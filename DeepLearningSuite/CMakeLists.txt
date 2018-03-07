@@ -38,6 +38,7 @@ FIND_PACKAGE(CUDA REQUIRED)
 FIND_PACKAGE(JdeRobot REQUIRED)
 
  include(Deps/glog/CMakeLists.txt)
+ include(Deps/ice/CMakeLists.txt)
 FIND_PACKAGE(Boost REQUIRED program_options filesystem)
 FIND_PACKAGE(Qt5Widgets REQUIRED)
 FIND_PACKAGE(Qt5Core REQUIRED)
@@ -60,30 +61,6 @@ FIND_PACKAGE(Qt5OpenGL REQUIRED)
 	 ${Qt5Svg_LIBRARIES}
 	 ${Qt5OpenGL_LIBRARIES}
 )
-
-
-
-
- #manual ICE
-FIND_PATH( Ice_INCLUDE_DIR NAMES Ice/Ice.h  PATHS ENV C++LIB ENV)
- 
-IF( Ice_INCLUDE_DIR )
-    FIND_LIBRARY( Ice_LIBRARY1 NAMES Ice PATHS ENV C++LIB ENV PATH PATH_SUFFIXES lib lib64 )
-    FIND_LIBRARY( Ice_LIBRARY2 NAMES IceUtil PATHS ENV C++LIB ENV PATH PATH_SUFFIXES lib lib64)
-    FIND_LIBRARY( Ice_LIBRARY3 NAMES IceStorm PATHS ENV C++LIB ENV PATH PATH_SUFFIXES lib lib64)
-    SET (Ice_LIBRARIES ${Ice_LIBRARY1} ${Ice_LIBRARY2} ${Ice_LIBRARY3})
-    IF( Ice_LIBRARIES )
-		MESSAGE ("-- Ice found at ${Ice_LIBRARIES}")
-		include_directories(${Ice_INCLUDE_DIR})
-		link_directories(${Ice_LIBRARIES})
-    ENDIF( Ice_LIBRARIES )
-ENDIF(Ice_INCLUDE_DIR)
-
-IF(NOT Ice_LIBRARIES)
-		MESSAGE ("*** Ice not found")
-ENDIF()
-
-
 
 
 #darknet
