@@ -7,6 +7,11 @@
 bool Utils::getListViewContent(const QListView *list, std::vector<std::string> &content, const std::string &prefix) {
     content.clear();
 
+		if (list->model() == 0) {
+			return false;
+		}
+
+
     QModelIndexList selectedList =list->selectionModel()->selectedIndexes();
     for (auto it = selectedList.begin(), end = selectedList.end(); it != end; ++it){
         content.push_back(prefix + it->data().toString().toStdString());
