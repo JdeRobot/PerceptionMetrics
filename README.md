@@ -104,12 +104,11 @@ For **Non-GPU** users (CPU build):
 ```
 cmake -DCMAKE_INSTALL_PREFIX=<DARKNET_DIR> -DUSE_GPU=OFF ..
 ```
-<br>
-```
-    make -j4
-    sudo make -j4 install
 
-```
+``` make -j4 ``` <br>
+``` sudo make -j4 install ```
+
+
 
 Change <DARKNET_DIR> to your custom installation path.
 
