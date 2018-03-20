@@ -6,6 +6,10 @@
 
 VideoReader::VideoReader(const std::string &videoPath) {
     this->cap =  new cv::VideoCapture(videoPath);
+
+    if(!cap->isOpened())  // check if we succeeded
+			 throw std::invalid_argument( "Couldn't open Video file!" );
+
     init=false;
 }
 
