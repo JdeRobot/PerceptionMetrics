@@ -27,6 +27,7 @@ Sample Generation Tool has been developed in order to simply the process of gene
 # Requirements
 
 ### CUDA
+
 ```
    NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
 
@@ -34,6 +35,7 @@ Sample Generation Tool has been developed in order to simply the process of gene
     sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub && \
     sudo apt-key adv --export --no-emit-version -a $NVIDIA_GPGKEY_FPR | tail -n +5 > cudasign.pub && \
      echo "$NVIDIA_GPGKEY_SUM  cudasign.pub" | sha256sum -c --strict - && rm cudasign.pub && \
+
      sudo sh -c 'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/cuda.list' && \
      sudo sh -c 'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list'
 ```
@@ -53,6 +55,7 @@ sudo apt-get install -y cuda
 ### Opencv
 ```
 sudo apt-get install libopencv-dev
+
 ```
 
 ### JDEROBOT
@@ -68,6 +71,7 @@ sudo apt-get install libopencv-dev
 #### Jderobot ThirdParty libraries:
 ```
     git clone https://github.com/JdeRobot/ThirdParty
+
     cd ThirdParty
     cd qflightinstruments
     qmake  qfi.pro
@@ -88,6 +92,7 @@ sudo apt-get install libopencv-dev
 ```
 
 ### Darknet (jderobot fork)
+
 Darknet supports both GPU and CPU builds, and GPU build is enabled by default.
 If your Computer doesn't have a NVIDIA Graphics card, then it is necessary to turn of GPU build in cmake by passing ```-DUSE_GPU=OFF``` as an option in cmake.
 
@@ -95,6 +100,7 @@ If your Computer doesn't have a NVIDIA Graphics card, then it is necessary to tu
     git clone https://github.com/JdeRobot/darknet
     cd darknet
     mkdir build && cd build
+
 
 ```
 
@@ -116,10 +122,12 @@ Change <DARKNET_DIR> to your custom installation path.
 
 # How to compile DL_DetectionSuite:
 Once you have all the deps installed just:
+
 ```
     git clone https://github.com/JdeRobot/DeepLearningSuite
     cd DeepLearningSuite
     cd DeepLearningSuite/
+
     cmake . -DDARKNET_PATH=<DARKNET_DIR>
 ```
 
