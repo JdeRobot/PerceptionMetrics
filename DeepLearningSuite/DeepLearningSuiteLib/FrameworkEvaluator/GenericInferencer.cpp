@@ -17,6 +17,10 @@ GenericInferencer::GenericInferencer(const std::string &netConfig, const std::st
                 this->darknetInferencerPtr = DarknetInferencerPtr( new DarknetInferencer(netConfig, netWeights,classNames));
                 break;
 #endif
+            case INF_TENSORFLOW:
+              this->tensorFlowInferencerPtr = TensorFlowInferencerPtr( new TensorFlowInferencer(netConfig, netWeights,classNames));
+              break;
+
             default:
                 LOG(WARNING)<<implementation + " is not a valid inferencer implementation";
                 break;
@@ -32,11 +36,16 @@ void GenericInferencer::configureAvailablesImplementations(std::vector<std::stri
 #ifdef DARKNET_ACTIVE
     data.push_back("yolo");
 #endif
+    data.push_back("tensorflow");
 }
 
 INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::string &inferencerImplementation) {
     if (inferencerImplementation.compare("yolo")==0){
         return INF_YOLO;
+    }
+    if (inferencerImplementation.compare("tensorflow")==0){
+        std::cout << "returned tensorflow" << '\n';
+        return INF_TENSORFLOW;
     }
 }
 
@@ -46,6 +55,8 @@ FrameworkInferencerPtr GenericInferencer::getInferencer() {
         case INF_YOLO:
             return this->darknetInferencerPtr;
 #endif
+        case INF_TENSORFLOW:
+            return this->tensorFlowInferencerPtr;
         default:
             LOG(WARNING)<<imp + " is not a valid reader implementation";
             break;
@@ -59,4 +70,3 @@ std::vector<std::string> GenericInferencer::getAvailableImplementations() {
 
 
 }
-

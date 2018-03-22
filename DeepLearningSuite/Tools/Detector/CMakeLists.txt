@@ -23,6 +23,7 @@ TARGET_LINK_LIBRARIES(detector
         ${Boost_LIBRARIES}
         ${GLOG_LIBRARIES}
         ${Ice_LIBRARIES}
+        ${PYTHON_LIBRARIES}
         ssl
         crypto
         )

@@ -17,6 +17,7 @@ TARGET_LINK_LIBRARIES(viewer
         ${Boost_LIBRARIES}
         ${GLOG_LIBRARIES}
         ${Ice_LIBRARIES}
+        ${PYTHON_LIBRARIES}
         ssl
         crypto
         )

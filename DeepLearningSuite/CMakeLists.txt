@@ -39,6 +39,7 @@ FIND_PACKAGE(JdeRobot REQUIRED)
 
  include(Deps/glog/CMakeLists.txt)
  include(Deps/ice/CMakeLists.txt)
+ include(Deps/numpy/CMakeLists.txt)
 FIND_PACKAGE(Boost REQUIRED program_options filesystem)
 FIND_PACKAGE(Qt5Widgets REQUIRED)
 FIND_PACKAGE(Qt5Core REQUIRED)

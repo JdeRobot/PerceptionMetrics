@@ -9,9 +9,10 @@
 
 #ifdef DARKNET_ACTIVE
 #include <FrameworkEvaluator/DarknetInferencer.h>
+#include <FrameworkEvaluator/TensorFlowInferencer.h>
 #endif
 
-enum INFERENCER_IMPLEMENTATIONS{INF_YOLO};
+enum INFERENCER_IMPLEMENTATIONS{INF_YOLO, INF_TENSORFLOW};
 
 
 class GenericInferencer {
@@ -25,6 +26,8 @@ private:
 #ifdef DARKNET_ACTIVE
     DarknetInferencerPtr darknetInferencerPtr;
 #endif
+
+    TensorFlowInferencerPtr tensorFlowInferencerPtr;
     std::vector<std::string> availableImplementations;
 
     static void configureAvailablesImplementations(std::vector<std::string>& data);

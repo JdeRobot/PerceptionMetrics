@@ -46,6 +46,7 @@ TARGET_LINK_LIBRARIES(DatasetEvaluationApp
         ${QT_LIBRARIES}
         ${GLOG_LIBRARIES}
         ${Ice_LIBRARIES}
+        ${PYTHON_LIBRARIES}
         ssl
         crypto
         )
