@@ -180,7 +180,9 @@ void Sample::save(const std::string &outPath) {
 }
 
 
-
+bool Sample::isDepthImageValid() {
+  return !this->depthImage.empty();
+}
 
 bool Sample::isValid() {
     return !this->colorImage.empty();
@@ -235,23 +237,30 @@ cv::Mat Sample::getDeptImageGrayRGB() const {
 
 }
 
-cv::Mat Sample::getDepthColorMapImage() const {
+cv::Mat Sample::getDepthColorMapImage(double alpha, double beta) const {
     cv::Mat image = getDepthImage();
-    std::vector<cv::Mat> depthVector;
-    cv::split(image,depthVector);
+    double minVal, maxVal;
+
+    minMaxLoc( image, &minVal, &maxVal );
+
+    cv::Mat mask;
+    cv::threshold(image, mask, maxVal - 1, 255, cv::THRESH_BINARY_INV);
+    mask.convertTo(mask, CV_8UC1);
+
+    image.convertTo(image, CV_8UC1, alpha, beta);
+
     cv::Mat colorMappedDepth;
-    cv::applyColorMap(depthVector[0], colorMappedDepth, cv::COLORMAP_RAINBOW);
-    return colorMappedDepth;
+    cv::applyColorMap(image, image, cv::COLORMAP_RAINBOW);
+    image.copyTo(colorMappedDepth, mask);
+
+    return colorMappedDepth;;
 }
 
-cv::Mat Sample::getSampledDepthColorMapImage() const {
-    cv::Mat image = getDepthColorMapImage();
+cv::Mat Sample::getSampledDepthColorMapImage(double alpha, double beta) const {
+    cv::Mat image = getDepthColorMapImage(alpha, beta);
     if (this->rectRegions)
         this->rectRegions->drawRegions(image);
     if (this->contourRegions)
         this->contourRegions->drawRegions(image);
     return image;
 }
-
-
-

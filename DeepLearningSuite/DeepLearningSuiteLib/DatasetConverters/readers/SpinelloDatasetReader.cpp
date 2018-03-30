@@ -63,9 +63,10 @@ bool SpinelloDatasetReader::appendDataset(const std::string &datasetPath, const 
             cv::Mat depthImage= cv::imread(depthImagePath, CV_LOAD_IMAGE_ANYDEPTH);
 
             cv::Mat ownDepthImage;
-            DepthUtils::mat16_to_ownFormat(depthImage,ownDepthImage);
-            cv::cvtColor(ownDepthImage,ownDepthImage,CV_RGB2BGR);
+            //DepthUtils::mat16_to_ownFormat(depthImage,ownDepthImage);
+            //cv::cvtColor(ownDepthImage,ownDepthImage,CV_RGB2BGR);
 
+            DepthUtils::spinello_mat16_to_viewable(depthImage, ownDepthImage);
 
             cv::Rect colorRect;
             cv::Rect depthRect;

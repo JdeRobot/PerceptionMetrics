@@ -10,7 +10,7 @@
 namespace SampleGeneratorHandler {
     class Viewer {
     public:
-        static void process(QListView* datasetList,QListView* namesList,QListView* readerImpList, QListView* filterClasses,  const std::string& datasetPath, const std::string& namesPath);
+        static void process(QListView* datasetList,QListView* namesList,QListView* readerImpList, QListView* filterClasses, bool showDepth, const std::string& datasetPath, const std::string& namesPath);
     };
 
 }

@@ -42,3 +42,35 @@ void DepthUtils::mat16_to_ownFormat(const cv::Mat &inputImage, cv::Mat& outImage
 
 
 }
+
+void DepthUtils::spinello_mat16_to_viewable(const cv::Mat &inputImage, cv::Mat& outImage) {
+
+    double min,max;
+    cv::minMaxLoc(inputImage,&min,&max);
+
+
+
+    if (max > 10000) {              // Swapping bytes
+
+      cv::Mat toswap(inputImage.rows, inputImage.cols, CV_8UC2, inputImage.data);
+      cv::Mat merged;
+
+      std::vector<cv::Mat> channels(2);
+      cv::split(toswap, channels);
+      std::reverse(channels.begin(), channels.end());
+      cv::merge(&channels[0], 2, merged);
+
+      merged.addref();
+      outImage = cv::Mat(toswap.rows, toswap.cols, CV_16UC1, merged.data);
+
+    } else {
+      outImage = inputImage;
+    }
+
+    cv::minMaxLoc(outImage,&min,&max);
+
+
+    std::cout << "min: " << min << std::endl;
+    std::cout << "max: " << max << std::endl;
+
+}

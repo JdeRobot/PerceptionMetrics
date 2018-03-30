@@ -10,6 +10,7 @@
 class DepthUtils {
 public:
     static void mat16_to_ownFormat(const cv::Mat& inputImage, cv::Mat& outImage);
+    static void spinello_mat16_to_viewable(const cv::Mat &inputImage, cv::Mat& outImage);
 };
 
 

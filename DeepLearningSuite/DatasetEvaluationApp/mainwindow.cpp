@@ -52,7 +52,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::handleViewButton() {
     SampleGeneratorHandler::Viewer::process(ui->listView_viewer_dataset,ui->listView_viewer_names,ui->listView_viewer_reader_imp,
-                                            ui->listView_viewer_classFilter, app->getConfig()->getKey("datasetPath").getValue(), app->getConfig()->getKey("namesPath").getValue());
+                                            ui->listView_viewer_classFilter, ui->checkBox_evaluator_show_depth->isChecked(), app->getConfig()->getKey("datasetPath").getValue(), app->getConfig()->getKey("namesPath").getValue());
 }
 
 void MainWindow::handleSelectionNamesChanged() {
@@ -299,5 +299,3 @@ void MainWindow::handleProcessDeploy() {
         std::cout << "Uknown exectip type" << std::endl;
     }
 }
-
-

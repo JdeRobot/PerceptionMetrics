@@ -131,6 +131,22 @@
        </item>
       </layout>
      </widget>
+     <widget class="QCheckBox" name="checkBox_evaluator_show_depth">
+      <property name="geometry">
+       <rect>
+        <x>770</x>
+        <y>150</y>
+        <width>191</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Show Depth Images</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
