@@ -49,7 +49,6 @@ void DepthUtils::spinello_mat16_to_viewable(const cv::Mat &inputImage, cv::Mat& 
     cv::minMaxLoc(inputImage,&min,&max);
 
 
-
     if (max > 10000) {              // Swapping bytes
 
       cv::Mat toswap(inputImage.rows, inputImage.cols, CV_8UC2, inputImage.data);
@@ -66,11 +65,5 @@ void DepthUtils::spinello_mat16_to_viewable(const cv::Mat &inputImage, cv::Mat& 
     } else {
       outImage = inputImage;
     }
-
-    cv::minMaxLoc(outImage,&min,&max);
-
-
-    std::cout << "min: " << min << std::endl;
-    std::cout << "max: " << max << std::endl;
 
 }
