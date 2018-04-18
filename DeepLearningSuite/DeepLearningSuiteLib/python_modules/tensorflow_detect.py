@@ -58,7 +58,7 @@ def run_inference_for_single_image(image, graph):
 
   return output_dict
 
-def detect(img, my_graph, threshold=0.5):
+def detect(img, my_graph, threshold=0.2):
 
     print "Starting inference"
     start_time = time.time()
@@ -86,6 +86,5 @@ def detect(img, my_graph, threshold=0.5):
     output_dict['detection_boxes'] = output_dict['detection_boxes'][0:len(output_dict['detection_scores']), :]
     output_dict['detection_classes'] = output_dict['detection_classes'][0:len(output_dict['detection_scores'])]
     output_dict['num_detections'] = len(output_dict['detection_scores'])
-    print output_dict
 
     return output_dict

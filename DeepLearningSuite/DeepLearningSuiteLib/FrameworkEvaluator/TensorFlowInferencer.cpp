@@ -6,7 +6,20 @@ TensorFlowInferencer::TensorFlowInferencer(const std::string &netConfig, const s
 		std::cout << "in tensorflow constructor" << '\n';
 	  this->classNamesFile=classNamesFile;
 
+		/* Code below adds path of python models to sys.path so as to enable python
+		interpreter to import custom python modules from the path mentioned. This will
+		prevent adding python path manually.
+		*/
+
+		std::string file_path = __FILE__;
+    std::string dir_path = file_path.substr(0, file_path.rfind("/"));
+		dir_path = dir_path + "/../python_modules";
+
+		std::string string_to_run = "import sys\nsys.path.append('" + dir_path + "')\n";
+
     Py_Initialize();
+
+		PyRun_SimpleString(string_to_run.c_str());
 
 
     init();
@@ -77,13 +90,19 @@ void TensorFlowInferencer::init()
 
 Sample TensorFlowInferencer::detectImp(const cv::Mat &image) {
 
+		if(PyErr_CheckSignals() == -1) {
+				 throw std::runtime_error("Keyboard Interrupt");
+		 }
+
     cv::Mat rgbImage;
     cv::cvtColor(image,rgbImage,CV_RGB2BGR);
+
+		this->detections.clear();						//remove previous detections
 
 		int result = gettfInferences(image);
 
 		if (result == 0) {
-			std::cout << "Error Ocuured during getting inferences" << '\n';
+			std::cout << "Error Occured during getting inferences" << '\n';
 		}
 
     Sample sample;
@@ -102,6 +121,11 @@ Sample TensorFlowInferencer::detectImp(const cv::Mat &image) {
     return sample;
 }
 
+/*
+This function converts the output from python scripts into a fromat compatible
+DetectionSuite to read bounding boxes, classes and detection scores, which are
+drawn on the image to show detections.
+*/
 
 void TensorFlowInferencer::output_result(int num_detections, int width, int height, PyObject* bounding_boxes, PyObject* detection_scores, PyObject* classIds )
 {
@@ -130,7 +154,7 @@ void TensorFlowInferencer::output_result(int num_detections, int width, int heig
 
 
 					 	detections.push_back(detection());
-						detections[i].classId = classIds_data[classes++];
+						detections[i].classId = classIds_data[classes++] - 1;  // In TensorFlow id's start from 1 whereas detectionsuite starts from 0s
 						detections[i].probability = detection_scores_data[scores++];
 
 						detections[i].boundingBox.y = bounding_box_data[boxes++] * height;
@@ -152,6 +176,10 @@ void TensorFlowInferencer::output_result(int num_detections, int width, int heig
 }
 
 
+/* This function gets inferences from the Python script by calling coressponding
+function and the uses output_result() to convert it into a DetectionSuite C++
+readble format.
+*/
 
 int TensorFlowInferencer::gettfInferences(const cv::Mat& image) {
 
@@ -169,7 +197,7 @@ int TensorFlowInferencer::gettfInferences(const cv::Mat& image) {
 						sizes[0] = image.rows;
 						sizes[1] = image.cols;
 				} else {
-					std::cout << "Invalid Image Passes" << '\n';
+					std::cout << "Invalid Image Passed" << '\n';
 					return 0;
 				}
 
@@ -197,11 +225,9 @@ int TensorFlowInferencer::gettfInferences(const cv::Mat& image) {
             PyTuple_SetItem(pArgs, 0, mynparr);
 						PyTuple_SetItem(pArgs, 1, pGraph);
 
-            std::cout << "running" << '\n';
 
             pValue = PyObject_CallObject(pFunc, pArgs);
 
-            std::cout << "ran" << '\n';
 
             Py_DECREF(pArgs);
             if (pValue != NULL) {
@@ -218,6 +244,7 @@ int TensorFlowInferencer::gettfInferences(const cv::Mat& image) {
                 Py_DECREF(pModule);
                 PyErr_Print();
                 fprintf(stderr,"Call failed\n");
+
                 return 0;
             }
 

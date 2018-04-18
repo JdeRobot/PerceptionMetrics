@@ -55,8 +55,17 @@ void MassInferencer::process(bool useDepthImages) {
             image2detect = sample.getColorImage();
         }
 
+        Sample detection;
 
-        Sample detection=this->inferencer->detect(image2detect);
+        try {
+
+          detection=this->inferencer->detect(image2detect);
+
+        } catch(const std::runtime_error& error) {
+          std::cout << "Error Occured: " << error.what() << '\n';
+          exit(1);
+        }
+
         detection.setSampleID(sample.getSampleID());
         detection.save(this->resultsPath);
         if (this->debug) {
@@ -75,7 +84,7 @@ void MassInferencer::process(bool useDepthImages) {
             cv::waitKey(100);
         }
     }
-
+    cv::destroyAllWindows();
     std::cout << "Mean inference time: " << this->inferencer->getMeanDurationTime() << "(ms)" <<  std::endl;
 
 
