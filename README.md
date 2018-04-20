@@ -16,6 +16,7 @@ The idea is to offer a generic infrastructure to evaluates object detection algo
 
 ##### Supported object detection frameworks/algorithms
 * YOLO (darknet)
+* TensorFlow
 * Background substraction
 
 
@@ -150,6 +151,13 @@ cat 2007_train.txt 2007_val.txt 2012_*.txt > train.txt
 In order to use darknet to detect objectd over the images you have to download the network configuration and the network weights [5] and [6]. Then set the corresponding paths into DeepLearningSuite/appConfig.txt. You have also to create a file with the corresponding name for each class detection for darknet, you can download the file directly from [7]
 
 Once you have your custom appConfig.txt you can run the DatasetEvaluationApp.
+
+### Using TensorFlow:
+TensorFlow can also be used for Object Detection in this tool. All you need is a frozen inference graph and a video to run inferences on.
+Some sample pre-trained graphs are available at [TensorFlow Object Detection Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) trained on datasets such as COCO, KITTI and Open Images.
+
+More instructions and tutorials on using the same are mentioned [here(Github's Wiki)](https://github.com/JdeRobot/dl-DetectionSuite/wiki).
+
 
 # References.
 [1] http://tracking.cs.princeton.edu/dataset.html \
