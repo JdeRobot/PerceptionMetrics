@@ -81,7 +81,7 @@ void MassInferencer::process(bool useDepthImages) {
                 cv::imshow("Input", image2detect);
             }
             cv::imshow("Detection", detectionWithImage.getSampledColorImage());
-            cv::waitKey(100);
+            cv::waitKey(10);
         }
     }
     cv::destroyAllWindows();

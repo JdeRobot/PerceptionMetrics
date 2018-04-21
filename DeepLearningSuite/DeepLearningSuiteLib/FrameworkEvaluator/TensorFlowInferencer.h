@@ -15,12 +15,12 @@ private:
     std::string netConfig;
     std::string netWeights;
     struct detection {
-      cv::Rect boundingBox;
-      float probability;
-      int classId;
+        cv::Rect boundingBox;
+        float probability;
+        int classId;
     };
 
-    PyObject *pName, *pModule, *pFunc, *pGraph;
+    PyObject *pName, *pModule, *pClass, *pInstance;
     PyObject *pArgs, *pValue, *pmodel;
 
     std::vector<detection> detections;

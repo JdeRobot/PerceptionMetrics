@@ -16,10 +16,16 @@ VideoReader::VideoReader(const std::string &videoPath) {
 bool VideoReader::getNextSample(Sample &sample) {
 
     cv::Mat image;
+    int count = 0;
 
     try {
         while (!cap->read(image)) {
             std::cout << "Frame not valid " << std::endl;
+			if (count >= 5) {
+				std::cout << "Video Ended" << '\n';
+				return false;
+			}						// Video Ended
+			count++;
         }
 
         //    init=true;
