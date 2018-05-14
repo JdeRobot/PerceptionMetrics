@@ -18,9 +18,12 @@ GenericInferencer::GenericInferencer(const std::string &netConfig, const std::st
                 break;
 #endif
             case INF_TENSORFLOW:
-              this->tensorFlowInferencerPtr = TensorFlowInferencerPtr( new TensorFlowInferencer(netConfig, netWeights,classNames));
-              break;
+                this->tensorFlowInferencerPtr = TensorFlowInferencerPtr( new TensorFlowInferencer(netConfig, netWeights,classNames));
+                break;
 
+            case INF_KERAS:
+                this->kerasInferencerPtr = KerasInferencerPtr( new KerasInferencer(netConfig, netWeights,classNames));
+                break;
             default:
                 LOG(WARNING)<<implementation + " is not a valid inferencer implementation";
                 break;
@@ -37,6 +40,7 @@ void GenericInferencer::configureAvailablesImplementations(std::vector<std::stri
     data.push_back("yolo");
 #endif
     data.push_back("tensorflow");
+    data.push_back("keras");
 }
 
 INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::string &inferencerImplementation) {
@@ -44,8 +48,10 @@ INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::strin
         return INF_YOLO;
     }
     if (inferencerImplementation.compare("tensorflow")==0){
-        std::cout << "returned tensorflow" << '\n';
         return INF_TENSORFLOW;
+    }
+    if (inferencerImplementation.compare("keras")==0){
+        return INF_KERAS;
     }
 }
 
@@ -57,6 +63,8 @@ FrameworkInferencerPtr GenericInferencer::getInferencer() {
 #endif
         case INF_TENSORFLOW:
             return this->tensorFlowInferencerPtr;
+        case INF_KERAS:
+            return this->kerasInferencerPtr;
         default:
             LOG(WARNING)<<imp + " is not a valid reader implementation";
             break;

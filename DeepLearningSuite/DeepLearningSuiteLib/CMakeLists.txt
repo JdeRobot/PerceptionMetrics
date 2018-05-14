@@ -41,6 +41,7 @@ SET( SOURCE_FILES
         DatasetConverters/liveReaders/VideoReader
         FrameworkEvaluator/DarknetInferencer
         FrameworkEvaluator/TensorFlowInferencer
+        FrameworkEvaluator/KerasInferencer
         DatasetConverters/liveReaders/VideoReader
         Utils/PathHelper
         )
