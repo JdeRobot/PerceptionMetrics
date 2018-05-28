@@ -29,6 +29,8 @@ struct Sample {
 
     RectRegionsPtr getRectRegions()const;
     ContourRegionsPtr getContourRegions();
+    std::string getColorImagePath() const;
+    std::string getDepthImagePath() const;
     cv::Mat getColorImage() const;
     cv::Mat getDepthImage() const;
     cv::Mat getDeptImageGrayRGB() const;

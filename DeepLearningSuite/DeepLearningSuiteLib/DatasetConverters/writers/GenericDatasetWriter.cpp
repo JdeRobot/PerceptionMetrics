@@ -11,6 +11,9 @@ GenericDatasetWriter::GenericDatasetWriter(const std::string &path,DatasetReader
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), writerImplementation) != this->availableImplementations.end()){
         imp = getImplementation(writerImplementation);
         switch (imp) {
+            case WR_COCO:
+              this->cocoDatasetWriterPtr = COCODatasetWriterPtr( new COCODatasetWriter(path,reader));
+              break;
             case WR_YOLO:
                 this->yoloDatasetWriterPtr = YoloDatasetWriterPtr( new YoloDatasetWriter(path,reader));
                 break;
@@ -32,9 +35,13 @@ GenericDatasetWriter::GenericDatasetWriter(const std::string &path,DatasetReader
 void GenericDatasetWriter::configureAvailableImplementations(std::vector<std::string> &data) {
     data.push_back("own");
     data.push_back("yolo");
+    data.push_back("coco");
 }
 
 WRITER_IMPLEMENTATIONS GenericDatasetWriter::getImplementation(const std::string &writerImplementation) {
+    if (writerImplementation.compare("coco")==0){
+        return WR_COCO;
+    }
     if (writerImplementation.compare("yolo")==0){
         return WR_YOLO;
     }
@@ -45,6 +52,8 @@ WRITER_IMPLEMENTATIONS GenericDatasetWriter::getImplementation(const std::string
 
 DatasetWriterPtr GenericDatasetWriter::getWriter() {
     switch (imp) {
+        case WR_COCO:
+            return this->cocoDatasetWriterPtr;
         case WR_YOLO:
             return this->yoloDatasetWriterPtr;
         case WR_OWN:
@@ -59,6 +68,3 @@ std::vector<std::string> GenericDatasetWriter::getAvailableImplementations() {
     configureAvailableImplementations(data);
     return data;
 }
-
-
-

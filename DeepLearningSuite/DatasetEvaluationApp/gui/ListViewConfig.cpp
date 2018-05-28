@@ -51,6 +51,7 @@ bool ListViewConfig::configureDatasetInput(QMainWindow* mainWindow, QListView *q
 void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::vector<std::string>& content) {
     boost::filesystem::directory_iterator end_itr;
     boost::filesystem::path boostPath(path);
+    std::size_t path_last;
 
     for (boost::filesystem::directory_iterator itr(boostPath); itr!=end_itr; ++itr)
     {
@@ -58,15 +59,29 @@ void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::ve
         if (boost::filesystem::is_directory(*itr)){
             //check if yolo (should contain a *.txt
             bool isOwnFormat=false;
+            bool takeParent=true;
             boost::filesystem::path boostPath2(itr->path());
             for (boost::filesystem::directory_iterator itr2(boostPath2); itr2!=end_itr; ++itr2) {
                 if (itr2->path().string().find(".txt") != std::string::npos){
                     possibleContent.push_back(itr2->path().string());
                 }
+                else if(itr2->path().string().find(".json") != std::string::npos){
+                    possibleContent.push_back(itr2->path().string());
+                }
+                else if(itr2->path().string().find(".xml") != std::string::npos){
+                    possibleContent.push_back(itr2->path().string());
+                }
                 else if ((itr2->path().string().find("png") != std::string::npos) || (itr2->path().string().find("json") != std::string::npos)){
                     isOwnFormat=true;
+                    takeParent=false;
                     break;
                 }
+                else {
+                    takeParent=false;
+                }
+            }
+            if (takeParent) {
+                possibleContent.push_back(itr->path().string());
             }
 
             if (possibleContent.size() != 0){

@@ -5,12 +5,13 @@
 #ifndef SAMPLERGENERATOR_GENERICDATASETWRITTER_H
 #define SAMPLERGENERATOR_GENERICDATASETWRITTER_H
 
-enum WRITER_IMPLEMENTATIONS{WR_OWN, WR_YOLO};
+enum WRITER_IMPLEMENTATIONS{WR_OWN, WR_YOLO, WR_COCO};
 
 #include <string>
 #include "DatasetWriter.h"
 #include <DatasetConverters/writers/OwnDatasetWriter.h>
 #include "YoloDatasetWriter.h"
+#include "COCODatasetWriter.h"
 
 class GenericDatasetWriter {
 public:
@@ -24,6 +25,7 @@ private:
 
     YoloDatasetWriterPtr yoloDatasetWriterPtr;
     OwnDatasetWriterPtr ownDatasetWriterPtr;
+    COCODatasetWriterPtr cocoDatasetWriterPtr;
 
     std::vector<std::string> availableImplementations;
 

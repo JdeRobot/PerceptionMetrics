@@ -11,6 +11,9 @@ GenericDatasetReader::GenericDatasetReader(const std::string &path, const std::s
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), readerImplementation) != this->availableImplementations.end()){
         imp = getImplementation(readerImplementation);
         switch (imp) {
+            case COCO:
+                this->cocoDatasetReaderPtr = COCODatasetReaderPtr( new COCODatasetReader(path,classNamesFile));
+                break;
             case YOLO:
                 this->yoloDatasetReaderPtr = YoloDatasetReaderPtr( new YoloDatasetReader(path,classNamesFile));
                 break;
@@ -81,6 +84,7 @@ GenericDatasetReader::GenericDatasetReader(const std::vector<std::string> &paths
 
 
 void GenericDatasetReader::configureAvailablesImplementations(std::vector<std::string>& data) {
+    data.push_back("coco");
     data.push_back("yolo");
     data.push_back("spinello");
     data.push_back("own");
@@ -89,6 +93,9 @@ void GenericDatasetReader::configureAvailablesImplementations(std::vector<std::s
 }
 
 READER_IMPLEMENTATIONS GenericDatasetReader::getImplementation(const std::string& readerImplementation) {
+    if (readerImplementation == "coco"){
+        return COCO;
+    }
     if (readerImplementation == "yolo"){
         return YOLO;
     }
@@ -105,6 +112,8 @@ READER_IMPLEMENTATIONS GenericDatasetReader::getImplementation(const std::string
 
 DatasetReaderPtr GenericDatasetReader::getReader() {
     switch (imp) {
+        case COCO:
+            return this->cocoDatasetReaderPtr;
         case YOLO:
             return this->yoloDatasetReaderPtr;
         case SPINELLO:
@@ -125,4 +134,3 @@ std::vector<std::string> GenericDatasetReader::getAvailableImplementations() {
     configureAvailablesImplementations(data);
     return data;
 }
-
