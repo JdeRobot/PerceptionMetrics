@@ -1,0 +1,183 @@
+#include <fstream>
+#include <glog/logging.h>
+#include "ImageNetDatasetReader.h"
+#include "DatasetConverters/ClassTypeGeneric.h"
+
+using namespace boost::filesystem;
+
+/*bool replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}*/
+
+bool ImageNetDatasetReader::find_img_directory( const path & ann_dir_path, path & path_found ) {
+    if ( !exists( ann_dir_path ) ) {
+        return false;
+    }
+    directory_iterator end_itr;
+
+    std::cout << ann_dir_path.string() << '\n';
+
+    path parent_folder1 = ann_dir_path.parent_path();
+    path parent_folder2 = parent_folder1.parent_path();
+
+    std::cout << parent_folder1.string() << '\n';
+    std::cout << parent_folder2.string() << '\n';
+
+    for ( directory_iterator itr( parent_folder2 ); itr != end_itr; ++itr ) {
+        if ( is_directory(itr->status()) ) {
+
+            std::cout << itr->path().string() << '\n';
+            if (itr->path().string() == parent_folder1.string()) {
+                std::cout << "skipping" << itr->path().string() << '\n';
+                continue;
+            } else if (itr->path().filename() == ann_dir_path.filename() ) {
+                if ( find_directory(itr->path(), ann_dir_path.filename().string(), path_found ) )  // find the deepest nested directory
+                    return true;
+
+                path_found = itr->path();
+                return true;
+            } else {
+                if ( find_directory( itr->path(), ann_dir_path.filename().string(), path_found ) )
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool ImageNetDatasetReader::find_directory(const path & dir_path, const std::string & dir_name, path & path_found) {
+
+    directory_iterator end_itr;
+
+
+    for ( directory_iterator itr( dir_path ); itr != end_itr; ++itr ) {
+        if ( is_directory(itr->status()) ) {
+
+            std::cout << itr->path().string() << '\n';
+
+            if (itr->path().filename() == dir_name ) {
+                if ( find_directory(itr->path(), dir_name, path_found ) )  // find the deepest nested directory
+                    return true;
+
+                path_found = itr->path();
+                return true;
+            } else {
+                if ( find_directory( itr->path(), dir_name, path_found ) )
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+ImageNetDatasetReader::ImageNetDatasetReader(const std::string &path,const std::string& classNamesFile) {
+    this->classNamesFile=classNamesFile;
+    appendDataset(path);
+}
+
+ImageNetDatasetReader::ImageNetDatasetReader() {
+
+}
+
+bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const std::string &datasetPrefix) {
+    boost::filesystem::path boostDatasetPath(datasetPath);
+
+    if (!boost::filesystem::is_directory(boostDatasetPath)) {
+        std::cout << "Throwing Exception" << '\n';
+        throw std::invalid_argument("Invalid File received for Imagenet Parser");
+    }
+
+    std::cout << boostDatasetPath.string() << '\n';
+
+    path img_dir;
+
+    if (find_img_directory(boostDatasetPath, img_dir)) {
+        std::cout << img_dir.string() << '\n';
+    } else {
+        std::cout << "Corresponding Image Directory, can't be located, Skipping" << '\n';
+    }
+
+    boost::filesystem::directory_iterator end_itr;
+    for (boost::filesystem::directory_iterator itr(boostDatasetPath); itr!=end_itr; ++itr)
+    {
+        if (!boost::filesystem::is_directory(*itr)){
+            std::cout << itr->path().string() << '\n';
+            boost::property_tree::ptree tree;
+
+            boost::property_tree::read_xml(itr->path().string(), tree);
+
+            std::string m_folder = tree.get<std::string>("annotation.folder");
+            std::string m_filename = tree.get<std::string>("annotation.filename");
+            std::string m_width = tree.get<std::string>("annotation.size.width");
+            std::string m_height = tree.get<std::string>("annotation.size.height");
+
+
+
+
+            Sample sample;
+            sample.setSampleID(m_filename);
+
+            std::string imgPath = img_dir.string() + "/" + m_filename + ".JPEG";
+            sample.setColorImage(imgPath);
+
+            RectRegionsPtr rectRegions(new RectRegions());
+
+            BOOST_FOREACH(boost::property_tree::ptree::value_type &v, tree.get_child("annotation")) {
+        // The data function is used to access the data stored in a node.
+                if (v.first == "object") {
+                    std::string object_name = v.second.get<std::string>("name");
+                    int xmin = v.second.get<int>("bndbox.xmin");
+                    int xmax = v.second.get<int>("bndbox.xmax");
+                    int ymin = v.second.get<int>("bndbox.ymin");
+                    int ymax = v.second.get<int>("bndbox.ymax");
+
+                    cv::Rect bounding(xmin, ymin, xmax - xmin, ymax - ymin);
+                    rectRegions->add(bounding,object_name);
+
+                }
+            }
+
+            sample.setRectRegions(rectRegions);
+            this->samples.push_back(sample);
+
+        }
+    }
+
+    /*std::ifstream inFile(datasetPath);
+
+
+
+    std::string line;
+    while (getline(inFile,line)){
+        Sample sample;
+        sample.setSampleID(datasetPrefix + boost::filesystem::path(line).filename().stem().string());
+        sample.setColorImage(line);
+        LOG(INFO) << "Loading sample: " + line;
+        cv::Mat image = cv::imread(line);
+        replace(line,"JPEGImages", "labels");
+        replace(line,".jpg", ".txt");
+        std::ifstream labelFile(line);
+        std::string data;
+        RectRegionsPtr rectRegions(new RectRegions());
+        ClassTypeGeneric typeConverter(this->classNamesFile);
+
+        while(getline(labelFile,data)) {
+            std::istringstream iss(data);
+            int class_id;
+            double x, y, w,h;
+            iss >> class_id >> x >> y >> w >> h;
+            cv::Rect bounding(x * image.size().width - (w * image.size().width)/2, y * image.size().height - (h * image.size().height)/2, w * image.size().width, h * image.size().height);
+            typeConverter.setId(class_id);
+            rectRegions->add(bounding,typeConverter.getClassString());
+        }
+        labelFile.close();
+        sample.setRectRegions(rectRegions);
+        this->samples.push_back(sample);
+    }
+    printDatasetStats();
+*/
+}

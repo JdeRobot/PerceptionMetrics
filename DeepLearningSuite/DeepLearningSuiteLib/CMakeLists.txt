@@ -14,6 +14,7 @@ SET( SOURCE_FILES
         DatasetConverters/readers/YoloDatasetReader
         DatasetConverters/writers/COCODatasetWriter
         DatasetConverters/readers/COCODatasetReader
+        DatasetConverters/readers/ImageNetDatasetReader
         DatasetConverters/ClassTypeGeneric
         Regions/Region
         Regions/RectRegion
