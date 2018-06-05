@@ -8,18 +8,19 @@
 #include <string>
 #include "SpinelloDatasetReader.h"
 #include "YoloDatasetReader.h"
+#include "COCODatasetReader.h"
+#include "ImageNetDatasetReader.h"
 #include <DatasetConverters/readers/DatasetReader.h>
 #include "OwnDatasetReader.h"
 #include "PrincetonDatasetReader.h"
 
-enum READER_IMPLEMENTATIONS{OWN, SPINELLO, YOLO, PRINCETON};
+enum READER_IMPLEMENTATIONS{OWN, SPINELLO, COCO, IMAGENET, YOLO, PRINCETON};
 
 
 class GenericDatasetReader {
 public:
     GenericDatasetReader(const std::string& path, const std::string& classNamesFile, const std::string& readerImplementation);
     GenericDatasetReader(const std::vector<std::string>& paths,const std::string& classNamesFile, const std::string& readerImplementation);
-
     DatasetReaderPtr getReader();
 
     static std::vector<std::string> getAvailableImplementations();
@@ -30,6 +31,8 @@ private:
     YoloDatasetReaderPtr yoloDatasetReaderPtr;
     SpinelloDatasetReaderPtr spinelloDatasetReaderPtr;
     PrincetonDatasetReaderPtr princetonDatasetReaderPtr;
+    COCODatasetReaderPtr cocoDatasetReaderPtr;
+    ImageNetDatasetReaderPtr imagenetDatasetReaderPtr;
 
     std::vector<std::string> availableImplementations;
 

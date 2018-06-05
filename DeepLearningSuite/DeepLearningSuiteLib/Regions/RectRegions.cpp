@@ -143,4 +143,3 @@ void RectRegions::print() {
     }
     std::cout << "-------------------" << std::endl;
 }
-

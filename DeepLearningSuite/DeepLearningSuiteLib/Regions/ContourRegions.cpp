@@ -133,6 +133,3 @@ void ContourRegions::print() {
     //todo
     std::cout << "Not yet implemented" << std::endl;
 }
-
-
-

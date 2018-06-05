@@ -81,6 +81,20 @@ ContourRegionsPtr Sample::getContourRegions() {
     return this->contourRegions;
 }
 
+std::string Sample::getColorImagePath() const{
+    if (this->colorImagePath.empty())
+        throw std::invalid_argument("Color Image Path not set in this Sample");
+
+    return this->colorImagePath;
+}
+
+std::string Sample::getDepthImagePath() const{
+    if (this->depthImagePath.empty())
+        throw std::invalid_argument("Depth Image Path not set in this Sample");
+
+    return this->depthImagePath;
+}
+
 cv::Mat Sample::getColorImage() const{
     if (this->colorImage.empty()) {
         cv::Mat image = cv::imread(this->colorImagePath);
