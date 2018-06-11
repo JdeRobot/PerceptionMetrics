@@ -8,7 +8,7 @@
 #include "SamplerGenerationHandler.h"
 
 void SampleGeneratorHandler::Converter::process(QListView *datasetList, QListView *namesList, QListView *readerImpList,
-                                                QListView *filterClasses, QListView *writerImpList,
+                                                QListView *filterClasses, QListView *writerImpList, QListView* writerNamesList, bool useWriterNames,
                                                 const std::string& datasetPath, const std::string& namesPath, const std::string &outputPath,
                                                 bool splitActive, double splitRatio,bool useColorImage) {
 
@@ -18,6 +18,16 @@ void SampleGeneratorHandler::Converter::process(QListView *datasetList, QListVie
                                                                                       datasetPath, namesPath);
     std::vector<std::string> writerImp;
     Utils::getListViewContent(writerImpList,writerImp,"");
+    std::vector<std::string> writerNames;
+
+    if (useWriterNames) {
+        if (! Utils::getListViewContent(writerNamesList,writerNames,namesPath+"/")){
+            LOG(WARNING)<<"Select the dataset names related to the Output dataset, or unchechk mapping if you want a custom names file to be generated";
+            return;
+    }
+
+
+}
 
 
     if (splitActive){
@@ -49,17 +59,33 @@ void SampleGeneratorHandler::Converter::process(QListView *datasetList, QListVie
         std::cout << "Test: " << std::endl;
         readerTest->printDatasetStats();
 
+        if (useWriterNames) {
+            GenericDatasetWriterPtr writerTest( new GenericDatasetWriter(testPath,readerTest,writerImp[0],writerNames[0]));
+            GenericDatasetWriterPtr writerTrain( new GenericDatasetWriter(trainPath,readerTrain,writerImp[0], writerNames[0]));
+            writerTest->getWriter()->process(useColorImage);
+            writerTrain->getWriter()->process(useColorImage);
 
-        GenericDatasetWriterPtr writerTest( new GenericDatasetWriter(testPath,readerTest,writerImp[0]));
-        writerTest->getWriter()->process(useColorImage);
+        } else {
+            GenericDatasetWriterPtr writerTest( new GenericDatasetWriter(testPath,readerTest,writerImp[0]));
+            GenericDatasetWriterPtr writerTrain( new GenericDatasetWriter(trainPath,readerTrain,writerImp[0]));
+            writerTest->getWriter()->process(useColorImage);
+            writerTrain->getWriter()->process(useColorImage);
 
-        GenericDatasetWriterPtr writerTrain( new GenericDatasetWriter(trainPath,readerTrain,writerImp[0]));
-        writerTrain->getWriter()->process(useColorImage);
+        }
+
     }
     else{
         auto readerPtr = reader->getReader();
-        GenericDatasetWriterPtr writer( new GenericDatasetWriter(outputPath,readerPtr,writerImp[0]));
-        writer->getWriter()->process(useColorImage);
+        if (useWriterNames) {
+            GenericDatasetWriterPtr writer( new GenericDatasetWriter(outputPath,readerPtr,writerImp[0], writerNames[0]));
+            std::cout << "here" << '\n';
+            writer->getWriter()->process(useColorImage);
+        } else {
+            GenericDatasetWriterPtr writer( new GenericDatasetWriter(outputPath,readerPtr,writerImp[0]));
+
+            writer->getWriter()->process(useColorImage);
+        }
+
     }
 
 

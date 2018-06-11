@@ -9,12 +9,13 @@
 #include "SpinelloDatasetReader.h"
 #include "YoloDatasetReader.h"
 #include "COCODatasetReader.h"
+#include "PascalVOCDatasetReader.h"
 #include "ImageNetDatasetReader.h"
 #include <DatasetConverters/readers/DatasetReader.h>
 #include "OwnDatasetReader.h"
 #include "PrincetonDatasetReader.h"
 
-enum READER_IMPLEMENTATIONS{OWN, SPINELLO, COCO, IMAGENET, YOLO, PRINCETON};
+enum READER_IMPLEMENTATIONS{OWN, SPINELLO, COCO, IMAGENET, PASCALVOC, YOLO, PRINCETON};
 
 
 class GenericDatasetReader {
@@ -31,6 +32,7 @@ private:
     YoloDatasetReaderPtr yoloDatasetReaderPtr;
     SpinelloDatasetReaderPtr spinelloDatasetReaderPtr;
     PrincetonDatasetReaderPtr princetonDatasetReaderPtr;
+    PascalVOCDatasetReaderPtr pascalvocDatasetReaderPtr;
     COCODatasetReaderPtr cocoDatasetReaderPtr;
     ImageNetDatasetReaderPtr imagenetDatasetReaderPtr;
 

@@ -14,6 +14,8 @@ SET( SOURCE_FILES
         DatasetConverters/readers/YoloDatasetReader
         DatasetConverters/writers/COCODatasetWriter
         DatasetConverters/readers/COCODatasetReader
+        DatasetConverters/readers/PascalVOCDatasetReader
+        DatasetConverters/writers/PascalVOCDatasetWriter
         DatasetConverters/readers/ImageNetDatasetReader
         DatasetConverters/ClassTypeGeneric
         Regions/Region
@@ -28,7 +30,9 @@ SET( SOURCE_FILES
         FrameworkEvaluator/DetectionsEvaluator
         FrameworkEvaluator/MassInferencer
         DatasetConverters/ClassTypeOwn
+        DatasetConverters/ClassTypeMapper
         DatasetConverters/ClassType
+        DatasetConverters/Tree
         Utils/Configuration
         Utils/Key
         Utils/SampleGenerationApp

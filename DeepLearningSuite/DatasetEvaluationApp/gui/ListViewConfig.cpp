@@ -69,7 +69,9 @@ void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::ve
                     possibleContent.push_back(itr2->path().string());
                 }
                 else if(itr2->path().string().find(".xml") != std::string::npos){
-                    possibleContent.push_back(itr2->path().string());
+                    //Only Take Parent and break this will prevent dispaying multiple xml files
+                    break;
+                    //possibleContent.push_back(itr2->path().string());
                 }
                 else if ((itr2->path().string().find("png") != std::string::npos) || (itr2->path().string().find("json") != std::string::npos)){
                     isOwnFormat=true;

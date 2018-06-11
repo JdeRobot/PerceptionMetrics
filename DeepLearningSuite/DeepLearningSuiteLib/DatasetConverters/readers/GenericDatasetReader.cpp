@@ -17,6 +17,9 @@ GenericDatasetReader::GenericDatasetReader(const std::string &path, const std::s
             case COCO:
                 this->cocoDatasetReaderPtr = COCODatasetReaderPtr( new COCODatasetReader(path,classNamesFile));
                 break;
+            case PASCALVOC:
+                this->pascalvocDatasetReaderPtr = PascalVOCDatasetReaderPtr( new PascalVOCDatasetReader(path,classNamesFile));
+                break;
             case YOLO:
                 this->yoloDatasetReaderPtr = YoloDatasetReaderPtr( new YoloDatasetReader(path,classNamesFile));
                 break;
@@ -87,8 +90,9 @@ GenericDatasetReader::GenericDatasetReader(const std::vector<std::string> &paths
 
 
 void GenericDatasetReader::configureAvailablesImplementations(std::vector<std::string>& data) {
-    data.push_back("imagenet");
-    data.push_back("coco");
+    data.push_back("ImageNet");
+    data.push_back("COCO");
+    data.push_back("Pascal VOC");
     data.push_back("yolo");
     data.push_back("spinello");
     data.push_back("own");
@@ -97,11 +101,14 @@ void GenericDatasetReader::configureAvailablesImplementations(std::vector<std::s
 }
 
 READER_IMPLEMENTATIONS GenericDatasetReader::getImplementation(const std::string& readerImplementation) {
-    if (readerImplementation == "imagenet"){
+    if (readerImplementation == "ImageNet"){
         return IMAGENET;
     }
-    if (readerImplementation == "coco"){
+    if (readerImplementation == "COCO"){
         return COCO;
+    }
+    if (readerImplementation == "Pascal VOC"){
+        return PASCALVOC;
     }
     if (readerImplementation == "yolo"){
         return YOLO;
@@ -123,6 +130,8 @@ DatasetReaderPtr GenericDatasetReader::getReader() {
             return this->imagenetDatasetReaderPtr;
         case COCO:
             return this->cocoDatasetReaderPtr;
+        case PASCALVOC:
+            return this->pascalvocDatasetReaderPtr;
         case YOLO:
             return this->yoloDatasetReaderPtr;
         case SPINELLO:

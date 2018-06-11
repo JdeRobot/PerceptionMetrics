@@ -16,6 +16,9 @@ public:
 protected:
     std::string outPath;
     DatasetReaderPtr& reader;
+    std::vector<std::string> outputClasses;
+    std::unordered_map<std::string, std::string> mapped_classes;
+    std::unordered_map<std::string, long int> discarded_classes;
 };
 
 

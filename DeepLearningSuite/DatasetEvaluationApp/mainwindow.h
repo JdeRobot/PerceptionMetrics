@@ -33,6 +33,7 @@ private slots:
     void handleSelectOutputFolderButtonDetector();
     void handleSelectDeployInputSource();
     void handleProcessDeploy();
+    void handleMappingCheckBoxChange();
 
 };
 

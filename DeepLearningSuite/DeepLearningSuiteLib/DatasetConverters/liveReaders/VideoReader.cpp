@@ -33,6 +33,11 @@ bool VideoReader::getNextSample(Sample &sample) {
         sample.setColorImage(image);
         return true;
     }
+    catch (const std::exception &exc)
+    {
+          std::cout << "Exeption Detected: " << exc.what();
+          return false;
+    }
     catch (...){
         return false;
     }

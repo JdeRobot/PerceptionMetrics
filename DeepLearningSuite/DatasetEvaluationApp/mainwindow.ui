@@ -262,11 +262,49 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_101">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>210</y>
+        <width>191</width>
+        <height>131</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_101">
+       <item>
+        <widget class="QLabel" name="label_101">
+         <property name="text">
+          <string>Writer Dataset Names</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListView" name="listView_converter_writer_names"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_use_writernames">
+         <property name="geometry">
+          <rect>
+           <x>870</x>
+           <y>350</y>
+           <width>191</width>
+           <height>26</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Map To Writer Names, May Lead to data loss</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+     </widget>
      <widget class="QTextEdit" name="textEdit_converterOutPath">
       <property name="geometry">
        <rect>
         <x>510</x>
-        <y>400</y>
+        <y>500</y>
         <width>401</width>
         <height>21</height>
        </rect>
@@ -276,7 +314,7 @@
       <property name="geometry">
        <rect>
         <x>510</x>
-        <y>340</y>
+        <y>440</y>
         <width>204</width>
         <height>20</height>
        </rect>
@@ -289,7 +327,7 @@
       <property name="geometry">
        <rect>
         <x>510</x>
-        <y>360</y>
+        <y>460</y>
         <width>141</width>
         <height>28</height>
        </rect>
@@ -315,7 +353,7 @@
       <property name="geometry">
        <rect>
         <x>750</x>
-        <y>240</y>
+        <y>400</y>
         <width>181</width>
         <height>26</height>
        </rect>
@@ -328,7 +366,7 @@
       <property name="geometry">
        <rect>
         <x>750</x>
-        <y>270</y>
+        <y>430</y>
         <width>81</width>
         <height>20</height>
        </rect>
@@ -341,7 +379,7 @@
       <property name="geometry">
        <rect>
         <x>750</x>
-        <y>290</y>
+        <y>450</y>
         <width>171</width>
         <height>21</height>
        </rect>
@@ -351,7 +389,7 @@
       <property name="geometry">
        <rect>
         <x>510</x>
-        <y>440</y>
+        <y>540</y>
         <width>171</width>
         <height>95</height>
        </rect>

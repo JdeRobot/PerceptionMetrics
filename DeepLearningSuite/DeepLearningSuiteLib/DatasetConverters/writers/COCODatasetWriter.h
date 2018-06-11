@@ -9,13 +9,15 @@
 
 class COCODatasetWriter: public DatasetWriter {
 public:
-    COCODatasetWriter(const std::string& outPath, DatasetReaderPtr& reader, bool overWriteclassWithZero=true);
+    COCODatasetWriter(const std::string& outPath, DatasetReaderPtr& reader, const std::string& writerNamesFile, bool overWriteclassWithZero=false);
     void process(bool usedColorImage=true);
 
 private:
     std::string fullImagesPath;
     std::string fullLabelsPath;
+    std::string fullNamesPath;
     bool overWriteclassWithZero;
+    std::string writerNamesFile;
 };
 
 typedef  boost::shared_ptr<COCODatasetWriter> COCODatasetWriterPtr;

@@ -5,13 +5,6 @@
 
 using namespace boost::filesystem;
 
-/*bool replace(std::string& str, const std::string& from, const std::string& to) {
-    size_t start_pos = str.find(from);
-    if(start_pos == std::string::npos)
-        return false;
-    str.replace(start_pos, from.length(), to);
-    return true;
-}*/
 
 bool ImageNetDatasetReader::find_img_directory( const path & ann_dir_path, path & path_found ) {
     if ( !exists( ann_dir_path ) ) {
@@ -19,13 +12,9 @@ bool ImageNetDatasetReader::find_img_directory( const path & ann_dir_path, path 
     }
     directory_iterator end_itr;
 
-    std::cout << ann_dir_path.string() << '\n';
 
     path parent_folder1 = ann_dir_path.parent_path();
     path parent_folder2 = parent_folder1.parent_path();
-
-    std::cout << parent_folder1.string() << '\n';
-    std::cout << parent_folder2.string() << '\n';
 
     for ( directory_iterator itr( parent_folder2 ); itr != end_itr; ++itr ) {
         if ( is_directory(itr->status()) ) {
@@ -57,8 +46,6 @@ bool ImageNetDatasetReader::find_directory(const path & dir_path, const std::str
     for ( directory_iterator itr( dir_path ); itr != end_itr; ++itr ) {
         if ( is_directory(itr->status()) ) {
 
-            std::cout << itr->path().string() << '\n';
-
             if (itr->path().filename() == dir_name ) {
                 if ( find_directory(itr->path(), dir_name, path_found ) )  // find the deepest nested directory
                     return true;
@@ -87,16 +74,15 @@ bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const 
     boost::filesystem::path boostDatasetPath(datasetPath);
 
     if (!boost::filesystem::is_directory(boostDatasetPath)) {
-        std::cout << "Throwing Exception" << '\n';
         throw std::invalid_argument("Invalid File received for Imagenet Parser");
     }
 
-    std::cout << boostDatasetPath.string() << '\n';
 
     path img_dir;
 
     if (find_img_directory(boostDatasetPath, img_dir)) {
         std::cout << img_dir.string() << '\n';
+        std::cout << "Image Directory Found" << '\n';
     } else {
         std::cout << "Corresponding Image Directory, can't be located, Skipping" << '\n';
     }
@@ -147,37 +133,5 @@ bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const 
         }
     }
 
-    /*std::ifstream inFile(datasetPath);
-
-
-
-    std::string line;
-    while (getline(inFile,line)){
-        Sample sample;
-        sample.setSampleID(datasetPrefix + boost::filesystem::path(line).filename().stem().string());
-        sample.setColorImage(line);
-        LOG(INFO) << "Loading sample: " + line;
-        cv::Mat image = cv::imread(line);
-        replace(line,"JPEGImages", "labels");
-        replace(line,".jpg", ".txt");
-        std::ifstream labelFile(line);
-        std::string data;
-        RectRegionsPtr rectRegions(new RectRegions());
-        ClassTypeGeneric typeConverter(this->classNamesFile);
-
-        while(getline(labelFile,data)) {
-            std::istringstream iss(data);
-            int class_id;
-            double x, y, w,h;
-            iss >> class_id >> x >> y >> w >> h;
-            cv::Rect bounding(x * image.size().width - (w * image.size().width)/2, y * image.size().height - (h * image.size().height)/2, w * image.size().width, h * image.size().height);
-            typeConverter.setId(class_id);
-            rectRegions->add(bounding,typeConverter.getClassString());
-        }
-        labelFile.close();
-        sample.setRectRegions(rectRegions);
-        this->samples.push_back(sample);
-    }
     printDatasetStats();
-*/
 }

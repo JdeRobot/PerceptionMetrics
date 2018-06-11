@@ -4,6 +4,8 @@
 #include "COCODatasetReader.h"
 #include "DatasetConverters/ClassTypeGeneric.h"
 
+using namespace boost::filesystem;
+
 bool replaceme(std::string& str, const std::string& from, const std::string& to) {
     size_t start_pos = str.find(from);
     if(start_pos == std::string::npos)
@@ -21,9 +23,29 @@ COCODatasetReader::COCODatasetReader() {
 
 }
 
+bool COCODatasetReader::find_img_directory(const path & dir_path, path & path_found) {
+
+    directory_iterator end_itr;
+
+    for ( directory_iterator itr( dir_path ); itr != end_itr; ++itr ) {
+
+        if (itr->path().has_extension() && itr->path().extension().string() == ".jpg" ) {
+            path_found = itr->path().parent_path();
+            return true;
+        } else {
+            if ( is_directory(itr->path()) && find_img_directory( itr->path(), path_found ) )
+                return true;
+        }
+
+    }
+    return false;
+}
+
 bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std::string &datasetPrefix) {
-    std::cout << datasetPath << '\n';                //path to json Annotations file
+    std::cout << "Dataset Path: " << datasetPath << '\n';                //path to json Annotations file
     std::ifstream inFile(datasetPath);
+
+    path boostDatasetPath(datasetPath);
 
     std::stringstream ss;
 
@@ -52,26 +74,24 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
     if(!a.IsArray())
         throw std::invalid_argument("Invalid Annotations file Passed");
 
+    path img_dir;
 
-    std::size_t path_last = datasetPath.find_last_of("/");
 
-    std::size_t filename_first = filename.find_first_of("_");
-    std::size_t filename_last = filename.find_last_of("_");
+    if (find_img_directory(boostDatasetPath.parent_path().parent_path(), img_dir)) {
+        std::cout << img_dir.string() << '\n';
+        std::cout << "Image Directory Found" << '\n';
+    } else {
+        throw std::runtime_error("Corresponding Image Directory, can't be located, please place it in the same Directory as annotations");
+    }
 
-    std::string image_prefix_path = datasetPath.substr(0,path_last);
-    std::string image_dir = filename.substr(filename_first + 1, filename_last - filename_first -1 );
-
-    replaceme(image_prefix_path, "annotations", image_dir);
-
-    std::string full_image_path = image_prefix_path + "/" + filename;
-
+    int counter = 0;
 
     for (rapidjson::Value::ConstValueIterator itr = a.Begin(); itr != a.End(); ++itr) {
 
         unsigned long int image_id = (*itr)["image_id"].GetUint64();
         //std::cout << image_id << '\n';
         int category = (*itr)["category_id"].GetUint();
-        //std::cout << category << '\n';
+
         double x, y, w, h;
         x = (*itr)["bbox"][0].GetDouble();
         y = (*itr)["bbox"][1].GetDouble();
@@ -83,14 +103,15 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
             std::string num_string = std::to_string(image_id);
 
-            std::size_t filename_id_start = full_image_path.find_last_of("_");
-            std::size_t filename_ext = full_image_path.find_last_of(".");
+            std::size_t filename_id_start = filename.find_last_of("_");
+            std::size_t filename_ext = filename.find_last_of(".");
 
             std::string dest = std::string( filename_ext - filename_id_start - 1 - num_string.length(), '0').append( num_string );
 
 
-            full_image_path.replace(filename_id_start + 1, filename_ext - filename_id_start - 1, dest);
+            filename.replace(filename_id_start + 1, filename_ext - filename_id_start - 1, dest);
 
+            std::string full_image_path = img_dir.string() + "/" + filename;
 
             Sample sample;
             sample.setSampleID(dest);

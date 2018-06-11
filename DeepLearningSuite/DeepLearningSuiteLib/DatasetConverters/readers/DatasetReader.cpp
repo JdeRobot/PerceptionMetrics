@@ -61,7 +61,8 @@ bool DatasetReader::getSampleBySampleID(Sample** sample, const std::string& samp
 }
 
 void DatasetReader::printDatasetStats() {
-    std::unordered_map<int, int> classStats;
+    std::unordered_map<std::string, int> classStats;
+    std::unordered_map<std::string, int>::iterator map_it;
 
     for (auto it=samples.begin(), end=samples.end(); it != end; ++it){
         RectRegionsPtr regions = it->getRectRegions();
@@ -70,11 +71,13 @@ void DatasetReader::printDatasetStats() {
             for (std::vector<RectRegion>::iterator itRegion = regionsVector.begin(), endRegion = regionsVector.end();
                  itRegion != endRegion; ++itRegion) {
                 std::string test = itRegion->classID;
-                ClassTypeOwn typeconv(test);
-                if (classStats.count(typeconv.getClassID())) {
-                    classStats[typeconv.getClassID()]++;
+
+                //ClassTypeOwn typeconv(test);
+                map_it = classStats.find(test);
+                if (map_it != classStats.end()) {
+                    map_it->second++;
                 } else {
-                    classStats.insert(std::make_pair(typeconv.getClassID(), 1));
+                    classStats.insert(std::make_pair(test, 1));
                 }
             }
         }
@@ -84,8 +87,7 @@ void DatasetReader::printDatasetStats() {
     std::cout << "------------------------------------------" << std::endl;
     int totalSamples=0;
     for (auto it = classStats.begin(), end = classStats.end(); it != end; ++it){
-        ClassTypeOwn typeconv(it->first);
-        std::cout << "["<< typeconv.getClassString() <<  "]: " << it->second << std::endl;
+        std::cout << "["<< it->first <<  "]: " << it->second << std::endl;
         totalSamples+=it->second;
     }
     std::cout << "------------------------------------------" << std::endl;
@@ -126,4 +128,3 @@ void DatasetReader::overWriteClasses(const std::string &from, const std::string 
 
     }
 }
-

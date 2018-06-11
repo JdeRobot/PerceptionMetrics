@@ -93,6 +93,13 @@ void MainWindow::handleSelectionNamesChanged() {
     }
 }
 
+void MainWindow::handleMappingCheckBoxChange() {
+    if(ui->checkBox_use_writernames->isChecked()) {
+        ui->listView_converter_writer_names->setEnabled(true);
+    } else {
+        ui->listView_converter_writer_names->setEnabled(false);
+    }
+}
 
 void MainWindow::setupTabsInformation() {
     switch(ui->tabWidget->currentIndex()) {
@@ -111,13 +118,16 @@ void MainWindow::setupTabsInformation() {
                                                   app->getConfig()->getKey("datasetPath").getValue(), true);
             ListViewConfig::configureInputByFile(this, ui->listView_converter_names,
                                                  app->getConfig()->getKey("namesPath").getValue(), false);
+            ListViewConfig::configureInputByFile(this, ui->listView_converter_writer_names,
+                                              app->getConfig()->getKey("namesPath").getValue(), false);
+            ui->listView_converter_writer_names->setEnabled(false);
             ListViewConfig::configureInputByData(this, ui->listView_converter_reader_imp,
                                                  GenericDatasetReader::getAvailableImplementations(), false);
             ListViewConfig::configureInputByData(this, ui->listView_converter_outImp,
                                                  GenericDatasetWriter::getAvailableImplementations(), false);
 
             connect(ui->listView_converter_names->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleSelectionNamesChanged()));
-
+            connect(ui->checkBox_use_writernames, SIGNAL(clicked(bool)), this, SLOT(handleMappingCheckBoxChange()));
             break;
         case 2:
             ListViewConfig::configureDatasetInput(this, ui->listView_detector_dataset,
@@ -198,12 +208,18 @@ void MainWindow::handleConvertButton() {
                                                    ui->listView_converter_reader_imp,
                                                    ui->listView_converter_classFilter,
                                                    ui->listView_converter_outImp,
+                                                   ui->listView_converter_writer_names,
+                                                   ui->checkBox_use_writernames->isChecked(),
                                                    app->getConfig()->getKey("datasetPath").getValue(),
                                                    app->getConfig()->getKey("namesPath").getValue(), outputPath,
                                                    splitActive, ratio, colorImage);
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;
+    }
+    catch (const std::exception &exc)
+    {
+        std::cout << "Exeption Detected: " << exc.what();
     }
     catch (...){
         std::cout << "Uknown exception type" << std::endl;
@@ -220,6 +236,10 @@ void MainWindow::handleEvaluateButton() {
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;
+    }
+    catch (const std::exception &exc)
+    {
+        std::cout << "Exeption Detected: " << exc.what();
     }
     catch (...){
         std::cout << "Uknown exectip type" << std::endl;
@@ -240,6 +260,10 @@ void MainWindow::handleDetectButton() {
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;
+    }
+    catch (const std::exception &exc)
+    {
+        std::cout << "Exeption Detected: " << exc.what();
     }
     catch (...){
         std::cout << "Uknown exectip type" << std::endl;
@@ -294,6 +318,10 @@ void MainWindow::handleProcessDeploy() {
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;
+    }
+    catch (const std::exception &exc)
+    {
+        std::cout << "Exeption Detected: " << exc.what();
     }
     catch (...){
         std::cout << "Uknown exectip type" << std::endl;

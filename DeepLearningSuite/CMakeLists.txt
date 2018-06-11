@@ -104,6 +104,7 @@ endif()
  add_subdirectory(Tools)
 
 
+ configure_file(ClassMappingHierarchy.xml ClassMappingHierarchy.xml COPYONLY)
 
 
  IF (BUILD_TEST)
