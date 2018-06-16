@@ -24,6 +24,9 @@ GenericInferencer::GenericInferencer(const std::string &netConfig, const std::st
             case INF_KERAS:
                 this->kerasInferencerPtr = KerasInferencerPtr( new KerasInferencer(netConfig, netWeights,classNames));
                 break;
+            case INF_CAFFE:
+                this->caffeInferencerPtr = CaffeInferencerPtr ( new CaffeInferencer(netConfig, netWeights, classNames) );
+                break;
             default:
                 LOG(WARNING)<<implementation + " is not a valid inferencer implementation";
                 break;
@@ -41,6 +44,7 @@ void GenericInferencer::configureAvailablesImplementations(std::vector<std::stri
 #endif
     data.push_back("tensorflow");
     data.push_back("keras");
+    data.push_back("caffe");
 }
 
 INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::string &inferencerImplementation) {
@@ -52,6 +56,9 @@ INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::strin
     }
     if (inferencerImplementation.compare("keras")==0){
         return INF_KERAS;
+    }
+    if (inferencerImplementation.compare("caffe")==0){
+        return INF_CAFFE;
     }
 }
 
@@ -65,6 +72,8 @@ FrameworkInferencerPtr GenericInferencer::getInferencer() {
             return this->tensorFlowInferencerPtr;
         case INF_KERAS:
             return this->kerasInferencerPtr;
+        case INF_CAFFE:
+            return this->caffeInferencerPtr;
         default:
             LOG(WARNING)<<imp + " is not a valid reader implementation";
             break;

@@ -9,11 +9,12 @@
 
 #ifdef DARKNET_ACTIVE
 #include <FrameworkEvaluator/DarknetInferencer.h>
+#endif
 #include <FrameworkEvaluator/TensorFlowInferencer.h>
 #include <FrameworkEvaluator/KerasInferencer.h>
-#endif
+#include <FrameworkEvaluator/CaffeInferencer.h>
 
-enum INFERENCER_IMPLEMENTATIONS{INF_YOLO, INF_TENSORFLOW, INF_KERAS};
+enum INFERENCER_IMPLEMENTATIONS{INF_YOLO, INF_TENSORFLOW, INF_KERAS, INF_CAFFE};
 
 
 class GenericInferencer {
@@ -32,6 +33,8 @@ private:
 
     KerasInferencerPtr kerasInferencerPtr;
 
+    CaffeInferencerPtr caffeInferencerPtr;
+    
     std::vector<std::string> availableImplementations;
 
     static void configureAvailablesImplementations(std::vector<std::string>& data);
