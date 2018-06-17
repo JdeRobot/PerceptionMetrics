@@ -10,9 +10,9 @@ CaffeInferencer::CaffeInferencer(const std::string &netConfig, const std::string
     this->confThreshold = 0.4;
     //float scale = parser.get<float>("scale");
     //Scalar mean = parser.get<Scalar>("mean");
-    //bool swapRB = parser.get<bool>("rgb");
-    //int inpWidth = parser.get<int>("width");
-    //int inpHeight = parser.get<int>("height");
+    this->swapRB = false;
+    this->inpWidth = 800;
+    this->inpHeight = 600;
 
     // Open file with classes names.
     /*if (parser.has("classes"))
@@ -33,6 +33,8 @@ CaffeInferencer::CaffeInferencer(const std::string &netConfig, const std::string
     this->net = cv::dnn::readNetFromCaffe(this->netConfig, this->netWeights);
     //net.setPreferableBackend(parser.get<int>("backend"));
     //net.setPreferableTarget(parser.get<int>("target"));
+    net.setPreferableBackend(0);
+    net.setPreferableTarget(0);
 
 
 
@@ -41,34 +43,43 @@ CaffeInferencer::CaffeInferencer(const std::string &netConfig, const std::string
 Sample CaffeInferencer::detectImp(const cv::Mat &image) {
 
     cv::Mat blob;
-    cv::Mat rgbImage;
 
-    cv::cvtColor(image,rgbImage,CV_BGR2RGB);
+    cv::Mat rgbImage = image;
+    this->detections.clear();
 
+    //cv::cvtColor(image,rgbImage,CV_BGR2RGB);
 
-    cv::Size inpSize(rgbImage.cols, rgbImage.rows);
-    blob = cv::dnn::blobFromImage(rgbImage,1.0, inpSize,cv::Scalar(), true, false);
+    std::cout << "converted image to rgb" << '\n';
+
+    cv::Size inpSize(this->inpWidth, this->inpHeight);
+    blob = cv::dnn::blobFromImage(rgbImage,1.0, inpSize, cv::Scalar(102.9801, 115.9465, 122.7717), false, false);
     //blobFromImage(frame, blob, scale, inpSize, mean, swapRB, false);
     // Run a model.
+
+    std::cout << "fetced blob" << '\n';
+
     this->net.setInput(blob);
+
+    std::cout << "setting blob" << '\n';
+
     if (this->net.getLayer(0)->outputNameToIndex("im_info") != -1)  // Faster-RCNN or R-FCN
     {
+        std::cout << "in if statement" << '\n';
         cv::resize(rgbImage, rgbImage, inpSize);
         cv::Mat imInfo = (cv::Mat_<float>(1, 3) << inpSize.height, inpSize.width, 1.6f);
         this->net.setInput(imInfo, "im_info");
     }
     std::vector<cv::Mat> outs;
+
+    std::cout << "before running inferenec" << '\n';
+
     this->net.forward(outs, getOutputsNames());
 
-    postprocess(outs);
+    std::cout << "after inference" << '\n';
 
-    // Put efficiency information.
-    /*std::vector<double> layersTimes;
-    double freq = getTickFrequency() / 1000;
-    double t = net.getPerfProfile(layersTimes) / freq;
-    std::string label = format("Inference time: %.2f ms", t);
-    putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
-    */
+    postprocess(outs, rgbImage);
+
+    std::cout << "post processed image" << '\n';
 
 
     Sample sample;
@@ -79,71 +90,82 @@ Sample CaffeInferencer::detectImp(const cv::Mat &image) {
 
 		typeConverter.setId(it->classId);
 		regions->add(it->boundingBox,typeConverter.getClassString());
-		//std::cout<< it->boundingBox.x << " " << it->boundingBox.y << " " << it->boundingBox.height << " " << it->boundingBox.width << std::endl;
+		std::cout<< it->boundingBox.x << " " << it->boundingBox.y << " " << it->boundingBox.height << " " << it->boundingBox.width << std::endl;
 		std::cout<< typeConverter.getClassString() << ": " << it->probability << std::endl;
 	}
     sample.setRectRegions(regions);
     return sample;
 }
 
-void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs)
+void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & image)
 {
     static std::vector<int> outLayers = this->net.getUnconnectedOutLayers();
     static std::string outLayerType = this->net.getLayer(outLayers[0])->type;
 
     if (this->net.getLayer(0)->outputNameToIndex("im_info") != -1)  // Faster-RCNN or R-FCN
     {
+        std::cout << "here_1" << '\n';
         // Network produces output blob with a shape 1x1xNx7 where N is a number of
         // detections and an every detection is a vector of values
         // [batchId, classId, confidence, left, top, right, bottom]
-        cv::CV_Assert(outs.size() == 1);
+        //cv::CV_Assert(outs.size() == 1);
+        assert(outs.size() == 1);
         float* data = (float*)outs[0].data;
+        int count = 0;
         for (size_t i = 0; i < outs[0].total(); i += 7)
         {
             float confidence = data[i + 2];
             if (confidence > confThreshold)
             {
                 detections.push_back(detection());
-                detections[i].classId = (int)(data[i + 1]) - 1;
-                detections[i].probability = confidence;
-                detections[i].boundingBox.x = (int)data[i + 3];
-                detections[i].boundingBox.y = (int)data[i + 4];
+                detections[count].classId = (int)(data[i + 1]) - 1;
+                detections[count].probability = confidence;
+                detections[count].boundingBox.x = (int)data[i + 3];
+                detections[count].boundingBox.y = (int)data[i + 4];
 
-                detections[i].boundingBox.width = (int)data[i + 5] - detections[i].boundingBox.x;
+                detections[count].boundingBox.width = (int)data[i + 5] - detections[i].boundingBox.x;
 
-                detections[i].boundingBox.height = (int)data[i + 6] - detections[i].boundingBox.y;
+                detections[count].boundingBox.height = (int)data[i + 6] - detections[i].boundingBox.y;
 
+                count++;
             }
+
         }
 
     }
     else if (outLayerType == "DetectionOutput")
     {
+        std::cout << "here_2" << '\n';
         // Network produces output blob with a shape 1x1xNx7 where N is a number of
         // detections and an every detection is a vector of values
         // [batchId, classId, confidence, left, top, right, bottom]
-        cv::CV_Assert(outs.size() == 1);
+        assert(outs.size() == 1);
         float* data = (float*)outs[0].data;
+        int count = 0;
         for (size_t i = 0; i < outs[0].total(); i += 7)
         {
             float confidence = data[i + 2];
             if (confidence > confThreshold)
             {
                 detections.push_back(detection());
-                detections[i].classId = (int)(data[i + 1]) - 1;
-                detections[i].probability = confidence;
-                detections[i].boundingBox.x = (int)data[i + 3];
-                detections[i].boundingBox.y = (int)data[i + 4];
+                detections[count].classId = (int)(data[i + 1]) - 1;
+                detections[count].probability = confidence;
+                std::cout << data[i + 3] << '\n';
+                detections[count].boundingBox.x = (int)(data[i + 3] * image.cols);
+                detections[count].boundingBox.y = (int)(data[i + 4] * image.rows);
 
-                detections[i].boundingBox.width = (int)data[i + 5] - detections[i].boundingBox.x;
+                detections[count].boundingBox.width = (int)(data[i + 5] * image.cols )- detections[count].boundingBox.x;
 
-                detections[i].boundingBox.height = (int)data[i + 6] - detections[i].boundingBox.y;
+                detections[count].boundingBox.height = (int)(data[i + 6] * image.rows ) - detections[count].boundingBox.y;
+
+                count++;
 
             }
         }
     }
     else if (outLayerType == "Region")
     {
+        std::cout << "here_region" << '\n';
         std::vector<int> classIds;
         std::vector<float> confidences;
         std::vector<cv::Rect> boxes;
@@ -161,21 +183,21 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs)
                 cv::minMaxLoc(scores, 0, &confidence, 0, &classIdPoint);
                 if (confidence > confThreshold)
                 {
-                    int centerX = (int)(data[0] * frame.cols);
-                    int centerY = (int)(data[1] * frame.rows);
-                    int width = (int)(data[2] * frame.cols);
-                    int height = (int)(data[3] * frame.rows);
+                    int centerX = (int)(data[0] * image.cols);
+                    int centerY = (int)(data[1] * image.rows);
+                    int width = (int)(data[2] * image.cols);
+                    int height = (int)(data[3] * image.rows);
                     int left = centerX - width / 2;
                     int top = centerY - height / 2;
 
                     classIds.push_back(classIdPoint.x);
                     confidences.push_back((float)confidence);
-                    boxes.push_back(Rect(left, top, width, height));
+                    boxes.push_back(cv::Rect(left, top, width, height));
                 }
             }
         }
         std::vector<int> indices;
-        cv::NMSBoxes(boxes, confidences, confThreshold, 0.4f, indices);
+        cv::dnn::NMSBoxes(boxes, confidences, confThreshold, 0.4f, indices);
         for (size_t i = 0; i < indices.size(); ++i)
         {
             int idx = indices[i];
@@ -196,7 +218,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs)
         }
     }
     else
-        cv::CV_Error(Error::StsNotImplemented, "Unknown output layer type: " + outLayerType);
+        throw std::invalid_argument("Unknown output layer type: " + outLayerType);
 }
 
 /*void drawPred(int classId, float conf, int left, int top, int right, int bottom, Mat& frame)
@@ -221,14 +243,15 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs)
 */
 std::vector<cv::String> CaffeInferencer::getOutputsNames()
 {
-    static std::vector<String> names;
-    if (names.empty())
+
+    if (this->names.empty())
     {
+        std::cout << "names is empty" << '\n';
         std::vector<int> outLayers = this->net.getUnconnectedOutLayers();
         std::vector<cv::String> layersNames = this->net.getLayerNames();
-        names.resize(outLayers.size());
+        this->names.resize(outLayers.size());
         for (size_t i = 0; i < outLayers.size(); ++i)
-            names[i] = layersNames[outLayers[i] - 1];
+            this->names[i] = layersNames[outLayers[i] - 1];
     }
-    return names;
+    return this->names;
 }
