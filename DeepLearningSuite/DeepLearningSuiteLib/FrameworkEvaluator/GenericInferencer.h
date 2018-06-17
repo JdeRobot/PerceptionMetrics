@@ -9,9 +9,9 @@
 
 #ifdef DARKNET_ACTIVE
 #include <FrameworkEvaluator/DarknetInferencer.h>
+#endif
 #include <FrameworkEvaluator/TensorFlowInferencer.h>
 #include <FrameworkEvaluator/KerasInferencer.h>
-#endif
 
 enum INFERENCER_IMPLEMENTATIONS{INF_YOLO, INF_TENSORFLOW, INF_KERAS};
 

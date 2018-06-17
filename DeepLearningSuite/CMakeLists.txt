@@ -68,11 +68,6 @@ FIND_PACKAGE(Qt5OpenGL REQUIRED)
 
 #darknet
 
-IF (NOT DARKNET_PATH)
-	MESSAGE("Please to use darknet please define DARKNET_PATH to the root installation")
-	MESSAGE(WARNING "DARKNET DISABLE")
-ENDIF()
-
 FIND_PATH( DARKNET_INCLUDE_DIR NAMES DarknetAPI/DarknetAPI.h  PATHS ${DARKNET_PATH}/include )
 SET(DARKNET_NAMES darknetAPILib darknetExamplesLib darknetLib)
 #SET(DARKNET_NAMES darknetLib)
@@ -87,7 +82,8 @@ ENDFOREACH()
 #UNSET(DARKNET_LIBRARIES CACHE)
 
 
-if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)
+if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)				## Sometimes it may be found without specifing DARNKNET_PATH
+	message("DARKNET FOUND")
 	message("DARKNET_INCLUDE_DIR: ${DARKNET_INCLUDE_DIR}")
 	message("DARKNET_LIBRARIES: ${DARKNET_LIBRARIES}")
 	SET(DARKNET_ACTIVE ON)
@@ -95,7 +91,13 @@ if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)
 else()
 	message("DARKNET_INCLUDE_DIR: ${DARKNET_INCLUDE_DIR}")
 	message("DARKNET_LIBRARIES: ${DARKNET_LIBRARIES}")
-	MESSAGE(WARNING "DARKNET DISABLE")
+	if (NOT DARKNET_PATH)
+		MESSAGE("Please to use darknet please define DARKNET_PATH to the root installation")
+		MESSAGE(WARNING "DARKNET DISABLE")
+	else()
+		MESSAGE("Couldn't find darknet in the DARKNET_PATH specified")
+		MESSAGE(WARNING "DARKNET DISABLE")
+	endif()
 endif()
 
  set(DeepLearningSuite_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/DeepLearningSuiteLib)

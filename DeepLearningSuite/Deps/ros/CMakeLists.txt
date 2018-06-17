@@ -1,7 +1,7 @@
 OPTION(ENABLE_ROS "Enable ROS compatibility modules" ON)
 
 if (ENABLE_ROS)
-	find_package(roscpp REQUIRED)
+	find_package(roscpp QUIET)
 
 	if(roscpp_FOUND)
 

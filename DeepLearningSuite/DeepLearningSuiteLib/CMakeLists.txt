@@ -65,7 +65,10 @@ SET( SOURCE_FILES
         DatasetConverters/liveReaders/RecorderReader
         DatasetConverters/liveReaders/CameraReader
         DatasetConverters/liveReaders/VideoReader
-        FrameworkEvaluator/DarknetInferencer
+        FrameworkEvaluator/GlobalStats
+        DatasetConverters/readers/PrincetonDatasetReader
+        Utils/JsonHelper.h
+        Utils/DepthUtils
         FrameworkEvaluator/TensorFlowInferencer
         FrameworkEvaluator/KerasInferencer
         DatasetConverters/liveReaders/VideoReader
@@ -74,7 +77,7 @@ SET( SOURCE_FILES
 
 
 IF(DARKNET_ACTIVE)
-    SET( SOURCE_FILES ${SOURCE_FILES} FrameworkEvaluator/GlobalStats.cpp FrameworkEvaluator/GlobalStats.h DatasetConverters/readers/PrincetonDatasetReader.cpp DatasetConverters/readers/PrincetonDatasetReader.h Utils/JsonHelper.h Utils/DepthUtils.cpp Utils/DepthUtils.h)
+    SET( SOURCE_FILES ${SOURCE_FILES} FrameworkEvaluator/DarknetInferencer )
     include_directories(${DARKNET_INCLUDE_DIR})
 ENDIF()
 
