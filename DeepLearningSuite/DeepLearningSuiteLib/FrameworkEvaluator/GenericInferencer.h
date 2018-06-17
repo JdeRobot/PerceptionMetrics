@@ -34,7 +34,7 @@ private:
     KerasInferencerPtr kerasInferencerPtr;
 
     CaffeInferencerPtr caffeInferencerPtr;
-    
+
     std::vector<std::string> availableImplementations;
 
     static void configureAvailablesImplementations(std::vector<std::string>& data);

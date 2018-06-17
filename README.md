@@ -10,6 +10,9 @@ The idea is to offer a generic infrastructure to evaluates object detection algo
 
 ##### Supported datasets formats:
 * YOLO
+* COCO
+* ImageNet
+* Pascal VOC
 * Jderobot recorder logs
 * Princeton RGB dataset [1]
 * Spinello dataset [2]
@@ -17,6 +20,7 @@ The idea is to offer a generic infrastructure to evaluates object detection algo
 ##### Supported object detection frameworks/algorithms
 * YOLO (darknet)
 * TensorFlow
+* Keras
 * Background substraction
 
 

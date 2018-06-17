@@ -6,17 +6,21 @@
 #define SAMPLERGENERATOR_JDEROBOTREADER_H
 
 
-#include <jderobot/parallelIce/cameraClient.h>
 #include <DatasetConverters/readers/DatasetReader.h>
-
+#include <QGroupBox>
+#include <config/config.h>
+#include <comm/communicator.hpp>
+#include <comm/cameraClient.hpp>
+#include <yaml-cpp/yaml.h>
 
 class JderobotReader: public DatasetReader {
 public:
-    JderobotReader(const std::string& IceConfigFile);
+    JderobotReader(std::map<std::string, std::string>* deployer_params_map, const std::string& path);
 
     bool getNextSample(Sample &sample);
 private:
-    jderobot::CameraClientPtr camera;
+    Comm::Communicator* jdrc;
+    Comm::CameraClient* camera;
 
 };
 

@@ -1,5 +1,4 @@
 include_directories(
-        ${JdeRobot_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIR}
         ${CMAKE_CURRENT_LIST_DIR}
@@ -12,7 +11,6 @@ add_executable (splitter splitter.cpp)
 TARGET_LINK_LIBRARIES(splitter
         DeepLearningSuite
         ${EXTRA_LIBS}
-        ${JdeRobot_LIBRARIES}
         ${OpenCV_LIBRARIES}
         ${Boost_LIBRARIES}
         ${GLOG_LIBRARIES}

@@ -10,6 +10,7 @@
 #include "ClassStatistics.h"
 #include "GlobalStats.h"
 #include <DatasetConverters/ClassTypeMapper.h>
+#include <unordered_map>
 
 class DetectionsEvaluator {
 public:
