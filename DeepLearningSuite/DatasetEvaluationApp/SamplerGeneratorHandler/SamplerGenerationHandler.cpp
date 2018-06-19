@@ -88,7 +88,7 @@ GenericLiveReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::createLiv
     GenericLiveReaderPtr reader;
 
     reader = GenericLiveReaderPtr(
-            new GenericLiveReader(infoPath, deployer_params_map, names[0], readerImplementation[0]));
+            new GenericLiveReader(infoPath, names[0], readerImplementation[0],  deployer_params_map));
 
 
     return reader;

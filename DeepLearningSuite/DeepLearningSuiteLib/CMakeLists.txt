@@ -71,6 +71,7 @@ SET( SOURCE_FILES
         Utils/DepthUtils
         FrameworkEvaluator/TensorFlowInferencer
         FrameworkEvaluator/KerasInferencer
+        FrameworkEvaluator/CaffeInferencer
         DatasetConverters/liveReaders/VideoReader
         Utils/PathHelper
         )

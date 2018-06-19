@@ -6,7 +6,7 @@
 #include "GenericLiveReader.h"
 
 
-GenericLiveReader::GenericLiveReader(const std::string &path, std::map<std::string, std::string>* deployer_params_map, const std::string& classNamesFile, const std::string &readerImplementation) {
+GenericLiveReader::GenericLiveReader(const std::string &path, const std::string& classNamesFile, const std::string &readerImplementation, std::map<std::string, std::string>* deployer_params_map) {
     configureAvailablesImplementations(this->availableImplementations);
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), readerImplementation) != this->availableImplementations.end()){
         imp = getImplementation(readerImplementation);

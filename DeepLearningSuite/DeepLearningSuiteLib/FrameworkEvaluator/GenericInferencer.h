@@ -12,13 +12,14 @@
 #endif
 #include <FrameworkEvaluator/TensorFlowInferencer.h>
 #include <FrameworkEvaluator/KerasInferencer.h>
+#include <FrameworkEvaluator/CaffeInferencer.h>
 
-enum INFERENCER_IMPLEMENTATIONS{INF_YOLO, INF_TENSORFLOW, INF_KERAS};
+enum INFERENCER_IMPLEMENTATIONS{INF_YOLO, INF_TENSORFLOW, INF_KERAS, INF_CAFFE};
 
 
 class GenericInferencer {
 public:
-    GenericInferencer(const std::string& netConfig, const std::string& netWeights, const std::string& classNames, const std::string& implementation);
+    GenericInferencer(const std::string& netConfig, const std::string& netWeights, const std::string& classNames, const std::string& implementation, std::map<std::string, std::string>* inferencerParamsMap = NULL);
     FrameworkInferencerPtr getInferencer();
     static std::vector<std::string> getAvailableImplementations();
 
@@ -31,6 +32,8 @@ private:
     TensorFlowInferencerPtr tensorFlowInferencerPtr;
 
     KerasInferencerPtr kerasInferencerPtr;
+
+    CaffeInferencerPtr caffeInferencerPtr;
 
     std::vector<std::string> availableImplementations;
 

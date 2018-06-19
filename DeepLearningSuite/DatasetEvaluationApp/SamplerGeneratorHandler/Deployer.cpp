@@ -12,7 +12,7 @@
 void
 SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *weightsList, QListView *netConfigList,
                                           QListView *inferencerImpList, QListView *inferencerNamesList,
-                                          QPushButton* stopButton, QGroupBox* deployer_params, const std::string &weightsPath, const std::string &cfgPath,
+                                          QPushButton* stopButton, QGroupBox* deployer_params, QGroupBox* inferencer_params, const std::string &weightsPath, const std::string &cfgPath,
                                           const std::string &inferencerNamesPath, const std::string &inputInfo) {
 
     GenericLiveReaderPtr reader;
@@ -52,7 +52,19 @@ SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *w
         return;
     }
 
-    GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0]));
+    std::map<std::string, std::string>* inferencerParamsMap = new std::map<std::string, std::string>();
+    try {
+
+        if(! Utils::getDeployerParamsContent(inferencer_params, *inferencerParamsMap)) {
+            inferencerParamsMap = NULL;
+        }
+
+    } catch(std::exception& ex) {
+        LOG(WARNING)<< ex.what();
+        return;
+    }
+
+    GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0], inferencerParamsMap));
     MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),"./tmp", true);
     massInferencer.process(false);
 }

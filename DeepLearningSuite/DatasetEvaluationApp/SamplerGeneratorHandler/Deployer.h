@@ -12,7 +12,7 @@ namespace SampleGeneratorHandler {
     class Deployer {
     public:
         static void  process(QListView *deployImpList,QListView* weightsList, QListView* netConfigList, QListView* inferencerImpList, QListView* inferencerNamesList,
-                             QPushButton* stopButton, QGroupBox* deployer_params, const std::string& weightsPath, const std::string& cfgPath,
+                             QPushButton* stopButton, QGroupBox* deployer_params, QGroupBox* inferencer_params, const std::string& weightsPath, const std::string& cfgPath,
                              const std::string& inferencerNamesPath,const std::string& inputInfo);
     };
 }

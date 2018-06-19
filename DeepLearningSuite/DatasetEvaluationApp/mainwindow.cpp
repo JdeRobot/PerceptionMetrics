@@ -43,6 +43,7 @@ MainWindow::MainWindow(SampleGenerationApp* app,QWidget *parent) :
     connect(ui->listView_deploy_input_imp->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDeployerImpListViewChange(QModelIndex, QModelIndex)));
     //connect(ui->groupBox_config_file, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
     connect(ui->deployer_radioButton_manual, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
+    connect(ui->listView_deploy_impl->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDeployerInferencerImpListViewChange(QModelIndex, QModelIndex)));
 
 
 }
@@ -188,6 +189,8 @@ void MainWindow::setupTabsInformation() {
             #else
             ui->radioButton_deployer_ros->setEnabled(false);
             #endif
+
+            ui->groupBox_deployer_inferencer_params->setEnabled(false);
 
             break;
         default:
@@ -354,15 +357,24 @@ void MainWindow::handleDeployerConfigFileOptionChange(bool checked) {
    }
 }
 
+void MainWindow::handleDeployerInferencerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected) {
+    if (selected.data().toString() == "caffe") {
+        ui->groupBox_deployer_inferencer_params->setEnabled(true);
+    } else {
+        ui->groupBox_deployer_inferencer_params->setEnabled(false);
+    }
+}
+
 void MainWindow::handleProcessDeploy() {
     std::string inputInfo = this->ui->textEdit_deployInputPath->toPlainText().toStdString();
 
     QGroupBox* deployer_params = this->ui->deployer_param_groupBox;
+    QGroupBox* inferencer_params = this->ui->groupBox_deployer_inferencer_params;
 
     try{
         SampleGeneratorHandler::Deployer::process(ui->listView_deploy_input_imp,ui->listView_deploy_weights,
                                                   ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer, ui->pushButton_stop_deployer_process,
-                                                  deployer_params, app->getConfig()->getKey("weightsPath").getValue(),
+                                                  deployer_params, inferencer_params, app->getConfig()->getKey("weightsPath").getValue(),
                                                   app->getConfig()->getKey("netCfgPath").getValue(),app->getConfig()->getKey("namesPath").getValue(),inputInfo);
     }
     catch (const std::string& msg){
