@@ -36,6 +36,7 @@ MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr i
 {
         //Constructor to avoid writing results to outputPath
         saveOutput = false;
+        alreadyProcessed=0;
 }
 
 void MassInferencer::process(bool useDepthImages, std::vector<Sample>* samples) {

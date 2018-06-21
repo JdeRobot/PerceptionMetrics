@@ -117,8 +117,10 @@ endif()
  add_subdirectory(Tools)
 
 
- configure_file(ClassMappingHierarchy.xml ClassMappingHierarchy.xml COPYONLY)
-
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ClassMappingHierarchy.xml
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ClassMappingHierarchy.xml
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Tools)
 
  IF (BUILD_TEST)
 	add_subdirectory(test)

@@ -10,23 +10,9 @@ CaffeInferencer::CaffeInferencer(const std::string &netConfig, const std::string
     this->confThreshold = std::stof(inferencerParamsMap->at("conf_thresh"));
     this->scaling_factor = std::stof(inferencerParamsMap->at("scaling_factor"));
     this->mean_sub = cv::Scalar(std::stof(inferencerParamsMap->at("mean_sub_blue")), std::stof(inferencerParamsMap->at("mean_sub_green")), std::stof(inferencerParamsMap->at("mean_sub_red")));
-    this->swapRB = false;
+    this->swapRB = inferencerParamsMap->at("useRGB") == "true";
     this->inpWidth = std::stof(inferencerParamsMap->at("inpWidth"));
     this->inpHeight = std::stof(inferencerParamsMap->at("inpHeight"));
-
-    // Open file with classes names.
-    /*if (parser.has("classes"))
-    {
-        std::string file = parser.get<String>("classes");
-        std::ifstream ifs(file.c_str());
-        if (!ifs.is_open())
-            CV_Error(Error::StsError, "File " + file + " not found");
-        std::string line;
-        while (std::getline(ifs, line))
-        {
-            classes.push_back(line);
-        }
-    }*/
 
     // Load a model.
     //CV_Assert(parser.has("model"));
@@ -47,39 +33,30 @@ Sample CaffeInferencer::detectImp(const cv::Mat &image) {
     cv::Mat rgbImage = image;
     this->detections.clear();
 
-    //cv::cvtColor(image,rgbImage,CV_BGR2RGB);
-
-    std::cout << "converted image to rgb" << '\n';
 
     cv::Size inpSize(this->inpWidth, this->inpHeight);
     blob = cv::dnn::blobFromImage(rgbImage, this->scaling_factor, inpSize, this->mean_sub, false, false);
     //blobFromImage(frame, blob, scale, inpSize, mean, swapRB, false);
     // Run a model.
 
-    std::cout << "fetced blob" << '\n';
 
     this->net.setInput(blob);
 
-    std::cout << "setting blob" << '\n';
 
     if (this->net.getLayer(0)->outputNameToIndex("im_info") != -1)  // Faster-RCNN or R-FCN
     {
-        std::cout << "in if statement" << '\n';
-        cv::resize(rgbImage, rgbImage, inpSize);
+        // For faster RCNN, same size images are being passed
+        //cv::resize(rgbImage, rgbImage, inpSize);
         cv::Mat imInfo = (cv::Mat_<float>(1, 3) << inpSize.height, inpSize.width, 1.6f);
         this->net.setInput(imInfo, "im_info");
     }
     std::vector<cv::Mat> outs;
 
-    std::cout << "before running inferenec" << '\n';
 
     this->net.forward(outs, getOutputsNames());
 
-    std::cout << "after inference" << '\n';
 
     postprocess(outs, rgbImage);
-
-    std::cout << "post processed image" << '\n';
 
 
     Sample sample;
@@ -104,7 +81,6 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
 
     if (this->net.getLayer(0)->outputNameToIndex("im_info") != -1)  // Faster-RCNN or R-FCN
     {
-        std::cout << "here_1" << '\n';
         // Network produces output blob with a shape 1x1xNx7 where N is a number of
         // detections and an every detection is a vector of values
         // [batchId, classId, confidence, left, top, right, bottom]
@@ -120,12 +96,12 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
                 detections.push_back(detection());
                 detections[count].classId = (int)(data[i + 1]) - 1;
                 detections[count].probability = confidence;
-                detections[count].boundingBox.x = (int)data[i + 3];
-                detections[count].boundingBox.y = (int)data[i + 4];
+                detections[count].boundingBox.x = (((int)data[i + 3] * image.cols) / inpWidth);
+                detections[count].boundingBox.y = (((int)data[i + 4] * image.rows) / inpHeight);
 
-                detections[count].boundingBox.width = (int)data[i + 5] - detections[i].boundingBox.x;
+                detections[count].boundingBox.width = (((int)data[i + 5] * image.cols) / inpWidth) - detections[count].boundingBox.x;
 
-                detections[count].boundingBox.height = (int)data[i + 6] - detections[i].boundingBox.y;
+                detections[count].boundingBox.height = (((int)data[i + 6] * image.rows) / inpHeight) - detections[count].boundingBox.y;
 
                 count++;
             }
@@ -135,7 +111,6 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
     }
     else if (outLayerType == "DetectionOutput")
     {
-        std::cout << "here_2" << '\n';
         // Network produces output blob with a shape 1x1xNx7 where N is a number of
         // detections and an every detection is a vector of values
         // [batchId, classId, confidence, left, top, right, bottom]
@@ -165,7 +140,6 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
     }
     else if (outLayerType == "Region")
     {
-        std::cout << "here_region" << '\n';
         std::vector<int> classIds;
         std::vector<float> confidences;
         std::vector<cv::Rect> boxes;
@@ -221,32 +195,11 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
         throw std::invalid_argument("Unknown output layer type: " + outLayerType);
 }
 
-/*void drawPred(int classId, float conf, int left, int top, int right, int bottom, Mat& frame)
-{
-    rectangle(frame, Point(left, top), Point(right, bottom), Scalar(0, 255, 0));
-
-    std::string label = format("%.2f", conf);
-    if (!classes.empty())
-    {
-        CV_Assert(classId < (int)classes.size());
-        label = classes[classId] + ": " + label;
-    }
-
-    int baseLine;
-    Size labelSize = getTextSize(label, FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
-
-    top = max(top, labelSize.height);
-    rectangle(frame, Point(left, top - labelSize.height),
-              Point(left + labelSize.width, top + baseLine), Scalar::all(255), FILLED);
-    putText(frame, label, Point(left, top), FONT_HERSHEY_SIMPLEX, 0.5, Scalar());
-}
-*/
 std::vector<cv::String> CaffeInferencer::getOutputsNames()
 {
 
     if (this->names.empty())
     {
-        std::cout << "names is empty" << '\n';
         std::vector<int> outLayers = this->net.getUnconnectedOutLayers();
         std::vector<cv::String> layersNames = this->net.getLayerNames();
         this->names.resize(outLayers.size());

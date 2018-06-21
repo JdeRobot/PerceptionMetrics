@@ -54,8 +54,7 @@ SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *w
 
     std::map<std::string, std::string>* inferencerParamsMap = new std::map<std::string, std::string>();
     try {
-
-        if(! Utils::getDeployerParamsContent(inferencer_params, *inferencerParamsMap)) {
+        if(! Utils::getInferencerParamsContent(inferencer_params, *inferencerParamsMap)) {
             inferencerParamsMap = NULL;
         }
 

@@ -2,6 +2,7 @@
 
 StatsWriter::StatsWriter(DatasetReaderPtr dataset, std::string& writerFile) {
 
+    this->writerFile = writerFile;
     this->writer = std::ofstream(writerFile);
 
     std::ifstream classNamesReader(dataset->getClassNamesFile());
@@ -49,9 +50,11 @@ void StatsWriter::writeInferencerResults(std::string inferencerName, GlobalStats
     }
 
       this->writer << "\n";
+      std::cout << "Inference Results Written Successfully" << '\n';
 
 }
 
 void StatsWriter::saveFile() {
     this->writer.close();
+    std::cout << "File " << this->writerFile << " Saved Successfully" << '\n';
 }

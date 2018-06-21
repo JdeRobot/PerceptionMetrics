@@ -39,11 +39,6 @@ MainWindow::MainWindow(SampleGenerationApp* app,QWidget *parent) :
     connect(ui->pushButton_detect, SIGNAL (released()),this, SLOT (handleDetectButton()));
     connect(ui->pushButton_deploy_input, SIGNAL (released()),this, SLOT (handleSelectDeployInputSource()));
     connect(ui->pushButton_deploy_process, SIGNAL (released()),this, SLOT (handleProcessDeploy()));
-    //connect(ui->listView_deploy_input_imp, SIGNAL (indexesMoved(const QModelIndexList)), this, SLOT (handleDeployerImpListViewChange()));
-    connect(ui->listView_deploy_input_imp->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDeployerImpListViewChange(QModelIndex, QModelIndex)));
-    //connect(ui->groupBox_config_file, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
-    connect(ui->deployer_radioButton_manual, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
-    connect(ui->listView_deploy_impl->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDeployerInferencerImpListViewChange(QModelIndex, QModelIndex)));
 
 
 }
@@ -148,6 +143,13 @@ void MainWindow::setupTabsInformation() {
             ListViewConfig::configureInputByFile(this, ui->listView_detector_names_inferencer,
                                                  app->getConfig()->getKey("namesPath").getValue(), false);
 
+
+            ui->detector_groupBox_inferencer_params->setEnabled(false);
+
+            connect(ui->listView_detector_imp->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDetectorInferencerImpListViewChange(QModelIndex, QModelIndex)));
+
+
+
             break;
         case 3:
             ListViewConfig::configureDatasetInput(this, ui->listView_evaluator_gt_dataset,
@@ -175,6 +177,8 @@ void MainWindow::setupTabsInformation() {
                                                  app->getConfig()->getKey("namesPath").getValue(), false);
             ListViewConfig::configureInputByData(this, ui->listView_deploy_input_imp,
                                                  GenericLiveReader::getAvailableImplementations(), false);
+
+
             ui->deployer_param_groupBox->setEnabled(false);
             ui->groupBox_config_option->setEnabled(false);
             ui->deployer_radioButton_manual->setChecked(true);
@@ -190,7 +194,14 @@ void MainWindow::setupTabsInformation() {
             ui->radioButton_deployer_ros->setEnabled(false);
             #endif
 
-            ui->groupBox_deployer_inferencer_params->setEnabled(false);
+            ui->deployer_groupBox_inferencer_params->setEnabled(false);
+
+            connect(ui->listView_deploy_input_imp->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDeployerImpListViewChange(QModelIndex, QModelIndex)));
+            //connect(ui->groupBox_config_file, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
+            connect(ui->deployer_radioButton_manual, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
+            connect(ui->listView_deploy_impl->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDeployerInferencerImpListViewChange(QModelIndex, QModelIndex)));
+
+
 
             break;
         default:
@@ -270,12 +281,13 @@ void MainWindow::handleDetectButton() {
     std::string outputPath = this->ui->textEdit_detectorOutPath->toPlainText().toStdString();
     bool useDepth = this->ui->checkBox_detector_useDepth->isChecked();
     bool singleEvaluation = this->ui->checkBox_detector_single->isChecked();
+    QGroupBox* inferencer_params = this->ui->detector_groupBox_inferencer_params;
 
 
     try{
     SampleGeneratorHandler::Detector::process(ui->listView_detector_dataset, ui->listView_detector_names,ui->listView_detector_reader_imp,app->getConfig()->getKey("datasetPath").getValue(),
                                               ui->listView_detector_weights,ui->listView_detector_net_config,ui->listView_detector_imp,ui->listView_detector_names_inferencer,
-                                              app->getConfig()->getKey("weightsPath").getValue(),app->getConfig()->getKey("netCfgPath").getValue(),outputPath,app->getConfig()->getKey("namesPath").getValue(),
+                                              inferencer_params, app->getConfig()->getKey("weightsPath").getValue(),app->getConfig()->getKey("netCfgPath").getValue(),outputPath,app->getConfig()->getKey("namesPath").getValue(),
                                               useDepth,singleEvaluation);
     }
     catch (const std::string& msg){
@@ -359,9 +371,17 @@ void MainWindow::handleDeployerConfigFileOptionChange(bool checked) {
 
 void MainWindow::handleDeployerInferencerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected) {
     if (selected.data().toString() == "caffe") {
-        ui->groupBox_deployer_inferencer_params->setEnabled(true);
+        ui->deployer_groupBox_inferencer_params->setEnabled(true);
     } else {
-        ui->groupBox_deployer_inferencer_params->setEnabled(false);
+        ui->deployer_groupBox_inferencer_params->setEnabled(false);
+    }
+}
+
+void MainWindow::handleDetectorInferencerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected) {
+    if (selected.data().toString() == "caffe") {
+        ui->detector_groupBox_inferencer_params->setEnabled(true);
+    } else {
+        ui->detector_groupBox_inferencer_params->setEnabled(false);
     }
 }
 
@@ -369,7 +389,7 @@ void MainWindow::handleProcessDeploy() {
     std::string inputInfo = this->ui->textEdit_deployInputPath->toPlainText().toStdString();
 
     QGroupBox* deployer_params = this->ui->deployer_param_groupBox;
-    QGroupBox* inferencer_params = this->ui->groupBox_deployer_inferencer_params;
+    QGroupBox* inferencer_params = this->ui->deployer_groupBox_inferencer_params;
 
     try{
         SampleGeneratorHandler::Deployer::process(ui->listView_deploy_input_imp,ui->listView_deploy_weights,

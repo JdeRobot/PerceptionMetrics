@@ -14,6 +14,7 @@ public:
 
 private:
     std::ofstream writer;
+    std::string writerFile;
     std::vector<std::string> classNamesinOrder;
 };
 

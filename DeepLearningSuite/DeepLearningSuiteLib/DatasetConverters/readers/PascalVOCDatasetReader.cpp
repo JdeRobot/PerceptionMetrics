@@ -62,9 +62,7 @@ bool PascalVOCDatasetReader::appendDataset(const std::string &datasetPath, const
     {
         if (!boost::filesystem::is_directory(*itr)){
             count++;
-            if (count == 500)
-                break;
-
+            
             LOG(INFO) << itr->path().string() << '\n';
             boost::property_tree::ptree tree;
 
