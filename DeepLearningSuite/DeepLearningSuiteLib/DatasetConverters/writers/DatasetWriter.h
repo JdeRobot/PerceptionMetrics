@@ -7,6 +7,7 @@
 
 
 #include <DatasetConverters/readers/DatasetReader.h>
+#include <unordered_map>
 
 class DatasetWriter {
 public:

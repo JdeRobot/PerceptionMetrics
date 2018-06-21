@@ -54,7 +54,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_1111 ">
          <property name="text">
           <string>Input Dataset</string>
          </property>
@@ -76,7 +76,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="label_27">
          <property name="text">
           <string>Dataset Names</string>
          </property>
@@ -98,7 +98,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="label_31">
          <property name="text">
           <string>Dataset implementation</string>
          </property>
@@ -120,7 +120,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="label_41">
          <property name="text">
           <string>Filter by class</string>
          </property>
@@ -697,7 +697,7 @@
         <string>Confidence Threshold:</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="label_211">
        <property name="geometry">
         <rect>
          <x>0</x>
@@ -759,7 +759,7 @@
         <string>R</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="label_33">
        <property name="geometry">
         <rect>
          <x>0</x>
@@ -772,7 +772,7 @@
         <string>Mean Subtraction:</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_43">
        <property name="geometry">
         <rect>
          <x>0</x>
@@ -1048,7 +1048,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_25">
        <item>
-        <widget class="QLabel" name="label_27">
+        <widget class="QLabel" name="label_271">
          <property name="text">
           <string>Inferencer Implementation</string>
          </property>
@@ -1125,7 +1125,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QLabel" name="label_31">
+     <widget class="QLabel" name="label_311">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -1174,7 +1174,7 @@
       <property name="title">
        <string>Camera Parameters:</string>
       </property>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="label21">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -1347,7 +1347,7 @@
         <string>ICE</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="label_51">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -1484,7 +1484,7 @@
         </rect>
        </property>
       </widget>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="label3">
        <property name="geometry">
         <rect>
          <x>0</x>
@@ -1497,7 +1497,7 @@
         <string>Confidence Threshold:</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="label_210">
        <property name="geometry">
         <rect>
          <x>0</x>
@@ -1559,7 +1559,7 @@
         <string>R</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="label_32">
        <property name="geometry">
         <rect>
          <x>0</x>
@@ -1572,7 +1572,7 @@
         <string>Mean Subtraction:</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_42">
        <property name="geometry">
         <rect>
          <x>0</x>

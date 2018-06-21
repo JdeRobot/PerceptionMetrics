@@ -1,0 +1,16 @@
+FIND_PACKAGE(OpenCV QUIET)
+
+if(OpenCV_FOUND)
+  include(CheckIncludeFileCXX)
+  check_include_file_cxx(opencv2/dnn/dnn.hpp HAS_OPENCV_DNN)
+
+  if(OpenCV_VERSION VERSION_LESS "3.4")
+    message(WARNING "Can't Find OpenCV 3.4 or greater, Caffe Inferencing Support will be disabled")
+  else()
+    if(NOT HAS_OPENCV_DNN)
+      message(WARNING "Can't Find dnn module, please rebuild OpenCV with dnn support!!! Caffe Inferencing Support will be disabled")
+    endif(NOT HAS_OPENCV_DNN)
+  endif(OpenCV_VERSION VERSION_LESS "3.4")
+else()
+  message(FATAL_ERROR "Error: Can't Find OpenCV")
+endif(OpenCV_FOUND)

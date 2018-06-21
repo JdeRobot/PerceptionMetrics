@@ -71,18 +71,21 @@ SET( SOURCE_FILES
         Utils/DepthUtils
         FrameworkEvaluator/TensorFlowInferencer
         FrameworkEvaluator/KerasInferencer
-        FrameworkEvaluator/CaffeInferencer
         DatasetConverters/liveReaders/VideoReader
         Utils/PathHelper
         )
 
 
 IF(DARKNET_ACTIVE)
+    message("add darknet files")
     SET( SOURCE_FILES ${SOURCE_FILES} FrameworkEvaluator/DarknetInferencer )
     include_directories(${DARKNET_INCLUDE_DIR})
 ENDIF()
 
-
+IF(ENABLE_DNN_CAFFE)
+    message("added caffe files")
+    SET( SOURCE_FILES ${SOURCE_FILES} FrameworkEvaluator/CaffeInferencer )
+ENDIF()
 
 message("WARNING: DeepLearningSuite_INCLUDE_DIR ${DeepLearningSuite_INCLUDE_DIR}")
 
