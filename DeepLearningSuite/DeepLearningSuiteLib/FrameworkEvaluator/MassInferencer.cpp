@@ -51,6 +51,7 @@ void MassInferencer::process(bool useDepthImages, std::vector<Sample>* samples) 
     }
 
 
+    std::cout << "here" << '\n';
 
     while (this->reader->getNextSample(sample)){
         counter++;

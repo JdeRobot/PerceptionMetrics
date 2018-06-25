@@ -7,7 +7,9 @@
 
 #include <DatasetConverters/readers/GenericDatasetReader.h>
 #include <QtWidgets/QListView>
+#include <QGroupBox>
 #include <DatasetConverters/liveReaders/GenericLiveReader.h>
+#include <glog/logging.h>
 
 namespace SampleGeneratorHandler {
 
@@ -21,6 +23,7 @@ namespace SampleGeneratorHandler {
 
         static GenericLiveReaderPtr createLiveReaderPtr(const QListView *namesList,
                                                         const QListView *readerImpList,
+                                                        const QGroupBox *deployer_params,
                                                         const std::string &infoPath,
                                                         const std::string &namesPath);
     };

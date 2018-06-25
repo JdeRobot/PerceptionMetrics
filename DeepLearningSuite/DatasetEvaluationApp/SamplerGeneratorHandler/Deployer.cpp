@@ -12,7 +12,7 @@
 void
 SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *weightsList, QListView *netConfigList,
                                           QListView *inferencerImpList, QListView *inferencerNamesList,
-                                          const std::string &weightsPath, const std::string &cfgPath,
+                                          QPushButton* stopButton, QGroupBox* deployer_params, const std::string &weightsPath, const std::string &cfgPath,
                                           const std::string &inferencerNamesPath, const std::string &inputInfo) {
 
     GenericLiveReaderPtr reader;
@@ -20,7 +20,7 @@ SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *w
     try {
 
         reader = SamplerGenerationHandler::createLiveReaderPtr( inferencerNamesList,
-                                                                                 deployImpList,inputInfo,inferencerNamesPath);
+                                                                                 deployImpList, deployer_params, inputInfo,inferencerNamesPath);
 
      } catch(const std::invalid_argument& ex) {
          LOG(WARNING)<< "Error Creating Generic Live Reader\nError Message: " << ex.what();

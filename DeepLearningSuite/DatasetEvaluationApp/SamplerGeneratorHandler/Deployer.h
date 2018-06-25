@@ -6,13 +6,13 @@
 #define SAMPLERGENERATOR_DEPLOYER_H
 
 #include <QtWidgets/QListView>
-
+#include <QPushButton>
 
 namespace SampleGeneratorHandler {
     class Deployer {
     public:
         static void  process(QListView *deployImpList,QListView* weightsList, QListView* netConfigList, QListView* inferencerImpList, QListView* inferencerNamesList,
-                             const std::string& weightsPath, const std::string& cfgPath,
+                             QPushButton* stopButton, QGroupBox* deployer_params, const std::string& weightsPath, const std::string& cfgPath,
                              const std::string& inferencerNamesPath,const std::string& inputInfo);
     };
 }

@@ -7,7 +7,6 @@
 
 
 
-#include <jderobot/parallelIce/cameraClient.h>
 #include <DatasetConverters/readers/DatasetReader.h>
 
 

@@ -39,8 +39,10 @@ MainWindow::MainWindow(SampleGenerationApp* app,QWidget *parent) :
     connect(ui->pushButton_detect, SIGNAL (released()),this, SLOT (handleDetectButton()));
     connect(ui->pushButton_deploy_input, SIGNAL (released()),this, SLOT (handleSelectDeployInputSource()));
     connect(ui->pushButton_deploy_process, SIGNAL (released()),this, SLOT (handleProcessDeploy()));
-
-
+    //connect(ui->listView_deploy_input_imp, SIGNAL (indexesMoved(const QModelIndexList)), this, SLOT (handleDeployerImpListViewChange()));
+    connect(ui->listView_deploy_input_imp->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDeployerImpListViewChange(QModelIndex, QModelIndex)));
+    //connect(ui->groupBox_config_file, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
+    connect(ui->deployer_radioButton_manual, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
 
 
 }
@@ -172,6 +174,21 @@ void MainWindow::setupTabsInformation() {
                                                  app->getConfig()->getKey("namesPath").getValue(), false);
             ListViewConfig::configureInputByData(this, ui->listView_deploy_input_imp,
                                                  GenericLiveReader::getAvailableImplementations(), false);
+            ui->deployer_param_groupBox->setEnabled(false);
+            ui->groupBox_config_option->setEnabled(false);
+            ui->deployer_radioButton_manual->setChecked(true);
+
+            #ifdef ICE
+            ui->radioButton_deployer_ice->setChecked(true);
+            #else
+            ui->radioButton_deployer_ice->setEnabled(false);
+            #endif
+            #ifdef JDERROS
+            ui->radioButton_deployer_ros->setChecked(true);
+            #else
+            ui->radioButton_deployer_ros->setEnabled(false);
+            #endif
+
             break;
         default:
             LOG(WARNING) << "Unkown tab index";
@@ -306,14 +323,46 @@ void MainWindow::handleSelectDeployInputSource() {
     }
 }
 
+void MainWindow::handleDeployerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected) {
+    if (selected.data().toString() == "stream") {
+        ui->deployer_param_groupBox->setEnabled(true);
+        ui->groupBox_config_option->setEnabled(true);
+        handleDeployerConfigFileOptionChange(ui->deployer_radioButton_manual->isChecked());
+    } else if (selected.data().toString() == "camera") {
+        ui->textEdit_deployInputPath->setEnabled(false);
+        ui->pushButton_deploy_input->setEnabled(false);
+        ui->deployer_param_groupBox->setEnabled(false);
+        ui->groupBox_config_option->setEnabled(false);
+    }
+    else {
+        ui->textEdit_deployInputPath->setEnabled(true);
+        ui->pushButton_deploy_input->setEnabled(true);
+        ui->deployer_param_groupBox->setEnabled(false);
+        ui->groupBox_config_option->setEnabled(false);
+    }
+}
+
+void MainWindow::handleDeployerConfigFileOptionChange(bool checked) {
+    if(checked){
+        ui->textEdit_deployInputPath->setEnabled(false);
+        ui->pushButton_deploy_input->setEnabled(false);
+        ui->deployer_param_groupBox->setEnabled(true);
+   } else {
+       ui->textEdit_deployInputPath->setEnabled(true);
+       ui->pushButton_deploy_input->setEnabled(true);
+       ui->deployer_param_groupBox->setEnabled(false);
+   }
+}
+
 void MainWindow::handleProcessDeploy() {
     std::string inputInfo = this->ui->textEdit_deployInputPath->toPlainText().toStdString();
 
-
+    QGroupBox* deployer_params = this->ui->deployer_param_groupBox;
 
     try{
         SampleGeneratorHandler::Deployer::process(ui->listView_deploy_input_imp,ui->listView_deploy_weights,
-                                                  ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer,app->getConfig()->getKey("weightsPath").getValue(),
+                                                  ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer, ui->pushButton_stop_deployer_process,
+                                                  deployer_params, app->getConfig()->getKey("weightsPath").getValue(),
                                                   app->getConfig()->getKey("netCfgPath").getValue(),app->getConfig()->getKey("namesPath").getValue(),inputInfo);
     }
     catch (const std::string& msg){
@@ -321,7 +370,7 @@ void MainWindow::handleProcessDeploy() {
     }
     catch (const std::exception &exc)
     {
-        std::cout << "Exeption Detected: " << exc.what();
+        std::cout << "Exception Detected: " << exc.what();
     }
     catch (...){
         std::cout << "Uknown exectip type" << std::endl;

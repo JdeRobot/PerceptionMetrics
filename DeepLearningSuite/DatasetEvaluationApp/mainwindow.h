@@ -34,6 +34,8 @@ private slots:
     void handleSelectDeployInputSource();
     void handleProcessDeploy();
     void handleMappingCheckBoxChange();
+    void handleDeployerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected);
+    void handleDeployerConfigFileOptionChange(bool checked);
 
 };
 
