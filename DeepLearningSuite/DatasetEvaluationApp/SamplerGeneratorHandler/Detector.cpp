@@ -12,7 +12,7 @@
 
 void SampleGeneratorHandler::Detector::process(QListView* datasetList,QListView* namesList,QListView* readerImpList, const std::string& datasetPath,
                                                QListView* weightsList, QListView* netConfigList, QListView* inferencerImpList, QListView* inferencerNamesList,
-                                               const std::string& weightsPath, const std::string& cfgPath, const std::string& outputPath,
+                                               QGroupBox* inferencer_params, const std::string& weightsPath, const std::string& cfgPath, const std::string& outputPath,
                                                const std::string& inferencerNamesPath, bool useDepth, bool singleEvaluation) {
 
     GenericDatasetReaderPtr reader = SamplerGenerationHandler::createDatasetReaderPtr(datasetList, namesList,
@@ -43,7 +43,18 @@ void SampleGeneratorHandler::Detector::process(QListView* datasetList,QListView*
         return;
     }
 
-    GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0]));
+    std::map<std::string, std::string>* inferencerParamsMap = new std::map<std::string, std::string>();
+    try {
+        if(! Utils::getInferencerParamsContent(inferencer_params, *inferencerParamsMap)) {
+            inferencerParamsMap = NULL;
+        }
+
+    } catch(std::exception& ex) {
+        LOG(WARNING)<< ex.what();
+        return;
+    }
+
+    GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0], inferencerParamsMap));
     MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),outputPath, true);
     massInferencer.process(useDepth);
 }

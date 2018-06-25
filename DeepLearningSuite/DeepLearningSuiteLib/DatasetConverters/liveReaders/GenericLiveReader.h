@@ -8,13 +8,15 @@
 #include <string>
 #include <DatasetConverters/readers/DatasetReader.h>
 #include <DatasetConverters/liveReaders/VideoReader.h>
+#include <DatasetConverters/liveReaders/CameraReader.h>
+#include <DatasetConverters/liveReaders/JderobotReader.h>
 
-enum LIVEREADER_IMPLEMENTATIONS{RECORDER, JDEROBOT, VIDEO};
+enum LIVEREADER_IMPLEMENTATIONS{RECORDER, STREAM, CAMERA, VIDEO};
 
 
 class GenericLiveReader {
 public:
-    GenericLiveReader(const std::string& path, const std::string& classNamesFile, const std::string& readerImplementation);
+    GenericLiveReader(const std::string& path, const std::string& classNamesFile, const std::string& readerImplementation, std::map<std::string, std::string>* deployer_params_map = NULL);
     GenericLiveReader(const std::vector<std::string>& paths,const std::string& classNamesFile, const std::string& readerImplementation);
 
     DatasetReaderPtr getReader();
@@ -24,6 +26,8 @@ public:
 private:
     LIVEREADER_IMPLEMENTATIONS imp;
     VideoReaderPtr videoReaderPtr;
+    CameraReaderPtr cameraReaderPtr;
+    JderobotReaderPtr jderobotReaderPtr;
 
     std::vector<std::string> availableImplementations;
 

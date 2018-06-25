@@ -38,6 +38,7 @@ Sample Generation Tool has been developed in order to simply the process of gene
 # Requirements
 
 ### CUDA
+
 ```
    NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
 
@@ -45,6 +46,7 @@ Sample Generation Tool has been developed in order to simply the process of gene
     sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub && \
     sudo apt-key adv --export --no-emit-version -a $NVIDIA_GPGKEY_FPR | tail -n +5 > cudasign.pub && \
      echo "$NVIDIA_GPGKEY_SUM  cudasign.pub" | sha256sum -c --strict - && rm cudasign.pub && \
+
      sudo sh -c 'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/cuda.list' && \
      sudo sh -c 'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list'
 ```
@@ -64,6 +66,7 @@ sudo apt-get install -y cuda
 ### Opencv
 ```
 sudo apt-get install libopencv-dev
+
 ```
 
 ### Dependencies (Currently being refined and reduced)
@@ -112,7 +115,6 @@ Each one of them has some Dependencies, and are mentioned below.
    ``` make -j4 ``` <br>
    ``` sudo make -j4 install ```
 
-
    * #### TensorFlow
    Only depedency for using TensorFlow as an Inferencing framework is TensorFlow.
    So, just install TensorFlow. Though it should be 1.4.1 or greater.
@@ -127,11 +129,14 @@ Each one of them has some Dependencies, and are mentioned below.
 
 # How to compile DL_DetectionSuite:
 Once you have all the deps installed just:
+
 ```
     git clone https://github.com/JdeRobot/DeepLearningSuite
     cd DeepLearningSuite
     cd DeepLearningSuite/
+
     cmake . -DDARKNET_PATH=<DARKNET_DIR>
+    make
 ```
 
 

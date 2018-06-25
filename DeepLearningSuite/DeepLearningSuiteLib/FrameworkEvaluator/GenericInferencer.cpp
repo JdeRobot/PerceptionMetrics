@@ -6,7 +6,7 @@
 #include "GenericInferencer.h"
 
 GenericInferencer::GenericInferencer(const std::string &netConfig, const std::string &netWeights,const std::string& classNames,
-                                     const std::string &implementation) {
+                                     const std::string &implementation, std::map<std::string, std::string>* inferencerParamsMap) {
 
     configureAvailablesImplementations(this->availableImplementations);
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), implementation) != this->availableImplementations.end()){
@@ -24,6 +24,11 @@ GenericInferencer::GenericInferencer(const std::string &netConfig, const std::st
             case INF_KERAS:
                 this->kerasInferencerPtr = KerasInferencerPtr( new KerasInferencer(netConfig, netWeights,classNames));
                 break;
+#ifdef ENABLE_DNN_CAFFE
+            case INF_CAFFE:
+                this->caffeInferencerPtr = CaffeInferencerPtr (new CaffeInferencer(netConfig, netWeights, classNames, inferencerParamsMap));
+                break;
+#endif
             default:
                 LOG(WARNING)<<implementation + " is not a valid inferencer implementation";
                 break;
@@ -41,6 +46,9 @@ void GenericInferencer::configureAvailablesImplementations(std::vector<std::stri
 #endif
     data.push_back("tensorflow");
     data.push_back("keras");
+#ifdef ENABLE_DNN_CAFFE
+    data.push_back("caffe");
+#endif
 }
 
 INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::string &inferencerImplementation) {
@@ -52,6 +60,9 @@ INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::strin
     }
     if (inferencerImplementation.compare("keras")==0){
         return INF_KERAS;
+    }
+    if (inferencerImplementation.compare("caffe")==0){
+        return INF_CAFFE;
     }
 }
 
@@ -65,6 +76,10 @@ FrameworkInferencerPtr GenericInferencer::getInferencer() {
             return this->tensorFlowInferencerPtr;
         case INF_KERAS:
             return this->kerasInferencerPtr;
+#ifdef ENABLE_DNN_CAFFE
+        case INF_CAFFE:
+            return this->caffeInferencerPtr;
+#endif
         default:
             LOG(WARNING)<<imp + " is not a valid reader implementation";
             break;

@@ -58,6 +58,9 @@ public:
         int count = 0;
 
         for (auto it = inputPaths.begin(); it != inputPaths.end(); it++) {
+
+            std::cout << "here" << '\n';
+
             std::string readerNames = readerNamesKey.getValueOrLast(count);
             std::string readerImplementation = readerImplementationKey.getValueOrLast(count);
 
@@ -73,6 +76,9 @@ public:
 
 
             for (auto iter = inferencerWeights.begin(); iter != inferencerWeights.end(); iter++) {
+
+                std::cout << "here" << '\n';
+
 
                 std::vector<Sample> samples;
                 std::string inferencerConfig = inferencerConfigKey.getValueOrLast(count2);
@@ -122,10 +128,11 @@ public:
                 count2++;
 
             }
-
+            
             writer.saveFile();
 
             count++;
+
 
         }
 
@@ -138,4 +145,6 @@ int main (int argc, char* argv[]) {
 
     MyApp myApp(argc,argv);
     myApp.process();
+
+    std::cout << "Auto Evaluation Successfull" << '\n';
 }

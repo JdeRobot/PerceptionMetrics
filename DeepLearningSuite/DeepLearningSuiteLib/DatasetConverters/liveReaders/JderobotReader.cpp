@@ -2,12 +2,54 @@
 // Created by frivas on 24/02/17.
 //
 
-#include <Ice/CommunicatorF.h>
-#include "JderobotReader.h"
-#include <easyiceconfig/EasyIce.h>
 
-JderobotReader::JderobotReader(const std::string &IceConfigFile) {
-    Ice::CommunicatorPtr ic;
+#include "JderobotReader.h"
+
+JderobotReader::JderobotReader(std::map<std::string, std::string>* deployer_params_map, const std::string& path) {
+
+    Config::Properties cfg;
+
+    if (deployer_params_map == NULL) {
+        std::cout << "null" << '\n';
+        int argc=2;
+        char* argv[2];
+        argv[0] = (char*)std::string("myFakeApp").c_str();
+        argv[1] = (char*)path.c_str();
+        cfg = Config::load(argc, argv);
+    } else {
+        std::cout << "not null" << '\n';
+        std::map<std::string, std::string>::iterator iter;
+        YAML::Node rootNode;  // starts out as null
+        YAML::Node nodeConfig;
+
+        for (iter = deployer_params_map->begin(); iter != deployer_params_map->end(); iter++) {
+            std::cout << iter->first << " " << iter->second << '\n';
+            nodeConfig[iter->first.c_str()] = iter->second.c_str();
+            std::cout << "here" << '\n';
+        }
+
+        rootNode["Camera"] = nodeConfig;
+
+        cfg = Config::Properties(rootNode);
+
+        std::cout << "done" << '\n';
+
+    }
+
+
+    try{
+
+        this->jdrc = new Comm::Communicator(cfg);
+
+        this->camera = Comm::getCameraClient(jdrc, "Camera");
+
+
+    } catch (const std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
+
+  /*  Ice::CommunicatorPtr ic;
 
     //todo hack
     int argc=2;
@@ -30,16 +72,24 @@ JderobotReader::JderobotReader(const std::string &IceConfigFile) {
         throw "Invalid proxy";
     }
     this->camera->start();
-
+*/
 }
 
 bool JderobotReader::getNextSample(Sample &sample) {
-    cv::Mat image;
-    this->camera->getImage(image);
+
+    std::cout << "here2" << '\n';
+
+    JdeRobotTypes::Image myImage = this->camera->getImage();
+    cv::Mat image = myImage.data;
+
+    std::cout << "here3" << '\n';
+
     if (!image.empty()){
         sample.setColorImage(image);
-        sample.setDepthImage(image);
+        //sample.setDepthImage(image);
     }
 
+    std::cout << "here4" << '\n';
+    //std::cout << "Fetching" << '\n';
 
 }

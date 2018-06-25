@@ -53,6 +53,7 @@ void DetectionsEvaluator::evaluate() {
     }
 
     cv::destroyAllWindows();
+    std::cout << "Evaluated Successfully" << '\n';
 }
 
 

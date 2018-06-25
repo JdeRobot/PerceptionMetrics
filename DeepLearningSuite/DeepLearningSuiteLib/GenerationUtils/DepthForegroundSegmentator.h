@@ -6,7 +6,7 @@
 #define SAMPLERGENERATOR_DEPTHFOREGROUNDSEGMENTADOR_H
 #include <opencv2/opencv.hpp>
 #include <boost/shared_ptr.hpp>
-#include <jderobot/depthLib/DepthFilter.h>
+#include <DepthFilter.h>
 #include <opencv2/core/version.hpp>
 
 class DepthForegroundSegmentator {

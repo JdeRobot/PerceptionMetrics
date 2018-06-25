@@ -5,7 +5,6 @@ ENDIF()
 
 
 include_directories(
-        ${JdeRobot_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIR}
         ${CMAKE_CURRENT_LIST_DIR}
@@ -18,7 +17,6 @@ add_executable (detector detector.cpp)
 TARGET_LINK_LIBRARIES(detector
         DeepLearningSuite
         ${EXTRA_LIBS}
-        ${JdeRobot_LIBRARIES}
         ${OpenCV_LIBRARIES}
         ${Boost_LIBRARIES}
         ${GLOG_LIBRARIES}

@@ -6,13 +6,19 @@
 #include "GenericLiveReader.h"
 
 
-GenericLiveReader::GenericLiveReader(const std::string &path, const std::string& classNamesFile, const std::string &readerImplementation) {
+GenericLiveReader::GenericLiveReader(const std::string &path, const std::string& classNamesFile, const std::string &readerImplementation, std::map<std::string, std::string>* deployer_params_map) {
     configureAvailablesImplementations(this->availableImplementations);
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), readerImplementation) != this->availableImplementations.end()){
         imp = getImplementation(readerImplementation);
         switch (imp) {
             case VIDEO:
                 this->videoReaderPtr = VideoReaderPtr( new VideoReader(path));
+                break;
+            case CAMERA:
+                this->cameraReaderPtr = CameraReaderPtr( new CameraReader());
+                break;
+            case STREAM:
+                this->jderobotReaderPtr = JderobotReaderPtr( new JderobotReader(deployer_params_map, path));
                 break;
 //            case SPINELLO:
 //                this->spinelloDatasetReaderPtr = SpinelloDatasetReaderPtr( new SpinelloDatasetReader(path,classNamesFile));
@@ -79,8 +85,11 @@ GenericLiveReader::GenericLiveReader(const std::vector<std::string> &paths, cons
 
 void GenericLiveReader::configureAvailablesImplementations(std::vector<std::string>& data) {
     data.push_back("recorder");
-    data.push_back("jderobot");
+#if defined(JDERROS) || defined(ICE)
+    data.push_back("stream");
+#endif
     data.push_back("video");
+    data.push_back("camera");
 }
 
 LIVEREADER_IMPLEMENTATIONS GenericLiveReader::getImplementation(const std::string& readerImplementation) {
@@ -96,6 +105,12 @@ LIVEREADER_IMPLEMENTATIONS GenericLiveReader::getImplementation(const std::strin
     if (readerImplementation.compare("video")==0){
         return VIDEO;
     }
+    if (readerImplementation.compare("camera")==0){
+        return CAMERA;
+    }
+    if (readerImplementation.compare("stream")==0){
+        return STREAM;
+    }
 }
 
 DatasetReaderPtr GenericLiveReader::getReader() {
@@ -106,6 +121,10 @@ DatasetReaderPtr GenericLiveReader::getReader() {
 //            return this->spinelloDatasetReaderPtr;
         case VIDEO:
             return this->videoReaderPtr;
+        case CAMERA:
+            return this->cameraReaderPtr;
+        case STREAM:
+            return this->jderobotReaderPtr;
         default:
             LOG(WARNING)<<imp + " is not a valid reader implementation";
             break;
@@ -118,4 +137,3 @@ std::vector<std::string> GenericLiveReader::getAvailableImplementations() {
     configureAvailablesImplementations(data);
     return data;
 }
-

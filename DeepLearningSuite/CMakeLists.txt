@@ -33,13 +33,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -fPIC")
 #automated opencv
 include(FindPkgConfig)
 
-FIND_PACKAGE(OpenCV REQUIRED)
 FIND_PACKAGE(CUDA REQUIRED)
-FIND_PACKAGE(JdeRobot REQUIRED)
+## FIND_PACKAGE(JdeRobot REQUIRED)
 
  include(Deps/glog/CMakeLists.txt)
  include(Deps/ice/CMakeLists.txt)
  include(Deps/numpy/CMakeLists.txt)
+ include(Deps/yaml-cpp/CMakeLists.txt)
+ include(Deps/ros/CMakeLists.txt)
+ include(Deps/opencv/CMakeLists.txt)
 FIND_PACKAGE(Boost REQUIRED program_options filesystem)
 FIND_PACKAGE(Qt5Widgets REQUIRED)
 FIND_PACKAGE(Qt5Core REQUIRED)
@@ -66,11 +68,6 @@ FIND_PACKAGE(Qt5OpenGL REQUIRED)
 
 #darknet
 
-IF (NOT DARKNET_PATH)
-	MESSAGE("Please to use darknet please define DARKNET_PATH to the root installation")
-	MESSAGE(WARNING "DARKNET DISABLE")
-ENDIF()
-
 FIND_PATH( DARKNET_INCLUDE_DIR NAMES DarknetAPI/DarknetAPI.h  PATHS ${DARKNET_PATH}/include )
 SET(DARKNET_NAMES darknetAPILib darknetExamplesLib darknetLib)
 #SET(DARKNET_NAMES darknetLib)
@@ -85,7 +82,8 @@ ENDFOREACH()
 #UNSET(DARKNET_LIBRARIES CACHE)
 
 
-if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)
+if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)				## Sometimes it may be found without specifing DARNKNET_PATH
+	message("DARKNET FOUND")
 	message("DARKNET_INCLUDE_DIR: ${DARKNET_INCLUDE_DIR}")
 	message("DARKNET_LIBRARIES: ${DARKNET_LIBRARIES}")
 	SET(DARKNET_ACTIVE ON)
@@ -93,19 +91,41 @@ if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)
 else()
 	message("DARKNET_INCLUDE_DIR: ${DARKNET_INCLUDE_DIR}")
 	message("DARKNET_LIBRARIES: ${DARKNET_LIBRARIES}")
-	MESSAGE(WARNING "DARKNET DISABLE")
+	if (NOT DARKNET_PATH)
+		MESSAGE("Please to use darknet please define DARKNET_PATH to the root installation")
+		MESSAGE(WARNING "DARKNET DISABLE")
+	else()
+		MESSAGE("Couldn't find darknet in the DARKNET_PATH specified")
+		MESSAGE(WARNING "DARKNET DISABLE")
+	endif()
 endif()
 
  set(DeepLearningSuite_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/DeepLearningSuiteLib)
+ SET( INTERFACES_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/libs/interfaces/cpp/jderobot ${CMAKE_CURRENT_BINARY_DIR}/libs/interfaces/cpp)
 
+if(ZeroCIce_FOUND)
+  add_definitions(-DICE)
+endif()
+if(roscpp_FOUND)
+ 	add_definitions(-DJDERROS)
+endif()
+if(HAS_OPENCV_DNN)
+	message("dnn enabled")
+	SET(ENABLE_DNN_CAFFE ON)
+  add_definitions(-DENABLE_DNN_CAFFE)
+endif(HAS_OPENCV_DNN)
+
+ add_subdirectory(libs)
  add_subdirectory(DeepLearningSuiteLib)
  add_subdirectory(DatasetEvaluationApp)
  add_subdirectory(SampleGenerationApp)
  add_subdirectory(Tools)
 
 
- configure_file(ClassMappingHierarchy.xml ClassMappingHierarchy.xml COPYONLY)
-
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ClassMappingHierarchy.xml
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ClassMappingHierarchy.xml
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Tools)
 
  IF (BUILD_TEST)
 	add_subdirectory(test)

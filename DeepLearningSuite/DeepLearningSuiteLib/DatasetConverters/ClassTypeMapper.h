@@ -5,6 +5,7 @@
 #include "ClassType.h"
 #include "Tree.h"
 #include <algorithm>
+#include <unordered_map>
 
 struct ClassTypeMapper: public ClassType{
     ClassTypeMapper(const std::string& classNamesFile);

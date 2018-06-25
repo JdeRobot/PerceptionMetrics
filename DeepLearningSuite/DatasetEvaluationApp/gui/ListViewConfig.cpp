@@ -69,7 +69,7 @@ void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::ve
                     possibleContent.push_back(itr2->path().string());
                 }
                 else if(itr2->path().string().find(".xml") != std::string::npos){
-                    //Only Take Parent and break this will prevent dispaying multiple xml files
+                    //Only Take Parent and break this will prevent displaying multiple xml files
                     break;
                     //possibleContent.push_back(itr2->path().string());
                 }

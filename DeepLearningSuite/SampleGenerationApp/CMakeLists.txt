@@ -10,7 +10,7 @@ include_directories(
         ${Boost_INCLUDE_DIR}
         ${CMAKE_CURRENT_LIST_DIR}
         ${DeepLearningSuite_INCLUDE_DIR}
-
+        ${depthLib_INCLUDE_DIRS}
 )
 
 add_executable (SampleGenerationApp generator.cpp)

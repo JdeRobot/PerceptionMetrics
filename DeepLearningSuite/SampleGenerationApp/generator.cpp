@@ -14,9 +14,9 @@
 
 #ifdef DARKNET_ACTIVE
 #include <FrameworkEvaluator/DarknetInferencer.h>
-#include <DatasetConverters/readers/GenericDatasetReader.h>
-
 #endif
+
+#include <DatasetConverters/readers/GenericDatasetReader.h>
 
 class MyApp:public SampleGenerationApp{
 public:

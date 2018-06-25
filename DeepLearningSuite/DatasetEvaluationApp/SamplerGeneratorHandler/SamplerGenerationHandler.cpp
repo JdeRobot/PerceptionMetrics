@@ -56,6 +56,7 @@ GenericDatasetReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::create
 
 GenericLiveReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::createLiveReaderPtr(const QListView *namesList,
                                                                                            const QListView *readerImpList,
+                                                                                           const QGroupBox *deployer_params,
                                                                                            const std::string &infoPath,
                                                                                            const std::string &namesPath) {
 
@@ -71,11 +72,23 @@ GenericLiveReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::createLiv
         return GenericLiveReaderPtr();
     }
 
+    std::map<std::string, std::string>* deployer_params_map = new std::map<std::string, std::string>();
+
+    try {
+
+        if(! Utils::getDeployerParamsContent(deployer_params, *deployer_params_map)) {
+            deployer_params_map = NULL;
+        }
+
+    } catch(std::exception& ex) {
+        LOG(WARNING)<< ex.what();
+        return GenericLiveReaderPtr();
+    }
 
     GenericLiveReaderPtr reader;
 
     reader = GenericLiveReaderPtr(
-            new GenericLiveReader(infoPath,names[0], readerImplementation[0]));
+            new GenericLiveReader(infoPath, names[0], readerImplementation[0],  deployer_params_map));
 
 
     return reader;
