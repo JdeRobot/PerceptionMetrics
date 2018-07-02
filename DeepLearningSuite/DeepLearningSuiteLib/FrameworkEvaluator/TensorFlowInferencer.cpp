@@ -76,11 +76,11 @@ Sample TensorFlowInferencer::detectImp(const cv::Mat &image) {
 	}
 
 	cv::Mat rgbImage;
-	cv::cvtColor(image,rgbImage,CV_RGB2BGR);
+	cv::cvtColor(image,rgbImage,CV_BGR2RGB);
 
 	this->detections.clear();						//remove previous detections
 
-	int result = gettfInferences(image);
+	int result = gettfInferences(rgbImage);
 
 	if (result == 0) {
 		std::cout << "Error Occured during getting inferences" << '\n';

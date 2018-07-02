@@ -35,9 +35,14 @@ private:
 
     KerasInferencerPtr kerasInferencerPtr;
 
+<<<<<<< HEAD
 #ifdef ENABLE_DNN_CAFFE
     CaffeInferencerPtr caffeInferencerPtr;
 #endif
+=======
+    CaffeInferencerPtr caffeInferencerPtr;
+
+>>>>>>> readme
     std::vector<std::string> availableImplementations;
 
     static void configureAvailablesImplementations(std::vector<std::string>& data);

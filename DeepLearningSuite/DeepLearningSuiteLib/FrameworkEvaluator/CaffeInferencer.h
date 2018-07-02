@@ -30,8 +30,11 @@ private:
     std::vector<detection> detections;
     std::vector<cv::String> names;
     double confThreshold;
+<<<<<<< HEAD
     double scaling_factor;
     cv::Scalar mean_sub;
+=======
+>>>>>>> readme
     cv::dnn::Net net;
     int inpWidth;
     int inpHeight;

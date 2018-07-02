@@ -11,6 +11,7 @@
 #include "GlobalStats.h"
 #include <DatasetConverters/ClassTypeMapper.h>
 #include <Common/EvalMatrix.h>
+#include <unordered_map>
 
 class DetectionsEvaluator {
 public:

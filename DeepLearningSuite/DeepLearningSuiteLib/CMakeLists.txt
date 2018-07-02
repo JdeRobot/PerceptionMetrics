@@ -28,6 +28,7 @@ SET( SOURCE_FILES
         Common/EvalMatrix
         Common/Sample
         DatasetConverters/readers/OwnDatasetReader
+	DatasetConverters/readers/PrincetonDatasetReader
         DatasetConverters/writers/YoloDatasetWriter
         DatasetConverters/readers/YoloDatasetReader
         DatasetConverters/writers/COCODatasetWriter
@@ -67,20 +68,30 @@ SET( SOURCE_FILES
         DatasetConverters/liveReaders/RecorderReader
         DatasetConverters/liveReaders/CameraReader
         DatasetConverters/liveReaders/VideoReader
+<<<<<<< HEAD
         FrameworkEvaluator/GlobalStats
         DatasetConverters/readers/PrincetonDatasetReader
         Utils/JsonHelper.h
         Utils/DepthUtils
+=======
+	FrameworkEvaluator/GlobalStats
+>>>>>>> readme
         FrameworkEvaluator/TensorFlowInferencer
         FrameworkEvaluator/KerasInferencer
+        FrameworkEvaluator/CaffeInferencer
         DatasetConverters/liveReaders/VideoReader
         Utils/PathHelper
+	Utils/DepthUtils
         )
 
 
 IF(DARKNET_ACTIVE)
+<<<<<<< HEAD
     message("add darknet files")
     SET( SOURCE_FILES ${SOURCE_FILES} FrameworkEvaluator/DarknetInferencer )
+=======
+    SET( SOURCE_FILES ${SOURCE_FILES} FrameworkEvaluator/DarknetInferencer Utils/JsonHelper.h)
+>>>>>>> readme
     include_directories(${DARKNET_INCLUDE_DIR})
 ENDIF()
 
