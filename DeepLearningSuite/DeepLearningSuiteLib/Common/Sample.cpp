@@ -203,6 +203,7 @@ void Sample::print() {
         std::cout << "Class: " << it->classID << '\n';
         std::cout << "Confidence: " << it->confidence_score << '\n';
         std::cout << "uniqObjectID" << it->uniqObjectID <<'\n';
+        std::cout << "BBOX" << it->region.x << it->region.y << it->region.width << it->region.height << '\n';
     }
 }
 

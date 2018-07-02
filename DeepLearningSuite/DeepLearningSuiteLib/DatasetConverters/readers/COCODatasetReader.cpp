@@ -107,7 +107,13 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
         y = (*itr)["bbox"][1].GetDouble();
         w = (*itr)["bbox"][2].GetDouble();
         h = (*itr)["bbox"][3].GetDouble();
-
+        bool isCrowd = (*itr).HasMember("iscrowd") ? ( (*itr)["iscrowd"].GetInt() > 0 ? true : false) : false;
+        /*if (isCrowd) {
+            std::cout << "Found 1" << '\n';
+            exit(0);
+        }*/
+        //std::cout << isCrowd << '\n';
+        std::cout << x << y << w <<  h << '\n';
         //counter++;
         //if (counter == 100) {
         //    break;
@@ -145,13 +151,14 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
 
             //std::cout << category << '\n';
-            cv::Rect bounding(x , y , w , h);
+            cv::Rect_<double> bounding = cv::Rect_<double>(x , y , w , h);
+
 
             if ((*itr).HasMember("score")) {
                 std::cout << "Adding Score" << '\n';
-                rectRegions->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble());
+                rectRegions->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble(), isCrowd);
             } else {
-                rectRegions->add(bounding,typeConverter.getClassString());
+                rectRegions->add(bounding,typeConverter.getClassString(), isCrowd);
             }
             sample.setRectRegions(rectRegions);
 
@@ -167,15 +174,15 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
 
 
-            cv::Rect bounding(x , y , w , h);
+            cv::Rect_<double> bounding(x , y , w , h);
 
             RectRegionsPtr rectRegions_old = this->samples[this->map_image_id[image_id]].getRectRegions();
 
             if ((*itr).HasMember("score")) {
                 std::cout << "Adding Score" << '\n';
-                rectRegions_old->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble());
+                rectRegions_old->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble(), isCrowd);
             } else {
-                rectRegions_old->add(bounding,typeConverter.getClassString());
+                rectRegions_old->add(bounding,typeConverter.getClassString(), isCrowd);
             }
 
             this->samples[this->map_image_id[image_id]].setRectRegions(rectRegions_old);

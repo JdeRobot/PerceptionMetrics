@@ -12,9 +12,11 @@
 #endif
 #include <FrameworkEvaluator/TensorFlowInferencer.h>
 #include <FrameworkEvaluator/KerasInferencer.h>
+
 #ifdef ENABLE_DNN_CAFFE
 #include <FrameworkEvaluator/CaffeInferencer.h>
 #endif
+
 
 enum INFERENCER_IMPLEMENTATIONS{INF_YOLO, INF_TENSORFLOW, INF_KERAS, INF_CAFFE};
 
@@ -35,14 +37,10 @@ private:
 
     KerasInferencerPtr kerasInferencerPtr;
 
-<<<<<<< HEAD
 #ifdef ENABLE_DNN_CAFFE
     CaffeInferencerPtr caffeInferencerPtr;
 #endif
-=======
-    CaffeInferencerPtr caffeInferencerPtr;
 
->>>>>>> readme
     std::vector<std::string> availableImplementations;
 
     static void configureAvailablesImplementations(std::vector<std::string>& data);

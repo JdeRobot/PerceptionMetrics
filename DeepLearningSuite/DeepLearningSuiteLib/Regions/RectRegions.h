@@ -15,11 +15,11 @@ struct RectRegions:Regions {
     RectRegions(const std::string& jsonPath);
     RectRegions();
 
-    void add(const cv::Rect rect, const std::string classId);
-    void add(const cv::Rect rect, const std::string classId, const double confidence_score);
-    void add(const std::vector<cv::Point>& detections, const std::string classId);
-    void add(int x, int y, int w, int h, const std::string classId);
-    void add(int x, int y, int w, int h, const std::string classId, const double confidence_score);
+    void add(const cv::Rect_<double> rect, const std::string classId, const bool isCrowd = false);
+    void add(const cv::Rect_<double> rect, const std::string classId, const double confidence_score, const bool isCrowd = false);
+    void add(const std::vector<cv::Point_<double>>& detections, const std::string classId, const bool isCrowd = false);
+    void add(double x, double y, double w, double h, const std::string classId, const bool isCrowd = false);
+    void add(double x, double y, double w, double h, const std::string classId, const double confidence_score, const bool isCrowd = false);
 
     void saveJson(const std::string& outPath);
     RectRegion getRegion(int id);

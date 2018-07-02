@@ -46,13 +46,10 @@ void GenericInferencer::configureAvailablesImplementations(std::vector<std::stri
 #endif
     data.push_back("tensorflow");
     data.push_back("keras");
-<<<<<<< HEAD
+
 #ifdef ENABLE_DNN_CAFFE
     data.push_back("caffe");
 #endif
-=======
-    data.push_back("caffe");
->>>>>>> readme
 }
 
 INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::string &inferencerImplementation) {
@@ -80,15 +77,11 @@ FrameworkInferencerPtr GenericInferencer::getInferencer() {
             return this->tensorFlowInferencerPtr;
         case INF_KERAS:
             return this->kerasInferencerPtr;
-<<<<<<< HEAD
 #ifdef ENABLE_DNN_CAFFE
         case INF_CAFFE:
             return this->caffeInferencerPtr;
 #endif
-=======
-        case INF_CAFFE:
-            return this->caffeInferencerPtr;
->>>>>>> readme
+
         default:
             LOG(WARNING)<<imp + " is not a valid reader implementation";
             break;

@@ -8,21 +8,31 @@
 
 #include <vector>
 #include <string>
+#include <set>
+#include <numeric>
+#include <functional>
+#include <algorithm>
+#include <type_traits>
 
 struct ClassStatistics {
     ClassStatistics();
     ClassStatistics(const std::string& classID);
     double getMeanIOU() const;
-    double getPrecision() const;
-    double getRecall() const;
-    void printStats() const;
+    std::vector<double> getPrecisionArray() const;
+    std::vector<double> getRecallArray() const;
+    //void printStats() const;
 
 
     std::string classID;
+    int numGroundTruths = 0;
     std::vector<double> iou;
+    std::vector<int> truePositives;
+    std::vector<int> falsePositives;
+    std::multiset<double> confScores;
+    // 2 vectors in same order on with conf score and other with true positive 1/0
     int nSamples;
-    int truePositives;
-    int falsePositives;
+    //int truePositives;
+    //int falsePositives;
     int falseNegatives;
     int trueNegatives; //???? evaluar muestra negativa??
 

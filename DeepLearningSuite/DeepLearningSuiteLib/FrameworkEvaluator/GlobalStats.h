@@ -11,15 +11,19 @@
 class GlobalStats {
 public:
     GlobalStats();
-    void addTruePositive(const std::string &classID);
+    void addTruePositive(const std::string &classID, double confScore);
 
-    void addFalsePositive(const std::string &classID);
+    void addFalsePositive(const std::string &classID, double confScore);
 
     void addFalseNegative(const std::string &classID);
 
+    void addGroundTruth(const std::string &classID);
+
+    void addIgnore(const std::string &classID, double confScore);
+
     void addIOU(const std::string &classID, double value);
 
-    void printStats(const std::vector<std::string>& classesToDisplay) const;
+    //void printStats(const std::vector<std::string>& classesToDisplay) const;
 
     std::map<std::string,ClassStatistics> getStats() const;
 

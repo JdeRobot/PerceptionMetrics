@@ -28,7 +28,6 @@ SET( SOURCE_FILES
         Common/EvalMatrix
         Common/Sample
         DatasetConverters/readers/OwnDatasetReader
-	DatasetConverters/readers/PrincetonDatasetReader
         DatasetConverters/writers/YoloDatasetWriter
         DatasetConverters/readers/YoloDatasetReader
         DatasetConverters/writers/COCODatasetWriter
@@ -49,7 +48,7 @@ SET( SOURCE_FILES
         FrameworkEvaluator/ClassStatistics
         FrameworkEvaluator/DetectionsEvaluator
         FrameworkEvaluator/MassInferencer
-        FrameworkEvaluator/StatsWriter
+        #FrameworkEvaluator/StatsWriter
         DatasetConverters/ClassTypeOwn
         DatasetConverters/ClassTypeMapper
         DatasetConverters/ClassType
@@ -74,10 +73,8 @@ SET( SOURCE_FILES
         Utils/DepthUtils
         FrameworkEvaluator/TensorFlowInferencer
         FrameworkEvaluator/KerasInferencer
-        FrameworkEvaluator/CaffeInferencer
         DatasetConverters/liveReaders/VideoReader
         Utils/PathHelper
-	    Utils/DepthUtils
         )
 
 

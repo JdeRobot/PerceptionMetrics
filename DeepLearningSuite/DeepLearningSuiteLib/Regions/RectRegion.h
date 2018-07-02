@@ -10,8 +10,8 @@
 struct RectRegion {
 
     RectRegion():valid(false){};
-    RectRegion(const cv::Rect& region, const std::string& classID):region(region),classID(classID),valid(true){};
-    RectRegion(const cv::Rect& region, const std::string& classID, const double confidence_score):region(region),classID(classID),confidence_score(confidence_score),valid(true){};
+    RectRegion(const cv::Rect_<double>& region, const std::string& classID, const bool isCrowd = false):region(region),classID(classID),valid(true),isCrowd(isCrowd){};
+    RectRegion(const cv::Rect_<double>& region, const std::string& classID, const double confidence_score, const bool isCrowd = false):region(region),classID(classID),confidence_score(confidence_score),valid(true),isCrowd(isCrowd){};
 
     bool operator < (const RectRegion &obj) const {
 
@@ -25,13 +25,20 @@ struct RectRegion {
 
       } else {
          std::cout << "came here" << '\n';
+         if (isCrowd || obj.isCrowd) {
+            return (isCrowd ^ obj.isCrowd) & (!isCrowd);
+         }
          return confidence_score > obj.confidence_score;          //Reverse Sorting of Confidence Scores
       }
 
    }
 
-    cv::Rect region;
+    cv::Rect_<double> region;
     std::string classID;
+    bool isCrowd = false;      // Can be substantial for COCO dataset, which ignores iscrowd in evaluations
+    long double area;          // This can be either Bounding Box area or Contour Area, necessary for
+                               // determining area Range in evaluations, and may be directly read from
+                               // dataset like COCO.
     int uniqObjectID;
     double confidence_score = -1;
     bool valid;

@@ -11,7 +11,7 @@
 
 class StatsUtils {
 public:
-    static double getIOU(const cv::Rect& gt, const cv::Rect& detection);
+    static double getIOU(const cv::Rect_<double> &gt, const cv::Rect_<double> &detection);
     static void computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix& evalmatrix);
 };
 

@@ -11,6 +11,11 @@ DetectionsEvaluator::DetectionsEvaluator(DatasetReaderPtr gt, DatasetReaderPtr d
         gt(gt),detections(detections),debug(debug) {
     thIOU = 0.5;
 
+    for (int i = 0; i < 101; i++) {
+        this->recallThrs[i] = 0.01*i;
+    } // Initializing Recall Thersholds with 101 values starting
+      // from 0 with a difference of 0.01.
+
 }
 
 void DetectionsEvaluator::evaluate() {
@@ -64,7 +69,8 @@ void DetectionsEvaluator::evaluate() {
         }
 
         detectionSample.print();
-
+        std::cout << "Ground Truth" << '\n';
+        gtSamplePtr->print();
         evaluateSample(*gtSamplePtr,detectionSample, evalmatrix);
         std::cout << "Size: " << gtSamplePtr->getColorImage().size() << '\n';
         //Eval::printMatrix(evalmatrix);
@@ -80,13 +86,35 @@ void DetectionsEvaluator::evaluate() {
 
     }
 
+    /*for (auto itr = this->sampleStats.begin(); itr != this->sampleStats.end(); itr++) {
+        std::cout << "IOU Threshold: " << itr->first << '\n';
+        std::map<std::string, ClassStatistics> mystats = itr->second.getStats();
+        for (auto iter = mystats.begin(); iter != mystats.end(); iter++) {
+            std::cout << "ClassID: " << iter->first << '\n';
+            std::vector<double> pr = iter->second.getPrecisionArray();
+            std::vector<double> rc = iter->second.getRecallArray();
+            //int count = 0;
+            std::cout << "Num GroundTruth: " << iter->second.numGroundTruths << '\n';
+            for (auto it = pr.begin(); it != pr.end(); it++) {
+                std::cout << *it << ' ';
+                //std::cout << rc[count] << '\n';
+                //count++;
+            }
+            std::cout << '\n';
+            for (auto it = rc.begin(); it != rc.end(); it++) {
+                std::cout << *it << ' ';
+                //count++;
+            }
+            std::cout << '\n';
+        }
+    }*/
 
 
     cv::destroyAllWindows();
     std::cout << "Evaluated Successfully" << '\n';
 }
 
-
+/*
 void DetectionsEvaluator::evaluateSamples(Sample gt, Sample detection) {
     GlobalStats currentStats;
 
@@ -150,40 +178,150 @@ void DetectionsEvaluator::evaluateSamples(Sample gt, Sample detection) {
     }
 
 }
-
+*/
 void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, Eval::EvalMatrix& evalmatrix) {
 
     StatsUtils::computeIOUMatrix(gt, detection, evalmatrix);
+
 
     std::string sampleID = gt.getSampleID();
 
     auto detectionRegions = detection.getRectRegions()->getRegions();
 
+    auto gtRegions = gt.getRectRegions()->getRegions();
+
     /*for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); itDetection++) {
 
 
     }*/
+
+    for (auto it = evalmatrix[sampleID].begin(); it != evalmatrix[sampleID].end(); it++) {
+        std::cout << "ClassID: " << it->first << '\n';
+        for (auto iter = it->second.begin(); iter != it->second.end(); iter++ ) {
+            for (auto iterate = iter->begin(); iterate != iter->end(); iterate++) {
+                std::cout << *iterate << " ";
+            }
+            std::cout << '\n';
+        }
+
+    }
+
+
+
+    std::map<double, std::map<int, int>> matchingMap;
+    std::map<double, std::map<double, double>> prMap;
+    std::map<std::string, int> gtRegionsClassWiseCount;
+
+    //std::map<double, GlobalStats> this->sampleStats;
+
     for (int i = 0; i < 10; i++) {
         std::string current_class, previous_class;
         int count = 0;
+        std::map<int, bool> gtIsCrowd;
+        for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++ ) {
+            if (!itGt->isCrowd) {
+                this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID);
+                gtIsCrowd[itGt->uniqObjectID] = false;
+                std::cout << "0" << ' ';
+            } else {
+                gtIsCrowd[itGt->uniqObjectID] = true;
+                std::cout << "111111111111111111111111111111111111111111111111111111111111111111111111111111" << '\n';
+            }
+            std::cout << itGt->classID << ' ';
+        }
+
         for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); itDetection++) {
             previous_class = current_class;
             current_class = itDetection->classID;
             if (!previous_class.empty()) {
-                if (current_class != previous_class) {
+                if (current_class == previous_class) {
                     count++;
+                } else {
+                    count = 0;
                 }
             }
+            if (evalmatrix[sampleID][current_class].empty()) {
+                std::cout << "IOU Matrix for " << sampleID << " and class " << current_class << " is empty for this Detection Ground Truth Pair" << '\n';
+                continue;
+            }
 
-            evalmatrix[sampleID][classID]
+            std::string gtClass = this->classMapping[current_class];
 
+
+            double iou = std::min(this->iouThrs[i],1-1e-10);
+            int m = -1;
+            bool isCrowd_local;
+            std::string current_class_gt, previous_class_gt;
+            int count2 = 0;
+            for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++) {
+                previous_class_gt = current_class_gt;
+                current_class_gt = itGt->classID;
+                if (current_class_gt != current_class)
+                    continue;
+                if (!previous_class_gt.empty()) {
+                    if (current_class_gt == previous_class_gt) {
+                        count2++;
+                    } else {
+                        count2 = 0;
+                    }
+                }
+                       // if this gt already matched, and not a crowd, continue
+                if (matchingMap.find(itGt->uniqObjectID) != matchingMap.end() && !itGt->isCrowd)
+                    continue;
+                       //if gtm[tind,gind]>0 and not iscrowd[gind]:
+                    //       continue
+                       //# if dt matched to reg gt, and on ignore gt, stop
+                if (m >-1 && !gtIsCrowd[m] && itGt->isCrowd)
+                   break;
+                       // continue to next gt unless better match made
+                if (evalmatrix[sampleID][current_class][count][count2] < iou)
+                    continue;
+                       //# if match successful and best so far, store appropriately
+                iou=evalmatrix[sampleID][current_class][count][count2];
+                m=itGt->uniqObjectID;
+                   //# if match made store id of match for both dt and gt
+            }
+
+            if (gtIsCrowd[m]) {
+                std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << '\n';
+                this->sampleStats[this->iouThrs[i]].addIgnore(itDetection->classID, itDetection->confidence_score);
+                continue;
+            }
+            if (m ==-1) {
+                this->sampleStats[this->iouThrs[i]].addFalsePositive(itDetection->classID, itDetection->confidence_score);
+                continue;
+            }
+
+            matchingMap[this->iouThrs[i]][m] = itDetection->uniqObjectID;
+
+
+            this->sampleStats[this->iouThrs[i]].addTruePositive(itDetection->classID, itDetection->confidence_score);
+
+            /*dtIg[tind,dind] = gtIg[m]
+            dtm[tind,dind]  = gt[m]['id']
+            gtm[tind,m]     = d['id']
+            */
         }
     }
+
+    std::cout << sampleID << '\n';
+
+    /*for (auto itr = matchingMap.begin(); itr != matchingMap.end(); itr++) {
+        std::cout << "For IOU: " << itr->first << '\n';
+        for (auto it = itr->second.begin(); it != itr->second.end(); it++) {
+            //std::cout << "ID: " << it->first << '\n';
+            std::cout << it->first << " " << it->second << '\n';
+                    //}
+        }
+
+    }*/
+
+
 
 }
 
 void DetectionsEvaluator::printStats() {
-    this->stats.printStats(classesToDisplay);
+    //this->stats.printStats(classesToDisplay);
 }
 
 GlobalStats DetectionsEvaluator::getStats() {

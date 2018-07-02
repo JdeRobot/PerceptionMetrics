@@ -7,25 +7,66 @@
 
 GlobalStats::GlobalStats() = default;
 
-
-void GlobalStats::addTruePositive(const std::string &classID) {
+void GlobalStats::addIgnore(const std::string &classID, double confScore ) {
     if (this->statsMap.count(classID)){
-        this->statsMap[classID].truePositives = this->statsMap[classID].truePositives+1;
+        auto it = this->statsMap[classID].confScores.insert(confScore);
+        unsigned int index = std::distance(this->statsMap[classID].confScores.begin(), it);
+        auto itr = this->statsMap[classID].truePositives.begin();
+        this->statsMap[classID].truePositives.insert(itr + index, 0);
+        itr = this->statsMap[classID].falsePositives.begin();
+        this->statsMap[classID].falsePositives.insert(itr + index, 0);
     }
     else{
         ClassStatistics s(classID);
-        s.truePositives = s.truePositives+1;
+        s.truePositives.push_back(0);
+        s.falsePositives.push_back(0);
+        s.confScores.insert(confScore);
         this->statsMap[classID]=s;
     }
 }
 
-void GlobalStats::addFalsePositive(const std::string &classID) {
+void GlobalStats::addGroundTruth(const std::string &classID) {
+    if (this->statsMap.count(classID)) {
+        this->statsMap[classID].numGroundTruths++;
+    } else {
+        ClassStatistics s(classID);
+        s.numGroundTruths = 1;
+        this->statsMap[classID] = s;
+    }
+}
+
+void GlobalStats::addTruePositive(const std::string &classID, double confScore) {
     if (this->statsMap.count(classID)){
-        this->statsMap[classID].falsePositives = this->statsMap[classID].falsePositives+1;
+        auto it = this->statsMap[classID].confScores.insert(confScore);
+        unsigned int index = std::distance(this->statsMap[classID].confScores.begin(), it);
+        auto itr = this->statsMap[classID].truePositives.begin();
+        this->statsMap[classID].truePositives.insert(itr + index, 1);
+        itr = this->statsMap[classID].falsePositives.begin();
+        this->statsMap[classID].falsePositives.insert(itr + index, 0);
     }
     else{
         ClassStatistics s(classID);
-        s.falsePositives = s.falsePositives+1;
+        s.truePositives.push_back(1);
+        s.falsePositives.push_back(0);
+        s.confScores.insert(confScore);
+        this->statsMap[classID]=s;
+    }
+}
+
+void GlobalStats::addFalsePositive(const std::string &classID, double confScore) {
+    if (this->statsMap.count(classID)){
+        auto it = this->statsMap[classID].confScores.insert(confScore);
+        unsigned int index = std::distance(this->statsMap[classID].confScores.begin(), it);
+        auto itr = this->statsMap[classID].truePositives.begin();
+        this->statsMap[classID].truePositives.insert(itr + index, 0);
+        itr = this->statsMap[classID].falsePositives.begin();
+        this->statsMap[classID].falsePositives.insert(itr + index, 1);
+    }
+    else{
+        ClassStatistics s(classID);
+        s.truePositives.push_back(0);
+        s.falsePositives.push_back(1);
+        s.confScores.insert(confScore);
         this->statsMap[classID]=s;
     }
 }
@@ -52,7 +93,7 @@ void GlobalStats::addIOU(const std::string &classID, double value)  {
     }
 }
 
-void GlobalStats::printStats(const std::vector<std::string>& classesToDisplay) const{
+/*void GlobalStats::printStats(const std::vector<std::string>& classesToDisplay) const{
     if (classesToDisplay.empty()) {
         for (auto it : this->statsMap) {
             it.second.printStats();
@@ -66,7 +107,7 @@ void GlobalStats::printStats(const std::vector<std::string>& classesToDisplay) c
             }
         }
     }
-}
+}*/
 
 std::map<std::string,ClassStatistics> GlobalStats::getStats() const{
     return statsMap;

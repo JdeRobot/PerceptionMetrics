@@ -4,7 +4,7 @@
 
 #include "StatsUtils.h"
 
-double StatsUtils::getIOU(const cv::Rect &gt, const cv::Rect &detection) {
+double StatsUtils::getIOU(const cv::Rect_<double> &gt, const cv::Rect_<double> &detection) {
     //compute iou
 
     double xA = std::max(gt.x, detection.x);
@@ -78,9 +78,11 @@ void StatsUtils::computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix&
             }
 
             double iouValue;
-            std::cout << itDetection->classID << " " << itDetection->confidence_score <<'\n';
+            //std::cout << itDetection->classID << " " << itDetection->confidence_score <<'\n';
             iouValue = StatsUtils::getIOU(itgt->region, itDetection->region );
-            std::cout << iouValue << '\n';
+            //std::cout << "Bbox Gt: " << itgt->region.x << " " << itgt->region.y << " " << itgt->region.width << " " << itgt->region.height << '\n';
+            //std::cout << "Bbox Dt: " << itDetection->region.x << " " << itDetection->region.y << " " << itDetection->region.width << " " << itDetection->region.height << '\n';
+            //std::cout << iouValue << '\n';
             detectionIOUclassRow.push_back(iouValue);
 
         }

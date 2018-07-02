@@ -11,7 +11,7 @@
 #include "GlobalStats.h"
 #include <DatasetConverters/ClassTypeMapper.h>
 #include <Common/EvalMatrix.h>
-#include <unordered_map>
+#include <tuple>
 
 class DetectionsEvaluator {
 public:
@@ -28,7 +28,7 @@ private:
     std::vector<std::pair<std::string, std::string>> validMixClass;
     std::unordered_map<std::string, std::string> classMapping;
 
-    void evaluateSamples(Sample gt, Sample detection);
+    //void evaluateSamples(Sample gt, Sample detection);
     void evaluateSample(Sample gt, Sample detection, Eval::EvalMatrix& evalmatrix);
 
     void printStats();
@@ -37,9 +37,17 @@ private:
 
     std::vector<std::string> classesToDisplay;
     double thIOU;
+    std::map<double, GlobalStats> sampleStats;
+
     GlobalStats stats;
 
+    std::map<std::string, std::tuple <unsigned int, unsigned int>> areaRng = { {"all", std::make_tuple(0, 10000000000) },
+                                                                {"small", std::make_tuple(0, 1024) },
+                                                                {"medium", std::make_tuple(1024, 9216) },
+                                                                {"large", std::make_tuple(9210, 10000000000)} };
+
     double iouThrs[10] = {0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95};
+    double recallThrs[101];
 };
 
 
