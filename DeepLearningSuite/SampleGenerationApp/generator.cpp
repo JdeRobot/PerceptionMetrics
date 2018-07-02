@@ -28,21 +28,21 @@ public:
 
     };
     virtual void operator()(){
-        Key outputPath=this->config->getKey("outputPath");
-        Key reader=this->config->getKey("reader");
-        Key detectorKey = this->config->getKey("detector");
-        Key colorImagesPathKey;
-        Key depthImagesPathKey;
-        Key dataPath;
+        YAML::Node outputPath=this->config.getNode("outputPath");
+        YAML::Node reader=this->config.getNode("reader");
+        YAML::Node detectorKey = this->config.getNode("detector");
+        YAML::Node colorImagesPathKey;
+        YAML::Node depthImagesPathKey;
+        YAML::Node dataPath;
 
 
 
-        if  (reader.getValue() == "recorder"){
-            colorImagesPathKey = this->config->getKey("colorImagesPath");
-            depthImagesPathKey = this->config->getKey("depthImagesPath");
+        if  (reader.as<std::string>() == "recorder"){
+            colorImagesPathKey = this->config.getNode("colorImagesPath");
+            depthImagesPathKey = this->config.getNode("depthImagesPath");
         }
         else{
-            dataPath = this->config->getKey("dataPath");
+            dataPath = this->config.getNode("dataPath");
         }
 
 
@@ -56,19 +56,19 @@ public:
 
 
 
-        if (std::find(detectorOptions.begin(),detectorOptions.end(),detectorKey.getValue())== detectorOptions.end()){
-            LOG(ERROR) << detectorKey.getValue() << " is nor supported";
+        if (std::find(detectorOptions.begin(),detectorOptions.end(),detectorKey.as<std::string>())== detectorOptions.end()){
+            LOG(ERROR) << detectorKey.as<std::string>() << " is nor supported";
             exit(1);
         }
 
 
-        if (detectorKey.getValue()=="pentalo-bg") {
+        if (detectorKey.as<std::string>()=="pentalo-bg") {
 
-            RecorderReader converter(colorImagesPathKey.getValue(), depthImagesPathKey.getValue());
+            RecorderReader converter(colorImagesPathKey.as<std::string>(), depthImagesPathKey.as<std::string>());
             DepthForegroundSegmentator segmentator;
 
 
-            DetectionsValidator validator(outputPath.getValue());
+            DetectionsValidator validator(outputPath.as<std::string>());
             cv::Mat previousImage;
             int counter = 0;
             int maxElements = converter.getNumSamples();
@@ -95,35 +95,35 @@ public:
                 validator.validate(colorImage, depthImage, detections);
             }
         }
-        else if (detectorKey.getValue()=="deepLearning") {
-            Key inferencerImplementationKey=this->config->getKey("inferencerImplementation");
-            Key inferencerNamesKey=this->config->getKey("inferencerNames");
-            Key inferencerConfigKey=this->config->getKey("inferencerConfig");
-            Key inferencerWeightsKey=this->config->getKey("inferencerWeights");
+        else if (detectorKey.as<std::string>()=="deepLearning") {
+            YAML::Node inferencerImplementationKey=this->config.getNode("inferencerImplementation");
+            YAML::Node inferencerNamesKey=this->config.getNode("inferencerNames");
+            YAML::Node inferencerConfigKey=this->config.getNode("inferencerConfig");
+            YAML::Node inferencerWeightsKey=this->config.getNode("inferencerWeights");
 
 
             RecorderReaderPtr converter;
-            if (reader.getValue() == "recorder-rgbd") {
-                converter=RecorderReaderPtr( new RecorderReader(dataPath.getValue()));
+            if (reader.as<std::string>() == "recorder-rgbd") {
+                converter=RecorderReaderPtr( new RecorderReader(dataPath.as<std::string>()));
             }
             else{
-                converter=RecorderReaderPtr( new RecorderReader(colorImagesPathKey.getValue(), depthImagesPathKey.getValue()));
+                converter=RecorderReaderPtr( new RecorderReader(colorImagesPathKey.as<std::string>(), depthImagesPathKey.as<std::string>()));
             }
 
             FrameworkInferencerPtr inferencer;
 
-            if (inferencerImplementationKey.getValue()=="yolo") {
+            if (inferencerImplementationKey.as<std::string>()=="yolo") {
 #ifdef DARKNET_ACTIVE
-                inferencer = DarknetInferencerPtr( new DarknetInferencer(inferencerConfigKey.getValue(), inferencerWeightsKey.getValue(), inferencerNamesKey.getValue()));
+                inferencer = DarknetInferencerPtr( new DarknetInferencer(inferencerConfigKey.as<std::string>(), inferencerWeightsKey.as<std::string>(), inferencerNamesKey.as<std::string>()));
 #else
                 LOG(WARNING) << "Darknet inferencer is not available";
 #endif
             }
             else{
-                LOG(WARNING) << inferencerImplementationKey.getValue() + " is not a valid inferencer implementation";
+                LOG(WARNING) << inferencerImplementationKey.as<std::string>() + " is not a valid inferencer implementation";
             }
 
-            DetectionsValidator validator(outputPath.getValue());
+            DetectionsValidator validator(outputPath.as<std::string>());
             int maxElements = converter->getNumSamples();
             Sample sample;
             int counter=0;
@@ -163,13 +163,13 @@ public:
 
             }
         }
-        else if(detectorKey.getValue()=="datasetReader"){
-            Key readerNamesKey=this->config->getKey("readerNames");
+        else if(detectorKey.as<std::string>()=="datasetReader"){
+            YAML::Node readerNamesKey=this->config.getNode("readerNames");
             //readerImplementationGT
-            GenericDatasetReaderPtr readerImp(new GenericDatasetReader(dataPath.getValue(),readerNamesKey.getValue(), reader.getValue()));
+            GenericDatasetReaderPtr readerImp(new GenericDatasetReader(dataPath.as<std::string>(),readerNamesKey.as<std::string>(), reader.as<std::string>()));
 
 
-            DetectionsValidator validator(outputPath.getValue(),1.5);
+            DetectionsValidator validator(outputPath.as<std::string>(),1.5);
 
             int maxElements = -1;
             Sample sample;

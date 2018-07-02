@@ -50,7 +50,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::handleViewButton() {
     SampleGeneratorHandler::Viewer::process(ui->listView_viewer_dataset,ui->listView_viewer_names,ui->listView_viewer_reader_imp,
-                                            ui->listView_viewer_classFilter, ui->checkBox_evaluator_show_depth->isChecked(), app->getConfig()->getKey("datasetPath").getValue(), app->getConfig()->getKey("namesPath").getValue());
+                                            ui->listView_viewer_classFilter, ui->checkBox_evaluator_show_depth->isChecked(), app->getConfig().asString("datasetPath"), app->getConfig().asString("namesPath"));
 }
 
 void MainWindow::handleSelectionNamesChanged() {
@@ -59,7 +59,7 @@ void MainWindow::handleSelectionNamesChanged() {
     switch(ui->tabWidget->currentIndex()) {
         case 0: {
             std::vector<std::string> dataSelected;
-            Utils::getListViewContent(ui->listView_viewer_names,dataSelected,app->getConfig()->getKey("namesPath").getValue() + "/");
+            Utils::getListViewContent(ui->listView_viewer_names,dataSelected,app->getConfig().asString("namesPath") + "/");
             ClassTypeGeneric typeConverter(dataSelected[0]);
             ListViewConfig::configureInputByData(this, ui->listView_viewer_classFilter,
                                                  typeConverter.getAllAvailableClasses(), true);
@@ -67,7 +67,7 @@ void MainWindow::handleSelectionNamesChanged() {
             break;
         case 1: {
             std::vector<std::string> dataSelected;
-            Utils::getListViewContent(ui->listView_converter_names,dataSelected,app->getConfig()->getKey("namesPath").getValue() + "/");
+            Utils::getListViewContent(ui->listView_converter_names,dataSelected,app->getConfig().asString("namesPath") + "/");
             ClassTypeGeneric typeConverter(dataSelected[0]);
             ListViewConfig::configureInputByData(this, ui->listView_converter_classFilter,
                                                  typeConverter.getAllAvailableClasses(), true);
@@ -76,7 +76,7 @@ void MainWindow::handleSelectionNamesChanged() {
         case 3: {
             std::vector<std::string> dataSelected;
             Utils::getListViewContent(ui->listView_evaluator_detection_names, dataSelected,
-                                      app->getConfig()->getKey("namesPath").getValue() + "/");
+                                      app->getConfig().asString("namesPath") + "/");
             ClassTypeGeneric typeConverter(dataSelected[0]);
             ListViewConfig::configureInputByData(this, ui->listView_evaluator_classFilter,
                                                  typeConverter.getAllAvailableClasses(), true);
@@ -103,9 +103,9 @@ void MainWindow::setupTabsInformation() {
     switch(ui->tabWidget->currentIndex()) {
         case 0:
             ListViewConfig::configureDatasetInput(this, ui->listView_viewer_dataset,
-                                              app->getConfig()->getKey("datasetPath").getValue(), true);
+                                              app->getConfig().asString("datasetPath"), true);
             ListViewConfig::configureInputByFile(this, ui->listView_viewer_names,
-                                             app->getConfig()->getKey("namesPath").getValue(), false);
+                                             app->getConfig().asString("namesPath"), false);
             ListViewConfig::configureInputByData(this, ui->listView_viewer_reader_imp,
                                                  GenericDatasetReader::getAvailableImplementations(), false);
             connect(ui->listView_viewer_names->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleSelectionNamesChanged()));
@@ -113,11 +113,11 @@ void MainWindow::setupTabsInformation() {
             break;
         case 1:
             ListViewConfig::configureDatasetInput(this, ui->listView_converter_dataset,
-                                                  app->getConfig()->getKey("datasetPath").getValue(), true);
+                                                  app->getConfig().asString("datasetPath"), true);
             ListViewConfig::configureInputByFile(this, ui->listView_converter_names,
-                                                 app->getConfig()->getKey("namesPath").getValue(), false);
+                                                 app->getConfig().asString("namesPath"), false);
             ListViewConfig::configureInputByFile(this, ui->listView_converter_writer_names,
-                                              app->getConfig()->getKey("namesPath").getValue(), false);
+                                              app->getConfig().asString("namesPath"), false);
             ui->listView_converter_writer_names->setEnabled(false);
             ListViewConfig::configureInputByData(this, ui->listView_converter_reader_imp,
                                                  GenericDatasetReader::getAvailableImplementations(), false);
@@ -129,19 +129,19 @@ void MainWindow::setupTabsInformation() {
             break;
         case 2:
             ListViewConfig::configureDatasetInput(this, ui->listView_detector_dataset,
-                                                  app->getConfig()->getKey("datasetPath").getValue(), true);
+                                                  app->getConfig().asString("datasetPath"), true);
             ListViewConfig::configureInputByFile(this, ui->listView_detector_names,
-                                                 app->getConfig()->getKey("namesPath").getValue(), false);
+                                                 app->getConfig().asString("namesPath"), false);
             ListViewConfig::configureInputByData(this, ui->listView_detector_reader_imp,
                                                  GenericDatasetReader::getAvailableImplementations(), false);
             ListViewConfig::configureInputByFile(this, ui->listView_detector_weights,
-                                                 app->getConfig()->getKey("weightsPath").getValue(), false);
+                                                 app->getConfig().asString("weightsPath"), false);
             ListViewConfig::configureInputByFile(this, ui->listView_detector_net_config,
-                                                 app->getConfig()->getKey("netCfgPath").getValue(), false);
+                                                 app->getConfig().asString("netCfgPath"), false);
             ListViewConfig::configureInputByData(this, ui->listView_detector_imp,
                                                  GenericInferencer::getAvailableImplementations(), false);
             ListViewConfig::configureInputByFile(this, ui->listView_detector_names_inferencer,
-                                                 app->getConfig()->getKey("namesPath").getValue(), false);
+                                                 app->getConfig().asString("namesPath"), false);
 
 
             ui->detector_groupBox_inferencer_params->setEnabled(false);
@@ -153,28 +153,28 @@ void MainWindow::setupTabsInformation() {
             break;
         case 3:
             ListViewConfig::configureDatasetInput(this, ui->listView_evaluator_gt_dataset,
-                                                  app->getConfig()->getKey("datasetPath").getValue(), true);
+                                                  app->getConfig().asString("datasetPath"), true);
             ListViewConfig::configureInputByFile(this, ui->listView_evaluator_gt_names,
-                                                 app->getConfig()->getKey("namesPath").getValue(), false);
+                                                 app->getConfig().asString("namesPath"), false);
             ListViewConfig::configureInputByData(this, ui->listView_evaluator_gt_imp,
                                                  GenericDatasetReader::getAvailableImplementations(), false);
             ListViewConfig::configureDatasetInput(this, ui->listView_evaluator_dectection_dataset,
-                                                  app->getConfig()->getKey("inferencesPath").getValue(), true);
+                                                  app->getConfig().asString("inferencesPath"), true);
             ListViewConfig::configureInputByFile(this, ui->listView_evaluator_detection_names,
-                                                 app->getConfig()->getKey("namesPath").getValue(), false);
+                                                 app->getConfig().asString("namesPath"), false);
             ListViewConfig::configureInputByData(this, ui->listView_evaluator_detection_imp,
                                                  GenericDatasetReader::getAvailableImplementations(), false);
             connect(ui->listView_evaluator_detection_names->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleSelectionNamesChanged()));
             break;
         case 4:
             ListViewConfig::configureInputByFile(this, ui->listView_deploy_weights,
-                                                 app->getConfig()->getKey("weightsPath").getValue(), false);
+                                                 app->getConfig().asString("weightsPath"), false);
             ListViewConfig::configureInputByFile(this, ui->listView_deploy_net_config,
-                                                 app->getConfig()->getKey("netCfgPath").getValue(), false);
+                                                 app->getConfig().asString("netCfgPath"), false);
             ListViewConfig::configureInputByData(this, ui->listView_deploy_impl,
                                                  GenericInferencer::getAvailableImplementations(), false);
             ListViewConfig::configureInputByFile(this, ui->listView_deploy_names_inferencer,
-                                                 app->getConfig()->getKey("namesPath").getValue(), false);
+                                                 app->getConfig().asString("namesPath"), false);
             ListViewConfig::configureInputByData(this, ui->listView_deploy_input_imp,
                                                  GenericLiveReader::getAvailableImplementations(), false);
 
@@ -241,8 +241,8 @@ void MainWindow::handleConvertButton() {
                                                    ui->listView_converter_outImp,
                                                    ui->listView_converter_writer_names,
                                                    ui->checkBox_use_writernames->isChecked(),
-                                                   app->getConfig()->getKey("datasetPath").getValue(),
-                                                   app->getConfig()->getKey("namesPath").getValue(), outputPath,
+                                                   app->getConfig().asString("datasetPath"),
+                                                   app->getConfig().asString("namesPath"), outputPath,
                                                    splitActive, ratio, colorImage);
     }
     catch (const std::string& msg){
@@ -261,8 +261,8 @@ void MainWindow::handleEvaluateButton() {
     try{
     SampleGeneratorHandler::Evaluator::process(ui->listView_evaluator_gt_dataset,ui->listView_evaluator_gt_names,ui->listView_evaluator_gt_imp,
                                                ui->listView_evaluator_dectection_dataset,ui->listView_evaluator_detection_names, ui->listView_evaluator_detection_imp,
-                                               ui->listView_evaluator_classFilter,app->getConfig()->getKey("datasetPath").getValue(),app->getConfig()->getKey("namesPath").getValue(),
-                                               app->getConfig()->getKey("inferencesPath").getValue(),app->getConfig()->getKey("namesPath").getValue(),ui->checkBox_evaluator_merge->isChecked(),
+                                               ui->listView_evaluator_classFilter,app->getConfig().asString("datasetPath"),app->getConfig().asString("namesPath"),
+                                               app->getConfig().asString("inferencesPath"),app->getConfig().asString("namesPath"),ui->checkBox_evaluator_merge->isChecked(),
                                                ui->checkBox_evaluator_mix->isChecked(),ui->checkBox_evaluator_show_eval->isChecked());
     }
     catch (const std::string& msg){
@@ -285,9 +285,9 @@ void MainWindow::handleDetectButton() {
 
 
     try{
-    SampleGeneratorHandler::Detector::process(ui->listView_detector_dataset, ui->listView_detector_names,ui->listView_detector_reader_imp,app->getConfig()->getKey("datasetPath").getValue(),
+    SampleGeneratorHandler::Detector::process(ui->listView_detector_dataset, ui->listView_detector_names,ui->listView_detector_reader_imp,app->getConfig().asString("datasetPath"),
                                               ui->listView_detector_weights,ui->listView_detector_net_config,ui->listView_detector_imp,ui->listView_detector_names_inferencer,
-                                              inferencer_params, app->getConfig()->getKey("weightsPath").getValue(),app->getConfig()->getKey("netCfgPath").getValue(),outputPath,app->getConfig()->getKey("namesPath").getValue(),
+                                              inferencer_params, app->getConfig().asString("weightsPath"),app->getConfig().asString("netCfgPath"),outputPath,app->getConfig().asString("namesPath"),
                                               useDepth,singleEvaluation);
     }
     catch (const std::string& msg){
@@ -394,8 +394,8 @@ void MainWindow::handleProcessDeploy() {
     try{
         SampleGeneratorHandler::Deployer::process(ui->listView_deploy_input_imp,ui->listView_deploy_weights,
                                                   ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer, ui->pushButton_stop_deployer_process,
-                                                  deployer_params, inferencer_params, app->getConfig()->getKey("weightsPath").getValue(),
-                                                  app->getConfig()->getKey("netCfgPath").getValue(),app->getConfig()->getKey("namesPath").getValue(),inputInfo);
+                                                  deployer_params, inferencer_params, app->getConfig().asString("weightsPath"),
+                                                  app->getConfig().asString("netCfgPath"),app->getConfig().asString("namesPath"),inputInfo);
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;

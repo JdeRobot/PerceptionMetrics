@@ -6,6 +6,7 @@ ENDIF()
 
 include_directories(
         ${JdeRobot_INCLUDE_DIRS}
+        ${config_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIR}
         ${CMAKE_CURRENT_LIST_DIR}
@@ -18,6 +19,7 @@ add_executable (SampleGenerationApp generator.cpp)
 TARGET_LINK_LIBRARIES(SampleGenerationApp
         DeepLearningSuite
         ${EXTRA_LIBS}
+        ${config_LIBRARIES} 
         ${JdeRobot_LIBRARIES}
         ${OpenCV_LIBRARIES}
         ${Boost_LIBRARIES}
