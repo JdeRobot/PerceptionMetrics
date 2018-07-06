@@ -43,6 +43,13 @@ public:
 	Properties(YAML::Node node);
 	//~Properties();
 
+	void showConfig();
+
+	void printNode(YAML::Node node);
+
+	bool keyExists(std::string element);
+
+	YAML::Node getNode(std::string element);
 	/**
 	 * @brief returns as string the propery given
 	 *

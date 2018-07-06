@@ -25,7 +25,8 @@ SampleGenerationApp::SampleGenerationApp(int argc, char **argv):argc(argc),argv(
         exit(1);
     }
 
-    config=ConfigurationPtr( new Configuration(configFilePath));
+    config = jderobotconfig::loader::load(configFilePath);
+    //config=ConfigurationPtr( new Configuration(configFilePath));
 }
 
 
@@ -93,9 +94,9 @@ void SampleGenerationApp::process() {
 
 bool SampleGenerationApp::verifyRequirements() {
     bool success=true;
-    this->config->showConfig();
+    this->config.showConfig();
     for (auto it = this->requiredArguments.begin(), end =this->requiredArguments.end(); it != end; ++it){
-        if (!this->config->keyExists(*it)){
+        if (!this->config.keyExists(*it)){
             LOG(WARNING)<< "Key: " + (*it) + " is not defined in the configuration file";
             success=false;
         }
@@ -104,6 +105,6 @@ bool SampleGenerationApp::verifyRequirements() {
     return success;
 }
 
-ConfigurationPtr SampleGenerationApp::getConfig() {
+Config::Properties SampleGenerationApp::getConfig() {
     return config;
 }

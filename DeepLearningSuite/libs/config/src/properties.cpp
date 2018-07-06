@@ -29,6 +29,68 @@ Properties::Properties(YAML::Node node){
     this->node = node;
 }
 
+void
+Properties::showConfig() {
+    std::cout << "------------------------------------------------------------------" << std::endl;
+    std::cout << "------------------------------------------------------------------" << std::endl;
+
+    for (YAML::const_iterator it = this->node.begin(); it != this->node.end(); ++it){
+       std::cout << it->first.as<std::string>() << ": ";
+       printNode(it->second);
+       std::cout << '\n';
+        // it->second.as<std::string>(); // can't do this until it's type is checked!!
+   }
+   std::cout << "------------------------------------------------------------------" << std::endl;
+   std::cout << "------------------------------------------------------------------" << std::endl;
+
+}
+
+void
+Properties::printNode(YAML::Node node_passed) {
+   switch (node_passed.Type()) {
+     case  YAML::NodeType::Null:
+        return;
+     case YAML::NodeType::Scalar:
+        std::cout << node_passed.as<std::string>() << '\n';
+        break;
+     case YAML::NodeType::Sequence:
+        std::cout << "[ ";
+        for (YAML::const_iterator it = node_passed.begin(); it != node_passed.end(); ++it){
+            printNode(*it);
+            std::cout << ",";
+            // it->second.as<std::string>(); // can't do this until it's type is checked!!
+        }
+        std::cout << " ]";
+        break;
+     case YAML::NodeType::Map:
+        for (YAML::const_iterator it = node_passed.begin(); it != node_passed.end(); ++it){
+            std::cout << it->first.as<std::string>() << ": ";
+            printNode(it->second);
+         // it->second.as<std::string>(); // can't do this until it's type is checked!!
+        }
+        break;
+     case YAML::NodeType::Undefined: // ...
+        return;
+   }
+}
+
+bool
+Properties::keyExists(std::string element) {
+    std::vector<std::string> v = std::split(element, ".");
+
+    YAML::Node nod = this->searchNode(this->node, v);
+    return nod ? true : false;
+
+}
+
+YAML::Node
+Properties::getNode(std::string element) {
+    std::vector<std::string> v = std::split(element, ".");
+
+    YAML::Node nod = this->searchNode(this->node, v);
+    return nod;
+}
+
 std::string
 Properties::asString(std::string element){
     std::vector<std::string> v = std::split(element, ".");

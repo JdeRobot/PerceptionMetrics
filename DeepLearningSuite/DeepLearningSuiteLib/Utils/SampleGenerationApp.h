@@ -6,18 +6,18 @@
 #define SAMPLERGENERATOR_SAMPLEGENERATIOAPP_H
 
 
-#include "Configuration.h"
+#include <config/config.h>
 
 class SampleGenerationApp {
 public:
     SampleGenerationApp(int argc, char* argv[]);
     virtual void operator()() =0;
     void process();
-    ConfigurationPtr getConfig();
+    Config::Properties getConfig();
 
 
 protected:
-    ConfigurationPtr config;
+    Config::Properties config;
     std::string configFilePath;
     std::vector<std::string> requiredArguments;
 

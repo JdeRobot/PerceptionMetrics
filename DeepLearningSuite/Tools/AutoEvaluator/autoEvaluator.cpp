@@ -60,7 +60,6 @@ public:
 
         for (auto it = inputPaths.begin(); it != inputPaths.end(); it++) {
 
-            std::cout << "here" << '\n';
 
             std::string readerNames = readerNamesKey.getValueOrLast(count);
             std::string readerImplementation = readerImplementationKey.getValueOrLast(count);
@@ -78,7 +77,6 @@ public:
 
             for (auto iter = inferencerWeights.begin(); iter != inferencerWeights.end(); iter++) {
 
-                std::cout << "here" << '\n';
 
 
                 std::vector<Sample> samples;
