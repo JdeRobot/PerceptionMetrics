@@ -17,7 +17,7 @@ public:
 
     void addFalseNegative(const std::string &classID);
 
-    void addGroundTruth(const std::string &classID);
+    void addGroundTruth(const std::string &classID, bool isRegular);
 
     void addIgnore(const std::string &classID, double confScore);
 

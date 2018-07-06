@@ -20,11 +20,11 @@ struct RectRegion {
       }
 
       if (classID != obj.classID) {
-         std::cout << "returning not equal class" << '\n';
+         //std::cout << "returning not equal class" << '\n';
          return classID < obj.classID;
 
       } else {
-         std::cout << "came here" << '\n';
+         //std::cout << "came here" << '\n';
          if (isCrowd || obj.isCrowd) {
             return (isCrowd ^ obj.isCrowd) & (!isCrowd);
          }

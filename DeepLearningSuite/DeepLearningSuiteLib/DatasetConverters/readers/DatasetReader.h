@@ -19,6 +19,7 @@ public:
     int getNumberOfElements();
     void resetReaderCounter();
     bool getSampleBySampleID(Sample** sample, const std::string& sampleID);
+    bool getSampleBySampleID(Sample** sample, const long long int sampleID);
     void printDatasetStats();
     virtual bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
     void addSample(Sample sample);

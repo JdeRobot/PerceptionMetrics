@@ -12,26 +12,131 @@ DetectionsEvaluator::DetectionsEvaluator(DatasetReaderPtr gt, DatasetReaderPtr d
     thIOU = 0.5;
 
     for (int i = 0; i < 101; i++) {
-        this->recallThrs[i] = 0.01*i;
+        this->recallThrs.push_back(0.01*i);
     } // Initializing Recall Thersholds with 101 values starting
       // from 0 with a difference of 0.01.
 
 }
 
+void DetectionsEvaluator::accumulateResults() {
+
+    std::valarray<double> ApDiffIou(10);
+    std::valarray<double> ArDiffIou(10);
+    std::map<double, std::map<std::string, double>> ApDiffIouClassWise;
+    std::map<double, std::map<std::string, double>> ArDiffIouClassWise;
+
+
+    int start_s=clock();
+
+    unsigned int index = 0;
+    for (auto itr = this->sampleStats.begin(); itr != this->sampleStats.end(); itr++) {
+
+        //std::cout << "IOU Threshold: " << itr->first << '\n';
+        std::map<std::string, ClassStatistics> mystats = itr->second.getStats();
+        //double ap = 0;
+        //int size = 0;
+        int totalCount = 0;
+        int totalRecallCount = 0;
+        double totalPrecision = 0;
+        double totalRecall = 0;
+
+
+        for (auto iter = mystats.begin(); iter != mystats.end(); iter++) {
+            //std::cout << "ClassID: " << iter->first << '\n';
+            totalRecallCount++;
+            if (iter->second.numGroundTruthsReg == 0)
+                continue;
+            std::vector<double> pr = iter->second.getPrecisionArray();
+
+            std::vector<double> rc = iter->second.getRecallArray();
+            //int count = 0;
+            //std::cout << "Num GroundTruth: " << iter->second.numGroundTruthsReg << '\n';
+            /*for (auto it = pr.begin(); it != pr.end(); it++) {
+                std::cout << *it << ' ';
+                //std::cout << rc[count] << '\n';
+                //count++;
+            }
+            std::cout << '\n';
+            std::vector<double> pr_op = iter->second.getPrecisionArrayOp();
+            for (auto it = pr_op.begin(); it != pr_op.end(); it++) {
+                std::cout << *it << ' ';
+                //count++;
+            }*/
+            //std::cout << '\n';
+
+            double recall = 0;
+            /*std::cout << "Priniting Recall Array" << '\n';
+            for (auto it = rc.begin(); it != rc.end(); it++) {
+                std::cout << *it << ' ';
+                //count++;
+                recallCount++;
+                recall += *it;
+            }*/
+
+            recall = iter->second.getRecall();
+            //std::cout << "Printing Recall Value: " << recall << '\n';
+            totalRecall += recall;
+
+            //std::cout << totalRecall << " " << recall << " " << recallCount << '\n';
+
+            //std::cout << '\n';
+            /*std::vector<double> pt_rc = iter->second.getPrecisionForDiffRecallThrs(this->recallThrs);
+            double precsion = 0;
+            int precsionCount = 0;
+            for (auto it = pt_rc.begin(); it != pt_rc.end(); it++) {
+                //std::cout << *it << ' ';
+                //count++;
+                precsion += *it;
+                precsionCount++;
+
+            }*/
+
+            totalPrecision += iter->second.getAveragePrecision(recallThrs);
+
+            totalCount++;
+            //std::cout << average/count;
+            //std::cout << '\n';
+
+        }
+        //std::cout << ap << " " << size << " " << totalCount << " " << totalAverage << '\n';
+        ApDiffIou[index] = totalPrecision / totalCount;
+        ArDiffIou[index] = totalRecall / totalCount;
+        //std::cout << "Recall Count: " << totalRecallCount << '\n';
+        ++index;
+    }
+
+    int stop_s=clock();
+    std::cout << "Time Taken in Accumulation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << " milli seconds" << std::endl;
+    std::cout << std::fixed;
+    std::cout << std::setprecision(8);
+
+
+    for (int i = 0; i < ApDiffIou.size(); i++) {
+        std::cout << "AP for IOU " << this->iouThrs[i] <<  ": \t" << ApDiffIou[i] << '\n';
+    }
+
+    for (int i = 0; i < ArDiffIou.size(); i++) {
+        std::cout << "AR for IOU " << this->iouThrs[i] <<  ": \t" << ArDiffIou[i] << '\n';
+    }
+
+    std::cout << "AP for IOU 0.5:0.95 \t" << ApDiffIou.sum()/10 << '\n';
+
+    std::cout << "AR for IOU 0.5:0.95 \t" << ArDiffIou.sum()/10 << '\n';
+
+    cv::destroyAllWindows();
+
+    std::cout << "Evaluated Successfully" << '\n';
+
+}
+
 void DetectionsEvaluator::evaluate() {
-    int counter=0;
+    int counter=-1;
     int gtSamples = this->gt->getNumberOfElements();
     int detectionSamples = this->detections->getNumberOfElements();
 
-    Sample testSample;
-    int count = 0;
-    while (this->gt->getNextSample(testSample)){
-        testSample.print();
-        if (count == 500) {
-            break;
-        }
-        count++;
-    }
+
+    int start_s=clock();
+	// the code you wish to time goes here
 
     /*while (this->detections->getNextSample(testSample)){
         testSample.print();
@@ -46,72 +151,68 @@ void DetectionsEvaluator::evaluate() {
 
 
     Sample gtSample;
-    Sample detectionSample;
     Sample* gtSamplePtr;
 
-    Eval::EvalMatrix evalmatrix;
-
-    while (this->detections->getNextSample(detectionSample)){
-        counter++;
-        std::cout << "Evaluating: " << detectionSample.getSampleID() << "(" << counter << "/" << gtSamples << ")" << std::endl;
 
 
-        //this->detections->getNextSample(detectionSample);
-        if(!this->gt->getSampleBySampleID(&gtSamplePtr, detectionSample.getSampleID())) {
-            std::cout << "Can't Find Sample" << '\n';
+    int imgIdsToEval[100] = {42, 73, 74, 133, 136, 139, 143, 164, 192, 196, 208, 241, 257, 283, 285, 294, 328, 338,
+                        357, 359, 360, 387, 395, 397, 400, 415, 428, 459, 472, 474, 486, 488, 502, 520, 536, 544,
+                        564, 569, 589, 590, 599, 623, 626, 632, 636, 641, 661, 675, 692, 693, 699, 711, 715, 724,
+                         730, 757, 761, 764, 772, 775, 776, 785, 802, 810, 827, 831, 836, 872, 873, 885, 923, 939,
+                         962, 969, 974, 985, 987, 999, 1000, 1029, 1063, 1064, 1083, 1089, 1103, 1138, 1146, 1149,
+                          1153, 1164, 1171, 1176, 1180, 1205, 1228, 1244, 1268, 1270, 1290, 1292};
+
+
+
+
+    for ( counter = 0; counter < 100; counter++ ) {
+
+        //counter++;
+
+        if (!this->gt->getSampleBySampleID(&gtSamplePtr, imgIdsToEval[counter])){
             continue;
         }
 
-        if (gtSamplePtr->getSampleID().compare(detectionSample.getSampleID()) != 0){
-            const std::string error="Both dataset has not the same structure ids mismatch from:" + gtSample.getSampleID() + " to " + detectionSample.getSampleID();
+
+        Sample* detectionSample;
+        //this->detections->getNextSample(detectionSample);
+        if(!this->detections->getSampleBySampleID(&detectionSample, gtSamplePtr->getSampleID())) {
+            std::cout << "Can't Find Sample, creating dummy sample i.e, assuming that the object detector didn't detect any objects in this image" << '\n';
+            //continue;
+            detectionSample = new Sample();
+            detectionSample->setSampleID(gtSamplePtr->getSampleID());
+        }
+
+        std::cout << "Evaluating: " << detectionSample->getSampleID() << "(" << counter << "/" << gtSamples << ")" << std::endl;
+
+
+        if (gtSamplePtr->getSampleID().compare(detectionSample->getSampleID()) != 0){
+            const std::string error="Both dataset has not the same structure ids mismatch from:" + gtSamplePtr->getSampleID() + " to " + detectionSample->getSampleID();
             LOG(WARNING) << error;
             throw error;
         }
 
-        detectionSample.print();
-        std::cout << "Ground Truth" << '\n';
-        gtSamplePtr->print();
-        evaluateSample(*gtSamplePtr,detectionSample, evalmatrix);
-        std::cout << "Size: " << gtSamplePtr->getColorImage().size() << '\n';
+        //detectionSample->print();
+        //std::cout << "Ground Truth" << '\n';
+        //gtSamplePtr->print();
+        evaluateSample(*gtSamplePtr,*detectionSample);
+        //std::cout << "Size: " << gtSamplePtr->getColorImage().size() << '\n';
         //Eval::printMatrix(evalmatrix);
         //printStats();
 
-        if (this->debug){
+        /*if (this->debug){
             cv::imshow("GT", gtSample.getSampledColorImage());
             Sample detectionWithImage=detectionSample;
             detectionWithImage.setColorImage(gtSample.getColorImage());
             cv::imshow("Detection", detectionWithImage.getSampledColorImage());
             cv::waitKey(100);
-        }
+        }*/
 
     }
 
-    /*for (auto itr = this->sampleStats.begin(); itr != this->sampleStats.end(); itr++) {
-        std::cout << "IOU Threshold: " << itr->first << '\n';
-        std::map<std::string, ClassStatistics> mystats = itr->second.getStats();
-        for (auto iter = mystats.begin(); iter != mystats.end(); iter++) {
-            std::cout << "ClassID: " << iter->first << '\n';
-            std::vector<double> pr = iter->second.getPrecisionArray();
-            std::vector<double> rc = iter->second.getRecallArray();
-            //int count = 0;
-            std::cout << "Num GroundTruth: " << iter->second.numGroundTruths << '\n';
-            for (auto it = pr.begin(); it != pr.end(); it++) {
-                std::cout << *it << ' ';
-                //std::cout << rc[count] << '\n';
-                //count++;
-            }
-            std::cout << '\n';
-            for (auto it = rc.begin(); it != rc.end(); it++) {
-                std::cout << *it << ' ';
-                //count++;
-            }
-            std::cout << '\n';
-        }
-    }*/
+    int stop_s=clock();
+    std::cout << "Time Taken in Evaluation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << " milli seconds" << std::endl;
 
-
-    cv::destroyAllWindows();
-    std::cout << "Evaluated Successfully" << '\n';
 }
 
 /*
@@ -179,9 +280,11 @@ void DetectionsEvaluator::evaluateSamples(Sample gt, Sample detection) {
 
 }
 */
-void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, Eval::EvalMatrix& evalmatrix) {
+void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection) {
 
-    StatsUtils::computeIOUMatrix(gt, detection, evalmatrix);
+    Eval::EvalMatrix sampleEvalMatrix;
+
+    StatsUtils::computeIOUMatrix(gt, detection, sampleEvalMatrix);
 
 
     std::string sampleID = gt.getSampleID();
@@ -195,7 +298,7 @@ void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, Eval::Eval
 
     }*/
 
-    for (auto it = evalmatrix[sampleID].begin(); it != evalmatrix[sampleID].end(); it++) {
+    /*for (auto it = sampleEvalMatrix.begin(); it != sampleEvalMatrix.end(); it++) {
         std::cout << "ClassID: " << it->first << '\n';
         for (auto iter = it->second.begin(); iter != it->second.end(); iter++ ) {
             for (auto iterate = iter->begin(); iterate != iter->end(); iterate++) {
@@ -204,7 +307,7 @@ void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, Eval::Eval
             std::cout << '\n';
         }
 
-    }
+    }*/
 
 
 
@@ -220,14 +323,15 @@ void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, Eval::Eval
         std::map<int, bool> gtIsCrowd;
         for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++ ) {
             if (!itGt->isCrowd) {
-                this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID);
+                this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID, true);
                 gtIsCrowd[itGt->uniqObjectID] = false;
-                std::cout << "0" << ' ';
+                //std::cout << "0" << ' ';
             } else {
                 gtIsCrowd[itGt->uniqObjectID] = true;
-                std::cout << "111111111111111111111111111111111111111111111111111111111111111111111111111111" << '\n';
+                this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID, false);
+                //std::cout << "111111111111111111111111111111111111111111111111111111111111111111111111111111" << '\n';
             }
-            std::cout << itGt->classID << ' ';
+            //std::cout << itGt->classID << ' ';
         }
 
         for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); itDetection++) {
@@ -240,12 +344,16 @@ void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, Eval::Eval
                     count = 0;
                 }
             }
-            if (evalmatrix[sampleID][current_class].empty()) {
+            if (sampleEvalMatrix[current_class].empty()) {
                 std::cout << "IOU Matrix for " << sampleID << " and class " << current_class << " is empty for this Detection Ground Truth Pair" << '\n';
-                continue;
+                // This is also a false positive
+                //continue;
             }
 
-            std::string gtClass = this->classMapping[current_class];
+            //std::cout << itDetection->classID << " " << itDetection->confidence_score <<  '\n';
+
+
+            //std::string gtClass = this->classMapping[current_class];
 
 
             double iou = std::min(this->iouThrs[i],1-1e-10);
@@ -265,30 +373,37 @@ void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, Eval::Eval
                         count2 = 0;
                     }
                 }
+                //std::cout << itGt->isCrowd << " " << itGt->uniqObjectID << '\n';
                        // if this gt already matched, and not a crowd, continue
-                if (matchingMap.find(itGt->uniqObjectID) != matchingMap.end() && !itGt->isCrowd)
+                if (matchingMap[this->iouThrs[i]].find(itGt->uniqObjectID) != matchingMap[this->iouThrs[i]].end() && !itGt->isCrowd) {
+                    //std::cout << "to continue " << itGt->uniqObjectID << '\n';
                     continue;
+                }
                        //if gtm[tind,gind]>0 and not iscrowd[gind]:
                     //       continue
+                    //std::cout << "came here" << '\n';
                        //# if dt matched to reg gt, and on ignore gt, stop
                 if (m >-1 && !gtIsCrowd[m] && itGt->isCrowd)
                    break;
                        // continue to next gt unless better match made
-                if (evalmatrix[sampleID][current_class][count][count2] < iou)
+                if (sampleEvalMatrix[current_class][count][count2] < iou)
                     continue;
                        //# if match successful and best so far, store appropriately
-                iou=evalmatrix[sampleID][current_class][count][count2];
+                //std::cout << "came here too " << itGt->uniqObjectID << '\n';
+                iou=sampleEvalMatrix[current_class][count][count2];
                 m=itGt->uniqObjectID;
                    //# if match made store id of match for both dt and gt
             }
 
-            if (gtIsCrowd[m]) {
-                std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << '\n';
-                this->sampleStats[this->iouThrs[i]].addIgnore(itDetection->classID, itDetection->confidence_score);
-                continue;
-            }
+            //std::cout << itDetection->classID << " " << itDetection->confidence_score << ' ' << itDetection->uniqObjectID << ' ' <<  m  <<'\n';
+
             if (m ==-1) {
                 this->sampleStats[this->iouThrs[i]].addFalsePositive(itDetection->classID, itDetection->confidence_score);
+                continue;
+            }
+            if (gtIsCrowd[m]) {
+                //std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << '\n';
+                this->sampleStats[this->iouThrs[i]].addIgnore(itDetection->classID, itDetection->confidence_score);
                 continue;
             }
 
@@ -304,7 +419,7 @@ void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, Eval::Eval
         }
     }
 
-    std::cout << sampleID << '\n';
+    //std::cout << sampleID << '\n';
 
     /*for (auto itr = matchingMap.begin(); itr != matchingMap.end(); itr++) {
         std::cout << "For IOU: " << itr->first << '\n';

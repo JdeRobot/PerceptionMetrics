@@ -18,13 +18,19 @@ struct ClassStatistics {
     ClassStatistics();
     ClassStatistics(const std::string& classID);
     double getMeanIOU() const;
+    double getAveragePrecision(std::vector<double> recallThrs) const;
     std::vector<double> getPrecisionArray() const;
+    std::vector<double> getPrecisionArrayOp() const;
+    std::vector<double> getPrecisionForDiffRecallThrs(std::vector<double> recallThrs) const;
     std::vector<double> getRecallArray() const;
+    double getRecall() const;
+    static double divide(double x, double y);
     //void printStats() const;
 
 
     std::string classID;
-    int numGroundTruths = 0;
+    int numGroundTruthsReg = 0;
+    int numGroundTruthsIg = 0;
     std::vector<double> iou;
     std::vector<int> truePositives;
     std::vector<int> falsePositives;

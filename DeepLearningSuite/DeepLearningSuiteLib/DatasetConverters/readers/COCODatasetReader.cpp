@@ -113,7 +113,7 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
             exit(0);
         }*/
         //std::cout << isCrowd << '\n';
-        std::cout << x << y << w <<  h << '\n';
+        //std::cout << x << y << w <<  h << '\n';
         //counter++;
         //if (counter == 100) {
         //    break;
@@ -155,7 +155,7 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
 
             if ((*itr).HasMember("score")) {
-                std::cout << "Adding Score" << '\n';
+                //std::cout << "Adding Score" << '\n';
                 rectRegions->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble(), isCrowd);
             } else {
                 rectRegions->add(bounding,typeConverter.getClassString(), isCrowd);
@@ -179,7 +179,7 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
             RectRegionsPtr rectRegions_old = this->samples[this->map_image_id[image_id]].getRectRegions();
 
             if ((*itr).HasMember("score")) {
-                std::cout << "Adding Score" << '\n';
+                //std::cout << "Adding Score" << '\n';
                 rectRegions_old->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble(), isCrowd);
             } else {
                 rectRegions_old->add(bounding,typeConverter.getClassString(), isCrowd);

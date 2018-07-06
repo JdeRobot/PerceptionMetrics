@@ -60,6 +60,16 @@ bool DatasetReader::getSampleBySampleID(Sample** sample, const std::string& samp
     return false;
 }
 
+bool DatasetReader::getSampleBySampleID(Sample** sample, const long long int sampleID) {
+    for (auto it=this->samples.begin(), end= this->samples.end(); it != end; ++it){
+        if ((long long int)std::stoi(it->getSampleID())==sampleID){
+            *sample=&(*it);
+            return true;
+        }
+    }
+    return false;
+}
+
 void DatasetReader::printDatasetStats() {
     std::unordered_map<std::string, int> classStats;
     std::unordered_map<std::string, int>::iterator map_it;

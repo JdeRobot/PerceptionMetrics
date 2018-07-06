@@ -40,6 +40,6 @@ SampleGeneratorHandler::Evaluator::process(QListView *datasetListGT, QListView *
         evaluator->addValidMixClass("person", "person-fall");
     }
     evaluator->evaluate();
-
+    evaluator->accumulateResults();
 
 }

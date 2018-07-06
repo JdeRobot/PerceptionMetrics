@@ -4,7 +4,7 @@
 
 #include "StatsUtils.h"
 
-double StatsUtils::getIOU(const cv::Rect_<double> &gt, const cv::Rect_<double> &detection) {
+double StatsUtils::getIOU(const cv::Rect_<double> &gt, const cv::Rect_<double> &detection, bool isCrowd) {
     //compute iou
 
     double xA = std::max(gt.x, detection.x);
@@ -23,8 +23,12 @@ double StatsUtils::getIOU(const cv::Rect_<double> &gt, const cv::Rect_<double> &
 	//compute the intersection over union by taking the intersection
 	//area and dividing it by the sum of prediction + ground-truth
 	//areas - the interesection area
-	double iou = interArea / (boxAArea + boxBArea - interArea);
-
+    double iou;
+    if (isCrowd) {
+        iou = interArea / (boxBArea);
+    } else {
+        iou = interArea / (boxAArea + boxBArea - interArea);
+    }
 
 
     //std::cout << gt.x << " " << gt.y << " " << gt.width << " " << gt.height << '\n';
@@ -57,7 +61,7 @@ void StatsUtils::computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix&
 
     std::string sampleID = gt.getSampleID();
 
-    if (!evalmatrix[sampleID].empty()) {
+    if (!evalmatrix.empty()) {
         throw std::runtime_error("EvalMatrix with sample ID isn't empty, Data might be duplicated while Evaluation");
     }
 
@@ -79,7 +83,7 @@ void StatsUtils::computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix&
 
             double iouValue;
             //std::cout << itDetection->classID << " " << itDetection->confidence_score <<'\n';
-            iouValue = StatsUtils::getIOU(itgt->region, itDetection->region );
+            iouValue = StatsUtils::getIOU(itgt->region, itDetection->region, itgt->isCrowd);
             //std::cout << "Bbox Gt: " << itgt->region.x << " " << itgt->region.y << " " << itgt->region.width << " " << itgt->region.height << '\n';
             //std::cout << "Bbox Dt: " << itDetection->region.x << " " << itDetection->region.y << " " << itDetection->region.width << " " << itDetection->region.height << '\n';
             //std::cout << iouValue << '\n';
@@ -87,9 +91,9 @@ void StatsUtils::computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix&
 
         }
 
-        evalmatrix[sampleID][classID].push_back(detectionIOUclassRow);
+        evalmatrix[classID].push_back(detectionIOUclassRow);
 
     }
 
-    std::cout << "Matrix Computed" << '\n';
+    //std::cout << "Matrix Computed" << '\n';
 }

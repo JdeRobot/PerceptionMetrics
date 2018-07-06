@@ -6,7 +6,7 @@
 
 namespace Eval {
 
-using EvalMatrix = std::map<std::string, std::map<std::string, Matrix<double>> >;
+using EvalMatrix = std::map<std::string, Matrix<double>>;
 
 using DetectionsMatcher = std::map<double, std::map<std::string, std::map<int, int>>>;
 
