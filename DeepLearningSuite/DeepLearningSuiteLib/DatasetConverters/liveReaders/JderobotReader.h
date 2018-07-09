@@ -7,7 +7,6 @@
 
 
 #include <DatasetConverters/readers/DatasetReader.h>
-#include <QGroupBox>
 #include <config/config.h>
 #include <comm/communicator.hpp>
 #include <comm/cameraClient.hpp>

@@ -20,7 +20,7 @@
 #ifndef JDEROBOTCOMM_CAMERACLIENT_H
 #define JDEROBOTCOMM_CAMERACLIENT_H
 
-#include <image.h>
+#include <jderobottypes/image.h>
 #include <colorspaces/colorspacesmm.h>
 #include <comm/tools.hpp>
 #include <comm/communicator.hpp>

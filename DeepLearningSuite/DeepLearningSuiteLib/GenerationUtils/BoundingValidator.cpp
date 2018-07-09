@@ -14,9 +14,9 @@ BoundingValidator::BoundingValidator(const cv::Mat &image_in,double scale) {
 
 }
 
-bool BoundingValidator::validate(std::vector<cv::Point> &bounding, cv::Rect& validatedBound, int& key) {
+bool BoundingValidator::validate(std::vector<cv::Point> &bounding, cv::Rect_<double>& validatedBound, int& key) {
 
-    cv::Rect boundingRectangle = cv::boundingRect(bounding);
+    cv::Rect_<double> boundingRectangle = cv::boundingRect(bounding);
     validate(boundingRectangle,validatedBound,key);
 
 
@@ -77,10 +77,10 @@ void BoundingValidator::CallBackFunc(int event, int x, int y, int flags, void* u
     }
 }
 
-bool BoundingValidator::validate(const cv::Rect &bounding, cv::Rect &validatedBound, int &key) {
+bool BoundingValidator::validate(const cv::Rect_<double> &bounding, cv::Rect_<double> &validatedBound, int &key) {
 
 
-    cv::Rect scaledBounding((int)(bounding.x * this->scale),
+    cv::Rect_<double> scaledBounding((int)(bounding.x * this->scale),
                             (int)(bounding.y*this->scale),
                             (int)(bounding.width * this->scale),
                             (int)(bounding.height*this->scale));
@@ -114,23 +114,23 @@ bool BoundingValidator::validateNDetections(std::vector<RectRegion> &regions) {
     std::string windowName="Validate number of detecions";
 
     char key='p';
-    cv::Rect rect;
+    cv::Rect_<double> rect;
     char rejectionKey='q';
     while ((key != ' ') and (key != rejectionKey)){
         cv::Mat image2show= imageInputRects.clone();
 
         cv::setMouseCallback(windowName, CallBackFuncNumberDetections, &rect);
-        if (rect != cv::Rect()){
+        if (rect != cv::Rect_<double>()){
             cv::rectangle(image2show,rect,cv::Scalar(0,255,0),int(this->scale));
             if (!clicked){
-                cv::Rect newScaledRect=cv::Rect(int(rect.x/scale),
+                cv::Rect_<double> newScaledRect=cv::Rect_<double>(int(rect.x/scale),
                                                 int(rect.y/scale),
                                                 int(rect.width/scale),
                                                 int(rect.height/scale));
                 RectRegion newRegion(newScaledRect,"person");
                 regions.push_back(newRegion);
                 imageInputRects=updateRegionsImage(regions);
-                rect=cv::Rect();
+                rect=cv::Rect_<double>();
             }
         }
         cv::imshow(windowName,image2show);
@@ -147,7 +147,7 @@ bool BoundingValidator::validateNDetections(std::vector<RectRegion> &regions) {
 
 void BoundingValidator::CallBackFuncNumberDetections(int event, int x, int y, int flags, void* userdata)
 {
-    auto rect = (cv::Rect*)userdata;
+    auto rect = (cv::Rect_<double>*)userdata;
     if  ( event == cv::EVENT_LBUTTONDOWN )
     {
         if (!clicked) {
@@ -186,7 +186,7 @@ cv::Mat BoundingValidator::updateRegionsImage(const std::vector<RectRegion> &reg
     cv::Mat imageInputRects= this->image.clone();
     for (auto it:regions) {
         auto bounding=it.region;
-        cv::Rect scaledBounding(int(bounding.x * this->scale),
+        cv::Rect_<double> scaledBounding(int(bounding.x * this->scale),
                                 int(bounding.y*this->scale),
                                 int(bounding.width * this->scale),
                                 int(bounding.height*this->scale));

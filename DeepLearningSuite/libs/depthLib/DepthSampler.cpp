@@ -78,7 +78,8 @@ void DepthSampler::evalSample(cv::Mat source, std::vector<cv::Mat> layers, int s
 		layerSample[i]=0;
 	}
 
-	IceUtil::Time n=IceUtil::Time::now();
+    int start_s=clock();
+	//IceUtil::Time n=IceUtil::Time::now();
 	for (int xIm=0; xIm< source.cols; xIm+=samplingRate) {
 		for (int yIm=0; yIm<source.rows ; yIm+=samplingRate) {
 			float d=dM.at<float>(yIm,xIm);
@@ -94,12 +95,14 @@ void DepthSampler::evalSample(cv::Mat source, std::vector<cv::Mat> layers, int s
 			}
 		}
 	}
-	std::cout << "Time for normal sampling: " << IceUtil::Time::now().toMilliSeconds() - n.toMilliSeconds() << std::endl;
+
+    int stop_s=clock();
+	std::cout << "Time for normal sampling: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << std::endl;
 	std::cout << "Layer sampling Size : " << std::accumulate(normalSample.begin(), normalSample.end(), 0) << ",  result:" << std::endl;
 	for (std::vector<int>::iterator it= normalSample.begin(); it!= normalSample.end(); it++){
 		std::cout << *it << std::endl;
 	}
-	n=IceUtil::Time::now();
+	start_s=clock();
 
 	float localStep=minInd+(step*nLayers);
 	for ( std::vector<cv::Mat>::iterator it= layers.begin(); it != layers.end(); it++){
@@ -125,7 +128,8 @@ void DepthSampler::evalSample(cv::Mat source, std::vector<cv::Mat> layers, int s
 
 		localStep=localStep-step;
 	}
-	std::cout << "Time for layers sampling: " << IceUtil::Time::now().toMilliSeconds() - n.toMilliSeconds() << std::endl;
+    stop_s=clock();
+	std::cout << "Time for layers sampling: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << std::endl;
 	std::cout << "Layer sampling Size : " << std::accumulate(layerSample.begin(), layerSample.end(), 0) << ",  result:" << std::endl;
 	for (std::vector<int>::iterator it= layerSample.begin(); it!= layerSample.end(); it++){
 		std::cout << *it << std::endl;

@@ -128,8 +128,8 @@ void DatasetReader::overWriteClasses(const std::string &from, const std::string 
             for (auto it2 = s.getContourRegions()->regions.begin(), end2 = s.getContourRegions()->regions.end();
                  it2 != end2; ++it2) {
                 ContourRegion &cr = *it2;
-                if (cr.id.compare(from) == 0) {
-                    cr.id = to;
+                if (cr.classID.compare(from) == 0) {
+                    cr.classID = to;
                 }
             }
         }

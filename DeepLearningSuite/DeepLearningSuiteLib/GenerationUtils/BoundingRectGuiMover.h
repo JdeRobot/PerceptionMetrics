@@ -11,11 +11,11 @@ struct BoundingRectGuiMover {
 public:
     enum MovementType{ LOCAL_MOVEMENT, GLOBAL_MOVEMENT, NONE};
     BoundingRectGuiMover(const std::vector<cv::Point>& points);
-    BoundingRectGuiMover(const cv::Rect& rectangle);
+    BoundingRectGuiMover(const cv::Rect_<double>& rectangle);
 
     std::vector<cv::Point> getPoints();
     void move(const cv::Point& from, const cv::Point& to, const  MovementType& type);
-    cv::Rect getRect(const double scale=1);
+    cv::Rect_<double> getRect(const double scale=1);
 
 
 private:

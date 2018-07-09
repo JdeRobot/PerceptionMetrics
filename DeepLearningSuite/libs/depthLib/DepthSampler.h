@@ -11,7 +11,8 @@
 #include <cv.h>
 #include <highgui.h>
 #include <list>
-#include <IceUtil/Mutex.h>
+#include <iostream>
+#include <mutex>
 #include <numeric>
 namespace jderobot {
 
