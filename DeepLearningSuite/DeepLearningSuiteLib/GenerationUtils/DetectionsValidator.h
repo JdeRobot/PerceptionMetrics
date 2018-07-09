@@ -21,7 +21,7 @@ private:
     std::string path;
     double scale;
 
-    void fillRectIntoImageDimensions(cv::Rect& rect, const cv::Size size);
+    void fillRectIntoImageDimensions(cv::Rect_<double>& rect, const cv::Size size);
 };
 
 

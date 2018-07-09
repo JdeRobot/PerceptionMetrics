@@ -8,7 +8,7 @@
 
 DepthForegroundSegmentator::DepthForegroundSegmentator(bool filterActive):filterActive(filterActive) {
 
-#if  CV_MAJOR_VERSION == 3
+#if  CV_MAJOR_VERSION == 3 || CV_MAJOR_VERSION == 4
     std::cerr << "OpenCV 3 is not working with doubles foreground segmentation" << std::endl;
     throw "Opencv v3 is not supported";
 #else
@@ -67,7 +67,7 @@ std::vector<std::vector<cv::Point>> DepthForegroundSegmentator::process(const cv
 
 
     if (!this->bg){
-#if  CV_MAJOR_VERSION == 3
+#if  CV_MAJOR_VERSION == 3 || CV_MAJOR_VERSION == 4
         this->bg= cv::createBackgroundSubtractorMOG2();
 //        this->bg= cv::createBackgroundSubtractorKNN(500,20000);
         bg->apply(distance,fore,defaultLearningRate);
@@ -77,7 +77,7 @@ std::vector<std::vector<cv::Point>> DepthForegroundSegmentator::process(const cv
 #endif
 
     }
-#if  CV_MAJOR_VERSION == 3
+#if  CV_MAJOR_VERSION == 3 || CV_MAJOR_VERSION == 4
     bg->apply(distance,fore,defaultLearningRate);
 #else
     bg->operator()(distance,fore,defaultLearningRate);

@@ -5,7 +5,7 @@
 #include "ContourRegion.h"
 
 ContourRegion::ContourRegion(const ContourRegion &other) {
-    this->id=other.id;
+    this->classID=other.classID;
     if (other.region.size()) {
         this->region.resize(other.region.size());
         std::copy(other.region.begin(), other.region.end(), this->region.begin());

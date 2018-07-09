@@ -128,7 +128,7 @@ void KerasInferencer::output_result(PyObject* result, int sizes[])
 		for( i=0; i<dims[0]; i++ ) {
 
 			detections.push_back(detection());
-			detections[i].classId = (int) result_data[k++] - 1;  // In TensorFlow id's start from 1 whereas detectionsuite starts from 0s
+			detections[i].classId = (int) result_data[k++] - 1;  // In Keras id's start from 1 whereas detectionsuite starts from 0s
 			detections[i].probability = result_data[k++];
 
 			detections[i].boundingBox.x = result_data[k++] * sizes[1];

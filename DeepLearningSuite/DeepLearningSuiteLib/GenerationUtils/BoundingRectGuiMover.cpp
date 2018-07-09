@@ -8,7 +8,7 @@ BoundingRectGuiMover::BoundingRectGuiMover(const std::vector<cv::Point> &points)
 
 }
 
-BoundingRectGuiMover::BoundingRectGuiMover(const cv::Rect &rectangle) {
+BoundingRectGuiMover::BoundingRectGuiMover(const cv::Rect_<double> &rectangle) {
     points.push_back(cv::Point(rectangle.x,rectangle.y));
     points.push_back(cv::Point(rectangle.x + rectangle.width,rectangle.y));
     points.push_back(cv::Point(rectangle.x + rectangle.width,rectangle.y + rectangle.height));
@@ -85,7 +85,6 @@ bool BoundingRectGuiMover::isVertical(const cv::Point &from, const cv::Point &to
     return abs(from.x-to.x) <  abs(from.y-to.y);
 }
 
-cv::Rect BoundingRectGuiMover::getRect(const double scale) {
-    return cv::Rect(points[0].x/scale, points[0].y/scale,(points[1].x - points[0].x)/scale,(points[2].y - points[1].y)/scale);
+cv::Rect_<double> BoundingRectGuiMover::getRect(const double scale) {
+    return cv::Rect_<double>(points[0].x/scale, points[0].y/scale,(points[1].x - points[0].x)/scale,(points[2].y - points[1].y)/scale);
 }
-

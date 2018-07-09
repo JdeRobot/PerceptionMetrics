@@ -18,8 +18,8 @@ static BoundingRectGuiMover::MovementType movementType;
 class BoundingValidator {
 public:
     explicit BoundingValidator(const cv::Mat& image_in, double scale=3);
-    bool validate(std::vector<cv::Point>& bounding,cv::Rect& validatedBound, int& key);
-    bool validate(const cv::Rect& bounding,cv::Rect& validatedBound, int& key);
+    bool validate(std::vector<cv::Point>& bounding,cv::Rect_<double>& validatedBound, int& key);
+    bool validate(const cv::Rect_<double>& bounding,cv::Rect_<double>& validatedBound, int& key);
     bool validateNDetections(std::vector<RectRegion>& regions);
 
 

@@ -35,10 +35,20 @@ ContourRegions::ContourRegions(){
 
 }
 
-void ContourRegions::add(const std::vector<cv::Point> &detections, const std::string& classId) {
-    this->regions.push_back(ContourRegion(std::vector<cv::Point>(detections),classId));
+void ContourRegions::add(const std::vector<cv::Point> &detections, const std::string& classId, const bool isCrowd) {
+    ContourRegion regionToInsert(detections, classId, isCrowd);
+    auto itr = std::upper_bound(regions.begin(), regions.end(), regionToInsert);
+    regionToInsert.uniqObjectID = regions.size();
+    regions.insert(itr, regionToInsert);
 }
 
+void ContourRegions::add(const std::vector<cv::Point>& detections, const std::string& classId, const double confidence_score, const bool isCrowd) {
+    ContourRegion regionToInsert(detections, classId, confidence_score, isCrowd);
+    auto itr = std::upper_bound(regions.begin(), regions.end(), regionToInsert);
+    regionToInsert.uniqObjectID = regions.size();
+    regions.insert(itr, regionToInsert);
+    //regions.push_back(RectRegion(rect, cla
+}
 
 
 void ContourRegions::saveJson(const std::string &outPath) {
@@ -48,8 +58,8 @@ void ContourRegions::saveJson(const std::string &outPath) {
     for (auto it = this->regions.begin(), end=this->regions.end(); it != end; it++){
         rapidjson::Value detection;
         detection.SetObject();
-        rapidjson::Value idValue(it->id.c_str(),d.GetAllocator());
-        detection.AddMember("id",idValue,d.GetAllocator());
+        rapidjson::Value idValue(it->classID.c_str(),d.GetAllocator());
+        detection.AddMember("classID",idValue,d.GetAllocator());
 
         rapidjson::Value regionValue;
         regionValue.SetArray();
@@ -119,7 +129,7 @@ void ContourRegions::filterSamplesByID(std::vector<std::string> filteredIDS) {
     std::vector<ContourRegion> oldRegions(this->regions);
     this->regions.clear();
     for(auto it = oldRegions.begin(), end=oldRegions.end(); it != end; ++it) {
-        if (std::find(filteredIDS.begin(), filteredIDS.end(), it->id) != filteredIDS.end()) {
+        if (std::find(filteredIDS.begin(), filteredIDS.end(), it->classID) != filteredIDS.end()) {
             this->regions.push_back(*it);
         }
     }

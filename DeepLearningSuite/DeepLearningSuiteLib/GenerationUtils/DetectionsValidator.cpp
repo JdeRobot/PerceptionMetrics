@@ -72,7 +72,7 @@ void DetectionsValidator::validate(const cv::Mat& colorImage,const cv::Mat& dept
 
     BoundingValidator validator(image2show,scale);
     for (auto it : detections){
-        cv::Rect validatedRect;
+        cv::Rect_<double> validatedRect;
         int classVal;
         if (validator.validate(it,validatedRect,classVal)){
             std::string validationID;
@@ -102,7 +102,7 @@ void DetectionsValidator::validate(const cv::Mat& colorImage,const cv::Mat& dept
     }
 }
 
-void DetectionsValidator::fillRectIntoImageDimensions(cv::Rect &rect, const cv::Size size) {
+void DetectionsValidator::fillRectIntoImageDimensions(cv::Rect_<double> &rect, const cv::Size size) {
     //check the format x,y -> w.h
 
     if (rect.width < 0){
@@ -162,7 +162,7 @@ void DetectionsValidator::validate(const Sample &inputSample) {
 
 
 
-        cv::Rect validatedRect;
+        cv::Rect_<double> validatedRect;
         int classVal;
         if (validator.validate(it->region,validatedRect,classVal)){
             std::string validationID;

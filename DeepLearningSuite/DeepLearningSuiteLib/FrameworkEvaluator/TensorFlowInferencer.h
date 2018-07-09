@@ -9,13 +9,14 @@ public:
     TensorFlowInferencer(const std::string& netConfig, const std::string& netWeights, const std::string& classNamesFile);
     Sample detectImp(const cv::Mat& image);
     int gettfInferences(const cv::Mat& image);
-    void output_result(int num_detections, int width, int height, PyObject* bounding_boxes, PyObject* detection_scores, PyObject* classIds );
+    void output_result(int num_detections, int width, int height, PyObject* bounding_boxes, PyObject* detection_scores, PyObject* classIds, PyObject* detections_masks=NULL );
     static void init();
 private:
     std::string netConfig;
     std::string netWeights;
     struct detection {
         cv::Rect boundingBox;
+        std::vector<cv::Point> mask;
         float probability;
         int classId;
     };
