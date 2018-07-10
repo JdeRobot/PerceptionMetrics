@@ -168,6 +168,9 @@ class TensorFlowDetector:
         start_time = time.time()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 575dfee27a958a3df1612e90021a7ab418bc381c
         output_dict = self.run_inference_for_single_image(image_passed)
         # Visualization of the results of a detection.
 
