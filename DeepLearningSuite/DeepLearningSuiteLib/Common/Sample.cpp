@@ -177,10 +177,18 @@ void Sample::save(const std::string &outPath, const std::string &filename) {
     else
         cv::imwrite(outPath + "/" + filename + "-depth.png", depthImage);
 
-    if(rectRegions)
+    bool ifRegions = false;
+    if(!rectRegions->getRegions().empty()) {
         rectRegions->saveJson(outPath + "/" + filename + ".json");
-    if (contourRegions)
+        ifRegions = true;
+    }
+    if (!contourRegions->getRegions().empty()) {
         contourRegions->saveJson(outPath + "/" + filename + "-region.json");
+        ifRegions = true;
+    }
+
+    if (!ifRegions)
+        LOG(WARNING) << "Both ContourRegions and Rect Regions are not present, hence not saving any regions for Sample: " << this->sampleID;
 }
 
 void Sample::save(const std::string &outPath) {

@@ -70,6 +70,7 @@ Sample CaffeInferencer::detectImp(const cv::Mat &image) {
 		std::cout<< it->boundingBox.x << " " << it->boundingBox.y << " " << it->boundingBox.height << " " << it->boundingBox.width << std::endl;
 		std::cout<< typeConverter.getClassString() << ": " << it->probability << std::endl;
 	}
+    sample.setColorImage(image);
     sample.setRectRegions(regions);
     return sample;
 }

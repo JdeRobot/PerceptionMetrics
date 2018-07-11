@@ -25,7 +25,7 @@ bool CameraReader::getNextSample(Sample &sample) {
         }
 
         //    init=true;
-
+        sample.setSampleID(std::to_string(++this->sample_count));
         sample.setColorImage(image);
         return true;
     }

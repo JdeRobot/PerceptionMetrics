@@ -39,7 +39,9 @@ MainWindow::MainWindow(SampleGenerationApp* app,QWidget *parent) :
     connect(ui->pushButton_detect, SIGNAL (released()),this, SLOT (handleDetectButton()));
     connect(ui->pushButton_deploy_input, SIGNAL (released()),this, SLOT (handleSelectDeployInputSource()));
     connect(ui->pushButton_deploy_process, SIGNAL (released()),this, SLOT (handleProcessDeploy()));
-
+    connect(ui->checkBox_deployer_saveOutput, SIGNAL (released()), this, SLOT( handleDeployerSaveOutputCheckboxChange()));
+    connect(ui->pushButton_stop_deployer_process, SIGNAL(released()), this, SLOT(handleDeployerStop()));
+    connect(ui->pushButton_deployer_output_folder, SIGNAL(released()), this, SLOT(handleSelectOutputFolderButtonDeployer()));
 
 }
 
@@ -338,6 +340,24 @@ void MainWindow::handleSelectDeployInputSource() {
     }
 }
 
+void MainWindow::handleSelectOutputFolderButtonDeployer() {
+    QFileDialog *fd = new QFileDialog;
+    QTreeView *tree = fd->findChild <QTreeView*>();
+    tree->setRootIsDecorated(true);
+    tree->setItemsExpandable(false);
+    fd->setFileMode(QFileDialog::Directory);
+    //fd->setOption(QFileDialog::ShowDirsOnly);
+    fd->setViewMode(QFileDialog::Detail);
+    fd->setDirectory("/mnt/large/pentalo/deep/evaluations/");
+    int result = fd->exec();
+    QString directory;
+    if (result)
+    {
+        directory = fd->selectedFiles()[0];
+        this->ui->textEdit_deployerOutputPath->setText(directory);
+    }
+}
+
 void MainWindow::handleDeployerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected) {
     if (selected.data().toString() == "stream") {
         ui->deployer_param_groupBox->setEnabled(true);
@@ -385,17 +405,35 @@ void MainWindow::handleDetectorInferencerImpListViewChange(const QModelIndex& se
     }
 }
 
+void MainWindow::handleDeployerSaveOutputCheckboxChange() {
+    if(ui->checkBox_deployer_saveOutput->isChecked()) {
+        ui->groupbox_deployer_saveOutput->setEnabled(true);
+    } else {
+        ui->groupbox_deployer_saveOutput->setEnabled(false);
+    }
+}
+
+void MainWindow::handleDeployerStop() {
+    this->stopDeployer = true;
+    std::cout << "Stopping Deployer Process" << "\n";
+}
+
 void MainWindow::handleProcessDeploy() {
+    this->stopDeployer = false;
     std::string inputInfo = this->ui->textEdit_deployInputPath->toPlainText().toStdString();
 
     QGroupBox* deployer_params = this->ui->deployer_param_groupBox;
     QGroupBox* inferencer_params = this->ui->deployer_groupBox_inferencer_params;
+    std::string outputFolder = this->ui->textEdit_deployerOutputPath->toPlainText().toStdString();
+    if (!ui->checkBox_deployer_saveOutput->isChecked()) {
+        outputFolder.clear();
+    }
 
     try{
         SampleGeneratorHandler::Deployer::process(ui->listView_deploy_input_imp,ui->listView_deploy_weights,
-                                                  ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer, ui->pushButton_stop_deployer_process,
+                                                  ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer, &this->stopDeployer,
                                                   deployer_params, inferencer_params, app->getConfig().asString("weightsPath"),
-                                                  app->getConfig().asString("netCfgPath"),app->getConfig().asString("namesPath"),inputInfo);
+                                                  app->getConfig().asString("netCfgPath"),app->getConfig().asString("namesPath"),inputInfo, outputFolder);
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;

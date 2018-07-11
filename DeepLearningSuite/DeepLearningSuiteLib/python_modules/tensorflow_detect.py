@@ -62,13 +62,8 @@ class TensorFlowDetector:
         #self.detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
         #self.detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
         #self.num_detections = detection_graph.get_tensor_by_name('num_detections:0')
-	session_conf = tf.ConfigProto(
-		intra_op_parallelism_threads=2,
-		inter_op_parallelism_threads=2,
-	)
-	
-	
-        self.sess = tf.Session(config=session_conf, graph=detection_graph)
+
+        self.sess = tf.Session(graph=detection_graph)
 
 	print "Initializing"
 

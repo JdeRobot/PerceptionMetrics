@@ -38,7 +38,6 @@ include_directories(
         ${DeepLearningSuite_INCLUDE_DIR}
 )
 
-MESSAGE(${DeepLearningSuite_INCLUDE_DIR})
 
 add_executable(DatasetEvaluationApp ${SOURCES})
 

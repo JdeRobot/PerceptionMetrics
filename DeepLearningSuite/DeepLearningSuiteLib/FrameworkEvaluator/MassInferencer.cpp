@@ -32,6 +32,29 @@ MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr i
     }
 }
 
+MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer,
+                               const std::string &resultsPath, bool* stopDeployer,bool debug): reader(reader), inferencer(inferencer), resultsPath(resultsPath),debug(debug),stopDeployer(stopDeployer)
+{
+
+    saveOutput = true;
+    alreadyProcessed=0;
+    if (!resultsPath.empty()) {
+        auto boostPath= boost::filesystem::path(this->resultsPath);
+        if (!boost::filesystem::exists(boostPath)){
+            boost::filesystem::create_directories(boostPath);
+        }
+        else{
+            LOG(WARNING)<<"Output directory already exists";
+            LOG(WARNING)<<"Files might be overwritten, if present in the directory";
+            boost::filesystem::directory_iterator end_itr;
+
+
+        }
+
+    }
+
+}
+
 MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer, bool debug): reader(reader), inferencer(inferencer), debug(debug)
 {
         //Constructor to avoid writing results to outputPath
@@ -52,10 +75,13 @@ void MassInferencer::process(bool useDepthImages, std::vector<Sample>* samples) 
     }
 
 
-    std::cout << "here" << '\n';
-
     while (this->reader->getNextSample(sample)){
         counter++;
+        if (this->stopDeployer != NULL && *(this->stopDeployer)) {
+            std::cout << "Deployer Process Stopped" << "\n";
+            return;
+        }
+
         std::cout << "Evaluating : " << sample.getSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
 
         cv::Mat image2detect;

@@ -12,8 +12,8 @@
 void
 SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *weightsList, QListView *netConfigList,
                                           QListView *inferencerImpList, QListView *inferencerNamesList,
-                                          QPushButton* stopButton, QGroupBox* deployer_params, QGroupBox* inferencer_params, const std::string &weightsPath, const std::string &cfgPath,
-                                          const std::string &inferencerNamesPath, const std::string &inputInfo) {
+                                          bool* stopButton, QGroupBox* deployer_params, QGroupBox* inferencer_params, const std::string &weightsPath, const std::string &cfgPath,
+                                          const std::string &inferencerNamesPath, const std::string &inputInfo, const std::string &outputFolder) {
 
     GenericLiveReaderPtr reader;
 
@@ -63,7 +63,27 @@ SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *w
         return;
     }
 
+    if (!outputFolder.empty()) {
+
+        auto boostPath= boost::filesystem::path(outputFolder);
+        if (boost::filesystem::exists(boostPath)){
+            boost::filesystem::directory_iterator end_itr;
+            boost::filesystem::directory_iterator itr(boostPath);
+            for (; itr != end_itr; ++itr)
+            {
+        // If it's not a directory, list it. If you want to list directories too, just remove this check.
+                if (boost::filesystem::is_regular_file(itr->path()) && (itr->path().extension()==".png" || itr->path().extension()==".json")  ) {
+            // assign current file name to current_file and echo it out to the console.
+                    break;
+                }
+            }
+            if (itr != end_itr)
+                QMessageBox::warning(deployer_params, QObject::tr("Output Directory isn't Empty"), QObject::tr("Output Director contains png or json files which might be overwritten"));
+        }
+
+    }
+
     GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0], inferencerParamsMap));
-    MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),"./tmp", true);
+    MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),outputFolder, stopButton,  true);
     massInferencer.process(false);
 }

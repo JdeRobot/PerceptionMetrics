@@ -97,6 +97,7 @@ Sample KerasInferencer::detectImp(const cv::Mat &image) {
 		std::cout<< typeConverter.getClassString() << ": " << it->probability << std::endl;
 	}
 
+	sample.setColorImage(image);
 	sample.setRectRegions(regions);
 	return sample;
 }

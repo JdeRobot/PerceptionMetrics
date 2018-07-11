@@ -77,19 +77,16 @@ JderobotReader::JderobotReader(std::map<std::string, std::string>* deployer_para
 
 bool JderobotReader::getNextSample(Sample &sample) {
 
-    std::cout << "here2" << '\n';
 
     JdeRobotTypes::Image myImage = this->camera->getImage();
     cv::Mat image = myImage.data;
 
-    std::cout << "here3" << '\n';
 
     if (!image.empty()){
+        sample.setSampleID(std::to_string(++this->sample_count));
         sample.setColorImage(image);
         //sample.setDepthImage(image);
     }
-
-    std::cout << "here4" << '\n';
     //std::cout << "Fetching" << '\n';
 
 }
