@@ -95,7 +95,8 @@ Sample TensorFlowInferencer::detectImp(const cv::Mat &image) {
 
 		typeConverter.setId(it->classId);
 		regions->add(it->boundingBox,typeConverter.getClassString(),it->probability);
-        contourRegions->add(it->mask, typeConverter.getClassString(), it->probability);
+		if (!it->mask.empty())
+        	contourRegions->add(it->mask, typeConverter.getClassString(), it->probability);
 		//std::cout<< it->boundingBox.x << " " << it->boundingBox.y << " " << it->boundingBox.height << " " << it->boundingBox.width << std::endl;
 		std::cout<< typeConverter.getClassString() << ": " << it->probability << std::endl;
 	}

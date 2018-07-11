@@ -79,17 +79,15 @@ SET( SOURCE_FILES
 
 
 IF(DARKNET_ACTIVE)
-    message("add darknet files")
     SET( SOURCE_FILES ${SOURCE_FILES} FrameworkEvaluator/DarknetInferencer )
     include_directories(${DARKNET_INCLUDE_DIR})
 ENDIF()
 
 IF(ENABLE_DNN_CAFFE)
-    message("added caffe files")
     SET( SOURCE_FILES ${SOURCE_FILES} FrameworkEvaluator/CaffeInferencer )
 ENDIF()
 
-message("WARNING: DeepLearningSuite_INCLUDE_DIR ${DeepLearningSuite_INCLUDE_DIR}")
+#message("WARNING: DeepLearningSuite_INCLUDE_DIR ${DeepLearningSuite_INCLUDE_DIR}")
 
 
 add_library (DeepLearningSuite SHARED ${SOURCE_FILES})

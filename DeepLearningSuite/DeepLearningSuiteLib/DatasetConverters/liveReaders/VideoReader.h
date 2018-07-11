@@ -18,7 +18,7 @@ public:
 private:
     cv::VideoCapture* cap;
     bool init;
-
+    long long int sample_count = 0;
 };
 
 typedef boost::shared_ptr<VideoReader> VideoReaderPtr;

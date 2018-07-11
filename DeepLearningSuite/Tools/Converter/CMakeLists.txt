@@ -14,7 +14,6 @@ include_directories(
 
 add_executable (converter  converter.cpp)
 
-message(${OpenCV_LIBRARIES})
 
 TARGET_LINK_LIBRARIES(converter
         DeepLearningSuite

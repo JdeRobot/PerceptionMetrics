@@ -20,7 +20,7 @@ public:
 
 private:
     SampleGenerationApp* app;
-
+    bool stopDeployer = false;
 
 private slots:
     void handleViewButton();
@@ -32,12 +32,15 @@ private slots:
     void handleDetectButton();
     void handleSelectOutputFolderButtonDetector();
     void handleSelectDeployInputSource();
+    void handleSelectOutputFolderButtonDeployer();
     void handleProcessDeploy();
     void handleMappingCheckBoxChange();
     void handleDeployerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected);
     void handleDeployerConfigFileOptionChange(bool checked);
     void handleDeployerInferencerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected);
     void handleDetectorInferencerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected);
+    void handleDeployerSaveOutputCheckboxChange();
+    void handleDeployerStop();
 };
 
 #endif // MAINWINDOW_H

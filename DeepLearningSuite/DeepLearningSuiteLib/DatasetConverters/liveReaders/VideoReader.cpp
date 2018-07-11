@@ -29,13 +29,13 @@ bool VideoReader::getNextSample(Sample &sample) {
         }
 
         //    init=true;
-
+        sample.setSampleID(std::to_string(++this->sample_count));
         sample.setColorImage(image);
         return true;
     }
     catch (const std::exception &exc)
     {
-          std::cout << "Exeption Detected: " << exc.what();
+          std::cout << "Exception Detected: " << exc.what();
           return false;
     }
     catch (...){

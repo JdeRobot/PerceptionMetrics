@@ -12,8 +12,8 @@
 void
 SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *weightsList, QListView *netConfigList,
                                           QListView *inferencerImpList, QListView *inferencerNamesList,
-                                          QPushButton* stopButton, QGroupBox* deployer_params, QGroupBox* inferencer_params, const std::string &weightsPath, const std::string &cfgPath,
-                                          const std::string &inferencerNamesPath, const std::string &inputInfo) {
+                                          bool* stopButton, QGroupBox* deployer_params, QGroupBox* inferencer_params, const std::string &weightsPath, const std::string &cfgPath,
+                                          const std::string &inferencerNamesPath, const std::string &inputInfo, const std::string &outputFolder) {
 
     GenericLiveReaderPtr reader;
 
@@ -64,6 +64,6 @@ SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *w
     }
 
     GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0], inferencerParamsMap));
-    MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),"./tmp", true);
+    MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),outputFolder, stopButton,  true);
     massInferencer.process(false);
 }
