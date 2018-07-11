@@ -125,9 +125,11 @@ Each one of them has some Dependencies, and are mentioned below.
    * #### Caffe
    For using Caffe as an inferencing framework, it is necessary to install OpenCV 3.4 or greater.
 
+
 **Note: ** Be Sure to checkout the Wiki Pages for tutorials on how to use the above mentioned functionalities and frameworks.  
 
 # How to compile DL_DetectionSuite:
+
 Once you have all the required Dependencies installed just:
 
 ```
