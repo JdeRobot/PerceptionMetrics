@@ -16,7 +16,7 @@ enum LIVEREADER_IMPLEMENTATIONS{RECORDER, STREAM, CAMERA, VIDEO};
 
 class GenericLiveReader {
 public:
-    GenericLiveReader(const std::string& path, const std::string& classNamesFile, const std::string& readerImplementation, std::map<std::string, std::string>* deployer_params_map = NULL);
+    GenericLiveReader(const std::string& path, const std::string& classNamesFile, const std::string& readerImplementation, std::map<std::string, std::string>* deployer_params_map = NULL, int cameraID = -1);
     GenericLiveReader(const std::vector<std::string>& paths,const std::string& classNamesFile, const std::string& readerImplementation);
 
     DatasetReaderPtr getReader();

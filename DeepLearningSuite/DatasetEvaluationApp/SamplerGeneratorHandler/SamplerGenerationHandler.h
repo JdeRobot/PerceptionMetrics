@@ -24,6 +24,7 @@ namespace SampleGeneratorHandler {
         static GenericLiveReaderPtr createLiveReaderPtr(const QListView *namesList,
                                                         const QListView *readerImpList,
                                                         const QGroupBox *deployer_params,
+                                                        const QGroupBox *camera_params,
                                                         const std::string &infoPath,
                                                         const std::string &namesPath);
     };

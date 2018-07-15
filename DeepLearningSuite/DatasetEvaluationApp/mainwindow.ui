@@ -1749,6 +1749,53 @@
        <string/>
       </property>
      </widget>
+     <widget class="QGroupBox" name="deployer_cameraID_groupBox">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>30</y>
+        <width>101</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Camera ID starting form 0, -1 for any camera vaiable</string>
+      </property>
+      <property name="whatsThis">
+       <string>Camera ID starting form 0, -1 for any camera vaiable</string>
+      </property>
+      <property name="title">
+       <string>Camera ID:</string>
+      </property>
+      <widget class="QSpinBox" name="deployer_camera_spinBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>30</y>
+         <width>57</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Camera ID starting form 0, -1 for any camera vaiable</string>
+       </property>
+       <property name="whatsThis">
+        <string>Camera ID starting form 0, -1 for any camera vaiable</string>
+       </property>
+       <property name="prefix">
+        <string/>
+       </property>
+       <property name="minimum">
+        <number>-1</number>
+       </property>
+      </widget>
+     </widget>
     </widget>
    </widget>
   </widget>

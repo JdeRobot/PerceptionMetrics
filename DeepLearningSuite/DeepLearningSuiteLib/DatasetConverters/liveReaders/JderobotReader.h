@@ -20,7 +20,7 @@ public:
 private:
     Comm::Communicator* jdrc;
     Comm::CameraClient* camera;
-    long long int sample_count;
+    long long int sample_count = 0;
 
 };
 

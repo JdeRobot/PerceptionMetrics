@@ -200,6 +200,7 @@ void MainWindow::setupTabsInformation() {
             #endif
 
             ui->deployer_groupBox_inferencer_params->setEnabled(false);
+            ui->deployer_cameraID_groupBox->setEnabled(false);
 
             connect(ui->listView_deploy_input_imp->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this,SLOT(handleDeployerImpListViewChange(QModelIndex, QModelIndex)));
             //connect(ui->groupBox_config_file, SIGNAL(toggled(bool)), this, SLOT(handleDeployerConfigFileOptionChange(bool)));
@@ -365,18 +366,21 @@ void MainWindow::handleDeployerImpListViewChange(const QModelIndex& selected, co
     if (selected.data().toString() == "stream") {
         ui->deployer_param_groupBox->setEnabled(true);
         ui->groupBox_config_option->setEnabled(true);
+        ui->deployer_cameraID_groupBox->setEnabled(false);
         handleDeployerConfigFileOptionChange(ui->deployer_radioButton_manual->isChecked());
     } else if (selected.data().toString() == "camera") {
         ui->textEdit_deployInputPath->setEnabled(false);
         ui->pushButton_deploy_input->setEnabled(false);
         ui->deployer_param_groupBox->setEnabled(false);
         ui->groupBox_config_option->setEnabled(false);
+        ui->deployer_cameraID_groupBox->setEnabled(true);
     }
     else {
         ui->textEdit_deployInputPath->setEnabled(true);
         ui->pushButton_deploy_input->setEnabled(true);
         ui->deployer_param_groupBox->setEnabled(false);
         ui->groupBox_config_option->setEnabled(false);
+        ui->deployer_cameraID_groupBox->setEnabled(false);
     }
 }
 
@@ -475,6 +479,7 @@ void MainWindow::handleProcessDeploy() {
     std::string inputInfo = this->ui->textEdit_deployInputPath->toPlainText().toStdString();
 
     QGroupBox* deployer_params = this->ui->deployer_param_groupBox;
+    QGroupBox* camera_params = this->ui->deployer_cameraID_groupBox;
     QGroupBox* inferencer_params = this->ui->deployer_groupBox_inferencer_params;
     std::string outputFolder = this->ui->textEdit_deployerOutputPath->toPlainText().toStdString();
     if (!ui->checkBox_deployer_saveOutput->isChecked()) {
@@ -484,7 +489,7 @@ void MainWindow::handleProcessDeploy() {
     try{
         SampleGeneratorHandler::Deployer::process(ui->listView_deploy_input_imp,ui->listView_deploy_weights,
                                                   ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer, &this->stopDeployer,
-                                                  &confidence_threshold, deployer_params, inferencer_params, app->getConfig().asString("weightsPath"),
+                                                  &confidence_threshold, deployer_params, camera_params, inferencer_params, app->getConfig().asString("weightsPath"),
                                                   app->getConfig().asString("netCfgPath"),app->getConfig().asString("namesPath"),inputInfo, outputFolder);
     }
     catch (const std::string& msg){

@@ -13,7 +13,7 @@ public:
 private:
     cv::VideoCapture* cap;
     bool init;
-    long long int sample_count;
+    long long int sample_count = 0;
 
 };
 

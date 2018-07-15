@@ -57,6 +57,7 @@ GenericDatasetReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::create
 GenericLiveReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::createLiveReaderPtr(const QListView *namesList,
                                                                                            const QListView *readerImpList,
                                                                                            const QGroupBox *deployer_params,
+                                                                                           const QGroupBox *camera_params,
                                                                                            const std::string &infoPath,
                                                                                            const std::string &namesPath) {
 
@@ -69,6 +70,12 @@ GenericLiveReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::createLiv
     std::vector<std::string> readerImplementation;
     if (! Utils::getListViewContent(readerImpList,readerImplementation,"")){
         LOG(WARNING)<<"Select the reader implementation";
+        return GenericLiveReaderPtr();
+    }
+
+    int cameraID;
+    if(! Utils::getCameraParamsContent(camera_params, cameraID)) {
+        LOG(WARNING)<<"Invalid Camera ID passed";
         return GenericLiveReaderPtr();
     }
 
@@ -88,7 +95,7 @@ GenericLiveReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::createLiv
     GenericLiveReaderPtr reader;
 
     reader = GenericLiveReaderPtr(
-            new GenericLiveReader(infoPath, names[0], readerImplementation[0],  deployer_params_map));
+            new GenericLiveReader(infoPath, names[0], readerImplementation[0],  deployer_params_map, cameraID));
 
 
     return reader;

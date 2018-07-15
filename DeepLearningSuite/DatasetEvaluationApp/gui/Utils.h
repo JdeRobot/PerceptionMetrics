@@ -18,6 +18,7 @@ public:
     static bool getListViewContent(const QListView* list,std::vector<std::string>& content ,const std::string& prefix);
     static bool getDeployerParamsContent(const QGroupBox* deployer_params, std::map<std::string, std::string>& deployer_params_map);
     static bool getInferencerParamsContent(const QGroupBox* inferencer_params, std::map<std::string, std::string>& inferencer_params_map);
+    static bool getCameraParamsContent(const QGroupBox* camera_params, int& cameraID);
 };
 
 

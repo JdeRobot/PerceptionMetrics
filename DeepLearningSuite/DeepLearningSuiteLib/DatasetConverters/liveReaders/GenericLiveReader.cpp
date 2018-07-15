@@ -6,7 +6,7 @@
 #include "GenericLiveReader.h"
 
 
-GenericLiveReader::GenericLiveReader(const std::string &path, const std::string& classNamesFile, const std::string &readerImplementation, std::map<std::string, std::string>* deployer_params_map) {
+GenericLiveReader::GenericLiveReader(const std::string &path, const std::string& classNamesFile, const std::string &readerImplementation, std::map<std::string, std::string>* deployer_params_map, int cameraID) {
     configureAvailablesImplementations(this->availableImplementations);
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), readerImplementation) != this->availableImplementations.end()){
         imp = getImplementation(readerImplementation);
@@ -15,7 +15,7 @@ GenericLiveReader::GenericLiveReader(const std::string &path, const std::string&
                 this->videoReaderPtr = VideoReaderPtr( new VideoReader(path));
                 break;
             case CAMERA:
-                this->cameraReaderPtr = CameraReaderPtr( new CameraReader());
+                this->cameraReaderPtr = CameraReaderPtr( new CameraReader(cameraID));
                 break;
             case STREAM:
                 this->jderobotReaderPtr = JderobotReaderPtr( new JderobotReader(deployer_params_map, path));
