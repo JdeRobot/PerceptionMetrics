@@ -7,8 +7,8 @@
 class KerasInferencer: public FrameworkInferencer {
 public:
     KerasInferencer(const std::string& netConfig, const std::string& netWeights, const std::string& classNamesFile);
-    Sample detectImp(const cv::Mat& image);
-    int gettfInferences(const cv::Mat& image);
+    Sample detectImp(const cv::Mat& image, double confidence_threshold);
+    int getKerasInferences(const cv::Mat& image, double confidence_threshold);
     void output_result(PyObject* result, int sizes[] );
     static void init();
 private:

@@ -72,7 +72,7 @@ bool Utils::getInferencerParamsContent(const QGroupBox* inferencer_params, std::
     }*/
 
 
-    inferencer_params_map["conf_thresh"] = inferencer_params->findChild<QLineEdit*>((prefix + "_lineEdit_confidence_thresh").c_str())->text().toStdString();
+    //inferencer_params_map["conf_thresh"] = inferencer_params->findChild<QLineEdit*>((prefix + "_lineEdit_confidence_thresh").c_str())->text().toStdString();
     inferencer_params_map["scaling_factor"] = inferencer_params->findChild<QLineEdit*>((prefix + "_lineEdit_inferencer_scaling_factor").c_str())->text().toStdString();
     inferencer_params_map["inpWidth"] = inferencer_params->findChild<QLineEdit*>((prefix + "_lineEdit_inferencer_input_width").c_str())->text().toStdString();
     inferencer_params_map["inpHeight"] = inferencer_params->findChild<QLineEdit*>((prefix + "_lineEdit_inferencer_input_height").c_str())->text().toStdString();

@@ -42,6 +42,9 @@ MainWindow::MainWindow(SampleGenerationApp* app,QWidget *parent) :
     connect(ui->checkBox_deployer_saveOutput, SIGNAL (released()), this, SLOT( handleDeployerSaveOutputCheckboxChange()));
     connect(ui->pushButton_stop_deployer_process, SIGNAL(released()), this, SLOT(handleDeployerStop()));
     connect(ui->pushButton_deployer_output_folder, SIGNAL(released()), this, SLOT(handleSelectOutputFolderButtonDeployer()));
+    connect(ui->deployer_conf_horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(handleDeployerConfidenceSliderChange(int)));
+    connect(ui->deployer_confidence_lineEdit, SIGNAL(textEdited(QString)), this, SLOT(handleDeployerConfidenceLineEditChange(QString)));
+
 
 }
 
@@ -405,6 +408,55 @@ void MainWindow::handleDetectorInferencerImpListViewChange(const QModelIndex& se
     }
 }
 
+void MainWindow::handleDeployerConfidenceLineEditChange(const QString& confidence) {
+
+
+    std::string conf_val = confidence.toStdString();
+
+    //std::cout << conf_val << '\n';
+    double val;
+
+    try {
+
+        val = std::stod(confidence.toStdString());
+    } catch (...) {
+
+        bool oldState = this->ui->deployer_conf_horizontalSlider->blockSignals(true);
+        this->ui->deployer_conf_horizontalSlider->setValue(0);
+        this->ui->deployer_conf_horizontalSlider->blockSignals(oldState);
+        return;
+    }
+    //std::cout << val << '\n';
+    if (val > 1.0) {
+        QMessageBox::warning(this, QObject::tr("Confidence Threshold out of Bounds"), QObject::tr("Confidence Threshold can't be greater than 1.0, setting Threshold to 0.2"));
+        val = 1.0;
+        this->ui->deployer_confidence_lineEdit->setText(QString("0.2"));
+    }
+    if ( val < 0.0) {
+        QMessageBox::warning(this, QObject::tr("Confidence Threshold out of Bounds"), QObject::tr("Confidence Threshold can't be smaller than 0, setting Threshold to 0.2"));
+        val = 0;
+        this->ui->deployer_confidence_lineEdit->setText(QString("0.2"));
+    }
+    bool oldState = this->ui->deployer_conf_horizontalSlider->blockSignals(true);
+    this->ui->deployer_conf_horizontalSlider->setValue((int)(val*100));
+    this->ui->deployer_conf_horizontalSlider->blockSignals(oldState);
+    this->confidence_threshold = val;
+}
+
+void MainWindow::handleDeployerConfidenceSliderChange(const int& confidence) {
+
+    std::stringstream str;
+    double val = confidence/100.0;
+    str << std::fixed << std::setprecision( 2 ) << val;
+    QString qstr = QString::fromStdString(str.str());
+
+    //std::cout << qstr.toStdString() << '\n';
+
+    this->ui->deployer_confidence_lineEdit->setText(qstr);
+    this->confidence_threshold = val;
+}
+
+
 void MainWindow::handleDeployerSaveOutputCheckboxChange() {
     if(ui->checkBox_deployer_saveOutput->isChecked()) {
         ui->groupbox_deployer_saveOutput->setEnabled(true);
@@ -432,7 +484,7 @@ void MainWindow::handleProcessDeploy() {
     try{
         SampleGeneratorHandler::Deployer::process(ui->listView_deploy_input_imp,ui->listView_deploy_weights,
                                                   ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer, &this->stopDeployer,
-                                                  deployer_params, inferencer_params, app->getConfig().asString("weightsPath"),
+                                                  &confidence_threshold, deployer_params, inferencer_params, app->getConfig().asString("weightsPath"),
                                                   app->getConfig().asString("netCfgPath"),app->getConfig().asString("namesPath"),inputInfo, outputFolder);
     }
     catch (const std::string& msg){

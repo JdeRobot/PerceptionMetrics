@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <Utils/SampleGenerationApp.h>
+#include <iomanip>
+#include <sstream>
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +23,7 @@ public:
 private:
     SampleGenerationApp* app;
     bool stopDeployer = false;
+    double confidence_threshold = 0.2;
 
 private slots:
     void handleViewButton();
@@ -41,6 +44,8 @@ private slots:
     void handleDetectorInferencerImpListViewChange(const QModelIndex& selected, const QModelIndex& deselected);
     void handleDeployerSaveOutputCheckboxChange();
     void handleDeployerStop();
+    void handleDeployerConfidenceLineEditChange(const QString& confidence);
+    void handleDeployerConfidenceSliderChange(const int& confidence);
 };
 
 #endif // MAINWINDOW_H

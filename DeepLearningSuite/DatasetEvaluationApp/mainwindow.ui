@@ -1463,7 +1463,7 @@
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>160</y>
+         <y>145</y>
          <width>97</width>
          <height>22</height>
         </rect>
@@ -1472,34 +1472,11 @@
         <string>Use RGB</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="deployer_lineEdit_confidence_thresh">
-       <property name="geometry">
-        <rect>
-         <x>160</x>
-         <y>26</y>
-         <width>61</width>
-         <height>27</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label3">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>30</y>
-         <width>161</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Confidence Threshold:</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_210">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>60</y>
+         <y>30</y>
          <width>141</width>
          <height>17</height>
         </rect>
@@ -1512,7 +1489,7 @@
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>55</y>
+         <y>27</y>
          <width>61</width>
          <height>27</height>
         </rect>
@@ -1522,7 +1499,7 @@
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>120</y>
+         <y>108</y>
          <width>51</width>
          <height>27</height>
         </rect>
@@ -1535,7 +1512,7 @@
        <property name="geometry">
         <rect>
          <x>210</x>
-         <y>120</y>
+         <y>108</y>
          <width>51</width>
          <height>27</height>
         </rect>
@@ -1548,7 +1525,7 @@
        <property name="geometry">
         <rect>
          <x>260</x>
-         <y>120</y>
+         <y>108</y>
          <width>51</width>
          <height>27</height>
         </rect>
@@ -1561,7 +1538,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>130</y>
+         <y>110</y>
          <width>131</width>
          <height>17</height>
         </rect>
@@ -1574,7 +1551,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>90</y>
+         <y>70</y>
          <width>161</width>
          <height>17</height>
         </rect>
@@ -1587,7 +1564,7 @@
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>88</y>
+         <y>67</y>
          <width>61</width>
          <height>27</height>
         </rect>
@@ -1603,7 +1580,7 @@
        <property name="geometry">
         <rect>
          <x>220</x>
-         <y>88</y>
+         <y>67</y>
          <width>61</width>
          <height>27</height>
         </rect>
@@ -1706,22 +1683,72 @@
        <string>Stop</string>
       </property>
      </widget>
-     <zorder>verticalLayoutWidget_25</zorder>
-     <zorder>verticalLayoutWidget_26</zorder>
-     <zorder>verticalLayoutWidget_28</zorder>
-     <zorder>label_311</zorder>
-     <zorder>listView_deploy_input_imp</zorder>
-     <zorder>deployer_param_groupBox</zorder>
-     <zorder>groupBox_config_option</zorder>
-     <zorder>textEdit_deployInputPath</zorder>
-     <zorder>pushButton_deploy_input</zorder>
-     <zorder>pushButton_deploy_process</zorder>
-     <zorder>deployer_groupBox_inferencer_params</zorder>
-     <zorder>groupbox_deployer_saveOutput</zorder>
-     <zorder>checkBox_deployer_saveOutput</zorder>
-     <zorder>verticalLayoutWidget_27</zorder>
-     <zorder>textEdit_deployerOutputPath</zorder>
-     <zorder>pushButton_stop_deployer_process</zorder>
+     <widget class="QSlider" name="deployer_conf_horizontalSlider">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>300</y>
+        <width>160</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Confidence Threshold for inferencer, typically 0.2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Confidence Threshold for inferencer, typically 0.2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="sliderPosition">
+       <number>20</number>
+      </property>
+      <property name="tracking">
+       <bool>true</bool>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::TicksBothSides</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="deployer_confidence_label">
+      <property name="geometry">
+       <rect>
+        <x>447</x>
+        <y>270</y>
+        <width>171</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Confidence Threshold: </string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="deployer_confidence_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>608</x>
+        <y>267</y>
+        <width>41</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="inputMask">
+       <string extracomment="0.2"/>
+      </property>
+      <property name="text">
+       <string extracomment="0.2">0.2</string>
+      </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

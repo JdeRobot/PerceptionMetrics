@@ -153,7 +153,8 @@ public:
                 ss << counter << "/" << maxElements;
                 LOG(INFO) << "Processing [" + ss.str() + "]";
 
-                Sample detectedSample = inferencer->detect(sample.getColorImage());
+                double thresh = 0.2;
+                Sample detectedSample = inferencer->detect(sample.getColorImage(), thresh);
                 detectedSample.setColorImage(sample.getColorImage());
                 detectedSample.setDepthImage(sample.getDepthImage());
 

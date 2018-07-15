@@ -11,10 +11,10 @@ DarknetInferencer::DarknetInferencer(const std::string &netConfig, const std::st
     this->cnn = boost::shared_ptr<DarknetAPI>(new DarknetAPI((char*)this->netConfig.c_str(), (char*)this->netWeights.c_str()));
 }
 
-Sample DarknetInferencer::detectImp(const cv::Mat &image) {
+Sample DarknetInferencer::detectImp(const cv::Mat &image, double confidence_threshold) {
     cv::Mat rgbImage;
     cv::cvtColor(image,rgbImage,CV_RGB2BGR);
-    DarknetDetections detections = this->cnn->process(rgbImage);
+    DarknetDetections detections = this->cnn->process(rgbImage, (float)confidence_threshold);
 
     Sample sample;
     RectRegionsPtr regions(new RectRegions());

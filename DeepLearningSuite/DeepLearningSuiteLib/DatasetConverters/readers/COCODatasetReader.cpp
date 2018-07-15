@@ -14,6 +14,31 @@ bool replaceme(std::string& str, const std::string& from, const std::string& to)
     return true;
 }
 
+int LongestCommonSubsequence(std::string X, std::string Y)
+{
+    int m = X.length();
+    int n = Y.length();
+
+    int LCSuff[m+1][n+1];
+    int result = 0;
+    for (int i=0; i<=m; i++)
+    {
+        for (int j=0; j<=n; j++)
+        {
+            if (i == 0 || j == 0)
+                LCSuff[i][j] = 0;
+
+            else if (X[i-1] == Y[j-1])
+            {
+                LCSuff[i][j] = LCSuff[i-1][j-1] + 1;
+                result = std::max(result, LCSuff[i][j]);
+            }
+            else LCSuff[i][j] = 0;
+        }
+    }
+    return result;
+}
+
 COCODatasetReader::COCODatasetReader(const std::string &path,const std::string& classNamesFile) {
     this->classNamesFile=classNamesFile;
     appendDataset(path);
@@ -23,22 +48,41 @@ COCODatasetReader::COCODatasetReader() {
 
 }
 
-bool COCODatasetReader::find_img_directory(const path & dir_path, path & path_found) {
+bool COCODatasetReader::find_img_directory(const path & dir_path, path & path_found, std::string& img_filename, int& longestSubSeq) {
 
     directory_iterator end_itr;
+    //int longestSubSeq = 0;
+
 
     for ( directory_iterator itr( dir_path ); itr != end_itr; ++itr ) {
 
-        if (itr->path().has_extension() && itr->path().extension().string() == ".jpg" ) {
-            path_found = itr->path().parent_path();
-            return true;
-        } else {
-            if ( is_directory(itr->path()) && find_img_directory( itr->path(), path_found ) )
-                return true;
+        if (itr->path().has_extension() ) {
+
+            std::string current_path = itr->path().extension().string();
+            std::transform(current_path.begin(), current_path.end(), current_path.begin(), ::tolower);
+
+            if ((current_path == ".jpg" || current_path == ".jpeg")) {
+                int length = LongestCommonSubsequence(img_filename, itr->path().string());
+                if (length > longestSubSeq) {
+                    path_found = itr->path().parent_path();
+                    longestSubSeq = length;
+
+                }
+                break;
+            }
+
         }
+        if ( is_directory(itr->path()) && find_img_directory( itr->path(), path_found , img_filename, longestSubSeq) )
+                continue;
+    }
+
+
+    if (longestSubSeq >= 11 ) {
+        return true;
+    } else {
+        return false;
 
     }
-    return false;
 }
 
 bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std::string &datasetPrefix) {
@@ -74,11 +118,14 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
     const rapidjson::Value& a = doc["annotations"];
 
-    std::string filename;
+    std::string filename, img_file_prefix;
+    int prefix_length;
 
     if (read_images) {
         const rapidjson::Value& imgs = doc["images"];
         filename = std::string(imgs[0]["file_name"].GetString(), imgs[0]["file_name"].GetStringLength());
+        prefix_length = filename.find_last_of('_');
+        img_file_prefix = filename.substr(0, prefix_length);
     }
 
     if(!a.IsArray())
@@ -86,13 +133,16 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
     path img_dir;
 
+    if (read_images) {
+        int longestSubSeq = 0;
+        if (find_img_directory(boostDatasetPath.parent_path().parent_path(), img_dir, img_file_prefix, longestSubSeq)) {
+            std::cout << "Image Directory Found: " << img_dir.string() << '\n';
+        } else {
+            throw std::runtime_error("Corresponding Image Directory, can't be located, please place it in the same Directory as annotations");
+        }
 
-    if (find_img_directory(boostDatasetPath.parent_path().parent_path(), img_dir)) {
-        std::cout << img_dir.string() << '\n';
-        std::cout << "Image Directory Found" << '\n';
-    } else {
-        throw std::runtime_error("Corresponding Image Directory, can't be located, please place it in the same Directory as annotations");
     }
+
 
     int counter = 0;
 

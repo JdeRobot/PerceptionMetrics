@@ -16,9 +16,9 @@ class FrameworkInferencer{
 public:
     FrameworkInferencer();
     ~   FrameworkInferencer();
-    Sample detect(const cv::Mat& image);
+    Sample detect(const cv::Mat& image, double confidence_threshold);
     int getMeanDurationTime();
-    virtual Sample detectImp(const cv::Mat& image) =0;
+    virtual Sample detectImp(const cv::Mat& image, double confidence_threshold) =0;
 
 protected:
     std::string classNamesFile;

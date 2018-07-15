@@ -7,7 +7,7 @@ CaffeInferencer::CaffeInferencer(const std::string &netConfig, const std::string
     this->netConfig=netConfig;
     this->netWeights=netWeights;
 
-    this->confThreshold = std::stof(inferencerParamsMap->at("conf_thresh"));
+    //this->confThreshold = std::stof(inferencerParamsMap->at("conf_thresh"));
     this->scaling_factor = std::stof(inferencerParamsMap->at("scaling_factor"));
     this->mean_sub = cv::Scalar(std::stof(inferencerParamsMap->at("mean_sub_blue")), std::stof(inferencerParamsMap->at("mean_sub_green")), std::stof(inferencerParamsMap->at("mean_sub_red")));
     this->swapRB = inferencerParamsMap->at("useRGB") == "true";
@@ -26,7 +26,7 @@ CaffeInferencer::CaffeInferencer(const std::string &netConfig, const std::string
 
 }
 
-Sample CaffeInferencer::detectImp(const cv::Mat &image) {
+Sample CaffeInferencer::detectImp(const cv::Mat &image, double confidence_threshold) {
 
     cv::Mat blob;
 
@@ -92,7 +92,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
         for (size_t i = 0; i < outs[0].total(); i += 7)
         {
             float confidence = data[i + 2];
-            if (confidence > confThreshold)
+            if (confidence > confidence_threshold)
             {
                 detections.push_back(detection());
                 detections[count].classId = (int)(data[i + 1]) - 1;
@@ -121,7 +121,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
         for (size_t i = 0; i < outs[0].total(); i += 7)
         {
             float confidence = data[i + 2];
-            if (confidence > confThreshold)
+            if (confidence > confidence_threshold)
             {
                 detections.push_back(detection());
                 detections[count].classId = (int)(data[i + 1]) - 1;
@@ -156,7 +156,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
                 cv::Point classIdPoint;
                 double confidence;
                 cv::minMaxLoc(scores, 0, &confidence, 0, &classIdPoint);
-                if (confidence > confThreshold)
+                if (confidence > confidence_threshold)
                 {
                     int centerX = (int)(data[0] * image.cols);
                     int centerY = (int)(data[1] * image.rows);
@@ -172,7 +172,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
             }
         }
         std::vector<int> indices;
-        cv::dnn::NMSBoxes(boxes, confidences, confThreshold, 0.4f, indices);
+        cv::dnn::NMSBoxes(boxes, confidences, confidence_threshold, 0.4f, indices);
         for (size_t i = 0; i < indices.size(); ++i)
         {
             int idx = indices[i];

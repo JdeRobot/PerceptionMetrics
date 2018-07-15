@@ -68,7 +68,7 @@ void KerasInferencer::init()
 	import_array();
 }
 
-Sample KerasInferencer::detectImp(const cv::Mat &image) {
+Sample KerasInferencer::detectImp(const cv::Mat &image, double confidence_threshold) {
 
 	if(PyErr_CheckSignals() == -1) {
 		throw std::runtime_error("Keyboard Interrupt");
@@ -79,7 +79,7 @@ Sample KerasInferencer::detectImp(const cv::Mat &image) {
 
 	this->detections.clear();						//remove previous detections
 
-	int result = gettfInferences(rgbImage);
+	int result = getKerasInferences(rgbImage, confidence_threshold);
 
 	if (result == 0) {
 		std::cout << "Error Occured during getting inferences" << '\n';
@@ -156,7 +156,7 @@ function and the uses output_result() to convert it into a DetectionSuite C++
 readble format.
 */
 
-int KerasInferencer::gettfInferences(const cv::Mat& image) {
+int KerasInferencer::getKerasInferences(const cv::Mat& image, double confidence_threshold) {
 
 
 	int i, num_detections, dims, sizes[3];
@@ -187,8 +187,9 @@ int KerasInferencer::gettfInferences(const cv::Mat& image) {
 
 
 	PyObject* mynparr = PyArray_SimpleNewFromData(dims, _sizes, NPY_UBYTE, image.data);
+	PyObject* conf = PyFloat_FromDouble(confidence_threshold);
 
-	if (!mynparr) {
+	if (!mynparr || !conf) {
 		Py_DECREF(pArgs);
 		Py_DECREF(pModule);
 		fprintf(stderr, "Cannot convert argument\n");
@@ -196,7 +197,7 @@ int KerasInferencer::gettfInferences(const cv::Mat& image) {
 	}
 
 	//pValue = PyObject_CallObject(pFunc, pArgs);
-	pValue = PyObject_CallMethodObjArgs(pInstance, PyString_FromString("detect"), mynparr, NULL);
+	pValue = PyObject_CallMethodObjArgs(pInstance, PyString_FromString("detect"), mynparr, conf, NULL);
 
 	Py_DECREF(pArgs);
     if (pValue != NULL) {

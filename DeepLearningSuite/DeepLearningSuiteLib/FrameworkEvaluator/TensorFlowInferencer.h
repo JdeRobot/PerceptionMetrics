@@ -7,8 +7,8 @@
 class TensorFlowInferencer: public FrameworkInferencer {
 public:
     TensorFlowInferencer(const std::string& netConfig, const std::string& netWeights, const std::string& classNamesFile);
-    Sample detectImp(const cv::Mat& image);
-    int gettfInferences(const cv::Mat& image);
+    Sample detectImp(const cv::Mat& image, double confidence_threshold);
+    int gettfInferences(const cv::Mat& image, double confidence_threshold);
     void output_result(int num_detections, int width, int height, PyObject* bounding_boxes, PyObject* detection_scores, PyObject* classIds, PyObject* detections_masks=NULL );
     static void init();
 private:

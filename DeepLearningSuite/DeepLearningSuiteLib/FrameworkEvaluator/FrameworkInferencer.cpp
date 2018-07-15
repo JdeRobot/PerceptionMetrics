@@ -7,9 +7,9 @@
 
 
 
-Sample FrameworkInferencer::detect(const cv::Mat &image) {
+Sample FrameworkInferencer::detect(const cv::Mat &image, double confidence_threshold) {
     boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::local_time();
-    Sample s = detectImp(image);
+    Sample s = detectImp(image, confidence_threshold);
     boost::posix_time::ptime endTime = boost::posix_time::microsec_clock::local_time();
     boost::posix_time::time_duration duration = endTime-startTime;
     long elapsedTime = duration.total_milliseconds();

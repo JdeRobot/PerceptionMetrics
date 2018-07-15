@@ -15,7 +15,7 @@ public:
     COCODatasetReader(const std::string& path,const std::string& classNamesFile);
     COCODatasetReader();
     bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
-    bool find_img_directory(const boost::filesystem::path & dir_path, boost::filesystem::path & path_found);
+    bool find_img_directory(const boost::filesystem::path & dir_path, boost::filesystem::path & path_found, std::string& img_file_prefix,  int& longestSubSeq);
 private:
     std::map<unsigned long int,unsigned long int> map_image_id;
 

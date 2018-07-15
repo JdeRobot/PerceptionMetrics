@@ -7,10 +7,20 @@
 #include <glog/logging.h>
 #include "MassInferencer.h"
 
+MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer, const std::string& resultsPath, bool debug)
+ : MassInferencer::MassInferencer(reader, inferencer, resultsPath, NULL, debug) {}  // Delegating Constructor
+
+MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer, bool debug)
+ : MassInferencer::MassInferencer(reader, inferencer, NULL, debug) {}  // Delegating Constructor
+
 MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer,
-                               const std::string &resultsPath,bool debug): reader(reader), inferencer(inferencer), resultsPath(resultsPath),debug(debug)
+                               const std::string &resultsPath,double* confidence_threshold, bool debug): reader(reader), inferencer(inferencer), resultsPath(resultsPath),confidence_threshold(confidence_threshold),debug(debug)
 {
-    saveOutput = true;
+    if (resultsPath.empty())
+        saveOutput = false;
+    else
+        saveOutput = true;
+        
     alreadyProcessed=0;
     auto boostPath= boost::filesystem::path(this->resultsPath);
     if (!boost::filesystem::exists(boostPath)){
@@ -33,10 +43,14 @@ MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr i
 }
 
 MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer,
-                               const std::string &resultsPath, bool* stopDeployer,bool debug): reader(reader), inferencer(inferencer), resultsPath(resultsPath),debug(debug),stopDeployer(stopDeployer)
+                               const std::string &resultsPath, bool* stopDeployer,double* confidence_threshold, bool debug): reader(reader), inferencer(inferencer), resultsPath(resultsPath),debug(debug),stopDeployer(stopDeployer),confidence_threshold(confidence_threshold)
 {
 
-    saveOutput = true;
+    if (resultsPath.empty())
+        saveOutput = false;
+    else
+        saveOutput = true;
+
     alreadyProcessed=0;
     if (!resultsPath.empty()) {
         auto boostPath= boost::filesystem::path(this->resultsPath);
@@ -55,7 +69,7 @@ MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr i
 
 }
 
-MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer, bool debug): reader(reader), inferencer(inferencer), debug(debug)
+MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer, double* confidence_threshold, bool debug): reader(reader), inferencer(inferencer), confidence_threshold(confidence_threshold), debug(debug)
 {
         //Constructor to avoid writing results to outputPath
         saveOutput = false;
@@ -93,9 +107,12 @@ void MassInferencer::process(bool useDepthImages, std::vector<Sample>* samples) 
 
         Sample detection;
 
+        double thresh = this->confidence_threshold == NULL ? this->default_confidence_threshold
+                                                            : *(this->confidence_threshold);
+
         try {
 
-          detection=this->inferencer->detect(image2detect);
+          detection=this->inferencer->detect(image2detect, thresh);
 
         } catch(const std::runtime_error& error) {
           std::cout << "Error Occured: " << error.what() << '\n';
