@@ -26,6 +26,8 @@ struct Sample {
     void setRectRegions(const RectRegionsPtr& regions);
     void setContourRegions(const ContourRegionsPtr& regions);
     void setSampleID(const std::string& sampleID);
+    void clearColorImage();                         // For better memory management
+    void clearDepthImage();                         // For better memeory management
 
     RectRegionsPtr getRectRegions()const;
     ContourRegionsPtr getContourRegions();

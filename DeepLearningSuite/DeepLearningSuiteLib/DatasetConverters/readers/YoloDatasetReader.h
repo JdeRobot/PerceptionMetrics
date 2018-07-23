@@ -10,8 +10,8 @@
 
 class YoloDatasetReader: public DatasetReader {
 public:
-    YoloDatasetReader(const std::string& path,const std::string& classNamesFile);
-    YoloDatasetReader();
+    YoloDatasetReader(const std::string& path,const std::string& classNamesFile, bool imagesRequired);
+    YoloDatasetReader(const std::string& classNamesFile,bool imagesRequired);
     bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
 
 };

@@ -32,8 +32,8 @@ public:
 
 
 
-        GenericDatasetReaderPtr readerGT(new GenericDatasetReader(inputPathGT.as<std::string>(),readerNamesKey.as<std::string>(), readerImplementationGTKey.as<std::string>()));
-        GenericDatasetReaderPtr readerDetection(new GenericDatasetReader(inputPathDetection.as<std::string>(),readerNamesKey.as<std::string>(), readerImplementationDetectionKey.as<std::string>()));
+        GenericDatasetReaderPtr readerGT(new GenericDatasetReader(inputPathGT.as<std::string>(),readerNamesKey.as<std::string>(), readerImplementationGTKey.as<std::string>(), false));
+        GenericDatasetReaderPtr readerDetection(new GenericDatasetReader(inputPathDetection.as<std::string>(),readerNamesKey.as<std::string>(), readerImplementationDetectionKey.as<std::string>(), false));
 
 
         DetectionsEvaluatorPtr evaluator(new DetectionsEvaluator(readerGT->getReader(),readerDetection->getReader(),true));

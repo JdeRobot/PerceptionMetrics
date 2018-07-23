@@ -11,8 +11,8 @@
 
 class PascalVOCDatasetWriter: public DatasetWriter {
 public:
-    PascalVOCDatasetWriter(const std::string& outPath, DatasetReaderPtr& reader, const std::string& writerNamesFile,bool overWriteclassWithZero=false);
-    void process(bool usedColorImage=true);
+    PascalVOCDatasetWriter(const std::string& outPath, DatasetReaderPtr& reader, const std::string& writerNamesFile, bool overWriteclassWithZero=false);
+    void process(bool writeImages = false, bool useDepth = false);
 
 private:
     std::string fullImagesPath;

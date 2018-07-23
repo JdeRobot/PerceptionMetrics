@@ -238,7 +238,7 @@ void MainWindow::handleConvertButton() {
     ratio = this->ui->textEdit_converter_trainRatio->toPlainText().toDouble();
     std::string outputPath = this->ui->textEdit_converterOutPath->toPlainText().toStdString();
     bool splitActive = this->ui->checkBox_splitActive->isChecked();
-    bool colorImage = !(this->ui->checkBox_yolo_depth->isChecked());
+    bool writeImages = this->ui->checkBox_converter_write_images->isChecked();
 
     try {
         SampleGeneratorHandler::Converter::process(ui->listView_converter_dataset, ui->listView_converter_names,
@@ -249,7 +249,7 @@ void MainWindow::handleConvertButton() {
                                                    ui->checkBox_use_writernames->isChecked(),
                                                    app->getConfig().asString("datasetPath"),
                                                    app->getConfig().asString("namesPath"), outputPath,
-                                                   splitActive, ratio, colorImage);
+                                                   splitActive, ratio, writeImages);
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;
@@ -269,7 +269,7 @@ void MainWindow::handleEvaluateButton() {
                                                ui->listView_evaluator_dectection_dataset,ui->listView_evaluator_detection_names, ui->listView_evaluator_detection_imp,
                                                ui->listView_evaluator_classFilter,app->getConfig().asString("datasetPath"),app->getConfig().asString("namesPath"),
                                                app->getConfig().asString("inferencesPath"),app->getConfig().asString("namesPath"),ui->checkBox_evaluator_merge->isChecked(),
-                                               ui->checkBox_evaluator_mix->isChecked(),ui->checkBox_evaluator_show_eval->isChecked());
+                                               ui->checkBox_evaluator_mix->isChecked());
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;

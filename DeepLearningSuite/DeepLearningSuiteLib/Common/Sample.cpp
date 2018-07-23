@@ -61,6 +61,16 @@ void Sample::setColorImage(const cv::Mat &image) {
     image.copyTo(this->colorImage);
 }
 
+void Sample::clearColorImage() {             // For better memory management
+    if (!this->colorImage.empty())
+        this->colorImage.release();
+}
+
+void Sample::clearDepthImage() {            // For better memory management
+    if (!this->depthImage.empty())
+        this->depthImage.release();
+}
+
 void Sample::setDepthImage(const cv::Mat &image) {
     image.copyTo(this->depthImage);
 }

@@ -9,7 +9,7 @@
 
 class PrincetonDatasetReader: public DatasetReader {
 public:
-    PrincetonDatasetReader(const std::string& path,const std::string& classNamesFile);
+    PrincetonDatasetReader(const std::string& path,const std::string& classNamesFile, const bool imagesRequired);
     PrincetonDatasetReader()= default;
     virtual bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
 

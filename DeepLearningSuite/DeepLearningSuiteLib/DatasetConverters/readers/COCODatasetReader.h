@@ -12,12 +12,11 @@
 
 class COCODatasetReader: public DatasetReader {
 public:
-    COCODatasetReader(const std::string& path,const std::string& classNamesFile);
-    COCODatasetReader();
+    COCODatasetReader(const std::string& path,const std::string& classNamesFile, bool imagesRequired);
     bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
-    bool find_img_directory(const boost::filesystem::path & dir_path, boost::filesystem::path & path_found, std::string& img_file_prefix,  int& longestSubSeq);
+    bool find_img_directory(const boost::filesystem::path & dir_path, boost::filesystem::path & path_found, std::string& img_filename);
 private:
-    std::map<unsigned long int,unsigned long int> map_image_id;
+    std::map < unsigned long int, Sample > map_image_id;      // map image id to sample, helps storage in a sorted way
 
 };
 

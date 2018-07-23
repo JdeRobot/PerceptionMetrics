@@ -12,8 +12,7 @@
 
 class PascalVOCDatasetReader: public DatasetReader {
 public:
-    PascalVOCDatasetReader(const std::string& path,const std::string& classNamesFile);
-    PascalVOCDatasetReader();
+    PascalVOCDatasetReader(const std::string& path,const std::string& classNamesFile, const bool imagesRequired);
     bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
     bool find_directory(const boost::filesystem::path & dir_path, const std::string & dir_name, boost::filesystem::path & path_found);
 

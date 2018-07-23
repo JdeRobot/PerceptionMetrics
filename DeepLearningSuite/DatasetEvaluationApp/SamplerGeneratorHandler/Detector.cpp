@@ -3,6 +3,7 @@
 //
 
 #include <DatasetConverters/readers/GenericDatasetReader.h>
+#include <DatasetConverters/writers/GenericDatasetWriter.h>
 #include <gui/Utils.h>
 #include <glog/logging.h>
 #include <FrameworkEvaluator/GenericInferencer.h>
@@ -13,11 +14,11 @@
 void SampleGeneratorHandler::Detector::process(QListView* datasetList,QListView* namesList,QListView* readerImpList, const std::string& datasetPath,
                                                QListView* weightsList, QListView* netConfigList, QListView* inferencerImpList, QListView* inferencerNamesList,
                                                QGroupBox* inferencer_params, const std::string& weightsPath, const std::string& cfgPath, const std::string& outputPath,
-                                               const std::string& inferencerNamesPath, bool useDepth, bool singleEvaluation) {
+                                               const std::string& namesPath, bool useDepth, bool singleEvaluation) {
 
     GenericDatasetReaderPtr reader = SamplerGenerationHandler::createDatasetReaderPtr(datasetList, namesList,
                                                                                       readerImpList, NULL, datasetPath,
-                                                                                      inferencerNamesPath);
+                                                                                      namesPath, true);
 
     std::vector<std::string> weights;
     if (! Utils::getListViewContent(weightsList,weights,weightsPath+ "/")){
@@ -38,7 +39,7 @@ void SampleGeneratorHandler::Detector::process(QListView* datasetList,QListView*
     }
 
     std::vector<std::string> inferencerNames;
-    if (! Utils::getListViewContent(inferencerNamesList,inferencerNames,inferencerNamesPath + "/")){
+    if (! Utils::getListViewContent(inferencerNamesList,inferencerNames,namesPath + "/")){
         LOG(WARNING)<<"Select the inferencer type";
         return;
     }
@@ -54,7 +55,25 @@ void SampleGeneratorHandler::Detector::process(QListView* datasetList,QListView*
         return;
     }
 
+    std::vector<std::string> writerImp;
+    Utils::getListViewContent(readerImpList,writerImp,"");
+
+
+    std::vector<std::string> writerNames;
+    if (! Utils::getListViewContent(namesList,writerNames,namesPath+"/")){
+        LOG(WARNING)<<"Select the dataset names related to the Output dataset, or unchechk mapping if you want a custom names file to be generated";
+        return;
+    }
+
+    DatasetReaderPtr readerDetection ( new DatasetReader(true) );
+
     GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0], inferencerParamsMap));
-    MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),outputPath, true);
-    massInferencer.process(useDepth);
+    MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),std::string(), true);
+    massInferencer.process(useDepth, readerDetection);
+
+    GenericDatasetWriterPtr writer( new GenericDatasetWriter(outputPath,readerDetection,writerImp[0], writerNames[0]));
+
+    writer->getWriter()->process(false);
+
+
 }

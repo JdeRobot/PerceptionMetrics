@@ -11,12 +11,12 @@
 #include <Utils/DepthUtils.h>
 #include <glog/logging.h>
 
-SpinelloDatasetReader::SpinelloDatasetReader(const std::string &path,const std::string& classNamesFile) {
+SpinelloDatasetReader::SpinelloDatasetReader(const std::string &path,const std::string& classNamesFile,const bool imagesRequired):DatasetReader(imagesRequired) {
     this->classNamesFile=classNamesFile;
     appendDataset(path);
 }
 
-SpinelloDatasetReader::SpinelloDatasetReader() {
+SpinelloDatasetReader::SpinelloDatasetReader(const bool imagesRequired):DatasetReader(imagesRequired) {
 
 }
 

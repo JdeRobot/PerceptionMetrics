@@ -19,7 +19,8 @@ namespace SampleGeneratorHandler {
                                                               const QListView *readerImpList,
                                                               const QListView *filterClasses,
                                                               const std::string &datasetPath,
-                                                              const std::string &namesPath);
+                                                              const std::string &namesPath,
+                                                              const bool imagesRequired);
 
         static GenericLiveReaderPtr createLiveReaderPtr(const QListView *namesList,
                                                         const QListView *readerImpList,

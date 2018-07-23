@@ -5,6 +5,7 @@
 #include <QtCore/QStringListModel>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/algorithm/string.hpp>
 #include <glog/logging.h>
 #include <iostream>
 #include "ListViewConfig.h"
@@ -45,10 +46,81 @@ bool ListViewConfig::configureDatasetInput(QMainWindow* mainWindow, QListView *q
     qlistView->setModel(model);
     if (multipleSelection)
         qlistView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
     return true;
 }
 
 void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::vector<std::string>& content) {
+
+    /*QString Qpath(path.c_str());
+    QDirIterator itr(Qpath);
+    while (itr.hasNext()) {
+        itr.next();
+
+        std::vector<std::string> possibleContent;
+        if (itr.fileInfo().isDir() && itr.fileName().toStdString() != "." && itr.fileName().toStdString() != ".."){
+            //check if yolo (should contain a *.txt
+            bool isOwnFormat=false;
+            bool takeParent=false;
+            int skip_count = 0;
+            QDirIterator itr2(itr.filePath());
+            while (itr2.hasNext()) {
+                itr2.next();
+
+                if (itr2.fileName().toLower().toStdString().find(".txt") != std::string::npos){
+                    possibleContent.push_back(itr2.filePath().toStdString());
+                    takeParent = true;
+                }
+                else if(itr2.fileName().toLower().toStdString().find(".json") != std::string::npos){
+                    possibleContent.push_back(itr2.filePath().toStdString());
+                    takeParent = true;
+                }
+                else if(itr2.fileName().toLower().toStdString().find(".xml") != std::string::npos){
+                    takeParent = true;
+                    //Only Take Parent and break this will prevent displaying multiple xml files
+                    break;
+                    //possibleContent.push_back(itr2->path().string());
+                }
+                else if(itr2.fileInfo().completeSuffix().toLower().toStdString() == "png"
+                        || itr2.fileInfo().completeSuffix().toLower().toStdString() == "jpeg"
+                        || itr2.fileInfo().completeSuffix().toLower().toStdString() == "jpg"
+                        || itr2.fileInfo().completeSuffix().toLower().toStdString() == "ppm"
+                        || itr2.fileInfo().completeSuffix().toLower().toStdString() == "pgm")  {
+                    if (skip_count >= 15) {         // If a directory contains more than 15 images, then it is aimge direcory for a dataset
+                        break;                      // and it won't be indexed
+                    }
+                    skip_count++;
+                }
+                else if ((itr2.fileName().toLower().toStdString().find(".png") != std::string::npos) || (itr2.fileName().toLower().toStdString().find(".json") != std::string::npos)){
+                    isOwnFormat=true;
+                    break;
+                }
+
+            }
+
+
+
+            if (takeParent) {
+                possibleContent.push_back(itr.filePath().toStdString());
+            }
+
+            if (possibleContent.size() != 0){
+                for (auto it = possibleContent.begin(), end = possibleContent.end(); it != end; ++it){
+                    content.push_back(*it);
+                }
+            }
+            else if (isOwnFormat){
+                content.push_back(itr.filePath().toStdString());
+            }
+            else if (skip_count < 15){
+                getPathContentDatasetInput(itr.filePath().toStdString(),content);
+            }
+        }
+
+    }*/
+
+
+
     boost::filesystem::directory_iterator end_itr;
     boost::filesystem::path boostPath(path);
     std::size_t path_last;

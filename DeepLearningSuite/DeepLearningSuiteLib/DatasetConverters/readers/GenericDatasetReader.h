@@ -17,14 +17,14 @@
 #include "SamplesReader.h"
 
 
-enum READER_IMPLEMENTATIONS{OWN, SPINELLO, SAMPLES_READER, PASCALVOC, COCO, IMAGENET, YOLO, PRINCETON};
+enum READER_IMPLEMENTATIONS{OWN, SPINELLO, PASCALVOC, COCO, IMAGENET, YOLO, PRINCETON};
 
 
 class GenericDatasetReader {
 public:
-    GenericDatasetReader(const std::string& path, const std::string& classNamesFile, const std::string& readerImplementation);
-    GenericDatasetReader(const std::vector<std::string>& paths,const std::string& classNamesFile, const std::string& readerImplementation);
-    GenericDatasetReader(std::vector<Sample> & samples, std::string classNamesFile);
+    GenericDatasetReader(const std::string& path, const std::string& classNamesFile, const std::string& readerImplementation, bool imagesRequired);
+    GenericDatasetReader(const std::vector<std::string>& paths,const std::string& classNamesFile, const std::string& readerImplementation, bool imagesRegquired);
+
     DatasetReaderPtr getReader();
 
     static std::vector<std::string> getAvailableImplementations();

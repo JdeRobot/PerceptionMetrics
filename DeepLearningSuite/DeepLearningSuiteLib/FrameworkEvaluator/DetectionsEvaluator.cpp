@@ -120,7 +120,7 @@ void DetectionsEvaluator::accumulateResults() {
     }
 
     int stop_s=clock();
-    std::cout << "Time Taken in Accumulation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << " milli seconds" << std::endl;
+    std::cout << "Time Taken in Accumulation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC) << " seconds" << std::endl;
     std::cout << std::fixed;
     std::cout << std::setprecision(8);
 
@@ -199,30 +199,37 @@ void DetectionsEvaluator::evaluate() {
 
 
         if (gtSample.getSampleID().compare(detectionSample.getSampleID()) != 0){
+            LOG(WARNING) << "No detection sample available, Creating Dummy Sample\n";
+            Sample dummy;
+            dummy.setSampleID(gtSample.getSampleID());
+            dummy.setColorImage(gtSample.getColorImagePath());
+            evaluateSample(gtSample, dummy);
+            this->detections->decrementReaderCounter();
             const std::string error="Both dataset has not the same structure ids mismatch from:" + gtSample.getSampleID() + " to " + detectionSample.getSampleID();
             LOG(WARNING) << error;
-            throw error;
+            //throw error;
+            //detectionSample = *dummy;
+        } else {
+            evaluateSample(gtSample,detectionSample);
         }
 
         //detectionSample->print();
         //std::cout << "Ground Truth" << '\n';
         //gtSamplePtr->print();
-        evaluateSample(gtSample,detectionSample);
+
         //std::cout << "Size: " << gtSamplePtr->getColorImage().size() << '\n';
         //Eval::printMatrix(evalmatrix);
         //printStats();
 
         /*if (this->debug){
             cv::imshow("GT", gtSample.getSampledColorImage());
-            Sample detectionWithImage=detectionSample;
-            detectionWithImage.setColorImage(gtSample.getColorImage());
-            cv::imshow("Detection", detectionWithImage.getSampledColorImage());
-            cv::waitKey(100);
+            cv::imshow("Detection", detectionSample.getSampledColorImage());
+            cv::waitKey(10);
         }*/
 
     }
     int stop_s=clock();
-    std::cout << "Time Taken in Evaluation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << " milli seconds" << std::endl;
+    std::cout << "Time Taken in Evaluation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC) << " seconds" << std::endl;
 
 }
 

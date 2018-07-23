@@ -16,7 +16,7 @@ public:
     CaffeInferencer(const std::string& netConfig, const std::string& netWeights, const std::string& classNamesFile, std::map<std::string, std::string>* inferencerParamsMap);
     Sample detectImp(const cv::Mat& image, double confidence_threshold);
     std::vector<cv::String> getOutputsNames();
-    void postprocess(const std::vector<cv::Mat>& outs, cv::Mat& image);
+    void postprocess(const std::vector<cv::Mat>& outs, cv::Mat& image, double confidence_threshold);
 
 
 private:

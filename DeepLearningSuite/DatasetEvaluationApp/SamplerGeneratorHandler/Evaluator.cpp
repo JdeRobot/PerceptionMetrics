@@ -11,22 +11,22 @@ SampleGeneratorHandler::Evaluator::process(QListView *datasetListGT, QListView *
                                            QListView *datasetListDetect, QListView *namesListDetect,
                                            QListView *readerImpListDetect, QListView *filterClasses,
                                            const std::string &datasetPath, const std::string &namesGTPath,
-                                           const std::string &inferencesPath, const std::string &inferencesNamesPath,bool overWriterPersonClasses,bool enableMixEvaluation,bool showEval) {
+                                           const std::string &inferencesPath, const std::string &namesPath,bool overWriterPersonClasses,bool enableMixEvaluation) {
 
     GenericDatasetReaderPtr readerGT = SamplerGenerationHandler::createDatasetReaderPtr(datasetListGT, namesListGT,
                                                                                         readerImpListGT, filterClasses,
                                                                                         datasetPath,
-                                                                                        inferencesNamesPath);
+                                                                                        namesPath, false);
     GenericDatasetReaderPtr readerDetection = SamplerGenerationHandler::createDatasetReaderPtr(datasetListDetect,
                                                                                                namesListDetect,
                                                                                                readerImpListDetect,
                                                                                                filterClasses,
                                                                                                inferencesPath,
-                                                                                               inferencesNamesPath);
+                                                                                               namesPath, false);
 
 
 
-    DetectionsEvaluatorPtr evaluator(new DetectionsEvaluator(readerGT->getReader(),readerDetection->getReader(),showEval));
+    DetectionsEvaluatorPtr evaluator(new DetectionsEvaluator(readerGT->getReader(),readerDetection->getReader()));
 
 
     if (overWriterPersonClasses){

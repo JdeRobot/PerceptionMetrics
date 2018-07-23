@@ -10,8 +10,8 @@
 
 class SpinelloDatasetReader: public DatasetReader {
 public:
-    SpinelloDatasetReader(const std::string& path,const std::string& classNamesFile);
-    SpinelloDatasetReader();
+    SpinelloDatasetReader(const std::string& path,const std::string& classNamesFile,const bool imagesRequired);
+    SpinelloDatasetReader(const bool imagesRequired);
     bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
 
 private:

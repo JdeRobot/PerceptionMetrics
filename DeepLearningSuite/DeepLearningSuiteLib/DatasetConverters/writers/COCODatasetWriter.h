@@ -10,7 +10,7 @@
 class COCODatasetWriter: public DatasetWriter {
 public:
     COCODatasetWriter(const std::string& outPath, DatasetReaderPtr& reader, const std::string& writerNamesFile, bool overWriteclassWithZero=false);
-    void process(bool usedColorImage=true);
+    void process(bool writeImages = false, bool useDepth = false);
 
 private:
     std::string fullImagesPath;

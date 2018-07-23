@@ -80,7 +80,7 @@ public:
 
 
             reader = GenericDatasetReaderPtr(
-                        new GenericDatasetReader(inputPath, readerNames, readerImplementation));
+                        new GenericDatasetReader(inputPath, readerNames, readerImplementation, true));
 
 
             int count2 = 0;
@@ -94,7 +94,7 @@ public:
 
 
 
-                std::vector<Sample> samples;
+                DatasetReaderPtr readerDetection ( new DatasetReader(true) );
 
                 if(!((*iter)["inferencerConfig"] && (*iter)["inferencerNames"] && (*iter)["inferencerImplementation"]))
                     throw std::invalid_argument("Invalid Config file, Error Detected in Datasets Configuration");
@@ -107,11 +107,13 @@ public:
 
                 std::string inferencerImplementation = (*iter)["inferencerImplementation"].as<std::string>();
 
+                bool useDepth = (*iter)["useDepth"] ? (*iter)["useDepth"].as<bool>() : false;
+
                 reader->getReader()->resetReaderCounter();
 
                 GenericInferencerPtr inferencer(new GenericInferencer(inferencerConfig, inferencerWeights, inferencerNames, inferencerImplementation));
                 MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(), false);
-                massInferencer.process(false, &samples);
+                massInferencer.process(useDepth, readerDetection);
 
                 /*std::vector<Sample>::iterator iter;
                 std::cout << samples.size() << '\n';
@@ -130,10 +132,8 @@ public:
                 reader->getReader()->resetReaderCounter();
 
                 //GenericDatasetReaderPtr readerGT(new GenericDatasetReader(inputPathGT.as<std::string>(),readerNamesNode.as<std::string>(), readerImplementationGTNode.as<std::string>()));
-                GenericDatasetReaderPtr readerDetection(new GenericDatasetReader(samples, inferencerNames));
 
-
-                DetectionsEvaluatorPtr evaluator(new DetectionsEvaluator(reader->getReader(),readerDetection->getReader(),true));
+                DetectionsEvaluatorPtr evaluator(new DetectionsEvaluator(reader->getReader(),readerDetection,true));
 
                 evaluator->evaluate();
                 evaluator->accumulateResults();

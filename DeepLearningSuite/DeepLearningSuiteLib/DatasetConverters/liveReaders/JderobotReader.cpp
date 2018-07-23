@@ -5,7 +5,7 @@
 
 #include "JderobotReader.h"
 
-JderobotReader::JderobotReader(std::map<std::string, std::string>* deployer_params_map, const std::string& path) {
+JderobotReader::JderobotReader(std::map<std::string, std::string>* deployer_params_map, const std::string& path):DatasetReader(true) {
 
     Config::Properties cfg;
 

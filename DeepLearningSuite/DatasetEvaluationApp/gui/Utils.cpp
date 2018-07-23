@@ -86,8 +86,6 @@ bool Utils::getInferencerParamsContent(const QGroupBox* inferencer_params, std::
 }
 
 bool Utils::getCameraParamsContent(const QGroupBox* camera_params, int& cameraID) {
-    if (!camera_params->isEnabled())
-        return false;
 
     cameraID = camera_params->findChild<QSpinBox*>("deployer_camera_spinBox")->value();
     std::cout << cameraID << '\n';

@@ -17,7 +17,7 @@
 #include <Utils/DepthUtils.h>
 
 
-PrincetonDatasetReader::PrincetonDatasetReader(const std::string &path, const std::string &classNamesFile) {
+PrincetonDatasetReader::PrincetonDatasetReader(const std::string &path, const std::string &classNamesFile,const bool imagesRequired):DatasetReader(imagesRequired) {
     this->classNamesFile=classNamesFile;
     appendDataset(path);
 }

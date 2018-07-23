@@ -11,7 +11,7 @@
 class YoloDatasetWriter: public DatasetWriter {
 public:
     YoloDatasetWriter(const std::string& outPath, DatasetReaderPtr& reader, bool overWriteclassWithZero=true);
-    void process(bool usedColorImage=true);
+    void process(bool writeImages = false, bool useDepth = false);
 
 private:
     std::string fullImagesPath;

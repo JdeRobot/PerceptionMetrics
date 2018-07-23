@@ -25,8 +25,7 @@ include_directories(
     ${Ice_INCLUDE_DIR}
     ${OpenCV_INCLUDE_DIRS}
     ${DeepLearningSuite_LIBS_DIR}
-    ${catkin_INCLUDE_DIRS}
-    ${roscpp_INCLUDE_DIRS}
+    ${ros_INCLUDE_DIRS}
     ${INTERFACES_CPP_DIR}
     ${config_INCLUDE_DIRS}
     ${utils_INCLUDE_DIRS}
@@ -81,7 +80,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}
     ${ZeroCIce_LIBRARIES}
     ${Boost_LIBRARIES}
-    ${catkin_LIBRARIES}
+    ${ros_LIBRARIES}
     colorspacesmm
     config
     DetectionSuiteUtils

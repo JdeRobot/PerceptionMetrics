@@ -16,7 +16,7 @@ namespace SampleGeneratorHandler {
             static void process(QListView* datasetList,QListView* namesList,QListView* readerImpList, const std::string& datasetPath,
                                 QListView* weightsList, QListView* netConfigList, QListView* inferencerImpList, QListView* inferencerNamesList,
                                 QGroupBox* inferencer_params, const std::string& weightsPath, const std::string& cfgPath, const std::string& outputPath,
-                                const std::string& inferencerNamesPath, bool useDepth, bool singleEvaluation
+                                const std::string& namesPath, bool useDepth, bool singleEvaluation
             );
     };
 

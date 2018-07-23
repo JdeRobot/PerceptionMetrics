@@ -1,7 +1,9 @@
 #include "COCODatasetWriter.h"
 #include "DatasetConverters/ClassTypeMapper.h"
 #include <iomanip>
+#include <math.h>
 #include <fstream>
+#include <algorithm>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <glog/logging.h>
@@ -29,7 +31,7 @@ COCODatasetWriter::COCODatasetWriter(const std::string &outPath, DatasetReaderPt
 
 }
 
-void COCODatasetWriter::process(bool usedColorImage) {
+void COCODatasetWriter::process(bool writeImages, bool useDepth) {
     Sample sample;
     //std::ofstream sampleFile(this->outPath + "/sample.txt");
 
@@ -46,10 +48,12 @@ void COCODatasetWriter::process(bool usedColorImage) {
     writer_anns.Key("annotations");
     writer_anns.StartArray();
 
+    if (writeImages) {
+        writer_imgs.StartObject();
+        writer_imgs.Key("images");
+        writer_imgs.StartArray();
 
-    writer_imgs.StartObject();
-    writer_imgs.Key("images");
-    writer_imgs.StartArray();
+    }
 
     ClassTypeMapper typeMapper;
 
@@ -60,39 +64,64 @@ void COCODatasetWriter::process(bool usedColorImage) {
 
     while (reader->getNextSample(sample)){
         auto boundingBoxes = sample.getRectRegions()->getRegions();
-        //std::string id_string = sample.getSampleID();
-
-        if (id == 100)
-            break;
-
+        std::string id_string = sample.getSampleID();
         id++;
+        id_string.erase(std::remove_if(id_string.begin(), id_string.end(), isspace), id_string.end());
 
-        int i;
-        for(int num = id, i=0; num > 0; num=num/10, i++);
 
-        std::stringstream ssID ;
-        ssID << std::setfill('0') << std::setw(12 - i) << id;
-        std::string imageFileName = "COCO_" + ssID.str() + ".jpg";
-        std::string imageFilePath= this->fullImagesPath + "/" + imageFileName;
+        std::string::size_type sz;   // alias of size_t
+
+        int num_id = std::stoi (id_string, &sz);
+
+        std::string imageFileName;
+        if (id_string.length() == sz) {
+            int i = ceil(log10(num_id));
+
+            std::string ssID (12-i+1,'0') ;
+
+            imageFileName = "COCO_" + ssID + std::to_string(num_id) + ".jpg";
+        } else {
+            imageFileName = "COCO_" + std::to_string(id) + ".jpg";
+            num_id = id;
+        }
+
 
         cv::Mat image;
-        if (usedColorImage)
-            image= sample.getColorImage();
-        else {
-            image = sample.getDepthColorMapImage();
+        if (writeImages) {
+            if (useDepth) {
+                image= sample.getDepthImage();
+            } else {
+                image= sample.getColorImage();
+            }
+
+            if (image.empty()) {
+                skip_count++;
+                if (skip_count > this->skip_count) {
+                    throw std::runtime_error("Maximum limit for skipping exceeded, either turn off writing images or fix issues in dataset");
+                }
+                LOG(WARNING) << "Image empty, skipping writing image. Skipped " + std::to_string(skip_count) + " of " + std::to_string(this->skip_count);
+
+            } else {
+                cv::imwrite(this->fullImagesPath + "/" + imageFileName,image);
+
+            }
 
         }
 
-        writer_imgs.StartObject();
-        writer_imgs.Key("file_name");
-        writer_imgs.String(imageFileName.c_str());
-        writer_imgs.Key("id");
-        writer_imgs.Int(id);
-        writer_imgs.Key("height");
-        writer_imgs.Int(image.size().height);
-        writer_imgs.Key("width");
-        writer_imgs.Int(image.size().width);
-        writer_imgs.EndObject();
+        if (writeImages) {
+            writer_imgs.StartObject();
+            writer_imgs.Key("file_name");
+            writer_imgs.String(imageFileName.c_str());
+            writer_imgs.Key("id");
+            writer_imgs.Int(num_id);
+            writer_imgs.Key("height");
+            writer_imgs.Int(image.size().height);
+            writer_imgs.Key("width");
+            writer_imgs.Int(image.size().width);
+            writer_imgs.EndObject();
+
+        }
+
 
 
         for (auto it = boundingBoxes.begin(), end=boundingBoxes.end(); it != end; ++it){
@@ -153,33 +182,37 @@ void COCODatasetWriter::process(bool usedColorImage) {
             writer_anns.Key("score");
             writer_anns.Double(confidence_score);
             writer_anns.Key("image_id");
-            writer_anns.Int(id);
+            writer_anns.Int(num_id);
             writer_anns.EndObject();
 
 
         }
 
-        cv::imwrite(imageFilePath,image);
 
     }
+
         writer_anns.EndArray();
         writer_anns.EndObject();
 
-        writer_imgs.EndArray();
-        writer_imgs.EndObject();
-
         std::string json_anns (s_anns.GetString(), s_anns.GetSize());
-        std::string json_imgs (s_imgs.GetString(), s_imgs.GetSize());
 
-        std::size_t pos = json_anns.find_last_of("}");
-        json_anns.erase(pos, 1);
+        if (writeImages) {
+
+            writer_imgs.EndArray();
+            writer_imgs.EndObject();
+
+            std::string json_imgs (s_imgs.GetString(), s_imgs.GetSize());
+
+
+            json_imgs.pop_back();
+
+            out << json_imgs;
+            json_anns.erase(0, 1);
+            out << ",";
+        }
+
         out << json_anns;
-        out << ",";
 
-        pos = json_imgs.find_first_of("{");
-        json_imgs.erase(pos, 1);
-
-        out << json_imgs;
 
         if (!out.good()) throw std::runtime_error ("Can't write the JSON string to the file!");
 
@@ -196,7 +229,7 @@ void COCODatasetWriter::process(bool usedColorImage) {
             writerClassfile.close();
         }
 
-        LOG(INFO) << "Successfully Converted given Dataset to COCO dataset\n";
+        LOG(INFO) << "Successfully Written to COCO dataset\n";
 
         if (!writerNamesFile.empty()) {
 

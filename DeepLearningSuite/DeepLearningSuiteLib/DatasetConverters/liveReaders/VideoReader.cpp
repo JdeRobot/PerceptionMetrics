@@ -4,7 +4,7 @@
 
 #include "VideoReader.h"
 
-VideoReader::VideoReader(const std::string &videoPath) {
+VideoReader::VideoReader(const std::string &videoPath):DatasetReader(true) {
     this->cap =  new cv::VideoCapture(videoPath);
 
     if(!cap->isOpened())  // check if we succeeded

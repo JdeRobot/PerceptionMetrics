@@ -27,11 +27,11 @@ public:
         GenericDatasetReaderPtr reader;
         if (inputPathNode.IsSequence()) {
             reader = GenericDatasetReaderPtr(
-                    new GenericDatasetReader(inputPathNode.as<std::vector<std::string>>(),readerNamesNode.as<std::string>(), readerImplementationNode.as<std::string>()));
+                    new GenericDatasetReader(inputPathNode.as<std::vector<std::string>>(),readerNamesNode.as<std::string>(), readerImplementationNode.as<std::string>(), true));
         }
         else {
             reader = GenericDatasetReaderPtr(
-                    new GenericDatasetReader(inputPathNode.as<std::string>(),readerNamesNode.as<std::string>(), readerImplementationNode.as<std::string>()));
+                    new GenericDatasetReader(inputPathNode.as<std::string>(),readerNamesNode.as<std::string>(), readerImplementationNode.as<std::string>(), true));
         }
 
 

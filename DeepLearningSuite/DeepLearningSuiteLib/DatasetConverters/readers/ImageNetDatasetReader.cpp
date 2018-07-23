@@ -61,13 +61,13 @@ bool ImageNetDatasetReader::find_directory(const path & dir_path, const std::str
     return false;
 }
 
-ImageNetDatasetReader::ImageNetDatasetReader(const std::string &path,const std::string& classNamesFile) {
+ImageNetDatasetReader::ImageNetDatasetReader(const std::string &path,const std::string& classNamesFile, bool imagesRequired):DatasetReader(imagesRequired) {
     this->classNamesFile=classNamesFile;
     appendDataset(path);
 }
 
-ImageNetDatasetReader::ImageNetDatasetReader() {
-
+ImageNetDatasetReader::ImageNetDatasetReader(const std::string& classNamesFile, const bool imagesRequired):DatasetReader(imagesRequired) {
+    this->classNamesFile=classNamesFile;
 }
 
 bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const std::string &datasetPrefix) {
@@ -80,12 +80,16 @@ bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const 
 
     path img_dir;
 
-    if (find_img_directory(boostDatasetPath, img_dir)) {
-        std::cout << img_dir.string() << '\n';
-        std::cout << "Image Directory Found" << '\n';
-    } else {
-        std::cout << "Corresponding Image Directory, can't be located, Skipping" << '\n';
+    if (imagesRequired) {
+        if (find_img_directory(boostDatasetPath, img_dir)) {
+            std::cout << img_dir.string() << '\n';
+            std::cout << "Image Directory Found" << '\n';
+        } else {
+            std::cout << "Corresponding Image Directory, can't be located, Skipping" << '\n';
+        }
+
     }
+
 
     boost::filesystem::directory_iterator end_itr;
     for (boost::filesystem::directory_iterator itr(boostDatasetPath); itr!=end_itr; ++itr)
@@ -107,8 +111,12 @@ bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const 
             Sample sample;
             sample.setSampleID(m_filename);
 
-            std::string imgPath = img_dir.string() + "/" + m_filename + ".JPEG";
-            sample.setColorImage(imgPath);
+            if (imagesRequired) {
+                std::string imgPath = img_dir.string() + "/" + m_filename + ".JPEG";
+                sample.setColorImage(imgPath);
+
+            }
+
 
             RectRegionsPtr rectRegions(new RectRegions());
 

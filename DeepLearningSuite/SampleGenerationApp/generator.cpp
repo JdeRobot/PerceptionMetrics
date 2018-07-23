@@ -167,7 +167,7 @@ public:
         else if(detectorKey.as<std::string>()=="datasetReader"){
             YAML::Node readerNamesKey=this->config.getNode("readerNames");
             //readerImplementationGT
-            GenericDatasetReaderPtr readerImp(new GenericDatasetReader(dataPath.as<std::string>(),readerNamesKey.as<std::string>(), reader.as<std::string>()));
+            GenericDatasetReaderPtr readerImp(new GenericDatasetReader(dataPath.as<std::string>(),readerNamesKey.as<std::string>(), reader.as<std::string>(), true));
 
 
             DetectionsValidator validator(outputPath.as<std::string>(),1.5);

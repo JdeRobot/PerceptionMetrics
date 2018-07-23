@@ -6,14 +6,11 @@
 
 using namespace boost::filesystem;
 
-PascalVOCDatasetReader::PascalVOCDatasetReader(const std::string &path,const std::string& classNamesFile) {
+PascalVOCDatasetReader::PascalVOCDatasetReader(const std::string &path,const std::string& classNamesFile, const bool imagesRequired):DatasetReader(imagesRequired) {
     this->classNamesFile=classNamesFile;
     appendDataset(path);
 }
 
-PascalVOCDatasetReader::PascalVOCDatasetReader() {
-
-}
 
 bool PascalVOCDatasetReader::find_directory(const path & dir_path, const std::string & dir_name, path & path_found) {
 
@@ -53,11 +50,15 @@ bool PascalVOCDatasetReader::appendDataset(const std::string &datasetPath, const
 
     path img_dir;
 
-    if (find_directory(boostDatasetPath.parent_path().parent_path(), "JPEGImages", img_dir)) {
-        std::cout << img_dir.string() << '\n';
-    } else {
-        std::cout << "Corresponding Image Directory, can't be located, Skipping" << '\n';
+    if (imagesRequired) {
+        if (find_directory(boostDatasetPath.parent_path(), "JPEGImages", img_dir)) {
+            std::cout << img_dir.string() << '\n';
+        } else {
+            throw std::runtime_error("Images Directory can't be located, place it in the folder containing annotations, and name it JPEGIamges");
+        }
+
     }
+
 
     int count = 0;
 
@@ -66,6 +67,7 @@ bool PascalVOCDatasetReader::appendDataset(const std::string &datasetPath, const
     {
         if (!boost::filesystem::is_directory(*itr)){
             count++;
+
 
             LOG(INFO) << itr->path().string() << '\n';
             boost::property_tree::ptree tree;
@@ -83,8 +85,12 @@ bool PascalVOCDatasetReader::appendDataset(const std::string &datasetPath, const
             Sample sample;
             sample.setSampleID(m_id);
 
-            std::string imgPath = img_dir.string() + "/" + m_imgfile;
-            sample.setColorImage(imgPath);
+            if (imagesRequired) {
+                std::string imgPath = img_dir.string() + "/" + m_imgfile;
+                sample.setColorImage(imgPath);
+
+            }
+
 
             RectRegionsPtr rectRegions(new RectRegions());
 

@@ -31,6 +31,7 @@ public:
         this->requiredArguments.push_back("readerImplementation");
         this->requiredArguments.push_back("writerImplementation");
         this->requiredArguments.push_back("readerNames");
+        this->requiredArguments.push_back("writeImages");
 
 
     };
@@ -40,16 +41,16 @@ public:
         YAML::Node writerImplementationNode = this->config.getNode("writerImplementation");
         YAML::Node outputPathNode = this->config.getNode("outputPath");
         YAML::Node readerNamesNode = this->config.getNode("readerNames");
-
+        YAML::Node writeImages = this->config.getNode("writeImages");
 
         GenericDatasetReaderPtr reader;
         if (inputPathNode.IsSequence()) {
             reader = GenericDatasetReaderPtr(
-                    new GenericDatasetReader(inputPathNode.as<std::vector<std::string>>(), readerNamesNode.as<std::string>(), readerImplementationNode.as<std::string>()));
+                    new GenericDatasetReader(inputPathNode.as<std::vector<std::string>>(), readerNamesNode.as<std::string>(), readerImplementationNode.as<std::string>(), writeImages.as<bool>()));
         }
         else {
             reader = GenericDatasetReaderPtr(
-                    new GenericDatasetReader(inputPathNode.as<std::string>(),readerNamesNode.as<std::string>(), readerImplementationNode.as<std::string>()));
+                    new GenericDatasetReader(inputPathNode.as<std::string>(),readerNamesNode.as<std::string>(), readerImplementationNode.as<std::string>(), writeImages.as<bool>()));
         }
 
         auto readerPtr = reader->getReader();
@@ -63,7 +64,7 @@ public:
 
 
         GenericDatasetWriterPtr writer( new GenericDatasetWriter(outputPathNode.as<std::string>(),readerPtr,writerImplementationNode.as<std::string>()));
-        writer->getWriter()->process();
+        writer->getWriter()->process(writeImages.as<bool>());
     };
 };
 

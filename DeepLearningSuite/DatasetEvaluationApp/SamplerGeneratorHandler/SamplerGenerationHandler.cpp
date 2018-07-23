@@ -11,7 +11,7 @@ GenericDatasetReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::create
         const QListView *namesList,
         const QListView *readerImpList,
         const QListView *filterClasses,
-        const std::string &datasetPath, const std::string &namesPath) {
+        const std::string &datasetPath, const std::string &namesPath, const bool imagesRequired) {
     std::vector<std::string> datasetsToShow;
 
     if (! Utils::getListViewContent(datasetList,datasetsToShow,datasetPath + "/")){
@@ -39,11 +39,11 @@ GenericDatasetReaderPtr SampleGeneratorHandler::SamplerGenerationHandler::create
     GenericDatasetReaderPtr reader;
     if (datasetsToShow.size()>1) {
         reader = GenericDatasetReaderPtr(
-                new GenericDatasetReader(datasetsToShow,names[0], readerImplementation[0]));
+                new GenericDatasetReader(datasetsToShow,names[0], readerImplementation[0], imagesRequired));
     }
     else {
         reader = GenericDatasetReaderPtr(
-                new GenericDatasetReader(datasetsToShow[0],names[0], readerImplementation[0]));
+                new GenericDatasetReader(datasetsToShow[0],names[0], readerImplementation[0], imagesRequired));
     }
 
 

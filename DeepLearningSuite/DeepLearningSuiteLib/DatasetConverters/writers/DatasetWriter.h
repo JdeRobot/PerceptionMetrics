@@ -12,7 +12,7 @@
 class DatasetWriter {
 public:
     DatasetWriter(const std::string& outPath, DatasetReaderPtr& reader);
-    virtual void process(bool usedColorImage=true)=0;
+    virtual void process(bool writeImages = false, bool useDepth = false)=0;
 
 protected:
     std::string outPath;
@@ -20,6 +20,7 @@ protected:
     std::vector<std::string> outputClasses;
     std::unordered_map<std::string, std::string> mapped_classes;
     std::unordered_map<std::string, long int> discarded_classes;
+    unsigned int skip_count = 10;  //max Number of annotations that can be skipped if Corresponding images weren't found
 };
 
 

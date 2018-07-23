@@ -27,7 +27,7 @@ include_directories(
         ${config_INCLUDE_DIRS}
         ${comm_INCLUDE_DIRS}
         ${utils_INCLUDE_DIRS}
-        ${roscpp_INCLUDE_DIRS}
+        ${ros_INCLUDE_DIRS}
         ${INTERFACES_CPP_DIR}
         ${jderobottypes_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
@@ -45,6 +45,7 @@ add_executable(DatasetEvaluationApp ${SOURCES})
 TARGET_LINK_LIBRARIES(DatasetEvaluationApp
         DeepLearningSuite
         ${JderobotInterfaces_LIBRARIES}
+        ${ros_LIBRARIES}
         ${EXTRA_LIBS}
         ${OpenCV_LIBRARIES}
         ${Boost_LIBRARIES}

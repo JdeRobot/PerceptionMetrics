@@ -3,7 +3,7 @@
 
 
 #include <DatasetConverters/readers/DatasetReader.h>
-
+#include <glog/logging.h>
 
 class CameraReader: public DatasetReader {
 public:

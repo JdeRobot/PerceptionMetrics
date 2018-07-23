@@ -11,7 +11,7 @@
 #include <glog/logging.h>
 
 
-YoloDatasetWriter::YoloDatasetWriter(const std::string &outPath, DatasetReaderPtr &reader,bool overWriteclassWithZero):DatasetWriter(outPath,reader),overWriteclassWithZero(overWriteclassWithZero){
+YoloDatasetWriter::YoloDatasetWriter(const std::string &outPath, DatasetReaderPtr &reader, bool overWriteclassWithZero):DatasetWriter(outPath,reader),overWriteclassWithZero(overWriteclassWithZero){
 
     this->fullImagesPath=boost::filesystem::absolute(boost::filesystem::path(outPath + "/JPEGImages")).string();
     this->fullLabelsPath=boost::filesystem::absolute(boost::filesystem::path(outPath + "/labels")).string();
@@ -32,9 +32,11 @@ YoloDatasetWriter::YoloDatasetWriter(const std::string &outPath, DatasetReaderPt
 
 }
 
-void YoloDatasetWriter::process(bool usedColorImage) {
+void YoloDatasetWriter::process(bool writeImages, bool useDepth) {
     Sample sample;
     int id=0;
+    unsigned int skip_count = 0;
+
 
     std::ofstream sampleFile(this->outPath + "/sample.txt");
 
@@ -49,10 +51,24 @@ void YoloDatasetWriter::process(bool usedColorImage) {
         std::ofstream out(labelFilePath);
 
         cv::Mat image;
-        if (usedColorImage)
-            image= sample.getColorImage();
-        else {
-            image = sample.getDepthColorMapImage();
+        if (writeImages) {
+            if (useDepth) {
+                image= sample.getDepthImage();
+            } else {
+                image= sample.getColorImage();
+            }
+
+            if (image.empty()) {
+                skip_count++;
+                if (skip_count > this->skip_count) {
+                    throw std::runtime_error("Maximum limit for skipping exceeded, either turn off writing images or fix issues in dataset");
+                }
+                LOG(WARNING) << "Image empty, skipping writing image. Skipped " + std::to_string(skip_count) + " of " + std::to_string(this->skip_count);
+
+            } else {
+                cv::imwrite(imageFilePath,image);
+
+            }
 
         }
 
@@ -86,7 +102,8 @@ void YoloDatasetWriter::process(bool usedColorImage) {
         }
         out.close();
         id++;
-        cv::imwrite(imageFilePath,image);
+
     }
     sampleFile.close();
+
 }

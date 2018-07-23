@@ -65,7 +65,7 @@ void StatsUtils::computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix&
         throw std::runtime_error("EvalMatrix with sample ID isn't empty, Data might be duplicated while Evaluation");
     }
 
-    // Sorting RectRegions by confidence_score for sam classID only
+    // Sorting RectRegions by confidence_score for same classID only
     // So, first of all it is necessary to segregate out RectRegions with
     // different classIds
 

@@ -34,7 +34,7 @@ class KerasDetector:
         print self.img_width, self.img_height
 
 
-    def detect(self, img, threshold=0.2):
+    def detect(self, img, threshold):
 
         print "Starting inference"
         input_images = []
@@ -50,7 +50,7 @@ class KerasDetector:
 
         y_pred = self.model.predict(input_images)
 
-        y_pred_thresh = [y_pred[k][y_pred[k,:,1] > threshold] for k in range(y_pred.shape[0])]
+        y_pred_thresh = [y_pred[k][y_pred[k,:,1] >= threshold] for k in range(y_pred.shape[0])]
 
         y_thresh_array = np.array(y_pred_thresh[0])
 

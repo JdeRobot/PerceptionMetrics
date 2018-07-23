@@ -56,7 +56,7 @@ Sample CaffeInferencer::detectImp(const cv::Mat &image, double confidence_thresh
     this->net.forward(outs, getOutputsNames());
 
 
-    postprocess(outs, rgbImage);
+    postprocess(outs, rgbImage, confidence_threshold);
 
 
     Sample sample;
@@ -75,7 +75,7 @@ Sample CaffeInferencer::detectImp(const cv::Mat &image, double confidence_thresh
     return sample;
 }
 
-void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & image)
+void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & image, double confidence_threshold)
 {
     static std::vector<int> outLayers = this->net.getUnconnectedOutLayers();
     static std::string outLayerType = this->net.getLayer(outLayers[0])->type;
@@ -92,7 +92,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
         for (size_t i = 0; i < outs[0].total(); i += 7)
         {
             float confidence = data[i + 2];
-            if (confidence > confidence_threshold)
+            if (confidence >= confidence_threshold)
             {
                 detections.push_back(detection());
                 detections[count].classId = (int)(data[i + 1]) - 1;
@@ -121,7 +121,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
         for (size_t i = 0; i < outs[0].total(); i += 7)
         {
             float confidence = data[i + 2];
-            if (confidence > confidence_threshold)
+            if (confidence >= confidence_threshold)
             {
                 detections.push_back(detection());
                 detections[count].classId = (int)(data[i + 1]) - 1;
@@ -156,7 +156,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
                 cv::Point classIdPoint;
                 double confidence;
                 cv::minMaxLoc(scores, 0, &confidence, 0, &classIdPoint);
-                if (confidence > confidence_threshold)
+                if (confidence >= confidence_threshold)
                 {
                     int centerX = (int)(data[0] * image.cols);
                     int centerY = (int)(data[1] * image.rows);

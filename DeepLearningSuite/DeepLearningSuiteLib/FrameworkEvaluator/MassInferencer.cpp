@@ -20,25 +20,27 @@ MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr i
         saveOutput = false;
     else
         saveOutput = true;
-        
+
     alreadyProcessed=0;
-    auto boostPath= boost::filesystem::path(this->resultsPath);
-    if (!boost::filesystem::exists(boostPath)){
-        boost::filesystem::create_directories(boostPath);
-    }
-    else{
-        LOG(WARNING)<<"Output directory already exists";
-        LOG(WARNING)<<"Continuing detecting";
-        boost::filesystem::directory_iterator end_itr;
-
-        for (boost::filesystem::directory_iterator itr(boostPath); itr!=end_itr; ++itr)
-        {
-            if ((is_regular_file(itr->status()) && itr->path().extension()==".png") && (itr->path().string().find("-depth") == std::string::npos)) {
-                alreadyProcessed++;
-            }
-
+    if (!resultsPath.empty()) {
+        auto boostPath= boost::filesystem::path(this->resultsPath);
+        if (!boost::filesystem::exists(boostPath)){
+            boost::filesystem::create_directories(boostPath);
         }
-        //exit(-1);
+        else{
+            LOG(WARNING)<<"Output directory already exists";
+            LOG(WARNING)<<"Continuing detecting";
+            boost::filesystem::directory_iterator end_itr;
+
+            for (boost::filesystem::directory_iterator itr(boostPath); itr!=end_itr; ++itr)
+            {
+                if ((is_regular_file(itr->status()) && itr->path().extension()==".png") && (itr->path().string().find("-depth") == std::string::npos)) {
+                    alreadyProcessed++;
+                }
+
+            }
+          //exit(-1);
+        }
     }
 }
 
@@ -76,7 +78,7 @@ MassInferencer::MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr i
         alreadyProcessed=0;
 }
 
-void MassInferencer::process(bool useDepthImages, std::vector<Sample>* samples) {
+void MassInferencer::process(bool useDepthImages, DatasetReaderPtr readerDetection) {
 
     Sample sample;
     int counter=0;
@@ -124,9 +126,6 @@ void MassInferencer::process(bool useDepthImages, std::vector<Sample>* samples) 
         if (saveOutput)
             detection.save(this->resultsPath);
 
-        if (samples != NULL) {
-            samples->push_back(detection);
-        }
         if (this->debug) {
             cv::Mat image =sample.getSampledColorImage();
             Sample detectionWithImage;
@@ -141,8 +140,17 @@ void MassInferencer::process(bool useDepthImages, std::vector<Sample>* samples) 
                 cv::imshow("Input", image2detect);
             }
             cv::imshow("Detection", detectionWithImage.getSampledColorImage());
-            cv::waitKey(10);
+            cv::waitKey(100);
         }
+
+        detection.clearColorImage();
+        detection.clearDepthImage();
+
+        if (readerDetection != NULL) {
+            readerDetection->addSample(detection);
+            //samples->push_back(detection);
+        }
+
     }
     cv::destroyAllWindows();
     std::cout << "Mean inference time: " << this->inferencer->getMeanDurationTime() << "(ms)" <<  std::endl;

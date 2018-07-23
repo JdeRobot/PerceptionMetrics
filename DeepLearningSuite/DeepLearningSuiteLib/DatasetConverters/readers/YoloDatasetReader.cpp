@@ -17,13 +17,13 @@ bool replace(std::string& str, const std::string& from, const std::string& to) {
     return true;
 }
 
-YoloDatasetReader::YoloDatasetReader(const std::string &path,const std::string& classNamesFile) {
+YoloDatasetReader::YoloDatasetReader(const std::string &path,const std::string& classNamesFile, bool imagesRequired):DatasetReader(imagesRequired) {
     this->classNamesFile=classNamesFile;
     appendDataset(path);
 }
 
-YoloDatasetReader::YoloDatasetReader() {
-
+YoloDatasetReader::YoloDatasetReader(const std::string& classNamesFile, bool imagesRequired):DatasetReader(imagesRequired) {
+    this->classNamesFile=classNamesFile;
 }
 
 bool YoloDatasetReader::appendDataset(const std::string &datasetPath, const std::string &datasetPrefix) {

@@ -6,31 +6,31 @@
 #include "GenericDatasetReader.h"
 
 
-GenericDatasetReader::GenericDatasetReader(const std::string &path, const std::string& classNamesFile, const std::string &readerImplementation) {
+GenericDatasetReader::GenericDatasetReader(const std::string &path, const std::string& classNamesFile, const std::string &readerImplementation, bool imagesRequired) {
     configureAvailablesImplementations(this->availableImplementations);
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), readerImplementation) != this->availableImplementations.end()){
         imp = getImplementation(readerImplementation);
         switch (imp) {
             case IMAGENET:
-                this->imagenetDatasetReaderPtr = ImageNetDatasetReaderPtr( new ImageNetDatasetReader(path,classNamesFile));
+                this->imagenetDatasetReaderPtr = ImageNetDatasetReaderPtr( new ImageNetDatasetReader(path,classNamesFile,imagesRequired));
                 break;
             case COCO:
-                this->cocoDatasetReaderPtr = COCODatasetReaderPtr( new COCODatasetReader(path,classNamesFile));
+                this->cocoDatasetReaderPtr = COCODatasetReaderPtr( new COCODatasetReader(path,classNamesFile,imagesRequired));
                 break;
             case PASCALVOC:
-                this->pascalvocDatasetReaderPtr = PascalVOCDatasetReaderPtr( new PascalVOCDatasetReader(path,classNamesFile));
+                this->pascalvocDatasetReaderPtr = PascalVOCDatasetReaderPtr( new PascalVOCDatasetReader(path,classNamesFile,imagesRequired));
                 break;
             case YOLO:
-                this->yoloDatasetReaderPtr = YoloDatasetReaderPtr( new YoloDatasetReader(path,classNamesFile));
+                this->yoloDatasetReaderPtr = YoloDatasetReaderPtr( new YoloDatasetReader(path,classNamesFile,imagesRequired));
                 break;
             case SPINELLO:
-                this->spinelloDatasetReaderPtr = SpinelloDatasetReaderPtr( new SpinelloDatasetReader(path,classNamesFile));
+                this->spinelloDatasetReaderPtr = SpinelloDatasetReaderPtr( new SpinelloDatasetReader(path,classNamesFile,imagesRequired));
                 break;
             case OWN:
-                this->ownDatasetReaderPtr = OwnDatasetReaderPtr( new OwnDatasetReader(path,classNamesFile));
+                this->ownDatasetReaderPtr = OwnDatasetReaderPtr( new OwnDatasetReader(path,classNamesFile,imagesRequired));
                 break;
             case PRINCETON:
-                this->princetonDatasetReaderPtr = PrincetonDatasetReaderPtr( new PrincetonDatasetReader(path,classNamesFile));
+                this->princetonDatasetReaderPtr = PrincetonDatasetReaderPtr( new PrincetonDatasetReader(path,classNamesFile,imagesRequired));
                 break;
             default:
                 LOG(WARNING)<<readerImplementation + " is not a valid reader implementation";
@@ -42,20 +42,24 @@ GenericDatasetReader::GenericDatasetReader(const std::string &path, const std::s
     }
 }
 
-GenericDatasetReader::GenericDatasetReader(std::vector<Sample> & samples, std::string classNamesFile) {
-    imp = SAMPLES_READER;
-    this->samplesReaderPtr = SamplesReaderPtr( new SamplesReader(samples, classNamesFile) );
-
-}
 
 GenericDatasetReader::GenericDatasetReader(const std::vector<std::string> &paths, const std::string& classNamesFile,
-                                           const std::string &readerImplementation) {
+                                           const std::string &readerImplementation, bool imagesRequired) {
     configureAvailablesImplementations(this->availableImplementations);
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), readerImplementation) != this->availableImplementations.end()){
         imp = getImplementation(readerImplementation);
         switch (imp) {
+            case IMAGENET:
+                this->imagenetDatasetReaderPtr = ImageNetDatasetReaderPtr( new ImageNetDatasetReader(classNamesFile, imagesRequired));
+                for (auto it =paths.begin(), end= paths.end(); it != end; ++it){
+                    int idx = std::distance(paths.begin(),it);
+                    std::stringstream ss;
+                    ss << idx << "_";
+                    this->imagenetDatasetReaderPtr->appendDataset(*it,ss.str());
+                }
+                break;
             case YOLO:
-                this->yoloDatasetReaderPtr = YoloDatasetReaderPtr( new YoloDatasetReader());
+                this->yoloDatasetReaderPtr = YoloDatasetReaderPtr( new YoloDatasetReader(classNamesFile, imagesRequired));
                 for (auto it =paths.begin(), end= paths.end(); it != end; ++it){
                     int idx = std::distance(paths.begin(),it);
                     std::stringstream ss;
@@ -64,7 +68,7 @@ GenericDatasetReader::GenericDatasetReader(const std::vector<std::string> &paths
                 }
                 break;
             case SPINELLO:
-                this->spinelloDatasetReaderPtr = SpinelloDatasetReaderPtr( new SpinelloDatasetReader());
+                this->spinelloDatasetReaderPtr = SpinelloDatasetReaderPtr( new SpinelloDatasetReader(imagesRequired));
                 for (auto it =paths.begin(), end= paths.end(); it != end; ++it){
                     int idx = std::distance(paths.begin(),it);
                     std::stringstream ss;
@@ -73,7 +77,7 @@ GenericDatasetReader::GenericDatasetReader(const std::vector<std::string> &paths
                 }
                 break;
             case OWN:
-                this->ownDatasetReaderPtr = OwnDatasetReaderPtr( new OwnDatasetReader());
+                this->ownDatasetReaderPtr = OwnDatasetReaderPtr( new OwnDatasetReader(imagesRequired));
                 for (auto it =paths.begin(), end= paths.end(); it != end; ++it){
                     int idx = std::distance(paths.begin(),it);
                     std::stringstream ss;
@@ -131,8 +135,6 @@ READER_IMPLEMENTATIONS GenericDatasetReader::getImplementation(const std::string
 
 DatasetReaderPtr GenericDatasetReader::getReader() {
     switch (imp) {
-        case SAMPLES_READER:
-            return this->samplesReaderPtr;
         case IMAGENET:
             return this->imagenetDatasetReaderPtr;
         case COCO:

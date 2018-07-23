@@ -12,12 +12,14 @@
 
 class DatasetReader {
 public:
-    DatasetReader();
+    DatasetReader(const bool imagesRequired);
     virtual bool getNextSample(Sample &sample);
     void filterSamplesByID(std::vector<std::string> filteredIDS);
     void overWriteClasses(const std::string& from, const std::string& to);
     int getNumberOfElements();
     void resetReaderCounter();
+    void decrementReaderCounter(const int decrement_by = 1);
+    void incrementReaderCounter(const int increment_by = 1);
     bool getSampleBySampleID(Sample** sample, const std::string& sampleID);
     bool getSampleBySampleID(Sample** sample, const long long int sampleID);
     void printDatasetStats();
@@ -31,6 +33,8 @@ protected:
     int readerCounter;
     std::string classNamesFile;
     std::vector<std::string> classNames;
+    bool imagesRequired;
+    unsigned int skip_count = 10;           //max Number of annotations that can be skipped if Corresponding images weren't found
 };
 
 

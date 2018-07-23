@@ -7,7 +7,7 @@
 #include "DatasetConverters/ClassTypeOwn.h"
 
 
-DatasetReader::DatasetReader():readerCounter(0) {
+DatasetReader::DatasetReader(const bool imagesRequired):readerCounter(0),imagesRequired(imagesRequired) {
 }
 
 void DatasetReader::filterSamplesByID(std::vector<std::string> filteredIDS) {
@@ -33,6 +33,14 @@ int DatasetReader::getNumberOfElements() {
 void DatasetReader::resetReaderCounter() {
     this->readerCounter=0;
 
+}
+
+void DatasetReader::decrementReaderCounter(const int decrement_by) {
+    this->readerCounter -= decrement_by;
+}
+
+void DatasetReader::incrementReaderCounter(const int increment_by) {
+    this->readerCounter +=  increment_by;
 }
 
 bool DatasetReader::getNextSample(Sample &sample) {
@@ -113,6 +121,11 @@ std::string DatasetReader::getClassNamesFile() {
 }
 
 void DatasetReader::addSample(Sample sample) {
+    if (imagesRequired && (!sample.getColorImage().empty() || !sample.getDepthImage().empty())) {
+        throw std::invalid_argument("Dataset Reader Requires Images, and sample doesn't contain any !!\n"
+        "The Class which has instantiated dataset Reader, requires it to contain images, whereas the sample doesn't contain any!");
+    }
+
     this->samples.push_back(sample);
 }
 

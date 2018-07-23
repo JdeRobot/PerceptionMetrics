@@ -17,7 +17,7 @@ namespace SampleGeneratorHandler {
 
         GenericDatasetReaderPtr reader = SamplerGenerationHandler::createDatasetReaderPtr(datasetList, namesList,
                                                                                           readerImpList, filterClasses,
-                                                                                          datasetPath, namesPath);
+                                                                                          datasetPath, namesPath, true);
         if (!reader){
             return;
         }

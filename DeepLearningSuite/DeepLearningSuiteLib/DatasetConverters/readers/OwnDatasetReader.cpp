@@ -7,9 +7,13 @@
 #include <boost/lexical_cast.hpp>
 #include "DatasetConverters/readers/OwnDatasetReader.h"
 
-OwnDatasetReader::OwnDatasetReader(const std::string &path,const std::string& classNamesFile){
+OwnDatasetReader::OwnDatasetReader(const std::string &path,const std::string& classNamesFile,const bool imagesRequired):DatasetReader(imagesRequired){
     this->classNamesFile=classNamesFile;
     appendDataset(path);
+}
+
+OwnDatasetReader::OwnDatasetReader(const bool imagesRequired):DatasetReader(imagesRequired) {
+
 }
 
 bool OwnDatasetReader::appendDataset(const std::string &datasetPath, const std::string &datasetPrefix) {
@@ -38,8 +42,4 @@ bool OwnDatasetReader::appendDataset(const std::string &datasetPath, const std::
     LOG(INFO) << "Loaded: " + boost::lexical_cast<std::string>(this->samples.size()) + " samples";
     printDatasetStats();
     return true;
-}
-
-OwnDatasetReader::OwnDatasetReader() {
-
 }

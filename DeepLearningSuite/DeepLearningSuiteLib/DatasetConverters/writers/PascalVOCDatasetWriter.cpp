@@ -5,7 +5,7 @@
 #include <glog/logging.h>
 
 
-PascalVOCDatasetWriter::PascalVOCDatasetWriter(const std::string &outPath, DatasetReaderPtr &reader,const std::string& writerNamesFile,bool overWriteclassWithZero):DatasetWriter(outPath,reader),writerNamesFile(writerNamesFile),overWriteclassWithZero(overWriteclassWithZero){
+PascalVOCDatasetWriter::PascalVOCDatasetWriter(const std::string &outPath, DatasetReaderPtr &reader,const std::string& writerNamesFile, bool overWriteclassWithZero):DatasetWriter(outPath,reader),writerNamesFile(writerNamesFile),overWriteclassWithZero(overWriteclassWithZero){
 
     this->fullImagesPath=boost::filesystem::absolute(boost::filesystem::path(outPath + "/VOCDevKit/VOC20xx/JPEGImages")).string();
     this->fullLabelsPath=boost::filesystem::absolute(boost::filesystem::path(outPath + "/VOCDevKit/VOC20xx/Annotations")).string();
@@ -26,7 +26,7 @@ PascalVOCDatasetWriter::PascalVOCDatasetWriter(const std::string &outPath, Datas
 
 }
 
-void PascalVOCDatasetWriter::process(bool usedColorImage) {
+void PascalVOCDatasetWriter::process(bool writeImages, bool useDepth) {
 
     Sample sample;
 
@@ -36,6 +36,7 @@ void PascalVOCDatasetWriter::process(bool usedColorImage) {
         typeMapper = ClassTypeMapper(writerNamesFile);
 
     int count = 0;
+    int skip_count = 0;
 
     while (reader->getNextSample(sample)){
         count++;
@@ -46,14 +47,27 @@ void PascalVOCDatasetWriter::process(bool usedColorImage) {
         std::string id = sample.getSampleID();
 
         std::string imageFilePath= this->fullImagesPath + "/" + id + ".jpg";
-
         std::string labelFilePath= this->fullLabelsPath + "/" + id + ".xml";
 
         cv::Mat image;
-        if (usedColorImage)
-            image= sample.getColorImage();
-        else {
-            image = sample.getDepthColorMapImage();
+        if (writeImages) {
+            if (useDepth) {
+                image= sample.getDepthImage();
+            } else {
+                image= sample.getColorImage();
+            }
+
+            if (image.empty()) {
+                skip_count++;
+                if (skip_count > this->skip_count) {
+                    throw std::runtime_error("Maximum limit for skipping exceeded, either turn off writing images or fix issues in dataset");
+                }
+                LOG(WARNING) << "Image empty, skipping writing image. Skipped " + std::to_string(skip_count) + " of " + std::to_string(this->skip_count);
+
+            } else {
+                cv::imwrite(imageFilePath,image);
+
+            }
 
         }
 
@@ -117,7 +131,7 @@ void PascalVOCDatasetWriter::process(bool usedColorImage) {
 
         boost::property_tree::write_xml(labelFilePath, tree);
 
-        cv::imwrite(imageFilePath,image);
+
     }
 
     if (writerNamesFile.empty()) {

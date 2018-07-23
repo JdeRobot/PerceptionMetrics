@@ -37,11 +37,11 @@ public:
         GenericDatasetReaderPtr reader;
         if (inputPath.IsSequence()) {
             reader = GenericDatasetReaderPtr(
-                    new GenericDatasetReader(inputPath.as<std::vector<std::string>>(),readerNamesKey.as<std::string>(), readerImplementationKey.as<std::string>()));
+                    new GenericDatasetReader(inputPath.as<std::vector<std::string>>(),readerNamesKey.as<std::string>(), readerImplementationKey.as<std::string>(), true));
         }
         else {
             reader = GenericDatasetReaderPtr(
-                    new GenericDatasetReader(inputPath.as<std::string>(),readerNamesKey.as<std::string>(), readerImplementationKey.as<std::string>()));
+                    new GenericDatasetReader(inputPath.as<std::string>(),readerNamesKey.as<std::string>(), readerImplementationKey.as<std::string>(), true));
         }
 
 

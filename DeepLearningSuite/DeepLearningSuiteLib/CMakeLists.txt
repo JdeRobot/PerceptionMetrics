@@ -5,7 +5,7 @@ include_directories(
     ${config_INCLUDE_DIRS}
     ${depthLib_INCLUDE_DIRS}
     ${comm_INCLUDE_DIRS}
-    ${roscpp_INCLUDE_DIRS}
+    ${ros_INCLUDE_DIRS}
     ${utils_INCLUDE_DIRS}
     ${INTERFACES_CPP_DIR}
     ${jderobottypes_INCLUDE_DIRS}
@@ -35,7 +35,6 @@ SET( SOURCE_FILES
         DatasetConverters/readers/PascalVOCDatasetReader
         DatasetConverters/writers/PascalVOCDatasetWriter
         DatasetConverters/readers/ImageNetDatasetReader
-        DatasetConverters/readers/SamplesReader
         DatasetConverters/ClassTypeGeneric
         Regions/Region
         Regions/RectRegion

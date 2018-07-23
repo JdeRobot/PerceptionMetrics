@@ -1,6 +1,7 @@
 #include "CameraReader.h"
 
-CameraReader::CameraReader(const int deviceId) {
+CameraReader::CameraReader(const int deviceId):DatasetReader(true) {
+    LOG(INFO) << "Starting Capture from device with DeviceId: " << deviceId;
     this->cap =  new cv::VideoCapture(deviceId);
 
     if(!cap->isOpened())  // check if we succeeded
