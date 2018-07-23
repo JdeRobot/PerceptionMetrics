@@ -53,7 +53,7 @@ bool PascalVOCDatasetReader::appendDataset(const std::string &datasetPath, const
 
     path img_dir;
 
-    if (find_directory(boostDatasetPath.parent_path().parent_path(), "JPEGImages", img_dir)) {
+    if (find_directory(boostDatasetPath.parent_path(), "JPEGImages", img_dir)) {
         std::cout << img_dir.string() << '\n';
     } else {
         std::cout << "Corresponding Image Directory, can't be located, Skipping" << '\n';
