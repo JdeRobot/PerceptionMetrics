@@ -269,7 +269,7 @@ void MainWindow::handleEvaluateButton() {
                                                ui->listView_evaluator_dectection_dataset,ui->listView_evaluator_detection_names, ui->listView_evaluator_detection_imp,
                                                ui->listView_evaluator_classFilter,app->getConfig().asString("datasetPath"),app->getConfig().asString("namesPath"),
                                                app->getConfig().asString("inferencesPath"),app->getConfig().asString("namesPath"),ui->checkBox_evaluator_merge->isChecked(),
-                                               ui->checkBox_evaluator_mix->isChecked());
+                                               ui->checkBox_evaluator_mix->isChecked(), ui->radioButton_evaluator_iou_bbox->isChecked());
     }
     catch (const std::string& msg){
         std::cout << "Exception detected: " << msg << std::endl;

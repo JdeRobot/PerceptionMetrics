@@ -112,10 +112,10 @@ void DetectionsEvaluator::accumulateResults() {
             //std::cout << '\n';
 
         }
-        //std::cout << ap << " " << size << " " << totalCount << " " << totalAverage << '\n';
+        std::cout << totalCount << " " << totalPrecision << " " << '\n';
         this->ApDiffIou[index] = totalPrecision / totalCount;
         this->ArDiffIou[index] = totalRecall / totalCount;
-        //std::cout << "Recall Count: " << totalRecallCount << '\n';
+
         ++index;
     }
 
@@ -143,7 +143,7 @@ void DetectionsEvaluator::accumulateResults() {
 
 }
 
-void DetectionsEvaluator::evaluate() {
+void DetectionsEvaluator::evaluate(bool isIouTypeBbox) {
     int counter=-1;
     int gtSamples = this->gt->getNumberOfElements();
     int detectionSamples = this->detections->getNumberOfElements();
@@ -152,9 +152,6 @@ void DetectionsEvaluator::evaluate() {
     int start_s=clock();
 	// the code you wish to time goes here
 
-    /*while (this->detections->getNextSample(testSample)){
-        testSample.print();
-    }*/
 
     if (gtSamples != detectionSamples){
         LOG(WARNING) << "Both dataset has not the same number of elements";
@@ -166,34 +163,14 @@ void DetectionsEvaluator::evaluate() {
 
     Sample gtSample;
     Sample detectionSample;
-    //Sample* gtSamplePtr;
-
-
-
-    /*int imgIdsToEval[100] = {42, 73, 74, 133, 136, 139, 143, 164, 192, 196, 208, 241, 257, 283, 285, 294, 328, 338,
-                        357, 359, 360, 387, 395, 397, 400, 415, 428, 459, 472, 474, 486, 488, 502, 520, 536, 544,
-                        564, 569, 589, 590, 599, 623, 626, 632, 636, 641, 661, 675, 692, 693, 699, 711, 715, 724,
-                         730, 757, 761, 764, 772, 775, 776, 785, 802, 810, 827, 831, 836, 872, 873, 885, 923, 939,
-                         962, 969, 974, 985, 987, 999, 1000, 1029, 1063, 1064, 1083, 1089, 1103, 1138, 1146, 1149,
-                          1153, 1164, 1171, 1176, 1180, 1205, 1228, 1244, 1268, 1270, 1290, 1292};
-
-	*/
+    
 
     while (this->gt->getNextSample(gtSample)) {
         counter++;
-       // if (!this->gt->getSampleBySampleID(&gtSamplePtr, imgIdsToEval[counter])){
-        //    continue;
-        //}
 
 
-        //Sample* detectionSample;
         this->detections->getNextSample(detectionSample);
-        /*if(!this->detections->getSampleBySampleID(&detectionSample, gtSamplePtr->getSampleID())) {
-            std::cout << "Can't Find Sample, creating dummy sample i.e, assuming that the object detector didn't detect any objects in this image" << '\n';
-            //continue;
-            detectionSample = new Sample();
-            detectionSample->setSampleID(gtSamplePtr->getSampleID());
-        }*/
+
 
         std::cout << "Evaluating: " << detectionSample.getSampleID() << "(" << counter << "/" << gtSamples << ")" << std::endl;
 
@@ -203,19 +180,14 @@ void DetectionsEvaluator::evaluate() {
             Sample dummy;
             dummy.setSampleID(gtSample.getSampleID());
             dummy.setColorImage(gtSample.getColorImagePath());
-            evaluateSample(gtSample, dummy);
+            evaluateSample(gtSample, dummy, isIouTypeBbox);
             this->detections->decrementReaderCounter();
             const std::string error="Both dataset has not the same structure ids mismatch from:" + gtSample.getSampleID() + " to " + detectionSample.getSampleID();
             LOG(WARNING) << error;
-            //throw error;
-            //detectionSample = *dummy;
-        } else {
-            evaluateSample(gtSample,detectionSample);
-        }
 
-        //detectionSample->print();
-        //std::cout << "Ground Truth" << '\n';
-        //gtSamplePtr->print();
+        } else {
+            evaluateSample(gtSample,detectionSample, isIouTypeBbox);
+        }
 
         //std::cout << "Size: " << gtSamplePtr->getColorImage().size() << '\n';
         //Eval::printMatrix(evalmatrix);
@@ -232,6 +204,8 @@ void DetectionsEvaluator::evaluate() {
     std::cout << "Time Taken in Evaluation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC) << " seconds" << std::endl;
 
 }
+
+// Previous Code
 
 /*
 void DetectionsEvaluator::evaluateSamples(Sample gt, Sample detection) {
@@ -298,25 +272,22 @@ void DetectionsEvaluator::evaluateSamples(Sample gt, Sample detection) {
 
 }
 */
-void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection) {
+void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection, bool isIouTypeBbox) {
 
     Eval::EvalMatrix sampleEvalMatrix;
 
-    StatsUtils::computeIOUMatrix(gt, detection, sampleEvalMatrix);
+    StatsUtils::computeIOUMatrix(gt, detection, sampleEvalMatrix, isIouTypeBbox);
 
 
     std::string sampleID = gt.getSampleID();
 
-    auto detectionRegions = detection.getRectRegions()->getRegions();
-
-    auto gtRegions = gt.getRectRegions()->getRegions();
 
     /*for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); itDetection++) {
 
 
     }*/
 
-    /*for (auto it = sampleEvalMatrix.begin(); it != sampleEvalMatrix.end(); it++) {
+    for (auto it = sampleEvalMatrix.begin(); it != sampleEvalMatrix.end(); it++) {
         std::cout << "ClassID: " << it->first << '\n';
         for (auto iter = it->second.begin(); iter != it->second.end(); iter++ ) {
             for (auto iterate = iter->begin(); iterate != iter->end(); iterate++) {
@@ -325,7 +296,7 @@ void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection) {
             std::cout << '\n';
         }
 
-    }*/
+    }
 
 
 
@@ -335,107 +306,230 @@ void DetectionsEvaluator::evaluateSample(Sample gt, Sample detection) {
 
     //std::map<double, GlobalStats> this->sampleStats;
 
-    for (int i = 0; i < 10; i++) {
-        std::string current_class, previous_class;
-        int count = 0;
-        std::map<int, bool> gtIsCrowd;
-        for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++ ) {
-            if (!itGt->isCrowd) {
-                this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID, true);
-                gtIsCrowd[itGt->uniqObjectID] = false;
-                //std::cout << "0" << ' ';
-            } else {
-                gtIsCrowd[itGt->uniqObjectID] = true;
-                this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID, false);
-                //std::cout << "111111111111111111111111111111111111111111111111111111111111111111111111111111" << '\n';
-            }
-            //std::cout << itGt->classID << ' ';
-        }
+    if (isIouTypeBbox) {
 
-        for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); itDetection++) {
-            previous_class = current_class;
-            current_class = itDetection->classID;
-            if (!previous_class.empty()) {
-                if (current_class == previous_class) {
-                    count++;
+        auto gtRegions = gt.getRectRegions()->getRegions();
+        auto detectionRegions = detection.getRectRegions()->getRegions();
+
+
+        for (int i = 0; i < 10; i++) {
+            std::string current_class, previous_class;
+            int count = 0;
+            std::map<int, bool> gtIsCrowd;
+            for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++ ) {
+                if (!itGt->isCrowd) {
+                    this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID, true);
+                    gtIsCrowd[itGt->uniqObjectID] = false;
+                    //std::cout << "0" << ' ';
                 } else {
-                    count = 0;
+                    gtIsCrowd[itGt->uniqObjectID] = true;
+                    this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID, false);
+                    //std::cout << "111111111111111111111111111111111111111111111111111111111111111111111111111111" << '\n';
                 }
-            }
-            if (sampleEvalMatrix[current_class].empty()) {
-                std::cout << "IOU Matrix for " << sampleID << " and class " << current_class << " is empty for this Detection Ground Truth Pair" << '\n';
-                // This is also a false positive
-                //continue;
+                //std::cout << itGt->classID << ' ';
             }
 
-            //std::cout << itDetection->classID << " " << itDetection->confidence_score <<  '\n';
-
-
-            //std::string gtClass = this->classMapping[current_class];
-
-
-            double iou = std::min(this->iouThrs[i],1-1e-10);
-            int m = -1;
-            bool isCrowd_local;
-            std::string current_class_gt, previous_class_gt;
-            int count2 = 0;
-            for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++) {
-                previous_class_gt = current_class_gt;
-                current_class_gt = itGt->classID;
-                if (current_class_gt != current_class)
-                    continue;
-                if (!previous_class_gt.empty()) {
-                    if (current_class_gt == previous_class_gt) {
-                        count2++;
+            for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); itDetection++) {
+                previous_class = current_class;
+                current_class = itDetection->classID;
+                if (!previous_class.empty()) {
+                    if (current_class == previous_class) {
+                        count++;
                     } else {
-                        count2 = 0;
+                        count = 0;
                     }
                 }
-                //std::cout << itGt->isCrowd << " " << itGt->uniqObjectID << '\n';
-                       // if this gt already matched, and not a crowd, continue
-                if (matchingMap[this->iouThrs[i]].find(itGt->uniqObjectID) != matchingMap[this->iouThrs[i]].end() && !itGt->isCrowd) {
-                    //std::cout << "to continue " << itGt->uniqObjectID << '\n';
+                if (sampleEvalMatrix[current_class].empty()) {
+                    std::cout << "IOU Matrix for " << sampleID << " and class " << current_class << " is empty for this Detection Ground Truth Pair" << '\n';
+                    // This is also a false positive
+                    //continue;
+                }
+
+                //std::cout << itDetection->classID << " " << itDetection->confidence_score <<  '\n';
+
+
+                //std::string gtClass = this->classMapping[current_class];
+
+
+                double iou = std::min(this->iouThrs[i],1-1e-10);
+                int m = -1;
+                bool isCrowd_local;
+                std::string current_class_gt, previous_class_gt;
+                int count2 = 0;
+                for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++) {
+                    previous_class_gt = current_class_gt;
+                    current_class_gt = itGt->classID;
+                    if (current_class_gt != current_class)
+                        continue;
+                    if (!previous_class_gt.empty()) {
+                        if (current_class_gt == previous_class_gt) {
+                            count2++;
+                        } else {
+                            count2 = 0;
+                        }
+                    }
+                    //std::cout << itGt->isCrowd << " " << itGt->uniqObjectID << '\n';
+                           // if this gt already matched, and not a crowd, continue
+                    if (matchingMap[this->iouThrs[i]].find(itGt->uniqObjectID) != matchingMap[this->iouThrs[i]].end() && !itGt->isCrowd) {
+                        //std::cout << "to continue " << itGt->uniqObjectID << '\n';
+                        continue;
+                    }
+                           //if gtm[tind,gind]>0 and not iscrowd[gind]:
+                        //       continue
+                        //std::cout << "came here" << '\n';
+                           //# if dt matched to reg gt, and on ignore gt, stop
+                    if (m >-1 && !gtIsCrowd[m] && itGt->isCrowd)
+                       break;
+                           // continue to next gt unless better match made
+                    if (sampleEvalMatrix[current_class][count][count2] < iou)
+                        continue;
+                           //# if match successful and best so far, store appropriately
+                    //std::cout << "came here too " << itGt->uniqObjectID << '\n';
+                    iou=sampleEvalMatrix[current_class][count][count2];
+                    m=itGt->uniqObjectID;
+                       //# if match made store id of match for both dt and gt
+                }
+
+                //std::cout << itDetection->classID << " " << itDetection->confidence_score << ' ' << itDetection->uniqObjectID << ' ' <<  m  <<'\n';
+
+                if (m ==-1) {
+                    this->sampleStats[this->iouThrs[i]].addFalsePositive(itDetection->classID, itDetection->confidence_score);
                     continue;
                 }
-                       //if gtm[tind,gind]>0 and not iscrowd[gind]:
-                    //       continue
-                    //std::cout << "came here" << '\n';
-                       //# if dt matched to reg gt, and on ignore gt, stop
-                if (m >-1 && !gtIsCrowd[m] && itGt->isCrowd)
-                   break;
-                       // continue to next gt unless better match made
-                if (sampleEvalMatrix[current_class][count][count2] < iou)
+                if (gtIsCrowd[m]) {
+                    //std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << '\n';
+                    this->sampleStats[this->iouThrs[i]].addIgnore(itDetection->classID, itDetection->confidence_score);
                     continue;
-                       //# if match successful and best so far, store appropriately
-                //std::cout << "came here too " << itGt->uniqObjectID << '\n';
-                iou=sampleEvalMatrix[current_class][count][count2];
-                m=itGt->uniqObjectID;
-                   //# if match made store id of match for both dt and gt
+                }
+
+                matchingMap[this->iouThrs[i]][m] = itDetection->uniqObjectID;
+
+
+                this->sampleStats[this->iouThrs[i]].addTruePositive(itDetection->classID, itDetection->confidence_score);
+
+                /*dtIg[tind,dind] = gtIg[m]
+                dtm[tind,dind]  = gt[m]['id']
+                gtm[tind,m]     = d['id']
+                */
             }
-
-            //std::cout << itDetection->classID << " " << itDetection->confidence_score << ' ' << itDetection->uniqObjectID << ' ' <<  m  <<'\n';
-
-            if (m ==-1) {
-                this->sampleStats[this->iouThrs[i]].addFalsePositive(itDetection->classID, itDetection->confidence_score);
-                continue;
-            }
-            if (gtIsCrowd[m]) {
-                //std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << '\n';
-                this->sampleStats[this->iouThrs[i]].addIgnore(itDetection->classID, itDetection->confidence_score);
-                continue;
-            }
-
-            matchingMap[this->iouThrs[i]][m] = itDetection->uniqObjectID;
-
-
-            this->sampleStats[this->iouThrs[i]].addTruePositive(itDetection->classID, itDetection->confidence_score);
-
-            /*dtIg[tind,dind] = gtIg[m]
-            dtm[tind,dind]  = gt[m]['id']
-            gtm[tind,m]     = d['id']
-            */
         }
+
+
+    } else {
+
+        auto gtRegions = gt.getRleRegions()->getRegions();
+        auto detectionRegions = detection.getRleRegions()->getRegions();
+
+
+        for (int i = 0; i < 10; i++) {
+            std::string current_class, previous_class;
+            int count = 0;
+            std::map<int, bool> gtIsCrowd;
+            for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++ ) {
+                if (!itGt->isCrowd) {
+                    this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID, true);
+                    gtIsCrowd[itGt->uniqObjectID] = false;
+                    //std::cout << "0" << ' ';
+                } else {
+                    gtIsCrowd[itGt->uniqObjectID] = true;
+                    this->sampleStats[this->iouThrs[i]].addGroundTruth(itGt->classID, false);
+                    //std::cout << "111111111111111111111111111111111111111111111111111111111111111111111111111111" << '\n';
+                }
+                //std::cout << itGt->classID << ' ';
+            }
+
+            for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); itDetection++) {
+                previous_class = current_class;
+                current_class = itDetection->classID;
+                if (!previous_class.empty()) {
+                    if (current_class == previous_class) {
+                        count++;
+                    } else {
+                        count = 0;
+                    }
+                }
+                if (sampleEvalMatrix[current_class].empty()) {
+                    std::cout << "IOU Matrix for " << sampleID << " and class " << current_class << " is empty for this Detection Ground Truth Pair" << '\n';
+                    // This is also a false positive
+                    //continue;
+                }
+
+                //std::cout << itDetection->classID << " " << itDetection->confidence_score <<  '\n';
+
+
+                //std::string gtClass = this->classMapping[current_class];
+
+
+                double iou = std::min(this->iouThrs[i],1-1e-10);
+                int m = -1;
+                bool isCrowd_local;
+                std::string current_class_gt, previous_class_gt;
+                int count2 = 0;
+                for (auto itGt = gtRegions.begin(); itGt != gtRegions.end(); itGt++) {
+                    previous_class_gt = current_class_gt;
+                    current_class_gt = itGt->classID;
+                    if (current_class_gt != current_class)
+                        continue;
+                    if (!previous_class_gt.empty()) {
+                        if (current_class_gt == previous_class_gt) {
+                            count2++;
+                        } else {
+                            count2 = 0;
+                        }
+                    }
+                    //std::cout << itGt->isCrowd << " " << itGt->uniqObjectID << '\n';
+                           // if this gt already matched, and not a crowd, continue
+                    if (matchingMap[this->iouThrs[i]].find(itGt->uniqObjectID) != matchingMap[this->iouThrs[i]].end() && !itGt->isCrowd) {
+                        //std::cout << "to continue " << itGt->uniqObjectID << '\n';
+                        continue;
+                    }
+                           //if gtm[tind,gind]>0 and not iscrowd[gind]:
+                        //       continue
+                        //std::cout << "came here" << '\n';
+                           //# if dt matched to reg gt, and on ignore gt, stop
+                    if (m >-1 && !gtIsCrowd[m] && itGt->isCrowd)
+                       break;
+                           // continue to next gt unless better match made
+                    if (sampleEvalMatrix[current_class][count][count2] < iou)
+                        continue;
+                           //# if match successful and best so far, store appropriately
+                    //std::cout << "came here too " << itGt->uniqObjectID << '\n';
+                    iou=sampleEvalMatrix[current_class][count][count2];
+                    m=itGt->uniqObjectID;
+                       //# if match made store id of match for both dt and gt
+                }
+
+                //std::cout << itDetection->classID << " " << itDetection->confidence_score << ' ' << itDetection->uniqObjectID << ' ' <<  m  <<'\n';
+
+                if (m ==-1) {
+                    this->sampleStats[this->iouThrs[i]].addFalsePositive(itDetection->classID, itDetection->confidence_score);
+                    continue;
+                }
+                if (gtIsCrowd[m]) {
+                    //std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << '\n';
+                    this->sampleStats[this->iouThrs[i]].addIgnore(itDetection->classID, itDetection->confidence_score);
+                    continue;
+                }
+
+                matchingMap[this->iouThrs[i]][m] = itDetection->uniqObjectID;
+
+
+                this->sampleStats[this->iouThrs[i]].addTruePositive(itDetection->classID, itDetection->confidence_score);
+
+                /*dtIg[tind,dind] = gtIg[m]
+                dtm[tind,dind]  = gt[m]['id']
+                gtm[tind,m]     = d['id']
+                */
+            }
+        }
+
+
+
     }
+
+
+
+
 
     //std::cout << sampleID << '\n';
 

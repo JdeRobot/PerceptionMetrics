@@ -7,6 +7,7 @@
 
 
 #include <opencv2/opencv.hpp>
+#include <boost/shared_ptr.hpp>
 
 struct Regions{
     Regions(){};
@@ -17,5 +18,7 @@ struct Regions{
     virtual void print()=0;
 
 };
+
+typedef boost::shared_ptr<Regions> RegionsPtr;
 
 #endif //SAMPLERGENERATOR_REGION_H

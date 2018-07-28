@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_1">
      <attribute name="title">
@@ -1005,6 +1005,65 @@
       <property name="checked">
        <bool>true</bool>
       </property>
+     </widget>
+     <widget class="QGroupBox" name="evaluator_ioutype_groupbox">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>130</y>
+        <width>201</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Ubuntu</family>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
+        <kerning>false</kerning>
+       </font>
+      </property>
+      <property name="whatsThis">
+       <string extracomment="Camera Parametrs specific to Streams only"/>
+      </property>
+      <property name="title">
+       <string>IOU Type</string>
+      </property>
+      <widget class="QRadioButton" name="radioButton_evaluator_iou_bbox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>171</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Use Bounding Boxes</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_evaluator_iou_seg">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>101</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Use Masks</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_4">

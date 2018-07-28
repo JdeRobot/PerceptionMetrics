@@ -131,17 +131,24 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
     int counter = 0;
 
+    bool hasBbox = true;
+
     for (rapidjson::Value::ConstValueIterator itr = a.Begin(); itr != a.End(); ++itr) {
 
         unsigned long int image_id = (*itr)["image_id"].GetUint64();
 
         int category = (*itr)["category_id"].GetUint();
 
+        hasBbox = (*itr).HasMember("bbox");
         double x, y, w, h;
-        x = (*itr)["bbox"][0].GetDouble();
-        y = (*itr)["bbox"][1].GetDouble();
-        w = (*itr)["bbox"][2].GetDouble();
-        h = (*itr)["bbox"][3].GetDouble();
+
+        if (hasBbox) {
+            x = (*itr)["bbox"][0].GetDouble();
+            y = (*itr)["bbox"][1].GetDouble();
+            w = (*itr)["bbox"][2].GetDouble();
+            h = (*itr)["bbox"][3].GetDouble();
+
+        }
         bool isCrowd = (*itr).HasMember("iscrowd") ? ( (*itr)["iscrowd"].GetInt() > 0 ? true : false) : false;
 
         /*if (isCrowd) {
@@ -167,25 +174,28 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
             LOG(INFO) << "Loading Instance for Sample: " + num_string;
 
-            RectRegionsPtr rectRegions(new RectRegions());
 
             typeConverter.setId(category - 1);   //since index starts from 0 and categories from 1
 
+            if (hasBbox) {
+
+                RectRegionsPtr rectRegions(new RectRegions());
+
+                cv::Rect_<double> bounding = cv::Rect_<double>(x , y , w , h);
 
 
-            cv::Rect_<double> bounding = cv::Rect_<double>(x , y , w , h);
-
-
-            if ((*itr).HasMember("score")) {
-                //Adding Score
-                rectRegions->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble(), isCrowd);
-            } else {
-                rectRegions->add(bounding,typeConverter.getClassString(), isCrowd);
+                if ((*itr).HasMember("score")) {
+                    //Adding Score
+                    rectRegions->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble(), isCrowd);
+                } else {
+                    rectRegions->add(bounding,typeConverter.getClassString(), isCrowd);
+                }
+                sample.setRectRegions(rectRegions);
             }
-            sample.setRectRegions(rectRegions);
+
 
             if ((*itr).HasMember("segmentation"))
-                appendSegmentationRegion((*itr)["segmentation"], sample, typeConverter, isCrowd);
+                appendSegmentationRegion(*itr, sample, typeConverter, isCrowd);
 
             //this->samples.push_back(sample);
 
@@ -196,23 +206,25 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
             typeConverter.setId(category - 1);   //since index starts from 0 and categories from 1
 
-            cv::Rect_<double> bounding(x , y , w , h);
-
-
             Sample& sample = this->map_image_id[image_id];
 
+            if (hasBbox) {
 
-            RectRegionsPtr rectRegions_old = sample.getRectRegions();
+                cv::Rect_<double> bounding(x , y , w , h);
 
+                RectRegionsPtr rectRegions_old = sample.getRectRegions();
 
-            if ((*itr).HasMember("score")) {
-                //Adding Score
-                rectRegions_old->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble(), isCrowd);
-            } else {
-                rectRegions_old->add(bounding,typeConverter.getClassString(), isCrowd);
+                if ((*itr).HasMember("score")) {
+                    //Adding Score
+                    rectRegions_old->add(bounding,typeConverter.getClassString(),(*itr)["score"].GetDouble(), isCrowd);
+                } else {
+                    rectRegions_old->add(bounding,typeConverter.getClassString(), isCrowd);
+                }
+
+                sample.setRectRegions(rectRegions_old);
             }
 
-            sample.setRectRegions(rectRegions_old);
+
 
             if ((*itr).HasMember("segmentation"))
                 appendSegmentationRegion(*itr, sample, typeConverter, isCrowd);

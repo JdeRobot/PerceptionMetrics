@@ -11,7 +11,9 @@ SampleGeneratorHandler::Evaluator::process(QListView *datasetListGT, QListView *
                                            QListView *datasetListDetect, QListView *namesListDetect,
                                            QListView *readerImpListDetect, QListView *filterClasses,
                                            const std::string &datasetPath, const std::string &namesGTPath,
-                                           const std::string &inferencesPath, const std::string &namesPath,bool overWriterPersonClasses,bool enableMixEvaluation) {
+                                           const std::string &inferencesPath, const std::string &namesPath,
+                                           bool overWriterPersonClasses,bool enableMixEvaluation,
+                                           bool isIouTypeBbox) {
 
     GenericDatasetReaderPtr readerGT = SamplerGenerationHandler::createDatasetReaderPtr(datasetListGT, namesListGT,
                                                                                         readerImpListGT, filterClasses,
@@ -42,7 +44,7 @@ SampleGeneratorHandler::Evaluator::process(QListView *datasetListGT, QListView *
         evaluator->addValidMixClass("person", "person-falling");
         evaluator->addValidMixClass("person", "person-fall");
     }
-    evaluator->evaluate();
+    evaluator->evaluate(isIouTypeBbox);
     evaluator->accumulateResults();
 
 }
