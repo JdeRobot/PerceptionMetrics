@@ -63,7 +63,12 @@ void COCODatasetWriter::process(bool writeImages, bool useDepth) {
     int id = 0;
 
     while (reader->getNextSample(sample)){
+
         auto boundingBoxes = sample.getRectRegions()->getRegions();
+        auto segmentationRegions = sample.getRleRegions()->getRegions();
+        int width = sample.getSampleWidth();
+        int height = sample.getSampleHeight();
+
         std::string id_string = sample.getSampleID();
         id++;
         id_string.erase(std::remove_if(id_string.begin(), id_string.end(), isspace), id_string.end());
@@ -115,15 +120,15 @@ void COCODatasetWriter::process(bool writeImages, bool useDepth) {
             writer_imgs.Key("id");
             writer_imgs.Int(num_id);
             writer_imgs.Key("height");
-            writer_imgs.Int(image.size().height);
+            writer_imgs.Int(height);
             writer_imgs.Key("width");
-            writer_imgs.Int(image.size().width);
+            writer_imgs.Int(width);
             writer_imgs.EndObject();
 
         }
 
 
-
+        int i = 0;
         for (auto it = boundingBoxes.begin(), end=boundingBoxes.end(); it != end; ++it){
 
             double x = it->region.x;
@@ -141,7 +146,7 @@ void COCODatasetWriter::process(bool writeImages, bool useDepth) {
                     itr = find(this->outputClasses.begin(), this->outputClasses.end(), it->classID);
                     if (itr == this->outputClasses.end()) {
                         this->outputClasses.push_back(it->classID);
-                        classId = std::distance(this->outputClasses.begin(), itr) + 1;
+                        classId = this->outputClasses.size() - 1;
                     } else {
                         classId = std::distance(this->outputClasses.begin(), itr);
                     }
@@ -183,8 +188,23 @@ void COCODatasetWriter::process(bool writeImages, bool useDepth) {
             writer_anns.Double(confidence_score);
             writer_anns.Key("image_id");
             writer_anns.Int(num_id);
-            writer_anns.EndObject();
 
+            if (!segmentationRegions.empty()) {
+                writer_anns.Key("segmentation");
+                writer_anns.StartObject();
+                writer_anns.Key("size");
+                writer_anns.StartArray();
+                writer_anns.Int(height);
+                writer_anns.Int(width);
+                writer_anns.EndArray();
+                writer_anns.Key("counts");
+                writer_anns.String(rleToString(&(segmentationRegions[i].region)));
+                writer_anns.EndObject();
+
+            }
+
+            writer_anns.EndObject();
+            i++;
 
         }
 

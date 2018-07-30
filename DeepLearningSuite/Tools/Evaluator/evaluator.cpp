@@ -19,6 +19,7 @@ public:
         this->requiredArguments.push_back("readerImplementationGT");
         this->requiredArguments.push_back("readerImplementationDetection");
         this->requiredArguments.push_back("readerNames");
+        this->requiredArguments.push_back("iouType");
 
 
     };
@@ -29,7 +30,7 @@ public:
         YAML::Node readerImplementationGTKey=this->config.getNode("readerImplementationGT");
         YAML::Node readerImplementationDetectionKey=this->config.getNode("readerImplementationDetection");
         YAML::Node readerNamesKey=this->config.getNode("readerNames");
-
+        std::string iouType = this->config.asString("iouType");
 
 
         GenericDatasetReaderPtr readerGT(new GenericDatasetReader(inputPathGT.as<std::string>(),readerNamesKey.as<std::string>(), readerImplementationGTKey.as<std::string>(), false));
@@ -38,12 +39,16 @@ public:
 
         DetectionsEvaluatorPtr evaluator(new DetectionsEvaluator(readerGT->getReader(),readerDetection->getReader(),true));
         //todo ñapa
-        evaluator->addValidMixClass("person", "person-falling");
-        evaluator->addValidMixClass("person", "person-fall");
-        evaluator->addClassToDisplay("person");
-        evaluator->addClassToDisplay("person-falling");
-        evaluator->addClassToDisplay("person-fall");
-        evaluator->evaluate();
+
+        bool isIouTypeBbox;
+
+        if (iouType == "segm" || iouType == "bbox") {
+            isIouTypeBbox = iouType == "bbox";
+        } else {
+            throw std::invalid_argument("Evaluation iouType can either be 'segm' or 'bbox'\n");
+        }
+
+        evaluator->evaluate(isIouTypeBbox);
         evaluator->accumulateResults();
 
 

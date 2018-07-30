@@ -19,6 +19,7 @@ public:
         this->requiredArguments.push_back("Inferencers.inferencerConfig");
         this->requiredArguments.push_back("Inferencers.inferencerWeights");
         this->requiredArguments.push_back("Inferencers.inferencerNames");
+        this->requiredArguments.push_back("Inferencers.iouType");
         this->requiredArguments.push_back("outputCSVPath");
 
 
@@ -107,6 +108,16 @@ public:
 
                 std::string inferencerImplementation = (*iter)["inferencerImplementation"].as<std::string>();
 
+                std::string inferencerIouType = (*iter)["iouType"].as<std::string>();
+
+                bool isIouTypeBbox;
+
+                if (inferencerIouType == "segm" || inferencerIouType == "bbox") {
+                    isIouTypeBbox = inferencerIouType == "bbox";
+                } else {
+                    throw std::invalid_argument("Evaluation iouType can either be 'segm' or 'bbox'\n");
+                }
+
                 bool useDepth = (*iter)["useDepth"] ? (*iter)["useDepth"].as<bool>() : false;
 
                 reader->getReader()->resetReaderCounter();
@@ -135,7 +146,7 @@ public:
 
                 DetectionsEvaluatorPtr evaluator(new DetectionsEvaluator(reader->getReader(),readerDetection,true));
 
-                evaluator->evaluate();
+                evaluator->evaluate(isIouTypeBbox);
                 evaluator->accumulateResults();
                 /*Extract weights name with folder*/
                 std::string path = inferencerWeights;

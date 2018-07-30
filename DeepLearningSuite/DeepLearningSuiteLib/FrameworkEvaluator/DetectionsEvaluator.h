@@ -17,7 +17,7 @@
 class DetectionsEvaluator {
 public:
     DetectionsEvaluator(DatasetReaderPtr gt, DatasetReaderPtr detections, bool debug=false);
-    void evaluate();
+    void evaluate(bool isIouTypeBbox);
     void accumulateResults();
     void addValidMixClass(const std::string classA, const std::string classB);
     void addClassToDisplay(const std::string& classID);
@@ -34,7 +34,7 @@ private:
     std::unordered_map<std::string, std::string> classMapping;
 
     //void evaluateSamples(Sample gt, Sample detection);
-    void evaluateSample(Sample gt, Sample detection);
+    void evaluateSample(Sample gt, Sample detection, bool isIouTypeBbox);
 
     void printStats();
 

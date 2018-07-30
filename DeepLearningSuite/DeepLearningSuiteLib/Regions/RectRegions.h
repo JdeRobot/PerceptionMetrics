@@ -6,7 +6,6 @@
 #define SAMPLERGENERATOR_RECTREGIONS_H
 
 #include <opencv2/opencv.hpp>
-#include <boost/shared_ptr.hpp>
 #include "Regions.h"
 #include "RectRegion.h"
 #include <algorithm>

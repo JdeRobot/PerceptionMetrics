@@ -17,6 +17,12 @@ void SampleGeneratorHandler::Converter::process(QListView *datasetList, QListVie
                                                                                       readerImpList, filterClasses,
                                                                                       datasetPath, namesPath, writeImages);   // Images Required for dataset if and
                                                                                                                               // only if write images is true
+
+
+    if (!reader)
+        return;                                                                                                                        
+
+
     std::vector<std::string> writerImp;
     Utils::getListViewContent(writerImpList,writerImp,"");
     std::vector<std::string> writerNames;

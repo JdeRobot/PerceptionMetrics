@@ -28,6 +28,7 @@ YoloDatasetReader::YoloDatasetReader(const std::string& classNamesFile, bool ima
 
 bool YoloDatasetReader::appendDataset(const std::string &datasetPath, const std::string &datasetPrefix) {
     std::ifstream inFile(datasetPath);
+    ClassTypeGeneric typeConverter(this->classNamesFile);
 
     std::string line;
     while (getline(inFile,line)){
@@ -41,7 +42,7 @@ bool YoloDatasetReader::appendDataset(const std::string &datasetPath, const std:
         std::ifstream labelFile(line);
         std::string data;
         RectRegionsPtr rectRegions(new RectRegions());
-        ClassTypeGeneric typeConverter(this->classNamesFile);
+
 
         while(getline(labelFile,data)) {
             std::istringstream iss(data);

@@ -7,6 +7,7 @@
 
 #include <Regions/RectRegions.h>
 #include <Regions/ContourRegions.h>
+#include <Regions/RleRegions.h>
 
 struct Sample {
     Sample(const std::string& path, const std::string& id, bool loadDepth=true);
@@ -19,18 +20,23 @@ struct Sample {
     Sample(const cv::Mat& colorImage, const cv::Mat& depthImage, const ContourRegionsPtr& contourRegions);
     Sample(const cv::Mat& colorImage, const cv::Mat& depthImage, const RectRegionsPtr& rectRegions, const ContourRegionsPtr& contourRegions);
     ~Sample();
+    void setSampleDims(const int width, const int height);
     void setColorImage(const std::string& imagePath);
     void setColorImage(const cv::Mat& image);
     void setDepthImage(const cv::Mat& image);
     void setDepthImage(const std::string& imagePath);
     void setRectRegions(const RectRegionsPtr& regions);
     void setContourRegions(const ContourRegionsPtr& regions);
+    void setRleRegions(const RleRegionsPtr& regions);
     void setSampleID(const std::string& sampleID);
     void clearColorImage();                         // For better memory management
     void clearDepthImage();                         // For better memeory management
 
+    int getSampleWidth()const;
+    int getSampleHeight()const;
     RectRegionsPtr getRectRegions()const;
-    ContourRegionsPtr getContourRegions();
+    ContourRegionsPtr getContourRegions()const;
+    RleRegionsPtr getRleRegions()const;
     std::string getColorImagePath() const;
     std::string getDepthImagePath() const;
     cv::Mat getColorImage() const;
@@ -55,11 +61,14 @@ struct Sample {
 private:
     RectRegionsPtr rectRegions;
     ContourRegionsPtr contourRegions;
+    RleRegionsPtr rleRegions;
     cv::Mat colorImage;
     std::string colorImagePath;
     cv::Mat depthImage;
     std::string depthImagePath;
     std::string sampleID;
+    int width = -1;
+    int height = -1;
 };
 
 

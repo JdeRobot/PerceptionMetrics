@@ -13,6 +13,7 @@ Sample::Sample() {
     this->depthImagePath="";
     this->rectRegions=RectRegionsPtr(new RectRegions());
     this->contourRegions=ContourRegionsPtr(new ContourRegions());
+    this->rleRegions=RleRegionsPtr(new RleRegions());
 
 }
 
@@ -57,6 +58,11 @@ Sample::Sample(const cv::Mat &colorImage, const cv::Mat &depthImage, const RectR
 
 }
 
+void Sample::setSampleDims(const int width, const int height) {
+    this->width = width;
+    this->height = height;
+}
+
 void Sample::setColorImage(const cv::Mat &image) {
     image.copyTo(this->colorImage);
 }
@@ -83,12 +89,47 @@ void Sample::setContourRegions(const ContourRegionsPtr &regions) {
     this->contourRegions=regions;
 }
 
+void Sample::setRleRegions(const RleRegionsPtr& regions) {
+    this->rleRegions=regions;
+}
+
+
+int Sample::getSampleWidth() const {
+    if (this->width != -1)
+        return this->width;
+
+    if (!this->getColorImage().empty())
+        return this->getColorImage().cols;
+
+    if (!this->getDepthImage().empty())
+        return this->getDepthImage().cols;
+
+    return -1;
+}
+
+int Sample::getSampleHeight() const {
+    if (this->height != -1)
+        return this->height;
+
+    if (!this->getColorImage().empty())
+        return this->getColorImage().rows;
+
+    if (!this->getDepthImage().empty())
+        return this->getDepthImage().rows;
+
+    return -1;
+}
+
 RectRegionsPtr Sample::getRectRegions() const{
     return this->rectRegions;
 }
 
-ContourRegionsPtr Sample::getContourRegions() {
+ContourRegionsPtr Sample::getContourRegions() const{
     return this->contourRegions;
+}
+
+RleRegionsPtr Sample::getRleRegions() const{
+    return this->rleRegions;
 }
 
 std::string Sample::getColorImagePath() const{
@@ -146,6 +187,8 @@ cv::Mat Sample::getSampledColorImage() const{
         this->rectRegions->drawRegions(image);
     if (this->contourRegions)
         this->contourRegions->drawRegions(image);
+    if (this->rleRegions)
+        this->rleRegions->drawRegions(image);
     return image;
 }
 

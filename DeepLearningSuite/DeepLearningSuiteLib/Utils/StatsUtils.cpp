@@ -55,45 +55,86 @@ double StatsUtils::getIOU(const cv::Rect_<double> &gt, const cv::Rect_<double> &
     return iouValue;*/
 }
 
-void StatsUtils::computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix& evalmatrix) {
-    auto detectionRegions = detection.getRectRegions()->getRegions();
-    auto gtRegions = gt.getRectRegions()->getRegions();
-
-    std::string sampleID = gt.getSampleID();
+void StatsUtils::computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix& evalmatrix, bool isIouTypeBbox) {
 
     if (!evalmatrix.empty()) {
         throw std::runtime_error("EvalMatrix with sample ID isn't empty, Data might be duplicated while Evaluation");
     }
 
-    // Sorting RectRegions by confidence_score for same classID only
-    // So, first of all it is necessary to segregate out RectRegions with
-    // different classIds
+
+    if (isIouTypeBbox) {
+
+        auto detectionRegions = detection.getRectRegions()->getRegions();
+        auto gtRegions = gt.getRectRegions()->getRegions();
+
+        // Sorting RectRegions by confidence_score for same classID only
+        // So, first of all it is necessary to segregate out RectRegions with
+        // different classIds
 
 
-    for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); ++itDetection) {
+        for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); ++itDetection) {
 
-        std::string classID = itDetection->classID;
-        std::vector<double> detectionIOUclassRow;
+            std::string classID = itDetection->classID;
+            std::vector<double> detectionIOUclassRow;
 
-        for(auto itgt = gtRegions.begin(); itgt != gtRegions.end(); itgt++) {
+            for(auto itgt = gtRegions.begin(); itgt != gtRegions.end(); itgt++) {
 
-            if (itgt->classID != classID) {
-                continue;
+                if (itgt->classID != classID) {
+                    continue;
+                }
+
+                double iouValue;
+                //std::cout << itDetection->classID << " " << itDetection->confidence_score <<'\n';
+                iouValue = StatsUtils::getIOU(itgt->region, itDetection->region, itgt->isCrowd);
+                //std::cout << "Bbox Gt: " << itgt->region.x << " " << itgt->region.y << " " << itgt->region.width << " " << itgt->region.height << '\n';
+                //std::cout << "Bbox Dt: " << itDetection->region.x << " " << itDetection->region.y << " " << itDetection->region.width << " " << itDetection->region.height << '\n';
+                //std::cout << iouValue << '\n';
+                detectionIOUclassRow.push_back(iouValue);
+
             }
 
-            double iouValue;
-            //std::cout << itDetection->classID << " " << itDetection->confidence_score <<'\n';
-            iouValue = StatsUtils::getIOU(itgt->region, itDetection->region, itgt->isCrowd);
-            //std::cout << "Bbox Gt: " << itgt->region.x << " " << itgt->region.y << " " << itgt->region.width << " " << itgt->region.height << '\n';
-            //std::cout << "Bbox Dt: " << itDetection->region.x << " " << itDetection->region.y << " " << itDetection->region.width << " " << itDetection->region.height << '\n';
-            //std::cout << iouValue << '\n';
-            detectionIOUclassRow.push_back(iouValue);
+            evalmatrix[classID].push_back(detectionIOUclassRow);
 
         }
 
-        evalmatrix[classID].push_back(detectionIOUclassRow);
+    } else {
+
+        std::cout << "For Seg regions" << '\n';
+
+        auto detectionRegions = detection.getRleRegions()->getRegions();
+        auto gtRegions = gt.getRleRegions()->getRegions();
+
+        int m = gtRegions.size();
+        int n = detectionRegions.size();
+
+        for (auto itDetection = detectionRegions.begin(); itDetection != detectionRegions.end(); ++itDetection) {
+
+            std::string classID = itDetection->classID;
+            std::vector<double> detectionIOUclassRow;
+
+            for(auto itgt = gtRegions.begin(); itgt != gtRegions.end(); itgt++) {
+
+                if (itgt->classID != classID) {
+                    continue;
+                }
+
+                double iouValue;
+                //std::cout << itDetection->classID << " " << itDetection->confidence_score <<'\n';
+                //iouValue = StatsUtils::getIOU(itgt->region, itDetection->region, itgt->isCrowd);
+                unsigned char isCrowd = itgt->isCrowd ? 1 : 0;
+                rleIou(&(itDetection->region), &(itgt->region), 1, 1, &isCrowd, &iouValue);
+                //std::cout << "Bbox Gt: " << itgt->region.x << " " << itgt->region.y << " " << itgt->region.width << " " << itgt->region.height << '\n';
+                //std::cout << "Bbox Dt: " << itDetection->region.x << " " << itDetection->region.y << " " << itDetection->region.width << " " << itDetection->region.height << '\n';
+                //std::cout << iouValue << '\n';
+                detectionIOUclassRow.push_back(iouValue);
+
+            }
+
+            evalmatrix[classID].push_back(detectionIOUclassRow);
+
+        }
 
     }
 
-    //std::cout << "Matrix Computed" << '\n';
+
 }

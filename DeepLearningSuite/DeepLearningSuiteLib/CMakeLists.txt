@@ -32,6 +32,7 @@ SET( SOURCE_FILES
         GenerationUtils/BoundingRectGuiMover
         GenerationUtils/DetectionsValidator
         Regions/RectRegions
+        Regions/RleRegions
         Regions/ContourRegions
         Regions/Regions.h
         DatasetConverters/DatasetConverter
@@ -50,7 +51,9 @@ SET( SOURCE_FILES
         DatasetConverters/ClassTypeGeneric
         Regions/Region
         Regions/RectRegion
+        Regions/RleRegion
         Regions/ContourRegion
+        Regions/maskApi
         Detectors/Detector.h
         DatasetConverters/readers/SpinelloDatasetReader
         FrameworkEvaluator/FrameworkInferencer

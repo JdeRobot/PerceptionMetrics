@@ -12,7 +12,7 @@
 class StatsUtils {
 public:
     static double getIOU(const cv::Rect_<double> &gt, const cv::Rect_<double> &detection, bool isCrowd);
-    static void computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix& evalmatrix);
+    static void computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix& evalmatrix, bool isIouTypeBbox);
 };
 
 
