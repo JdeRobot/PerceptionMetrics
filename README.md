@@ -46,57 +46,55 @@ Sample Generation Tool has been developed in order to simply the process of gene
 <table>
 <tr>
 <td>
-   <center>**Ubuntu**</center>
+<center><b>Ubuntu</b></center>
 </td>
 <td>
-<center>**MacOS**</center>
-</td>
-</tr>
-<tr>
-<td>
-   ```
-   sudo apt install build-essential git cmake rapidjson-dev libboost-dev libboost-filesystem-dev libboost-system-dev
-   ```
-</td>
-<td>
-  ```
-  sudo easy_install numpy
-  ```
-  <br/>
-  ```
-  brew install cmake boost rapidjson
-  ```
+<center><b>MacOS</b></center>
 </td>
 </tr>
 <tr>
 <td>
-   ```
-   sudo apt install libgoogle-glog-dev libyaml-cpp-dev qt5-default libqt5svg5-dev
-   ```
+<pre>
+sudo apt install build-essential git cmake rapidjson-dev
+sudo apt install libboost-dev libboost-filesystem-dev libboost-system-dev
+</pre>
 </td>
 <td>
-  ```
-  brew install glog yaml-cpp qt
-  ```
-  <br/>
-  Also, just add qt in your PATH by running:<br/>
-  ```
-  echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
-  ```
+<pre>
+sudo easy_install numpy
+brew install cmake boost rapidjson
+</pre>
 </td>
 </tr>
 <tr>
 <td>
-   ```
-   sudo apt install libopencv-dev
-   ```
-   <br/>
-   For Caffe Support Opencv 3.4 or greater is necessary. Instructions for the same can be found [here](https://github.com/JdeRobot/dl-DetectionSuite/wiki/FrameWorks#caffe).
+<pre>
+sudo apt install libgoogle-glog-dev libyaml-cpp-dev qt5-default libqt5svg5-dev
+</pre>
 </td>
 <td>
-  ```
-  brew install opencv
-  ```
+<pre>
+brew install glog yaml-cpp qt
+</pre>
+<br/>
+Also, just add qt in your PATH by running:<br/>
+<pre>
+echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
+</pre>
+</td>
+</tr>
+<tr>
+<td>
+<pre>
+sudo apt install libopencv-dev
+</pre>
+<br/>
+For Caffe Support Opencv 3.4 or greater is necessary. Instructions for the same can be found [here](https://github.com/JdeRobot/dl-DetectionSuite/wiki/FrameWorks#caffe).
+</td>
+<td>
+<pre>
+brew install opencv
+</pre>
 
 </td>
 </tr>
