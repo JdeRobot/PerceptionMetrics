@@ -3,10 +3,10 @@ OPTION(ENABLE_QT "Enable Qt support for GUI" ON)
 IF(ENABLE_QT)
 
 	FIND_PACKAGE(Qt5Core)                   # Just to print error if Qt isn't found
-  FIND_PACKAGE(Qt5Widgets QUIET)
-  FIND_PACKAGE(Qt5Gui QUIET)
-	FIND_PACKAGE(Qt5Svg QUIET)
-	FIND_PACKAGE(Qt5OpenGL QUIET)
+  FIND_PACKAGE(Qt5Widgets)
+  FIND_PACKAGE(Qt5Gui)
+	FIND_PACKAGE(Qt5Svg)
+	FIND_PACKAGE(Qt5OpenGL)
 
 	IF (Qt5Widgets_FOUND AND Qt5Core_FOUND AND Qt5Gui_FOUND AND Qt5Svg_FOUND AND Qt5OpenGL_FOUND)
 
@@ -26,6 +26,7 @@ IF(ENABLE_QT)
   		 ${Qt5OpenGL_LIBRARIES}
   	)
 
+    message(${QT_INCLUDE_DIRS})
     SET(QT_FOUND TRUE)
   ELSE()
 

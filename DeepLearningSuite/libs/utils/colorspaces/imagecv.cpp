@@ -9,6 +9,29 @@
 #include <unistd.h>
 #include <stdexcept>
 
+#if CV_MAJOR_VERSION == 2
+
+namespace cv {            // Fix for different opencv versions
+
+  #define COLOR_BGR2RGB CV_BGR2RGB
+  #define COLOR_RGB2BGR CV_RGB2BGR
+  #define COLOR_RGB2GRAY CV_RGB2GRAY
+  #define COLOR_RGB2YCrCb CV_RGB2YCrCb
+  #define COLOR_RGB2HSV CV_RGB2HSV
+  #define COLOR_RGB2YCrCb CV_RGB2YCrCb
+  #define COLOR_YCrCb2RGB CV_YCrCb2RGB
+  #define COLOR_GRAY2RGB CV_GRAY2RGB
+  #define COLOR_HSV2RGB CV_HSV2RGB
+  #define COLOR_YCrCb2RGB CV_YCrCb2RGB
+  #define COLOR_RGB2YCrCb CV_RGB2YCrCb
+
+
+
+}
+
+#endif
+
+
 namespace colorspaces {
   Image::Format::Format(const std::string name, const int id, const int cvType, imageCtor ctor, imageCvt cvt)
     : name(name), id(id), cvType(cvType),ctor(ctor),cvt(cvt) {}
@@ -40,9 +63,9 @@ namespace colorspaces {
       return ctor(width,height,data);
     return 0;
   }
-   
+
   Image& Image::convert(Image& dst) const throw(NoConversion){
-    //std::cerr << "colorspaces: imagecv: convert: " << *_format << "->" << *dst._format << std::endl; 
+    //std::cerr << "colorspaces: imagecv: convert: " << *_format << "->" << *dst._format << std::endl;
     return _format->cvt(*this,dst);
   }
 
@@ -50,7 +73,7 @@ namespace colorspaces {
     Image copy(cv::Mat::clone(),_format);
     return copy;
   }
- 
+
 
   //static definitions
   const Image::FormatPtr Image::FORMAT_NONE 			= Image::Format::createFormat("NONE",0,0,0);
@@ -84,7 +107,7 @@ namespace colorspaces {
 
   ImageRGB8::ImageRGB8(const int width, const int height)
     : Image(width,height,FORMAT_RGB8) {}
-    
+
   ImageRGB8::ImageRGB8(const int width, const int height, void *const data)
     : Image(width,height,FORMAT_RGB8,data) {}
 
@@ -98,13 +121,13 @@ namespace colorspaces {
     if (stat(filename.c_str(),&s) == -1)
       throw std::runtime_error(filename+" not found");
     cv::Mat readImage(cv::imread(filename));//BGR
-    cv::cvtColor(readImage,readImage,CV_BGR2RGB);
+    cv::cvtColor(readImage,readImage,cv::COLOR_BGR2RGB);
     return ImageRGB8(Image(readImage,FORMAT_RGB8));
   }
 
   bool ImageRGB8::write(const std::string& filename,const std::vector<int>& params){
     cv::Mat bgrImage(this->size(),this->type());
-    cv::cvtColor(*this,bgrImage,CV_RGB2BGR);
+    cv::cvtColor(*this,bgrImage,cv::COLOR_RGB2BGR);
     return cv::imwrite(filename, bgrImage, params);
   }
 
@@ -134,7 +157,7 @@ namespace colorspaces {
   void ImageRGB8::toGRAY8(Image& dst) const throw(Image::FormatMismatch){
     if (dst.format() != ImageGRAY8::FORMAT_GRAY8)
       throw Image::FormatMismatch("FORMAT_GRAY8 required for dst");
-    cv::cvtColor(*this,dst,CV_RGB2GRAY);
+    cv::cvtColor(*this,dst,cv::COLOR_RGB2GRAY);
   }
 
   void ImageRGB8::toYUY2(Image& dst) const throw(Image::FormatMismatch){
@@ -145,7 +168,7 @@ namespace colorspaces {
 
     cv::Mat_<cv::Vec3b> ycrcb(dst.height,dst.width,dst.type());//YUV444 previous conversion
     cv::Mat_<cv::Vec2b> yuy2(dst);
-    cv::cvtColor(*this,ycrcb,CV_RGB2YCrCb);
+    cv::cvtColor(*this,ycrcb,cv::COLOR_RGB2YCrCb);
 
     for (int i=0; i < height; i++){
       for (int j=0; j < width; j+=2){//two pixels each loop
@@ -160,13 +183,13 @@ namespace colorspaces {
   void ImageRGB8::toHSV8(Image& dst) const throw(FormatMismatch){
     if (dst.format() != ImageHSV8::FORMAT_HSV8)
       throw Image::FormatMismatch("FORMAT_HSV8 required for dst");
-    cv::cvtColor(*this,dst,CV_RGB2HSV);
+    cv::cvtColor(*this,dst,cv::COLOR_RGB2HSV);
   }
 
   void ImageRGB8::toYCRCB(Image& dst) const throw(FormatMismatch){
     if (dst.format() != ImageYCRCB::FORMAT_YCRCB)
       throw Image::FormatMismatch("FORMAT_YCRCB required for dst");
-    cv::cvtColor(*this,dst,CV_RGB2YCrCb);
+    cv::cvtColor(*this,dst,cv::COLOR_RGB2YCrCb);
   }
 
   Image* ImageRGB8::createInstance(const int width, const int height, void *const data){
@@ -178,7 +201,7 @@ namespace colorspaces {
 
   ImageYUY2::ImageYUY2(const int width, const int height)
     : Image(width,height,FORMAT_YUY2) {}
-    
+
   ImageYUY2::ImageYUY2(const int width, const int height, void *const data)
     : Image(width,height,FORMAT_YUY2,data) {}
 
@@ -221,8 +244,8 @@ namespace colorspaces {
 
     ImageYCRCB ycrcbImg(dst.height,dst.width);//YCRCB previous conversion
     toYCRCB(ycrcbImg);
-    
-    cv::cvtColor(ycrcbImg,dst,CV_YCrCb2RGB);
+
+    cv::cvtColor(ycrcbImg,dst,cv::COLOR_YCrCb2RGB);
   }
 
   void ImageYUY2::toYCRCB(Image& dst) const throw(FormatMismatch){
@@ -249,10 +272,10 @@ namespace colorspaces {
     else
       return new ImageYUY2(width,height);
   }
-  
+
   ImageGRAY8::ImageGRAY8(const int width, const int height)
     : Image(width,height,FORMAT_GRAY8) {}
-    
+
   ImageGRAY8::ImageGRAY8(const int width, const int height, void *const data)
     : Image(width,height,FORMAT_GRAY8,data) {}
 
@@ -292,7 +315,7 @@ namespace colorspaces {
     if (dst.format() != ImageRGB8::FORMAT_RGB8)
       throw Image::FormatMismatch("FORMAT_RGB8 required for dst");
 
-    cv::cvtColor(*this,dst,CV_GRAY2RGB);
+    cv::cvtColor(*this,dst,cv::COLOR_GRAY2RGB);
   }
 
   void ImageGRAY8::toYUY2(Image& dst) const throw(Image::FormatMismatch){
@@ -316,7 +339,7 @@ namespace colorspaces {
 
   ImageHSV8::ImageHSV8(const int width, const int height)
     : Image(width,height,FORMAT_HSV8) {}
-    
+
   ImageHSV8::ImageHSV8(const int width, const int height, void *const data)
     : Image(width,height,FORMAT_HSV8,data) {}
 
@@ -343,7 +366,7 @@ namespace colorspaces {
     if (dst.format() != ImageRGB8::FORMAT_RGB8)
       throw Image::FormatMismatch("FORMAT_RGB8 required for dst");
 
-    cv::cvtColor(*this,dst,CV_HSV2RGB);
+    cv::cvtColor(*this,dst,cv::COLOR_HSV2RGB);
   }
 
   Image* ImageHSV8::createInstance(const int width, const int height, void *const data){
@@ -355,7 +378,7 @@ namespace colorspaces {
 
   ImageYCRCB::ImageYCRCB(const int width, const int height)
     : Image(width,height,FORMAT_YCRCB) {}
-    
+
   ImageYCRCB::ImageYCRCB(const int width, const int height, void *const data)
     : Image(width,height,FORMAT_YCRCB,data) {}
 
@@ -381,8 +404,8 @@ namespace colorspaces {
   void ImageYCRCB::toRGB8(Image& dst) const throw(FormatMismatch){
     if (dst.format() != ImageRGB8::FORMAT_RGB8)
       throw Image::FormatMismatch("FORMAT_RGB8 required for dst");
-    
-    cv::cvtColor(*this,dst,CV_YCrCb2RGB);
+
+    cv::cvtColor(*this,dst,cv::COLOR_YCrCb2RGB);
   }
 
   Image* ImageYCRCB::createInstance(const int width, const int height, void *const data){
@@ -394,7 +417,7 @@ namespace colorspaces {
 
   ImageNV21::ImageNV21(const int width, const int height)
     : Image(width,height,FORMAT_NV21) {}
-    
+
   ImageNV21::ImageNV21(const int width, const int height, void *const data)
     : Image(width,height,FORMAT_NV21,data) {}
 
@@ -435,8 +458,8 @@ namespace colorspaces {
     if ((dst.width % 2 != 0) || (this->width % 2 != 0))
       throw Image::FormatMismatch("src and dst images have to have even number of columns");
 
-    //cv::cvtColor(*this,dst,CV_YUV420sp2RGB);
-    
+    //cv::cvtColor(*this,dst,cv::COLOR_YUV420sp2RGB);
+
     unsigned char *rgb = (unsigned char *)dst.data;
     unsigned char *yuv = (unsigned char *)this->data,
     	*yuv_y = yuv, *yuv_uv = yuv + dst.width * dst.height;
@@ -464,7 +487,7 @@ namespace colorspaces {
       throw Image::FormatMismatch("FORMAT_YCRCB required for dst");
     ImageYCRCB rgbImg(dst.height,dst.width);
     toRGB8(rgbImg);
-    cv::cvtColor(rgbImg,dst,CV_RGB2YCrCb);
+    cv::cvtColor(rgbImg,dst,cv::COLOR_RGB2YCrCb);
   }
 
   Image* ImageNV21::createInstance(const int width, const int height, void *const data){

@@ -55,7 +55,7 @@ void DetectionsValidator::validate(const cv::Mat& colorImage,const cv::Mat& dept
     for (auto it= detections.begin(), end = detections.end(); it != end; ++it){
         int idx= (int)std::distance(detections.begin(),it);
         cv::Scalar color( 150);
-        cv::drawContours( mask, detections, idx, color, CV_FILLED, 8);
+        cv::drawContours( mask, detections, idx, color, -1, 8);
     }
 
 

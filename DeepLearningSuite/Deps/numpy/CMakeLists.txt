@@ -4,8 +4,8 @@ SET(CMAKE_MODULE_PATH
 )
 
 
-find_package( PythonInterp REQUIRED )
-find_package( PythonLibs REQUIRED )
+find_package( PythonInterp 2.7.12 REQUIRED )
+find_package( PythonLibs 2.7.12  REQUIRED )
 find_package( NumPy REQUIRED )
 
 SET(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} ${PYTHON_NUMPY_INCLUDE_DIR})

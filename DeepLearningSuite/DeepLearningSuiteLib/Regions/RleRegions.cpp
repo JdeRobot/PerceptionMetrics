@@ -88,7 +88,7 @@ void RleRegions::drawRegions(cv::Mat &image) {
 
         rleDecode(&(it->region), mask.data , 1);
         mask = mask * 255;
-        cv::rotate(mask, mask, cv::ROTATE_90_CLOCKWISE);
+        //cv::rotate(mask, mask, cv::ROTATE_90_CLOCKWISE);
         cv::flip(mask, mask, 1);
 
 
@@ -98,7 +98,7 @@ void RleRegions::drawRegions(cv::Mat &image) {
             color = cv::Scalar(2,166,101);
         } else {
             color = cv::Scalar((unsigned int)(distribution(generator)*170), (unsigned int)(distribution(generator)*170), (unsigned int)(distribution(generator)*170));
-            cv::findContours( mask.clone(), contours, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+            cv::findContours( mask.clone(), contours, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
 
         }
 
