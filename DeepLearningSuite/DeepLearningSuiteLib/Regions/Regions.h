@@ -9,6 +9,19 @@
 #include <opencv2/opencv.hpp>
 #include <boost/shared_ptr.hpp>
 
+
+#if CV_MAJOR_VERSION == 2
+
+namespace cv {            // Fix for different opencv versions
+
+#define RETR_CCOMP CV_RETR_CCOMP
+#define CHAIN_APPROX_SIMPLE CV_CHAIN_APPROX_SIMPLE
+
+}
+
+#endif
+
+
 struct Regions{
     Regions(){};
     virtual void saveJson(const std::string& outPath)=0;

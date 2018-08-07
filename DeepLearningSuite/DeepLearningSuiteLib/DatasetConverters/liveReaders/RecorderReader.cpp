@@ -10,6 +10,14 @@
 #include <boost/algorithm/string/erase.hpp>
 #include <glog/logging.h>
 
+#if CV_MAJOR_VERSION == 2
+
+    namespace cv {
+        #define COLOR_RGB2BGR CV_RGB2BGR
+    }
+
+
+#endif
 
 
 RecorderReader::RecorderReader(const std::string &colorImagesPath, const std::string &depthImagesPath):DatasetReader(true), colorPath(colorImagesPath), depthPath(depthImagesPath) {
@@ -89,7 +97,7 @@ bool RecorderReader::getNextSample(Sample &sample) {
 
         cv::Mat colorImage= cv::imread(getPathByIndex(this->colorPath,closest(colorIndexes,indexValue),this->syncedData?"-rgb":""));
 //        if (!this->syncedData)
-            cv::cvtColor(colorImage,colorImage,CV_RGB2BGR);
+            cv::cvtColor(colorImage,colorImage,cv::COLOR_RGB2BGR);
 
         sample.setColorImage(colorImage);
         sample.setDepthImage(getPathByIndex(this->depthPath,indexValue,this->syncedData?"-depth":""));

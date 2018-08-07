@@ -11,6 +11,17 @@
 #include <Utils/DepthUtils.h>
 #include <glog/logging.h>
 
+
+#if CV_MAJOR_VERSION == 2
+
+namespace cv {
+
+    #define IMREAD_ANYDEPTH CV_LOAD_IMAGE_ANYDEPTH
+
+}
+
+#endif
+
 SpinelloDatasetReader::SpinelloDatasetReader(const std::string &path,const std::string& classNamesFile,const bool imagesRequired):DatasetReader(imagesRequired) {
     this->classNamesFile=classNamesFile;
     appendDataset(path);
@@ -60,7 +71,7 @@ bool SpinelloDatasetReader::appendDataset(const std::string &datasetPath, const 
             std::string colorImagePath=datasetPath + "/"  + "rgb" + "/" + imageID + ".ppm";
             std::string depthImagePath=datasetPath + "/"  + "depth" + "/" + imageID + ".pgm";
             cv::Mat colorImage= cv::imread(colorImagePath);
-            cv::Mat depthImage= cv::imread(depthImagePath, CV_LOAD_IMAGE_ANYDEPTH);
+            cv::Mat depthImage= cv::imread(depthImagePath, cv::IMREAD_ANYDEPTH);
 
             cv::Mat ownDepthImage;
             //DepthUtils::mat16_to_ownFormat(depthImage,ownDepthImage);

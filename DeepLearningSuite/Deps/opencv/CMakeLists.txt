@@ -1,4 +1,4 @@
-FIND_PACKAGE(OpenCV QUIET)
+FIND_PACKAGE(OpenCV)
 
 if(OpenCV_FOUND)
   include(CheckIncludeFileCXX)

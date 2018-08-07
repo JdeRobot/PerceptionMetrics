@@ -107,7 +107,7 @@ void ContourRegions::drawRegions(cv::Mat &image) {
         cv::Scalar color(255);
         std::vector<std::vector<cv::Point>> contours;
         contours.push_back(it->region);
-        cv::drawContours(mask, contours, 0, color, CV_FILLED, 8);
+        cv::drawContours(mask, contours, 0, color, -1, 8);
         std::vector<cv::Mat> channels;
         cv::split(image, channels);
         cv::Mat colorMask(image.size(), CV_8UC1, cv::Scalar(255));

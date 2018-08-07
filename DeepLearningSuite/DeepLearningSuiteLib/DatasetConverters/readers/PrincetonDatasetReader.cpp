@@ -16,6 +16,14 @@
 #include <Utils/JsonHelper.h>
 #include <Utils/DepthUtils.h>
 
+#if CV_MAJOR_VERSION == 2
+
+namespace cv {
+    #define IMREAD_ANYDEPTH CV_LOAD_IMAGE_ANYDEPTH
+
+}
+#endif
+
 
 PrincetonDatasetReader::PrincetonDatasetReader(const std::string &path, const std::string &classNamesFile,const bool imagesRequired):DatasetReader(imagesRequired) {
     this->classNamesFile=classNamesFile;
@@ -49,7 +57,7 @@ bool PrincetonDatasetReader::appendDataset(const std::string &datasetPath, const
         ssDepth << "d-" << depthTimestamp[i] << "-" << depthFrameID[i] << ".png";
         std::string depthImagePath = PathHelper::concatPaths(datasetPath, "depth");
         depthImagePath = PathHelper::concatPaths(depthImagePath, ssDepth.str());
-        cv::Mat depthImage = cv::imread(depthImagePath, CV_LOAD_IMAGE_ANYDEPTH);
+        cv::Mat depthImage = cv::imread(depthImagePath, cv::IMREAD_ANYDEPTH);
         cv::Mat ownDepthImage;
         DepthUtils::mat16_to_ownFormat(depthImage,ownDepthImage);
 
