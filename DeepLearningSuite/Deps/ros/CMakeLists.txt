@@ -1,13 +1,13 @@
 OPTION(ENABLE_ROS "Enable ROS compatibility modules" ON)
 
+SET (CMAKE_PREFIX_PATH "/opt/ros/kinetic;/opt/ros/lunar;/opt/ros/jade")
+
 if (ENABLE_ROS)
 	find_package(roscpp QUIET)
 
 	if(roscpp_FOUND)
 
 	    MESSAGE("*** ROS LIBRARIES FOUND : ${roscpp_INCLUDE_DIRS}")
-
-	    SET (CMAKE_PREFIX_PATH /opt/ros/kinetic)
 
 	    set (CATKIN_BUILD_BINARY_PACKAGE 1) #doesn't add ROS environment files to package
 

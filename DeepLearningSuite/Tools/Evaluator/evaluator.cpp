@@ -8,6 +8,7 @@
 #include <Utils/SampleGenerationApp.h>
 #include <DatasetConverters/readers/GenericDatasetReader.h>
 #include <FrameworkEvaluator/DetectionsEvaluator.h>
+#include <FrameworkEvaluator/StatsWriter.h>
 
 
 class MyApp:public SampleGenerationApp{
@@ -50,6 +51,15 @@ public:
 
         evaluator->evaluate(isIouTypeBbox);
         evaluator->accumulateResults();
+
+
+        std::string mywriterFile("Evaluation Results.csv" );
+
+        StatsWriter writer(readerGT->getReader(), mywriterFile);
+
+        writer.writeInferencerResults("Detection Dataset", evaluator);
+
+        writer.saveFile();
 
 
     };

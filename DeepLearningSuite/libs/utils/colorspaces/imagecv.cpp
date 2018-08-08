@@ -9,28 +9,6 @@
 #include <unistd.h>
 #include <stdexcept>
 
-#if CV_MAJOR_VERSION == 2
-
-namespace cv {            // Fix for different opencv versions
-
-  #define COLOR_BGR2RGB CV_BGR2RGB
-  #define COLOR_RGB2BGR CV_RGB2BGR
-  #define COLOR_RGB2GRAY CV_RGB2GRAY
-  #define COLOR_RGB2YCrCb CV_RGB2YCrCb
-  #define COLOR_RGB2HSV CV_RGB2HSV
-  #define COLOR_RGB2YCrCb CV_RGB2YCrCb
-  #define COLOR_YCrCb2RGB CV_YCrCb2RGB
-  #define COLOR_GRAY2RGB CV_GRAY2RGB
-  #define COLOR_HSV2RGB CV_HSV2RGB
-  #define COLOR_YCrCb2RGB CV_YCrCb2RGB
-  #define COLOR_RGB2YCrCb CV_RGB2YCrCb
-
-
-
-}
-
-#endif
-
 
 namespace colorspaces {
   Image::Format::Format(const std::string name, const int id, const int cvType, imageCtor ctor, imageCvt cvt)

@@ -10,15 +10,6 @@
 #include <boost/algorithm/string/erase.hpp>
 #include <glog/logging.h>
 
-#if CV_MAJOR_VERSION == 2
-
-    namespace cv {
-        #define COLOR_RGB2BGR CV_RGB2BGR
-    }
-
-
-#endif
-
 
 RecorderReader::RecorderReader(const std::string &colorImagesPath, const std::string &depthImagesPath):DatasetReader(true), colorPath(colorImagesPath), depthPath(depthImagesPath) {
     currentIndex=0;
