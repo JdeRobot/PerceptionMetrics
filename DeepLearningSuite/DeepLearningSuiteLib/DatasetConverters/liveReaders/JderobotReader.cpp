@@ -84,6 +84,7 @@ bool JderobotReader::getNextSample(Sample &sample) {
 
     if (!image.empty()){
         sample.setSampleID(std::to_string(++this->sample_count));
+	cv::cvtColor(image, image, cv::COLOR_RGB2BGR);
         sample.setColorImage(image);
         //sample.setDepthImage(image);
     }

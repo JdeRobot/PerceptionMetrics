@@ -8,7 +8,13 @@
 
 export ARCH=$(arch)
 
+if [[ "$TO_TEST" == "WITH_ROS_AND_ICE" ]];
+then
+APP=DetectionSuite_with_ROS_and_ICE
+else
 APP=DetectionSuite
+fi
+
 LOWERAPP=${APP,,}
 
 
@@ -22,6 +28,14 @@ echo `pwd`
 
 mkdir -p usr/bin
 cp ../DatasetEvaluationApp/DatasetEvaluationApp usr/bin/
+
+
+out=`find /opt -name "setup.bash"`
+if [ -a "$out"  ]
+then
+source $out
+fi
+
 
 mkdir -p usr/lib
 ldd ../DatasetEvaluationApp/DatasetEvaluationApp | grep "=> /" | awk '{print $3}' | xargs -I '{}' cp -v '{}' usr/lib/
@@ -76,4 +90,7 @@ echo `pwd`
 
 mkdir out
 cd out 
+
 ../appimagetool-x86_64.AppImage ../$APP.AppDir
+
+cd .. # Since this is being run in the same shell it is necssary to go backwards

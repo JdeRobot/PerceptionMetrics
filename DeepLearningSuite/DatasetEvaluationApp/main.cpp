@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <Utils/SampleGenerationApp.h>
-
+#include <QStyleFactory>
 
 class MyApp:public SampleGenerationApp{
 public:
@@ -16,6 +16,7 @@ public:
         QApplication a(argc, argv);
         MainWindow w(this);
         w.show();
+
 
         a.exec();
 

@@ -7,7 +7,7 @@ SET (DatasetConverters_SOURCE_FILES
   writers/COCODatasetWriter
   readers/COCODatasetReader
   readers/PascalVOCDatasetReader
-  readers/PrincetondatasetReader
+  readers/PrincetonDatasetReader
   writers/PascalVOCDatasetWriter
   readers/ImageNetDatasetReader
   readers/SpinelloDatasetReader
