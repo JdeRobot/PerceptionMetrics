@@ -218,12 +218,13 @@ void MainWindow::setupTabsInformation() {
 void MainWindow::handleSelectOutputFolderButton() {
     QFileDialog *fd = new QFileDialog;
     QTreeView *tree = fd->findChild <QTreeView*>();
+#ifndef __APPLE__
     tree->setRootIsDecorated(true);
     tree->setItemsExpandable(false);
+#endif
     fd->setFileMode(QFileDialog::Directory);
     fd->setOption(QFileDialog::ShowDirsOnly);
     fd->setViewMode(QFileDialog::Detail);
-    fd->setDirectory("/mnt/large/pentalo/deep/datasets/");
     int result = fd->exec();
     QString directory;
     if (result)
@@ -311,12 +312,13 @@ void MainWindow::handleDetectButton() {
 void MainWindow::handleSelectOutputFolderButtonDetector() {
     QFileDialog *fd = new QFileDialog;
     QTreeView *tree = fd->findChild <QTreeView*>();
+#ifndef __APPLE__
     tree->setRootIsDecorated(true);
     tree->setItemsExpandable(false);
+#endif
     fd->setFileMode(QFileDialog::Directory);
     fd->setOption(QFileDialog::ShowDirsOnly);
     fd->setViewMode(QFileDialog::Detail);
-    fd->setDirectory("/mnt/large/pentalo/deep/evaluations/");
     int result = fd->exec();
     QString directory;
     if (result)
@@ -329,12 +331,13 @@ void MainWindow::handleSelectOutputFolderButtonDetector() {
 void MainWindow::handleSelectDeployInputSource() {
     QFileDialog *fd = new QFileDialog;
     QTreeView *tree = fd->findChild <QTreeView*>();
+#ifndef __APPLE__
     tree->setRootIsDecorated(true);
     tree->setItemsExpandable(false);
+#endif
     fd->setFileMode(QFileDialog::AnyFile);
 //    fd->setOption(QFileDialog::Show);
     fd->setViewMode(QFileDialog::Detail);
-    fd->setDirectory("/mnt/large/Temporal/Series");
     int result = fd->exec();
     QString directory;
     if (result)
@@ -347,12 +350,13 @@ void MainWindow::handleSelectDeployInputSource() {
 void MainWindow::handleSelectOutputFolderButtonDeployer() {
     QFileDialog *fd = new QFileDialog;
     QTreeView *tree = fd->findChild <QTreeView*>();
+#ifndef __APPLE__
     tree->setRootIsDecorated(true);
     tree->setItemsExpandable(false);
+#endif
     fd->setFileMode(QFileDialog::Directory);
     //fd->setOption(QFileDialog::ShowDirsOnly);
     fd->setViewMode(QFileDialog::Detail);
-    fd->setDirectory("/mnt/large/pentalo/deep/evaluations/");
     int result = fd->exec();
     QString directory;
     if (result)

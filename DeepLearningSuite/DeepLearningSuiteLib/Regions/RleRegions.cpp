@@ -90,7 +90,6 @@ void RleRegions::drawRegions(cv::Mat &image) {
         mask = mask * 255;
         cv::Mat rotatedMask = mask.t();
 
-
         cv::Scalar color;
         std::vector<std::vector<cv::Point> > contours;
         if (it->isCrowd) {
