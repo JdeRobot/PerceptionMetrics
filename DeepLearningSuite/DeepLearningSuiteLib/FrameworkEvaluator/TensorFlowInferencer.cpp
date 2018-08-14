@@ -181,8 +181,9 @@ void TensorFlowInferencer::output_result(int num_detections, int width, int heig
                 cv::threshold(mask_char, mask_char, 127, 255, cv::THRESH_BINARY);
 
                 mask_char.copyTo(image_mask(cv::Rect(detections[i].boundingBox.x,detections[i].boundingBox.y,detections[i].boundingBox.width, detections[i].boundingBox.height)));
-				RLE forMask;
-                rleEncode( &forMask, image_mask.data, image_mask.rows, image_mask.cols, 1 );
+								RLE forMask;
+								cv::Mat t_mask = image_mask.t();
+                rleEncode( &forMask, t_mask.data, t_mask.cols, t_mask.rows, 1 );
                 //std::cout << rleToString(&forMask) << '\n';
                 //cv::Mat matrix_decoded(image_mask.rows, image_mask.cols, CV_8U);
 

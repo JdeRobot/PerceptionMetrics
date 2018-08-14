@@ -1,4 +1,7 @@
 # DeepLearningSuite
+
+[![Build Status](https://travis-ci.org/vinay0410/dl-DetectionSuite.svg?branch=master)](https://travis-ci.org/vinay0410/dl-DetectionSuite)
+
 DeepLearning Suite is a set of tool that simplify the evaluation of most common object detection datasets with several object detection neural networks.
 
 The idea is to offer a generic infrastructure to evaluates object detection algorithms againts a dataset and compute most common statistics:
@@ -34,9 +37,39 @@ The idea is to offer a generic infrastructure to evaluates object detection algo
 * Streams from ICE
 * JdeRobot Recorder Logs
 
-# Sample generation Tool
+
+## Sample generation Tool
 Sample Generation Tool has been developed in order to simply the process of generation samples for datasets focused on object detection. The tools provides some features to reduce the time on labelling objects as rectangles.
 
+
+# Installation
+#### We have AppImages !!!  
+###  [Download from here](https://github.com/vinay0410/dl-DetectionSuite/releases/tag/continuous)  
+
+<br />
+To run,  
+First give executable permissions by running  
+```chmod a+x DetectionSuitexxxxx.AppImage  ```  
+And Run it by
+```./DetectionSuitexxxxx -c configFile ```
+
+
+Though you would need `python` in your system installed with `numpy`.  
+Also, for using TensorFlow, you would need to tensorflow, and similaraly for keras you would need to install Keras.
+
+If required they can be installed by
+```
+pip install tensorflow
+```
+or
+
+```
+pip install tensorflow-gpu
+```
+Similrarly for keras:
+```
+pip install keras
+```
 
 # Requirements
 

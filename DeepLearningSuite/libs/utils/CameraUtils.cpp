@@ -45,7 +45,7 @@ cv::Mat CameraUtils::getImageFromCameraProxy(jderobot::ImageDataPtr dataPtr) {
         {
             colorspaces::Image imageRGB(dataPtr->description->width,dataPtr->description->height,colorspaces::ImageRGB8::FORMAT_RGB8,&(origin_buf[0]));
             colorspaces::ImageRGB8 img_rgb888(imageRGB);//conversion will happen if needed
-            cv::Mat(cvSize(img_rgb888.width,img_rgb888.height), CV_8UC3, img_rgb888.data).copyTo(outImage);
+            cv::Mat(cv::Size(img_rgb888.width,img_rgb888.height), CV_8UC3, img_rgb888.data).copyTo(outImage);
             img_rgb888.release();
         }
 
@@ -59,7 +59,7 @@ cv::Mat CameraUtils::getImageFromCameraProxy(jderobot::ImageDataPtr dataPtr) {
     {
         colorspaces::Image imageRGB(dataPtr->description->width,dataPtr->description->height,colorspaces::ImageRGB8::FORMAT_RGB8,&(dataPtr->pixelData[0]));
         colorspaces::ImageRGB8 img_rgb888(imageRGB);//conversion will happen if needed
-        cv::Mat(cvSize(img_rgb888.width,img_rgb888.height), CV_8UC3, img_rgb888.data).copyTo(outImage);
+        cv::Mat(cv::Size(img_rgb888.width,img_rgb888.height), CV_8UC3, img_rgb888.data).copyTo(outImage);
         img_rgb888.release();
     }
     else if (dataPtr->description->format == colorspaces::ImageGRAY8::FORMAT_GRAY8_Z.get()->name) {
@@ -90,7 +90,7 @@ cv::Mat CameraUtils::getImageFromCameraProxy(jderobot::ImageDataPtr dataPtr) {
             colorspaces::Image imageGray(dataPtr->description->width,dataPtr->description->height,colorspaces::ImageGRAY8::FORMAT_GRAY8,&(origin_buf[0]));
             colorspaces::ImageGRAY8 img_gray8(imageGray);//conversion will happen if needed
 
-            cv::Mat(cvSize(img_gray8.width,img_gray8.height), CV_8UC1, img_gray8.data).copyTo(outImage);
+            cv::Mat(cv::Size(img_gray8.width,img_gray8.height), CV_8UC1, img_gray8.data).copyTo(outImage);
             img_gray8.release();
         }
 
@@ -101,7 +101,7 @@ cv::Mat CameraUtils::getImageFromCameraProxy(jderobot::ImageDataPtr dataPtr) {
     else if (dataPtr->description->format == colorspaces::ImageGRAY8::FORMAT_GRAY8.get()->name){
         colorspaces::Image imageGray(dataPtr->description->width,dataPtr->description->height,colorspaces::ImageGRAY8::FORMAT_GRAY8,&(dataPtr->pixelData[0]));
         colorspaces::ImageGRAY8 img_gray8(imageGray);//conversion will happen if needed
-        cv::Mat(cvSize(img_gray8.width,img_gray8.height), CV_8UC1, img_gray8.data).copyTo(outImage);
+        cv::Mat(cv::Size(img_gray8.width,img_gray8.height), CV_8UC1, img_gray8.data).copyTo(outImage);
         img_gray8.release();
     }
     else{

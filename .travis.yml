@@ -1,15 +1,5 @@
 language: cpp
 
-# blacklist
-branches:
-  except:
-    - master
-
-# whitelist
-branches:
-  only:
-    - travis-test
-
 os:
   - linux
   - osx
@@ -25,6 +15,12 @@ cache:
    pip: true
    directories:
      - $HOME/opencv/
+     - $HOME/darknet/
+
+matrix:
+  include:
+    - env: TO_TEST=WITH_ROS_AND_ICE
+
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
@@ -37,8 +33,16 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt install -y rapidjson-dev ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt install -y libboost-dev libboost-filesystem-dev libboost-system-dev libboost-program-options-dev ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt install -y libgoogle-glog-dev libyaml-cpp-dev qt5-default libqt5svg5-dev libqt5opengl5-dev ; fi
+  - if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "$TO_TEST" == "WITH_ROS_AND_ICE" ) ]]; then sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' ; fi
+  - if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "$TO_TEST" == "WITH_ROS_AND_ICE" ) ]]; then sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116 ; fi
+  - if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "$TO_TEST" == "WITH_ROS_AND_ICE" ) ]]; then sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 5E6DA83306132997 ; fi
+  - if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "$TO_TEST" == "WITH_ROS_AND_ICE" ) ]]; then sudo apt-add-repository "deb http://zeroc.com/download/Ice/3.6/ubuntu16.04 stable main" ; fi
+  - if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "$TO_TEST" == "WITH_ROS_AND_ICE" ) ]]; then sudo apt update ; fi
+  - if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "$TO_TEST" == "WITH_ROS_AND_ICE" ) ]]; then sudo apt install ros-kinetic-roscpp ros-kinetic-cv-bridge ros-kinetic-image-transport zeroc-ice-all-runtime zeroc-ice-all-dev ; fi
+  - if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "$TO_TEST" == "WITH_ROS_AND_ICE" ) ]]; then source /opt/ros/kinetic/setup.bash ; fi
   - sudo pip install numpy
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./install_opencv.sh ; fi
+  - ./install_darknet.sh
 
 before_script:
   - cd DeepLearningSuite
@@ -46,14 +50,14 @@ before_script:
   - cd build
   - cmake ..
 
-script: make -j4
+script: make -j2
 
 
 after_success:
-  - bash ../package.sh
-  - ls -lh out/* # Assuming you have some files in out/ that you would like to upload
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then travis_wait bash ../package.sh ; fi    # To run the script in the same shell so as to setup environment variables
+  - ls -lh out/*            # Assuming you have some files in out/ that you would like to upload
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
-  - bash upload.sh out/*
+  - travis_wait bash upload.sh out/*
 
 
 branches:

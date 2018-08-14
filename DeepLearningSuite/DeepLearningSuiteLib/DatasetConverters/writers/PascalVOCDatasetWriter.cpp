@@ -134,7 +134,7 @@ void PascalVOCDatasetWriter::process(bool writeImages, bool useDepth) {
 
     }
 
-    if (writerNamesFile.empty()) {
+    if (!writerNamesFile.empty()) {
 
         std::ofstream writerClassfile;
         writerClassfile.open (this->fullNamesPath);
@@ -149,7 +149,7 @@ void PascalVOCDatasetWriter::process(bool writeImages, bool useDepth) {
 
     LOG(INFO) << "Successfully Converted given Dataset to Pascal VOC dataset\n";
 
-    if (writerNamesFile.empty()) {
+    if (!writerNamesFile.empty()) {
 
         std::cout << "\nPrinting Mapping Info\n";
         std::cout << "**********************\n";

@@ -12,16 +12,6 @@
 #include <glog/logging.h>
 
 
-#if CV_MAJOR_VERSION == 2
-
-namespace cv {
-
-    #define IMREAD_ANYDEPTH CV_LOAD_IMAGE_ANYDEPTH
-
-}
-
-#endif
-
 SpinelloDatasetReader::SpinelloDatasetReader(const std::string &path,const std::string& classNamesFile,const bool imagesRequired):DatasetReader(imagesRequired) {
     this->classNamesFile=classNamesFile;
     appendDataset(path);

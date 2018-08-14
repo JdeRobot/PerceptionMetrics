@@ -1,0 +1,37 @@
+Datasets:
+
+-
+  inputPath: /opt/datasets/coco/annotations2017/instances_val2017.json
+  readerImplementation: COCO
+  readerNames: /opt/datasets/names/coco.names
+
+
+Inferencers:
+
+- 
+  inferencerWeights:         /opt/datasets/weights/ssd_mobilenet_v1_coco_2017_11_17/frozen_inference_graph.pb
+  inferencerConfig:          /opt/datasets/cfg/foo.cfg
+  inferencerImplementation:  tensorflow
+  inferencerNames:           /opt/datasets/names/coco.names
+
+- 
+  inferencerWeights:         /opt/datasets/weights/ssd_inception_v2_coco_2017_11_17/frozen_inference_graph.pb
+  inferencerConfig:          /opt/datasets/cfg/foo.cfg
+  inferencerImplementation:  tensorflow
+  inferencerNames:           /opt/datasets/names/coco.names
+
+
+outputCSVPath: /opt/datasets/output
+
+
+
+
+
+
+
+
+
+
+
+
+

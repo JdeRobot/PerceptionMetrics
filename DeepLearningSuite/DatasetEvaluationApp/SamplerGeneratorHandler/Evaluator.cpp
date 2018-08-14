@@ -3,6 +3,7 @@
 //
 
 #include <FrameworkEvaluator/DetectionsEvaluator.h>
+#include <FrameworkEvaluator/StatsWriter.h>
 #include "Evaluator.h"
 #include "SamplerGenerationHandler.h"
 
@@ -46,5 +47,15 @@ SampleGeneratorHandler::Evaluator::process(QListView *datasetListGT, QListView *
     }
     evaluator->evaluate(isIouTypeBbox);
     evaluator->accumulateResults();
+
+
+
+    std::string mywriterFile("Evaluation Results.csv" );
+
+    StatsWriter writer(readerGT->getReader(), mywriterFile);
+
+    writer.writeInferencerResults("Detection Dataset", evaluator);
+
+    writer.saveFile();
 
 }

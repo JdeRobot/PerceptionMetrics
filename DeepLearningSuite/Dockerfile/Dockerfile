@@ -27,13 +27,6 @@ RUN apt-get install -y libboost-filesystem-dev libboost-system-dev libboost-thre
     libgtkglextmm-x11-1.2-dev libyaml-cpp-dev icestorm zeroc-ice libxml++2.6-dev qt5-default libqt5svg5-dev libtinyxml-dev \
     catkin libssl-dev
 
-RUN cd /opt/ && mkdir devel && cd devel && \
-    git clone https://github.com/JdeRobot/ThirdParty && \
-    cd ThirdParty && \
-    cd qflightinstruments && \
-    qmake  qfi.pro && \
-    make -j4 && \
-    make install
 
 RUN useradd -ms /bin/bash docker
 RUN 	echo "docker ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -41,13 +34,6 @@ RUN 	echo "docker ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 USER docker
 WORKDIR /home/docker
 
-
-RUN mkdir -p devel && cd devel && \
-    git clone https://github.com/JdeRobot/JdeRobot && \
-    cd JdeRobot && \
-    cmake . -DENABLE_ROS=OFF &&\
-    make -j4 && \
-    sudo make -j4 install
 
 USER root
 RUN apt-get install -y libboost-program-options-dev
@@ -69,9 +55,7 @@ RUN   mkdir -p devel && cd devel && mkdir install && \
 
 RUN   cd devel && \
         git clone https://github.com/JdeRobot/DeepLearningSuite && \
-        cd DeepLearningSuite && \
-        cd DeepLearningSuite/ && \
-        cmake . -DDARKNET_PATH=$DARKNET_DIR -DJdeRobot_DIR=/opt/jderobot/share/jderobot/ && \
+        cd DeepLearningSuite && mkdir build && \
+        cd build/ && \
+        cmake . -DDARKNET_PATH=$DARKNET_DIR  && \
 	make -j4
-
-

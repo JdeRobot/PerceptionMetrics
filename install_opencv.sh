@@ -12,7 +12,6 @@ if [ -n "$(ls -A $HOME/opencv/build)" ];
 	mv $HOME/opencv-3.4.2 $HOME/opencv && cd $HOME/opencv
 	mkdir build && cd build
 	cmake -DWITH_GTK=OFF -DWITH_QT=ON ..
-	make -j4
+	make -j2
 	sudo make install
  fi
-
