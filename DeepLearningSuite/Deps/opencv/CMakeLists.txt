@@ -1,4 +1,4 @@
-FIND_PACKAGE(OpenCV NO_DEFAULT_PATH PATHS "/usr/local" )
+FIND_PACKAGE(OpenCV NO_DEFAULT_PATH PATHS "/usr/local" "/usr" )
 
 if(OpenCV_FOUND)
   include(CheckIncludeFileCXX)
