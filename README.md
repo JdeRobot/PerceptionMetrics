@@ -1,6 +1,6 @@
 # DeepLearningSuite
 
-[![Build Status](https://travis-ci.org/vinay0410/dl-DetectionSuite.svg?branch=master)](https://travis-ci.org/vinay0410/dl-DetectionSuite)
+[![Build Status](https://travis-ci.org/JdeRobot/dl-DetectionSuite.svg?branch=master)](https://travis-ci.org/JdeRobot/dl-DetectionSuite)
 
 DeepLearning Suite is a set of tool that simplify the evaluation of most common object detection datasets with several object detection neural networks.
 
