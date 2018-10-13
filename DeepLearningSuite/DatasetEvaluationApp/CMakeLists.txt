@@ -51,10 +51,10 @@ add_executable(DatasetEvaluationApp ${SOURCES})
 
 TARGET_LINK_LIBRARIES(DatasetEvaluationApp
         DeepLearningSuite
+        ${OpenCV_LIBRARIES}
         ${JderobotInterfaces_LIBRARIES}
         ${ros_LIBRARIES}
         ${EXTRA_LIBS}
-        ${OpenCV_LIBRARIES}
         ${Boost_LIBRARIES}
         ${QT_LIBRARIES}
         ${PYTHON_LIBRARIES}

@@ -90,7 +90,7 @@ std::vector<std::vector<cv::Point>> DepthForegroundSegmentator::process(const cv
     cv::dilate(fore,fore,cv::Mat());
     std::vector<std::vector<cv::Point>> contours;
     std::vector<cv::Vec4i> hierarchy;
-    cv::findContours(fore,contours, hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE);
+    cv::findContours(fore,contours, hierarchy,cv::RETR_TREE,cv::CHAIN_APPROX_SIMPLE);
 
 
 

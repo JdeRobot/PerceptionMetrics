@@ -80,7 +80,7 @@ public:
                 ss << counter << "/" << maxElements;
                 LOG(INFO) << "Processing [" + ss.str() + "]";
                 cv::Mat colorImage = sample.getColorImage().clone();
-                cv::cvtColor(colorImage, colorImage, CV_RGB2BGR);
+                cv::cvtColor(colorImage, colorImage, cv::COLOR_RGB2BGR);
                 if (!previousImage.empty()) {
                     cv::Mat diff;
                     cv::absdiff(colorImage, previousImage, diff);

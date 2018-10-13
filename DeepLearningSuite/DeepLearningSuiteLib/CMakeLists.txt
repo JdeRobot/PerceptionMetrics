@@ -29,6 +29,7 @@ add_library(DeepLearningSuite SHARED
             )
 
 TARGET_LINK_LIBRARIES(DeepLearningSuite
+                    ${OpenCV_LIBRARIES}
                     ${EXTRA_LIBS}
                     ${depthLib_LIBRARIES}
                     ${JderobotInterfaces_LIBRARIES}

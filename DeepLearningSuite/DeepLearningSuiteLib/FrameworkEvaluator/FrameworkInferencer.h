@@ -5,7 +5,7 @@
 #ifndef SAMPLERGENERATOR_FRAMEWORKEVALUATOR_H
 #define SAMPLERGENERATOR_FRAMEWORKEVALUATOR_H
 
-#include <cv.h>
+#include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <boost/shared_ptr.hpp>
 #include <Common/Sample.h>

@@ -75,7 +75,7 @@ Sample KerasInferencer::detectImp(const cv::Mat &image, double confidence_thresh
 	}
 
 	cv::Mat rgbImage;
-	cv::cvtColor(image,rgbImage,CV_BGR2RGB);
+	cv::cvtColor(image,rgbImage,cv::COLOR_BGR2RGB);
 
 	this->detections.clear();						//remove previous detections
 
@@ -177,7 +177,7 @@ int KerasInferencer::getKerasInferences(const cv::Mat& image, double confidence_
 	}
 
 
-	npy_intp _sizes[CV_MAX_DIM+1];
+	npy_intp _sizes[4];
 
 	for( i = 0; i < dims; i++ )
 	{

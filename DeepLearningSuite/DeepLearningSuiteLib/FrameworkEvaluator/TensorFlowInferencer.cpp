@@ -76,7 +76,7 @@ Sample TensorFlowInferencer::detectImp(const cv::Mat &image, double confidence_t
 	}
 
 	cv::Mat rgbImage;
-	cv::cvtColor(image,rgbImage,CV_BGR2RGB);
+	cv::cvtColor(image,rgbImage,cv::COLOR_BGR2RGB);
 
 	this->detections.clear();						//remove previous detections
 
@@ -239,7 +239,7 @@ int TensorFlowInferencer::gettfInferences(const cv::Mat& image, double confidenc
 	}
 
 
-	npy_intp _sizes[CV_MAX_DIM+1];
+	npy_intp _sizes[4];
 
 	for( i = 0; i < dims; i++ )
 	{

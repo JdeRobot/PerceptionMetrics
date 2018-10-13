@@ -44,7 +44,7 @@ void DepthSampler::calculateLayers(cv::Mat source, std::vector<cv::Mat>& layers)
 
 	for (int i=0; i<nBins; i++){
 		cv::Mat localMask;
-		cv::threshold(dM,localMask,(maxDistance/nBins)*(i+1), 255, CV_THRESH_BINARY_INV);
+		cv::threshold(dM,localMask,(maxDistance/nBins)*(i+1), 255, cv::THRESH_BINARY_INV);
 		localMask.convertTo(localMask,CV_8UC1);
 		layers.push_back(localMask&unosc1);
 		zerosc1.copyTo(unosc1,localMask);
