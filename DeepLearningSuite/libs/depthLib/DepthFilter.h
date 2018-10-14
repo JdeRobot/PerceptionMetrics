@@ -8,8 +8,7 @@
 #ifndef DEPTHFILTER_H_
 #define DEPTHFILTER_H_
 
-#include <cv.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
 #include <list>
 #include <mutex>
 #include <iostream>

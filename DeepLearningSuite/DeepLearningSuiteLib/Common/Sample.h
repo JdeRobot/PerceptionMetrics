@@ -50,6 +50,7 @@ struct Sample {
     void save(const std::string& outPath, const std::string& filename);
     void save(const std::string& outPath);
     void print();
+    bool show(const std::string readerImplementation, const std::string windowName, const int waitKey, const bool showDepth);
 
     bool isDepthImageValid();
     bool isValid();

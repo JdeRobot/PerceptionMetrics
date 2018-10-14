@@ -7,7 +7,6 @@
 #include <Common/Sample.h>
 #include "Viewer.h"
 #include "SamplerGenerationHandler.h"
-#include <opencv2/opencv.hpp>
 #include <glog/logging.h>
 #include <gui/Utils.h>
 
@@ -31,32 +30,12 @@ namespace SampleGeneratorHandler {
 
         while (reader->getReader()->getNextSample(sample)){
             std::cout << "number of elements: " << sample.getRectRegions()->getRegions().size() << std::endl;
-            cv::Mat image =sample.getSampledColorImage();
-            cv::imshow(windowName, image);
 
-            if (showDepth) {
-                if (!sample.isDepthImageValid()) {
-                  LOG(WARNING)<< "Depth Images not available! Please verify your dataset or uncheck 'Show Depth Images'";
-                  return;
-                }
-
-                cv::Mat depth_color;
-
-                if (readerImplementation[0] == "spinello")
-                    depth_color = sample.getSampledDepthColorMapImage(-0.9345, 1013.17);
-                else
-                    depth_color = sample.getSampledDepthColorMapImage();
-
-
-                cv::imshow("Depth Color Map", depth_color);
-            }
-
-            int key = cv::waitKey(0);
-            if (char(key) == 'q'){
+            if (!sample.show(readerImplementation[0], windowName, 0, showDepth))
                 break;
-            }
+
         }
-        cv::destroyWindow(windowName);
+        //cv::destroyWindow(windowName);
 
     }
 

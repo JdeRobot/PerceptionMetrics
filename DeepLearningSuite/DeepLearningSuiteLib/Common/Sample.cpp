@@ -268,8 +268,40 @@ void Sample::print() {
     }
 }
 
+bool Sample::show(const std::string readerImplementation, const std::string windowName, const int waitKey, const bool showDepth) {
+    cv::Mat image = this->getSampledColorImage();
+    cv::imshow(windowName, image);
+
+    if (showDepth) {
+
+        if (!(this->isDepthImageValid())) {
+            LOG(WARNING)<< "Depth Images not available! Please verify your dataset or uncheck 'Show Depth Images'";
+            return false;
+        }
+
+        cv::Mat depth_color;
+
+        if (readerImplementation == "spinello")
+            depth_color = this->getSampledDepthColorMapImage(-0.9345, 1013.17);
+        else
+            depth_color = this->getSampledDepthColorMapImage();
+
+
+        cv::imshow("Depth Color Map", depth_color);
+    }
+
+    int key = cv::waitKey(waitKey);
+    if (char(key) == 'q' || key == 27) {
+        cv::destroyWindow(windowName);
+        return false;
+    }
+
+    return true;
+
+}
+
 bool Sample::isDepthImageValid() {
-  return !this->depthImage.empty();
+    return !this->depthImage.empty();
 }
 
 bool Sample::isValid() {

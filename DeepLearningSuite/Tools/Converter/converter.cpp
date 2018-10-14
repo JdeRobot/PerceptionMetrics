@@ -10,7 +10,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
 #include <glog/logging.h>
-#include <highgui.h>
 #include <DatasetConverters/readers/OwnDatasetReader.h>
 #include <DatasetConverters/writers/YoloDatasetWriter.h>
 #include <DatasetConverters/readers/YoloDatasetReader.h>

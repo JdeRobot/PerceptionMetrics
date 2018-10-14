@@ -18,7 +18,6 @@ ENDIF()
 set (SOURCES main.cpp
         mainwindow
         gui/ListViewConfig
-        SamplerGeneratorHandler/Viewer
         gui/TabHandler.cpp gui/TabHandler.h
         SamplerGeneratorHandler/Converter
         SamplerGeneratorHandler/SamplerGenerationHandler
@@ -26,10 +25,12 @@ set (SOURCES main.cpp
         SamplerGeneratorHandler/Detector
         SamplerGeneratorHandler/Evaluator
         SamplerGeneratorHandler/Deployer
+        SamplerGeneratorHandler/Viewer
         )
 
 
 include_directories(
+        ${OpenCV_INCLUDE_DIRS}
         ${config_INCLUDE_DIRS}
         ${comm_INCLUDE_DIRS}
         ${utils_INCLUDE_DIRS}
@@ -37,7 +38,6 @@ include_directories(
         ${PYTHON_INCLUDE_DIRS}
         ${INTERFACES_CPP_DIR}
         ${jderobottypes_INCLUDE_DIRS}
-        ${OpenCV_INCLUDE_DIRS}
         ${GLOG_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIR}
         ${QT_INCLUDE_DIRS}
@@ -51,10 +51,9 @@ add_executable(DatasetEvaluationApp ${SOURCES})
 
 TARGET_LINK_LIBRARIES(DatasetEvaluationApp
         DeepLearningSuite
-        ${JderobotInterfaces_LIBRARIES}
-        ${ros_LIBRARIES}
-        ${EXTRA_LIBS}
         ${OpenCV_LIBRARIES}
+        ${JderobotInterfaces_LIBRARIES}
+        ${EXTRA_LIBS}
         ${Boost_LIBRARIES}
         ${QT_LIBRARIES}
         ${PYTHON_LIBRARIES}

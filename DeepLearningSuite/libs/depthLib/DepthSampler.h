@@ -8,8 +8,7 @@
 #ifndef DEPTHSAMPLER_H_
 #define DEPTHSAMPLER_H_
 
-#include <cv.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <list>
 #include <mutex>

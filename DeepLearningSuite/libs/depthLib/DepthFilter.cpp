@@ -41,7 +41,7 @@ DepthFilter::filterDakkak(cv::Mat imageIn, cv::Mat& imageOut){
 	std::vector<cv::Mat> layers;
 	cv::split(imageIn, layers);
 	cv::bilateralFilter(layers[0], imageOut, d,sigmaColor,sigmaSpace);
-	cv::cvtColor(imageOut,imageOut,CV_GRAY2RGB);
+	cv::cvtColor(imageOut,imageOut,cv::COLOR_GRAY2RGB);
 }
 
 void
@@ -101,7 +101,7 @@ DepthFilter::filterMeanNonMotion3Channels(cv::Mat imageIn, cv::Mat& imageOut){
 		it->convertTo(localItFloat,CV_32FC3);
 		cv::absdiff(localItFloat,meanNonZeroImage,localDiff);
 		localDiff.convertTo(localDiff,CV_8UC3);
-		cv::threshold(localDiff,localMask,this->threshold, 255, CV_THRESH_BINARY_INV);
+		cv::threshold(localDiff,localMask,this->threshold, 255, cv::THRESH_BINARY_INV);
 		resultAcc=resultAcc+localItFloat;
 		localMask.convertTo(localMask,CV_8UC3);
 		ones.copyTo(localOnes,localMask);
@@ -200,7 +200,7 @@ void DepthFilter::filterMeanNonMotion1Channels(cv::Mat imageIn, cv::Mat& imageOu
 		cv::Mat localOnes;
 		cv::absdiff(*it,layersMean[0],localDiff);
 		localDiff.convertTo(localDiff,CV_8UC1);
-		cv::threshold(localDiff,localMask,this->threshold, 255, CV_THRESH_BINARY_INV);
+		cv::threshold(localDiff,localMask,this->threshold, 255, cv::THRESH_BINARY_INV);
 		localMask.convertTo(localMask,CV_8UC1);
 		ones1c.copyTo(localOnes,localMask);
 		accAndMask=accAndMask & localMask;
@@ -226,9 +226,9 @@ void DepthFilter::filterMeanNonMotion1Channels(cv::Mat imageIn, cv::Mat& imageOu
 
 
 		meanNonZeroImage.copyTo(this->globalMeanImage);
-		cv::cvtColor(localDiff,globalDiffImage,CV_GRAY2RGB);
+		cv::cvtColor(localDiff,globalDiffImage,cv::COLOR_GRAY2RGB);
 		accAndMask=accAndMask*255;
-		cv::cvtColor(accAndMask,this->globalFirstMask,CV_GRAY2RGB);
+		cv::cvtColor(accAndMask,this->globalFirstMask,cv::COLOR_GRAY2RGB);
 		ones3c=ones3c*255;
 		ones3c.copyTo(this->globalSecondMask);
 	this->m.unlock();

@@ -1,6 +1,6 @@
 # DeepLearningSuite
 
-[![Build Status](https://travis-ci.org/vinay0410/dl-DetectionSuite.svg?branch=master)](https://travis-ci.org/vinay0410/dl-DetectionSuite)
+[![Build Status](https://travis-ci.org/JdeRobot/dl-DetectionSuite.svg?branch=master)](https://travis-ci.org/JdeRobot/dl-DetectionSuite)
 
 DeepLearning Suite is a set of tool that simplify the evaluation of most common object detection datasets with several object detection neural networks.
 
@@ -46,12 +46,12 @@ Sample Generation Tool has been developed in order to simply the process of gene
 #### We have AppImages !!!  
 ###  [Download from here](https://github.com/vinay0410/dl-DetectionSuite/releases/tag/continuous)  
 
-<br />
+
 To run,  
 First give executable permissions by running  
-```chmod a+x DetectionSuitexxxxx.AppImage  ```  
-And Run it by
-```./DetectionSuitexxxxx -c configFile ```
+`chmod a+x DetectionSuitexxxxx.AppImage`  
+And Run it by  
+`./DetectionSuitexxxxx -c configFile`  
 
 
 Though you would need `python` in your system installed with `numpy`.  
@@ -118,11 +118,14 @@ echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
 </tr>
 <tr>
 <td>
+Install OpenCV 3.4
 <pre>
-sudo apt install libopencv-dev
+git clone https://github.com/opencv/opencv.git
+git checkout 3.4
+cmake -D WITH_QT=ON -D WITH_GTK=OFF ..
+make -j4
+sudo make install
 </pre>
-<br/>
-For Caffe Support Opencv 3.4 or greater is necessary. Instructions for the same can be found [here](https://github.com/JdeRobot/dl-DetectionSuite/wiki/FrameWorks#caffe).
 </td>
 <td>
 <pre>
