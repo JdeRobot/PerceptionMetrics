@@ -1,9 +1,9 @@
 import numpy as np
 import sys
+from distutils.version import StrictVersion
 
 if not hasattr(sys, 'argv'):
     sys.argv  = ['']
-
 
 
 import tensorflow as tf
@@ -11,10 +11,9 @@ import time
 
 np.set_printoptions(threshold='nan')
 
-if tf.__version__ < '1.4.0':
-  raise ImportError('Please upgrade your tensorflow installation to v1.4.* or later!')
+if StrictVersion(tf.__version__) < StrictVersion('1.4.0'):
+  raise ImportError('Please upgrade your TensorFlow installation to v1.4.* or later!')
 
-# What model to download.
 
 class TensorFlowDetector:
 
