@@ -26,6 +26,7 @@ public:
     virtual bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
     void addSample(Sample sample);
     std::string getClassNamesFile();
+    virtual ~DatasetReader(); 
 
 protected:
     std::vector<Sample> samples;

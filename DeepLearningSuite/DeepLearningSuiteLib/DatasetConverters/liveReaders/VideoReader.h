@@ -8,11 +8,12 @@
 
 
 #include <DatasetConverters/readers/DatasetReader.h>
-
+#include <glog/logging.h>
 
 class VideoReader: public DatasetReader {
 public:
     VideoReader(const std::string& videoPath);
+    ~VideoReader();
 
     bool getNextSample(Sample &sample);
 private:

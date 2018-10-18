@@ -13,6 +13,12 @@ VideoReader::VideoReader(const std::string &videoPath):DatasetReader(true) {
     init=false;
 }
 
+VideoReader::~VideoReader() {
+    LOG(INFO) << "Releasing Video File";
+    this->cap->release();
+
+}
+
 bool VideoReader::getNextSample(Sample &sample) {
 
     cv::Mat image;
@@ -35,11 +41,9 @@ bool VideoReader::getNextSample(Sample &sample) {
     }
     catch (const std::exception &exc)
     {
-          std::cout << "Exception Detected: " << exc.what();
+          LOG(ERROR) << "Exception Detected: " << exc.what();
           return false;
     }
-    catch (...){
-        return false;
-    }
+
 
 }

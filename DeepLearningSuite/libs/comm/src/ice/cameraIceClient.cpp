@@ -54,10 +54,10 @@ CameraIceClient::CameraIceClient(Comm::Communicator* jdrc, std::string prefix) {
 			}
 		}
 	}catch (const Ice::Exception& ex) {
-		std::cerr << ex << std::endl;
+		LOG(ERROR) << ex << std::endl;
 	}
 	catch (const char* msg) {
-		std::cerr << msg << std::endl;
+		LOG(ERROR) << msg << std::endl;
 		LOG(ERROR) <<prefix + " Not camera provided";
 	}
 

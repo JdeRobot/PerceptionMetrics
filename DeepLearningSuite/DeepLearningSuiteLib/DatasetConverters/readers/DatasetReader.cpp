@@ -10,6 +10,9 @@
 DatasetReader::DatasetReader(const bool imagesRequired):readerCounter(0),imagesRequired(imagesRequired) {
 }
 
+DatasetReader::~DatasetReader() {
+}
+
 void DatasetReader::filterSamplesByID(std::vector<std::string> filteredIDS) {
     std::vector<Sample> old_samples(this->samples);
     this->samples.clear();

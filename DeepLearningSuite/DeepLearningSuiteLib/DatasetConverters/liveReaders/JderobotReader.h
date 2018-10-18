@@ -11,6 +11,7 @@
 #include <comm/communicator.hpp>
 #include <comm/cameraClient.hpp>
 #include <yaml-cpp/yaml.h>
+#include <glog/logging.h>
 
 class JderobotReader: public DatasetReader {
 public:

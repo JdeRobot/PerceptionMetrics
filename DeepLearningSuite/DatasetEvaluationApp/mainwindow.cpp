@@ -253,14 +253,14 @@ void MainWindow::handleConvertButton() {
                                                    splitActive, ratio, writeImages);
     }
     catch (const std::string& msg){
-        std::cout << "Exception detected: " << msg << std::endl;
+        LOG(ERROR) << "Exception detected: " << msg << std::endl;
     }
     catch (const std::exception &exc)
     {
-        std::cout << "Exeption Detected: " << exc.what();
+        LOG(ERROR) << "Exception Detected: " << exc.what();
     }
     catch (...){
-        std::cout << "Uknown exception type" << std::endl;
+        LOG(ERROR) << "Uknown exception type" << std::endl;
     }
 }
 
@@ -273,14 +273,14 @@ void MainWindow::handleEvaluateButton() {
                                                ui->checkBox_evaluator_mix->isChecked(), ui->radioButton_evaluator_iou_bbox->isChecked());
     }
     catch (const std::string& msg){
-        std::cout << "Exception detected: " << msg << std::endl;
+        LOG(ERROR) << "Exception detected: " << msg;
     }
     catch (const std::exception &exc)
     {
-        std::cout << "Exeption Detected: " << exc.what();
+        LOG(ERROR) << "Exeption Detected: " << exc.what();
     }
     catch (...){
-        std::cout << "Uknown exectip type" << std::endl;
+        LOG(ERROR) << "Uknown Exception";
     }
 }
 
@@ -298,14 +298,14 @@ void MainWindow::handleDetectButton() {
                                               useDepth,singleEvaluation);
     }
     catch (const std::string& msg){
-        std::cout << "Exception detected: " << msg << std::endl;
+        LOG(ERROR) << "Exception Detected: " << msg;
     }
     catch (const std::exception &exc)
     {
-        std::cout << "Exeption Detected: " << exc.what();
+        LOG(ERROR) << "Exeption Detected: " << exc.what();
     }
     catch (...){
-        std::cout << "Uknown exectip type" << std::endl;
+        LOG(ERROR) << "Uknown exectip Type";
     }
 }
 
@@ -497,13 +497,13 @@ void MainWindow::handleProcessDeploy() {
                                                   app->getConfig().asString("netCfgPath"),app->getConfig().asString("namesPath"),inputInfo, outputFolder);
     }
     catch (const std::string& msg){
-        std::cout << "Exception detected: " << msg << std::endl;
+        LOG(ERROR) << "Exception detected: " << msg;
     }
     catch (const std::exception &exc)
     {
-        std::cout << "Exception Detected: " << exc.what();
+        LOG(ERROR) << "Exception Detected: " << exc.what();
     }
     catch (...){
-        std::cout << "Uknown exectip type" << std::endl;
+        LOG(ERROR) << "Uknown Exception Type";
     }
 }
