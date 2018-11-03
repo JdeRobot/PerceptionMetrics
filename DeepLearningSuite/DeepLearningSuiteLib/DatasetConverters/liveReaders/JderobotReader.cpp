@@ -45,7 +45,7 @@ JderobotReader::JderobotReader(std::map<std::string, std::string>* deployer_para
 
 
     } catch (const std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
+        LOG(ERROR) << ex.what();
     }
 
 

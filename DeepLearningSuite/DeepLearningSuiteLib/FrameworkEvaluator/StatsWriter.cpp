@@ -50,7 +50,7 @@ void StatsWriter::writeInferencerResults(std::string inferencerName, DetectionsE
             double AR = meanAR.at(*it);
             this->writer << ", " << AP << ", " << AR;
         } else {
-            std::cout << "Class " << *it << " not present!!" << " Skipping" << '\n';
+            LOG(INFO) << "Class " << *it << " not present!!" << " Skipping";
             this->writer << ",,";
         }
 
@@ -58,7 +58,9 @@ void StatsWriter::writeInferencerResults(std::string inferencerName, DetectionsE
       this->writer << ", " << evaluator->getOverallmAP() << ", " << evaluator->getOverallmAR();
 
       this->writer << "\n";
-      std::cout << "Inference Results Written Successfully" << '\n';
+      LOG(INFO) << "Inference Results Written Successfully";
+
+      this->writer.flush(); // Update File contents
 
 }
 

@@ -10,6 +10,11 @@ CameraReader::CameraReader(const int deviceId):DatasetReader(true) {
     init=false;
 }
 
+CameraReader::~CameraReader() {
+    LOG(INFO) << "Releasing Camera";
+    this->cap->release();
+}
+
 bool CameraReader::getNextSample(Sample &sample) {
 
     cv::Mat image;
@@ -32,11 +37,8 @@ bool CameraReader::getNextSample(Sample &sample) {
     }
     catch (const std::exception &exc)
     {
-          std::cout << "Exeption Detected: " << exc.what();
+          LOG(ERROR) << "Exception Detected: " << exc.what();
           return false;
-    }
-    catch (...){
-        return false;
     }
 
 }

@@ -8,7 +8,7 @@
 class CameraReader: public DatasetReader {
 public:
     CameraReader(const int deviceId = -1);
-
+    ~CameraReader();
     bool getNextSample(Sample &sample);
 private:
     cv::VideoCapture* cap;

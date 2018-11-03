@@ -68,8 +68,8 @@ int SampleGenerationApp::parse_arguments(const int argc, char* argv[], std::stri
         }
         catch(po::error& e)
         {
-            std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
-            std::cerr << desc << std::endl;
+            LOG(ERROR) << "ERROR: " << e.what() << std::endl << std::endl;
+            LOG(ERROR) << desc << std::endl;
             return ERROR_IN_COMMAND_LINE;
         }
 
@@ -78,7 +78,7 @@ int SampleGenerationApp::parse_arguments(const int argc, char* argv[], std::stri
     }
     catch(std::exception& e)
     {
-        std::cerr << "Unhandled Exception reached the top of main: "
+        LOG(ERROR) << "Unhandled Exception reached the top of main: "
                   << e.what() << ", application will now exit" << std::endl;
         return ERROR_UNHANDLED_EXCEPTION;
 

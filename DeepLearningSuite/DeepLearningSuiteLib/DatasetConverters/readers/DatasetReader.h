@@ -9,11 +9,13 @@
 #include <Common/Sample.h>
 #include <boost/shared_ptr.hpp>
 #include <Common/EvalMatrix.h>
+#include <glog/logging.h>
 
 class DatasetReader {
 public:
     DatasetReader(const bool imagesRequired);
     virtual bool getNextSample(Sample &sample);
+    virtual bool getNextSamples(std::vector<Sample> &samples, int size );
     void filterSamplesByID(std::vector<std::string> filteredIDS);
     void overWriteClasses(const std::string& from, const std::string& to);
     int getNumberOfElements();
@@ -26,6 +28,7 @@ public:
     virtual bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
     void addSample(Sample sample);
     std::string getClassNamesFile();
+    virtual ~DatasetReader();
 
 protected:
     std::vector<Sample> samples;

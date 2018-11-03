@@ -10,6 +10,9 @@
 DatasetReader::DatasetReader(const bool imagesRequired):readerCounter(0),imagesRequired(imagesRequired) {
 }
 
+DatasetReader::~DatasetReader() {
+}
+
 void DatasetReader::filterSamplesByID(std::vector<std::string> filteredIDS) {
     std::vector<Sample> old_samples(this->samples);
     this->samples.clear();
@@ -44,7 +47,7 @@ void DatasetReader::incrementReaderCounter(const int increment_by) {
 }
 
 bool DatasetReader::getNextSample(Sample &sample) {
-    std::cout << "readCounter: " << this->readerCounter << ", size: " << this->samples.size() << std::endl;
+    LOG(INFO) << "readCounter: " << this->readerCounter << ", size: " << this->samples.size();
     if (this->readerCounter < this->samples.size()){
         sample=this->samples[this->readerCounter];
         this->readerCounter++;
@@ -56,7 +59,24 @@ bool DatasetReader::getNextSample(Sample &sample) {
 
 }
 
+bool DatasetReader::getNextSamples(std::vector<Sample> &batchOfSamples, int size ) {
+    LOG(INFO) << "readCounter: " << this->readerCounter << ", size: " << this->samples.size();
 
+    int imagesLeft = this->samples.size() - this->readerCounter;
+
+    if ( size > imagesLeft )
+        size = imagesLeft;
+
+    if (batchOfSamples.capacity() != size)
+        batchOfSamples.resize(size);
+
+
+    for (int i = 0; i < size; i++) {
+        batchOfSamples[i] = this->samples[this->readerCounter];
+        this->readerCounter++;
+    }
+
+}
 
 bool DatasetReader::getSampleBySampleID(Sample** sample, const std::string& sampleID){
     for (auto it=this->samples.begin(), end= this->samples.end(); it != end; ++it){

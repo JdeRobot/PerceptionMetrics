@@ -67,8 +67,8 @@ class TensorFlowDetector:
 	print "Initializing"
 
 	dummy_tensor = np.zeros((1,1,1,3), dtype=np.int32)
-        self.sess.run(self.tensor_dict,
-                               feed_dict={self.image_tensor: dummy_tensor})
+    self.sess.run(self.tensor_dict,
+                        feed_dict={self.image_tensor: dummy_tensor})
 
 
 

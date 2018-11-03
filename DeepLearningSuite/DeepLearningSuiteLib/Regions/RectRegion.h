@@ -16,7 +16,7 @@ struct RectRegion {
     bool operator < (const RectRegion &obj) const {
 
       if (classID.empty() || obj.classID.empty()) {
-         throw std::invalid_argument("One of the RectRegions passed for comparision were not initialized");
+         throw std::invalid_argument("One of the RectRegions passed for comparision were not initialized, ClassID found empty");
       }
 
       if (classID != obj.classID) {
