@@ -122,6 +122,7 @@ Install OpenCV 3.4
 <pre>
 git clone https://github.com/opencv/opencv.git
 git checkout 3.4
+mkdir build && cd build
 cmake -D WITH_QT=ON -D WITH_GTK=OFF ..
 make -j4
 sudo make install
