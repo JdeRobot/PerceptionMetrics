@@ -50,17 +50,39 @@ before_script:
   - cd build
   - cmake ..
 
-script: make -j2
+branches:
+  except:
+    - # Do not build tags that we create when we upload to GitHub Releases
+    - /^(?i:continuous)$/
+    - gh-pages
 
+# Environment variables
+env:
+  global:
+    - GH_REPO_NAME: dl-DetectionSuite
+    - DOXYFILE: $TRAVIS_BUILD_DIR/./Doxyfile
+    - GH_REPO_REF: github.com/JdeRobot/dl-DetectionSuite.git
 
+# Install dependencies
+addons:
+  apt:
+    packages:
+      - doxygen
+      - doxygen-doc
+      - doxygen-latex
+      - doxygen-gui
+      - graphviz
+
+# Build your code e.g. by calling make
+script:
+  - make -j2
+
+# Generate and deploy documentation
 after_success:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then travis_wait bash ../package.sh ; fi    # To run the script in the same shell so as to setup environment variables
   - ls -lh out/*            # Assuming you have some files in out/ that you would like to upload
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - travis_wait bash upload.sh out/*
-
-
-branches:
-  except:
-    - # Do not build tags that we create when we upload to GitHub Releases
-    - /^(?i:continuous)$/
+  - cd $TRAVIS_BUILD_DIR
+  - chmod +x generateDocumentationAndDeploy.sh
+  - ./generateDocumentationAndDeploy.sh
