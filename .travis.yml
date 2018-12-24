@@ -38,7 +38,7 @@ addons:
       - libgoogle-glog-dev
       - libyaml-cpp-dev
       - qt5-default
-      - libqt5svg5-dev 
+      - libqt5svg5-dev
       - libqt5opengl5-dev
       - ros-kinetic-roscpp
       - ros-kinetic-cv-bridge
@@ -79,12 +79,19 @@ after_success:
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - travis_wait bash upload.sh out/*
   - cd $TRAVIS_BUILD_DIR
-  - travis_wait bash -x generateDocumentationAndDeploy.sh
+  - doxygen $DOXYFILE 2>&1 | tee doxygen.log
+  - mv doxygen.log html/ && echo "" > html/.nojekyll
 
+deploy:
+  provider: pages
+  skip-cleanup: true
+  local_dir: $TRAVIS_BUILD_DIR/html
+  github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  on:
+    branch: master
 
 branches:
   except:
     - # Do not build tags that we create when we upload to GitHub Releases
     - /^(?i:continuous)$/
     - gh-pages
-
