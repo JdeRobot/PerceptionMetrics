@@ -65,8 +65,6 @@ public:
         GenericDatasetReaderPtr reader;
 
         int count = 0;
-	unsigned int time = 0;
-	double time_evaluation = 0 , time_accumulation = 0;
 
         for (auto it = datasetsNode.begin(); it != datasetsNode.end(); it++) {
 
@@ -126,8 +124,8 @@ public:
 
                 GenericInferencerPtr inferencer(new GenericInferencer(inferencerConfig, inferencerWeights, inferencerNames, inferencerImplementation));
                 MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(), false);
-                massInferencer.process(useDepth, readerDetection, &time);
-
+                massInferencer.process(useDepth, readerDetection);
+		
                 /*std::vector<Sample>::iterator iter;
                 std::cout << samples.size() << '\n';
 
@@ -148,15 +146,15 @@ public:
 
                 DetectionsEvaluatorPtr evaluator(new DetectionsEvaluator(reader->getReader(),readerDetection,true));
 
-                evaluator->evaluate(isIouTypeBbox, &time_evaluation);
-                evaluator->accumulateResults(&time_accumulation);
+                evaluator->evaluate(isIouTypeBbox);
+                evaluator->accumulateResults();
                 /*Extract weights name with folder*/
                 std::string path = inferencerWeights;
                 std::size_t a =  path.find_last_of("/");
                 std::size_t b =  path.substr(0, a).find_last_of("/");
                 a =  path.find_last_of(".");
 
-                writer.writeInferencerResults(path.substr(b + 1, a - (b+1)), evaluator,time , time_evaluation, time_accumulation);
+                writer.writeInferencerResults(path.substr(b + 1, a - (b+1)), evaluator,massInferencer.mean_inference_time);
 
 
                 count2++;

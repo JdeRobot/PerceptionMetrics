@@ -34,7 +34,7 @@ double DetectionsEvaluator::getOverallmAR() {
     return this->ArDiffIou.sum()/10;
 }
 
-void DetectionsEvaluator::accumulateResults(double *time_accumulation) {
+void DetectionsEvaluator::accumulateResults() {
 
     int start_s=clock();
 
@@ -83,8 +83,8 @@ void DetectionsEvaluator::accumulateResults(double *time_accumulation) {
     }
 
     int stop_s=clock();
-    *time_accumulation = (stop_s-start_s)/double(CLOCKS_PER_SEC);
-    std::cout << "Time Taken in Accumulation: " << *time_accumulation  << " seconds" << std::endl;
+    time_accumulation = (stop_s-start_s)/double(CLOCKS_PER_SEC);
+    std::cout << "Time Taken in Accumulation: " << time_accumulation << " seconds" << std::endl;
     std::cout << std::fixed;
     std::cout << std::setprecision(8);
 
@@ -107,7 +107,7 @@ void DetectionsEvaluator::accumulateResults(double *time_accumulation) {
 
 }
 
-void DetectionsEvaluator::evaluate(bool isIouTypeBbox, double *time_evaluation) {
+void DetectionsEvaluator::evaluate(bool isIouTypeBbox) {
     int counter=-1;
     int gtSamples = this->gt->getNumberOfElements();
     int detectionSamples = this->detections->getNumberOfElements();
@@ -159,8 +159,8 @@ void DetectionsEvaluator::evaluate(bool isIouTypeBbox, double *time_evaluation) 
 
     }
     int stop_s=clock();
-    *time_evaluation = (stop_s-start_s)/double(CLOCKS_PER_SEC);
-    std::cout << "Time Taken in Evaluation: " << *time_evaluation << " seconds" << std::endl;
+    time_evaluation = (stop_s-start_s)/double(CLOCKS_PER_SEC);
+    std::cout << "Time Taken in Evaluation: " << time_evaluation << " seconds" << std::endl;
 
 }
 

@@ -8,8 +8,7 @@
 class StatsWriter {
 public:
     StatsWriter(DatasetReaderPtr dataset, std::string& writerFile);
-    void writeInferencerResults(std::string inferencerName, DetectionsEvaluatorPtr evaluator, unsigned int mean_inference_time = 0 ,
-	double time_evaluation = 0, double time_accumulation = 0);
+    void writeInferencerResults(std::string inferencerName, DetectionsEvaluatorPtr evaluator, unsigned int mean_inference_time = 0);
     void saveFile();
 
 private:

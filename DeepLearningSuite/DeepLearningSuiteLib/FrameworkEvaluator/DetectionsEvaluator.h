@@ -17,14 +17,16 @@
 class DetectionsEvaluator {
 public:
     DetectionsEvaluator(DatasetReaderPtr gt, DatasetReaderPtr detections, bool debug=false);
-    void evaluate(bool isIouTypeBbox, double *time_evaluation = 0);
-    void accumulateResults(double *time_accumulation = 0);
+    void evaluate(bool isIouTypeBbox);
+    void accumulateResults();
     void addValidMixClass(const std::string classA, const std::string classB);
     void addClassToDisplay(const std::string& classID);
     std::map<std::string, double> getClassWiseAP();
     std::map<std::string, double> getClassWiseAR();
     double getOverallmAP();
     double getOverallmAR();
+    double time_evaluation;
+    double time_accumulation;
 
 private:
     DatasetReaderPtr gt;
@@ -60,6 +62,7 @@ private:
     double iouThrs[10] = {0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95};
 
     std::vector<double> recallThrs;         // 101 recall Thrs initialized in constructor
+    
 };
 
 
