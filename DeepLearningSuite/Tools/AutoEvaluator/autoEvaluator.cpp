@@ -154,7 +154,7 @@ public:
                 std::size_t b =  path.substr(0, a).find_last_of("/");
                 a =  path.find_last_of(".");
 
-                writer.writeInferencerResults(path.substr(b + 1, a - (b+1)), evaluator);
+                writer.writeInferencerResults(path.substr(b + 1, a - (b+1)), evaluator,massInferencer.getInferencer()->getMeanDurationTime());
 
 
                 count2++;

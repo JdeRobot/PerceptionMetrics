@@ -9,7 +9,7 @@ if not hasattr(sys, 'argv'):
 import tensorflow as tf
 import time
 
-np.set_printoptions(threshold='nan')
+np.set_printoptions(threshold=sys.maxsize)
 
 if StrictVersion(tf.__version__) < StrictVersion('1.4.0'):
   raise ImportError('Please upgrade your TensorFlow installation to v1.4.* or later!')
@@ -67,7 +67,7 @@ class TensorFlowDetector:
 	print "Initializing"
 
 	dummy_tensor = np.zeros((1,1,1,3), dtype=np.int32)
-    self.sess.run(self.tensor_dict,
+    	self.sess.run(self.tensor_dict,
                         feed_dict={self.image_tensor: dummy_tensor})
 
 

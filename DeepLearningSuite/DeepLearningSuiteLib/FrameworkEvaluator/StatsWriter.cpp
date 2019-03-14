@@ -29,12 +29,13 @@ StatsWriter::StatsWriter(DatasetReaderPtr dataset, std::string& writerFile) {
     }
 
     this->writer << ", mAP(Overall)(IOU=0.5:0.95), mAR(Overall)(IOU=0.5:0.95)";
+    this->writer << " , Mean inference time(ms) , Time Taken in Evaluation (second), Time Taken in Accumulation (second)";
 
     this->writer << "\n";
 
 }
 
-void StatsWriter::writeInferencerResults(std::string inferencerName, DetectionsEvaluatorPtr evaluator) {
+void StatsWriter::writeInferencerResults(std::string inferencerName, DetectionsEvaluatorPtr evaluator, unsigned int mean_inference_time) {
 
     this->writer << inferencerName;
     std::map<std::string, double> meanAP = evaluator->getClassWiseAP();
@@ -56,7 +57,7 @@ void StatsWriter::writeInferencerResults(std::string inferencerName, DetectionsE
 
     }
       this->writer << ", " << evaluator->getOverallmAP() << ", " << evaluator->getOverallmAR();
-
+      this->writer << ", " << mean_inference_time << ", "<< evaluator->getEvaluationTime() << ", " << evaluator->getAccumulationTime();
       this->writer << "\n";
       LOG(INFO) << "Inference Results Written Successfully";
 

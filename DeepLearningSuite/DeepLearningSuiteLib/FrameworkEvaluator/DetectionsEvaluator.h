@@ -25,6 +25,8 @@ public:
     std::map<std::string, double> getClassWiseAR();
     double getOverallmAP();
     double getOverallmAR();
+    double getEvaluationTime();
+    double getAccumulationTime();
 
 private:
     DatasetReaderPtr gt;
@@ -60,6 +62,11 @@ private:
     double iouThrs[10] = {0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95};
 
     std::vector<double> recallThrs;         // 101 recall Thrs initialized in constructor
+    
+    
+    double timeEvaluation = 0;
+    double timeAccumulation = 0;
+    
 };
 
 

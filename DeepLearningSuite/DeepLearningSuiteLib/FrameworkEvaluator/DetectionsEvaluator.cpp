@@ -34,6 +34,14 @@ double DetectionsEvaluator::getOverallmAR() {
     return this->ArDiffIou.sum()/10;
 }
 
+double DetectionsEvaluator::getEvaluationTime() {
+    return this->timeEvaluation;
+}
+
+double DetectionsEvaluator::getAccumulationTime() {
+    return this->timeAccumulation;
+}
+
 void DetectionsEvaluator::accumulateResults() {
 
     int start_s=clock();
@@ -83,7 +91,8 @@ void DetectionsEvaluator::accumulateResults() {
     }
 
     int stop_s=clock();
-    std::cout << "Time Taken in Accumulation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC) << " seconds" << std::endl;
+    this->timeAccumulation = (stop_s-start_s)/double(CLOCKS_PER_SEC);
+    std::cout << "Time Taken in Accumulation: " << this->timeAccumulation << " seconds" << std::endl;
     std::cout << std::fixed;
     std::cout << std::setprecision(8);
 
@@ -158,7 +167,8 @@ void DetectionsEvaluator::evaluate(bool isIouTypeBbox) {
 
     }
     int stop_s=clock();
-    std::cout << "Time Taken in Evaluation: " << (stop_s-start_s)/double(CLOCKS_PER_SEC) << " seconds" << std::endl;
+    this->timeEvaluation = (stop_s-start_s)/double(CLOCKS_PER_SEC);
+    std::cout << "Time Taken in Evaluation: " << this->timeEvaluation << " seconds" << std::endl;
 
 }
 

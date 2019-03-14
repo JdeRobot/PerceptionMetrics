@@ -157,3 +157,7 @@ void MassInferencer::process(bool useDepthImages, DatasetReaderPtr readerDetecti
 
 
 }
+
+FrameworkInferencerPtr MassInferencer::getInferencer() const {
+    return this->inferencer;
+}
