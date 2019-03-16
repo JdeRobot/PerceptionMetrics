@@ -53,7 +53,7 @@ bool PascalVOCDatasetReader::appendDataset(const std::string &datasetPath, const
 
     if (imagesRequired) {
         if (find_directory(boostDatasetPath.parent_path(), "JPEGImages", img_dir)) {
-            std::cout << img_dir.string() << '\n';
+            LOG(INFO) << img_dir.string() << '\n';
         } else {
             throw std::runtime_error("Images Directory can't be located, place it in the folder containing annotations, and name it JPEGIamges");
         }

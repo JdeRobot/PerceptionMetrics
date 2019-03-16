@@ -60,7 +60,7 @@ void MainWindow::handleViewButton() {
 
 void MainWindow::handleSelectionNamesChanged() {
     std::string classNameFilePath;
-    std::cout << ui->tabWidget->currentIndex() << std::endl;
+    LOG(INFO) << ui->tabWidget->currentIndex() << std::endl;
     switch(ui->tabWidget->currentIndex()) {
         case 0: {
             std::vector<std::string> dataSelected;
@@ -475,7 +475,7 @@ void MainWindow::handleDeployerSaveOutputCheckboxChange() {
 
 void MainWindow::handleDeployerStop() {
     this->stopDeployer = true;
-    std::cout << "Stopping Deployer Process" << "\n";
+    LOG(WARNING) << "Stopping Deployer Process" << "\n";
 }
 
 void MainWindow::handleProcessDeploy() {

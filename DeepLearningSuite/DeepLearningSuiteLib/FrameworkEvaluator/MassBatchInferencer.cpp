@@ -11,7 +11,7 @@ MassBatchInferencer::MassBatchInferencer(DatasetReaderPtr reader, FrameworkInfer
 {
     if (resultsPath.empty()) {
         saveOutput = false;
-        
+
     } else {
         saveOutput = true;
         alreadyProcessed=0;
@@ -56,7 +56,7 @@ void MassBatchInferencer::process(const int batchSize, bool useDepthImages, Data
     int counter=0;
     int nsamples = this->reader->getNumberOfElements();
     while (alreadyProcessed>0){
-        std::cout << "Already evaluated: " << sample.getSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
+        LOG(INFO) << "Already evaluated: " << sample.getSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
         this->reader->getNextSample(sample);
         counter++;
         alreadyProcessed--;
@@ -66,7 +66,7 @@ void MassBatchInferencer::process(const int batchSize, bool useDepthImages, Data
     while (this->reader->getNextSample(sample)){
         counter++;
 
-        std::cout << "Evaluating : " << sample.gedtSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
+        LOG(INFO) << "Evaluating : " << sample.gedtSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
 
         cv::Mat image2detect;
         if (useDepthImages)
@@ -85,7 +85,7 @@ void MassBatchInferencer::process(const int batchSize, bool useDepthImages, Data
           detection=this->inferencer->detect(image2detect, thresh);
 
         } catch(const std::runtime_error& error) {
-          std::cout << "Error Occured: " << error.what() << '\n';
+          LOG(ERROR) << "Error Occured: " << error.what() << '\n';
           exit(1);
         }
 
@@ -121,7 +121,7 @@ void MassBatchInferencer::process(const int batchSize, bool useDepthImages, Data
 
     }
     cv::destroyAllWindows();
-    std::cout << "Mean inference time: " << this->inferencer->getMeanDurationTime() << "(ms)" <<  std::endl;
+    LOG(INFO) << "Mean inference time: " << this->inferencer->getMeanDurationTime() << "(ms)" <<  std::endl;
 
 
 }

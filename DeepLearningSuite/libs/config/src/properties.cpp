@@ -18,7 +18,7 @@
  */
 
 #include <config/properties.hpp>
-
+#include <glog/logging.h>
 namespace Config{
 
 
@@ -31,33 +31,33 @@ Properties::Properties(YAML::Node node){
 
 void
 Properties::showConfig() {
-    std::cout << "------------------------------------------------------------------" << std::endl;
-    std::cout << "------------------------------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------------------------------" << std::endl;
 
     for (YAML::const_iterator it = this->node.begin(); it != this->node.end(); ++it){
-       std::cout << it->first.as<std::string>() << ": ";
+       LOG(INFO) << it->first.as<std::string>() << ": ";
        printNode(it->second, 0);
-       std::cout << '\n';
+       LOG(INFO) << '\n';
         // it->second.as<std::string>(); // can't do this until it's type is checked!!
    }
-   std::cout << "------------------------------------------------------------------" << std::endl;
-   std::cout << "------------------------------------------------------------------" << std::endl;
+   LOG(INFO) << "------------------------------------------------------------------" << std::endl;
+   LOG(INFO) << "------------------------------------------------------------------" << std::endl;
 
 }
 
 void
 Properties::printNode(YAML::Node node_passed, int nesting_level) {
-    //std::cout << nesting_level << '\n';
+    //LOG(INFO) << nesting_level << '\n';
    switch (node_passed.Type()) {
      case  YAML::NodeType::Null:
         return;
      case YAML::NodeType::Scalar:
-        std::cout << node_passed.as<std::string>() << '\n';
+        LOG(INFO) << node_passed.as<std::string>() << '\n';
         break;
      case YAML::NodeType::Sequence:
-        std::cout << '\n';
+        LOG(INFO) << '\n';
         for (YAML::const_iterator it = node_passed.begin(); it != node_passed.end(); ++it){
-            std::cout << std::string(nesting_level, ' ')  << "-" << '\n';
+            LOG(INFO) << std::string(nesting_level, ' ')  << "-" << '\n';
             printNode(*it, nesting_level + 2);
 
             // it->second.as<std::string>(); // can't do this until it's type is checked!!
@@ -65,7 +65,7 @@ Properties::printNode(YAML::Node node_passed, int nesting_level) {
         break;
      case YAML::NodeType::Map:
         for (YAML::const_iterator it = node_passed.begin(); it != node_passed.end(); ++it){
-            std::cout << std::string(nesting_level, ' ') << it->first.as<std::string>() << ": ";
+            LOG(INFO) << std::string(nesting_level, ' ') << it->first.as<std::string>() << ": ";
             printNode(it->second, nesting_level + 2);
          // it->second.as<std::string>(); // can't do this until it's type is checked!!
         }

@@ -51,17 +51,17 @@ Configuration::Configuration(const std::string &configFilePath):configFilePath(c
 }
 
 void Configuration::showConfig() {
-    std::cout << "------------------------------------------------------------------" << std::endl;
-    std::cout << "------------------------------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------------------------------" << std::endl;
     for (auto it = this->config.begin(), end = this->config.end(); it != end; ++it){
-        std::cout << it->first << std::endl;
+        LOG(INFO) << it->first << std::endl;
         int nElements= it->second.getNValues();
         for (int i=0; i < nElements; i++) {
-            std::cout << "       " << it->second.getValue(i) << std::endl;
+            LOG(INFO) << "       " << it->second.getValue(i) << std::endl;
         }
     }
-    std::cout << "------------------------------------------------------------------" << std::endl;
-    std::cout << "------------------------------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------------------------------" << std::endl;
 }
 
 Configuration::Configuration() {

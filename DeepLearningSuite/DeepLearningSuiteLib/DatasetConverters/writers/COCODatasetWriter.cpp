@@ -26,8 +26,8 @@ COCODatasetWriter::COCODatasetWriter(const std::string &outPath, DatasetReaderPt
     }
 
 
-    std::cout << "FullImagesPath: " << this->fullImagesPath << std::endl;
-    std::cout << "FullLabelsPath: " << this->fullLabelsPath << std::endl;
+    LOG(INFO) << "FullImagesPath: " << this->fullImagesPath << std::endl;
+    LOG(INFO) << "FullLabelsPath: " << this->fullLabelsPath << std::endl;
 
 }
 
@@ -253,20 +253,20 @@ void COCODatasetWriter::process(bool writeImages, bool useDepth) {
 
         if (!writerNamesFile.empty()) {
 
-            std::cout << "\nPrinting Mapping Info\n";
-            std::cout << "**********************\n";
+            LOG(INFO) << "\nPrinting Mapping Info\n";
+            LOG(INFO) << "**********************\n";
 
             for (std::unordered_map<std::string, std::string>::iterator it=this->mapped_classes.begin(); it!=this->mapped_classes.end(); ++it)
-                std::cout << it->first << " => " << it->second << '\n';
+                LOG(INFO) << it->first << " => " << it->second << '\n';
 
-            std::cout << "**********************\n";
+            LOG(INFO) << "**********************\n";
 
-            std::cout << "\nPrinting Discarded Classes from Original Dataset\n";
-            std::cout << "**********************\n";
+            LOG(WARNING) << "\nPrinting Discarded Classes from Original Dataset\n";
+            LOG(INFO) << "**********************\n";
 
             for (std::unordered_map<std::string, long int>::iterator it=this->discarded_classes.begin(); it!=this->discarded_classes.end(); ++it)
-                std::cout << it->first << " : " << it->second << '\n';
-            std::cout << "**********************\n";
+                LOG(WARNING) << it->first << " : " << it->second << '\n';
+            LOG(INFO) << "**********************\n";
 
         }
 }

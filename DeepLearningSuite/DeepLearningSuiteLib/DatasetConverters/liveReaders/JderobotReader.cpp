@@ -10,29 +10,29 @@ JderobotReader::JderobotReader(std::map<std::string, std::string>* deployer_para
     Config::Properties cfg;
 
     if (deployer_params_map == NULL) {
-        std::cout << "null" << '\n';
+        LOG(WARNING) << "null" << '\n';
         int argc=2;
         char* argv[2];
         argv[0] = (char*)std::string("myFakeApp").c_str();
         argv[1] = (char*)path.c_str();
         cfg = Config::load(argc, argv);
     } else {
-        std::cout << "not null" << '\n';
+        LOG(INFO) << "not null" << '\n';
         std::map<std::string, std::string>::iterator iter;
         YAML::Node rootNode;  // starts out as null
         YAML::Node nodeConfig;
 
         for (iter = deployer_params_map->begin(); iter != deployer_params_map->end(); iter++) {
-            std::cout << iter->first << " " << iter->second << '\n';
+            LOG(INFO) << iter->first << " " << iter->second << '\n';
             nodeConfig[iter->first.c_str()] = iter->second.c_str();
-            std::cout << "here" << '\n';
+            LOG(INFO) << "here" << '\n';
         }
 
         rootNode["Camera"] = nodeConfig;
 
         cfg = Config::Properties(rootNode);
 
-        std::cout << "done" << '\n';
+        LOG(INFO) << "done" << '\n';
 
     }
 
@@ -88,6 +88,6 @@ bool JderobotReader::getNextSample(Sample &sample) {
         sample.setColorImage(image);
         //sample.setDepthImage(image);
     }
-    //std::cout << "Fetching" << '\n';
+    //LOG(INFO) << "Fetching" << '\n';
 
 }

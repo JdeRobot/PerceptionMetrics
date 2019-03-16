@@ -7,6 +7,7 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include "DepthSampler.h"
+#include <glog/logging.h>
 
 namespace jderobot {
 DepthSampler::DepthSampler(int nBins, int maxDistance, int minInd, float step){
@@ -97,16 +98,16 @@ void DepthSampler::evalSample(cv::Mat source, std::vector<cv::Mat> layers, int s
 	}
 
 	int stop_s=clock();
-	std::cout << "Time for normal sampling: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << std::endl;
-	std::cout << "Layer sampling Size : " << std::accumulate(normalSample.begin(), normalSample.end(), 0) << ",  result:" << std::endl;
+	LOG(INFO) << "Time for normal sampling: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << std::endl;
+	LOG(INFO) << "Layer sampling Size : " << std::accumulate(normalSample.begin(), normalSample.end(), 0) << ",  result:" << std::endl;
 	for (std::vector<int>::iterator it= normalSample.begin(); it!= normalSample.end(); it++){
-		std::cout << *it << std::endl;
+		LOG(INFO) << *it << std::endl;
 	}
 	start_s=clock();
 
 	float localStep=minInd+(step*nLayers);
 	for ( std::vector<cv::Mat>::iterator it= layers.begin(); it != layers.end(); it++){
-		std::cout << "step: " << (int)localStep << std::endl;
+		LOG(INFO) << "step: " << (int)localStep << std::endl;
 		for (int xIm=0; xIm< source.cols; xIm+=(int)localStep) {
 			for (int yIm=0; yIm<source.rows ; yIm+=(int)localStep) {
 				if ((int)it->at<char>(yIm,xIm) != 0){
@@ -130,10 +131,10 @@ void DepthSampler::evalSample(cv::Mat source, std::vector<cv::Mat> layers, int s
 	}
 
 	stop_s=clock();
-	std::cout << "Time for layers sampling: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << std::endl;
-	std::cout << "Layer sampling Size : " << std::accumulate(layerSample.begin(), layerSample.end(), 0) << ",  result:" << std::endl;
+	LOG(INFO) << "Time for layers sampling: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << std::endl;
+	LOG(INFO) << "Layer sampling Size : " << std::accumulate(layerSample.begin(), layerSample.end(), 0) << ",  result:" << std::endl;
 	for (std::vector<int>::iterator it= layerSample.begin(); it!= layerSample.end(); it++){
-		std::cout << *it << std::endl;
+		LOG(INFO) << *it << std::endl;
 	}
 
 	/*cv::imshow("normal", imgNormalSample);

@@ -17,7 +17,7 @@
  *       Aitor Martinez Fernandez <aitor.martinez.fernandez@gmail.com>
  */
 #include <comm/cameraClient.hpp>
-
+#include <glog/logging.h>
 
 namespace Comm {
 
@@ -32,13 +32,13 @@ getCameraClient(Comm::Communicator* jdrc, std::string prefix){
 	switch (server){
 		case 0:
 		{
-			std::cout << "Camera disabled" << std::endl;
+			LOG(ERROR) << "Camera disabled" << std::endl;
 			break;
 		}
 		case 1:
 		{
 			#ifdef ICE
-			std::cout << "Receiving Image from ICE interfaces" << std::endl;
+			LOG(INFO) << "Receiving Image from ICE interfaces" << std::endl;
 			CameraIceClient* cl;
 			cl = new CameraIceClient(jdrc, prefix);
 			cl->start();
@@ -51,7 +51,7 @@ getCameraClient(Comm::Communicator* jdrc, std::string prefix){
 		case 2:
 		{
 			#ifdef JDERROS
-				std::cout << "Receiving Image from ROS messages" << std::endl;
+				LOG(INFO) << "Receiving Image from ROS messages" << std::endl;
 				std::string nodeName;
 				nodeName =  jdrc->getConfig().asStringWithDefault(prefix+".Name", "LaserNode");
 				std::string topic;

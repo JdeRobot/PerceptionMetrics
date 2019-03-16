@@ -50,8 +50,8 @@ void RecorderReader::getImagesByIndexes(const std::string& path, std::vector<int
                 else{
                     onlyIndexFilename=dir_itr->path().filename().stem().string();
                 }
-                std::cout << dir_itr->path().string() << std::endl;
-                std::cout << onlyIndexFilename << std::endl;
+                LOG(INFO) << dir_itr->path().string() << std::endl;
+                LOG(INFO) << onlyIndexFilename << std::endl;
 
                 indexes.push_back(std::stoi(onlyIndexFilename));
             }

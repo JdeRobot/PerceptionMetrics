@@ -1,7 +1,7 @@
 #include <Common/Sample.h>
 #include <DatasetConverters/ClassTypeGeneric.h>
 #include "CaffeInferencer.h"
-
+#include <glog/logging.h>
 CaffeInferencer::CaffeInferencer(const std::string &netConfig, const std::string &netWeights,const std::string& classNamesFile, std::map<std::string, std::string>* inferencerParamsMap): netConfig(netConfig),netWeights(netWeights) {
     this->classNamesFile=classNamesFile;
     this->netConfig=netConfig;
@@ -67,8 +67,8 @@ Sample CaffeInferencer::detectImp(const cv::Mat &image, double confidence_thresh
 
 		typeConverter.setId(it->classId);
 		regions->add(it->boundingBox,typeConverter.getClassString(), it->probability);
-		std::cout<< it->boundingBox.x << " " << it->boundingBox.y << " " << it->boundingBox.height << " " << it->boundingBox.width << std::endl;
-		std::cout<< typeConverter.getClassString() << ": " << it->probability << std::endl;
+		LOG(INFO)<< it->boundingBox.x << " " << it->boundingBox.y << " " << it->boundingBox.height << " " << it->boundingBox.width << std::endl;
+		LOG(INFO)<< typeConverter.getClassString() << ": " << it->probability << std::endl;
 	}
     sample.setColorImage(image);
     sample.setRectRegions(regions);
@@ -126,7 +126,7 @@ void CaffeInferencer::postprocess(const std::vector<cv::Mat>& outs, cv::Mat & im
                 detections.push_back(detection());
                 detections[count].classId = (int)(data[i + 1]) - 1;
                 detections[count].probability = confidence;
-                std::cout << data[i + 3] << '\n';
+                LOG(INFO) << data[i + 3] << '\n';
                 detections[count].boundingBox.x = (int)(data[i + 3] * image.cols);
                 detections[count].boundingBox.y = (int)(data[i + 4] * image.rows);
 

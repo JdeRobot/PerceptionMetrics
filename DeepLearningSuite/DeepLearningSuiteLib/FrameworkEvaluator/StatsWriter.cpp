@@ -1,5 +1,5 @@
 #include "StatsWriter.h"
-
+#include <glog/logging.h>
 StatsWriter::StatsWriter(DatasetReaderPtr dataset, std::string& writerFile) {
 
     this->writerFile = writerFile;
@@ -67,5 +67,5 @@ void StatsWriter::writeInferencerResults(std::string inferencerName, DetectionsE
 
 void StatsWriter::saveFile() {
     this->writer.close();
-    std::cout << "File " << this->writerFile << " Saved Successfully" << '\n';
+    LOG(INFO) << "File " << this->writerFile << " Saved Successfully" << '\n';
 }

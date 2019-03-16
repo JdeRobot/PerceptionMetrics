@@ -6,7 +6,7 @@
 #include <fstream>
 #include <random>
 #include "rapidjson/filereadstream.h"
-
+#include <glog/logging.h>
 
 RleRegions::RleRegions(){
 
@@ -132,5 +132,5 @@ bool RleRegions::empty() {
 
 void RleRegions::print() {
     //todo
-    std::cout << "Not yet implemented" << std::endl;
+    LOG(ERROR) << "Not yet implemented" << std::endl;
 }

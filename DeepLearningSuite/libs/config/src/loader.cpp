@@ -19,7 +19,7 @@
 
 
 #include <config/loader.hpp>
-
+#include <glog/logging.h>
 namespace jderobotconfig{
 namespace loader{
 
@@ -53,7 +53,7 @@ load(std::string filename){
     YAML::Node nodeConfig = YAML::LoadFile(filepath);
 
     Config::Properties config(nodeConfig);
-    std::cout<<"[Info] loaded YAML Config file: "<<filepath<<std::endl;
+    LOG(INFO)<<"[Info] loaded YAML Config file: "<<filepath<<std::endl;
     //properties->setProperty("Ice.Config", filepath);
     return config;
 }

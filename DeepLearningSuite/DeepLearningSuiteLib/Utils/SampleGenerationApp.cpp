@@ -58,7 +58,7 @@ int SampleGenerationApp::parse_arguments(const int argc, char* argv[], std::stri
              */
             if ( vm.count("help")  )
             {
-                std::cout << "Basic Command Line Parameter App" << std::endl
+                LOG(INFO) << "Basic Command Line Parameter App" << std::endl
                           << desc << std::endl;
                 return SUCCESS;
             }

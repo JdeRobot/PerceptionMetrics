@@ -21,7 +21,7 @@ set(SOURCES
 
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
-target_link_libraries(${PROJECT_NAME}  ${YAML_CPP_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}  ${YAML_CPP_LIBRARIES} ${GLOG_LIBRARIES})
 
 ## Export library variables (like find_package)
 set(${PROJECT_NAME}_FOUND 1 CACHE BOOL "Find(${PROJECT_NAME})")

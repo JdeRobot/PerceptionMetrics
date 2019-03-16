@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include "DatasetReader.h"
 #include "DatasetConverters/ClassTypeOwn.h"
-
+#include <glog/logging.h>
 
 DatasetReader::DatasetReader(const bool imagesRequired):readerCounter(0),imagesRequired(imagesRequired) {
 }
@@ -121,17 +121,17 @@ void DatasetReader::printDatasetStats() {
         }
     }
 
-    std::cout << "------------------------------------------" << std::endl;
-    std::cout << "------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------" << std::endl;
     int totalSamples=0;
     for (auto it = classStats.begin(), end = classStats.end(); it != end; ++it){
-        std::cout << "["<< it->first <<  "]: " << it->second << std::endl;
+        LOG(INFO) << "["<< it->first <<  "]: " << it->second << std::endl;
         totalSamples+=it->second;
     }
-    std::cout << "------------------------------------------" << std::endl;
-    std::cout << "-- Total samples: " << totalSamples << std::endl;
-    std::cout << "-- Total images: " << this->getNumberOfElements() << std::endl;
-    std::cout << "------------------------------------------" << std::endl;
+    LOG(INFO) << "------------------------------------------" << std::endl;
+    LOG(INFO) << "-- Total samples: " << totalSamples << std::endl;
+    LOG(INFO) << "-- Total images: " << this->getNumberOfElements() << std::endl;
+    LOG(INFO) << "------------------------------------------" << std::endl;
 
 
 }

@@ -84,7 +84,7 @@ void MassInferencer::process(bool useDepthImages, DatasetReaderPtr readerDetecti
     int counter=0;
     int nsamples = this->reader->getNumberOfElements();
     while (alreadyProcessed>0){
-        std::cout << "Already evaluated: " << sample.getSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
+        LOG(INFO) << "Already evaluated: " << sample.getSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
         this->reader->getNextSample(sample);
         counter++;
         alreadyProcessed--;
@@ -94,11 +94,11 @@ void MassInferencer::process(bool useDepthImages, DatasetReaderPtr readerDetecti
     while (this->reader->getNextSample(sample)){
         counter++;
         if (this->stopDeployer != NULL && *(this->stopDeployer)) {
-            std::cout << "Deployer Process Stopped" << "\n";
+            LOG(INFO) << "Deployer Process Stopped" << "\n";
             return;
         }
 
-        std::cout << "Evaluating : " << sample.getSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
+        LOG(INFO) << "Evaluating : " << sample.getSampleID() << "(" << counter << "/" << nsamples << ")" << std::endl;
 
         cv::Mat image2detect;
         if (useDepthImages)
@@ -117,7 +117,7 @@ void MassInferencer::process(bool useDepthImages, DatasetReaderPtr readerDetecti
           detection=this->inferencer->detect(image2detect, thresh);
 
         } catch(const std::runtime_error& error) {
-          std::cout << "Error Occured: " << error.what() << '\n';
+          LOG(ERROR) << "Error Occured: " << error.what() << '\n';
           exit(1);
         }
 
@@ -153,7 +153,7 @@ void MassInferencer::process(bool useDepthImages, DatasetReaderPtr readerDetecti
 
     }
     cv::destroyAllWindows();
-    std::cout << "Mean inference time: " << this->inferencer->getMeanDurationTime() << "(ms)" <<  std::endl;
+    LOG(INFO) << "Mean inference time: " << this->inferencer->getMeanDurationTime() << "(ms)" <<  std::endl;
 
 
 }

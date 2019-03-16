@@ -13,6 +13,8 @@
 #include <list>
 #include <mutex>
 #include <numeric>
+#include <glog/logging.h>
+
 namespace jderobot {
 
 class DepthSampler {
@@ -30,7 +32,7 @@ public:
 	int getMaxDistance(){return this->maxDistance;};
 	void setMinInd(int value){this->minInd=value;};
 	int getMinInd(){return this->minInd;};
-	void setStep(double value){this->step=value; std::cout << "SETTING STEP TO: " << value << std::endl;};
+	void setStep(double value){this->step=value; LOG(INFO) << "SETTING STEP TO: " << value << std::endl;};
 	double getStep(){return this->step;};
 
 

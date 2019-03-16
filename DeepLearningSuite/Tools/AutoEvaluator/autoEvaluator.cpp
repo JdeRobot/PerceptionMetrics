@@ -8,7 +8,7 @@
 #include <FrameworkEvaluator/StatsWriter.h>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
-
+#include <glog/logging.h>
 class MyApp:public SampleGenerationApp{
 public:
     MyApp(int argc, char* argv[]):SampleGenerationApp(argc,argv){
@@ -178,5 +178,5 @@ int main (int argc, char* argv[]) {
     MyApp myApp(argc,argv);
     myApp.process();
 
-    std::cout << "Auto Evaluation Successfull" << '\n';
+    LOG(INFO) << "Auto Evaluation Successfull \n" ;
 }
