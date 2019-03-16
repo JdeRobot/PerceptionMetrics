@@ -1,17 +1,17 @@
 #include "EvalMatrix.h"
 #include <iostream>
-
+#include <glog/logging.h>
 void Eval::printMatrix(Eval::EvalMatrix matrix) {
 
-    std::cout << "Printing Matrix" << '\n';
+    LOG(INFO) << "Printing Matrix" << '\n';
 
     for (auto itr = matrix.begin(); itr != matrix.end(); itr++) {
-        std::cout << "ClassID: " << itr->first <<'\n';
+        LOG(INFO) << "ClassID: " << itr->first <<'\n';
         for (auto iter = itr->second.begin(); iter != itr->second.end(); iter++ ) {
             for (auto iterate = iter->begin(); iterate != iter->end(); iterate++) {
-                std::cout << *iterate << " ";
+                LOG(INFO) << *iterate << " ";
             }
-            std::cout << '\n';
+            LOG(INFO) << '\n';
         }
     }
 

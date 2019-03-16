@@ -28,7 +28,7 @@ bool SpinelloDatasetReader::appendDataset(const std::string &datasetPath, const 
 
     boost::filesystem::directory_iterator end_itr;
 
-    std::cout << "Path: " << boostPath.string() << std::endl;
+    LOG(INFO) << "Path: " << boostPath.string() << std::endl;
 
 
     std::vector<std::string> labelFileNames;

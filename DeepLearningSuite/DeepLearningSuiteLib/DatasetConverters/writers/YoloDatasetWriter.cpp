@@ -27,8 +27,8 @@ YoloDatasetWriter::YoloDatasetWriter(const std::string &outPath, DatasetReaderPt
     }
 
 
-    std::cout << "FullImagesPath: " << this->fullImagesPath << std::endl;
-    std::cout << "FullLabelsPath: " << this->fullImagesPath << std::endl;
+    LOG(INFO) << "FullImagesPath: " << this->fullImagesPath << std::endl;
+    LOG(INFO) << "FullLabelsPath: " << this->fullImagesPath << std::endl;
 
 }
 

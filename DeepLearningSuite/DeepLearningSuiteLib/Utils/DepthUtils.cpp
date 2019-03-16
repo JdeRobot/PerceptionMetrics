@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "DepthUtils.h"
-
+#include <glog/logging.h>
 void DepthUtils::mat16_to_ownFormat(const cv::Mat &inputImage, cv::Mat& outImage) {
 
     double MAX_LENGHT=10000;
@@ -31,13 +31,13 @@ void DepthUtils::mat16_to_ownFormat(const cv::Mat &inputImage, cv::Mat& outImage
     double min,max;
     cv::minMaxLoc(inputImage,&min,&max);
 
-    std::cout << "min: " << min << std::endl;
-    std::cout << "max: " << max << std::endl;
+    LOG(INFO) << "min: " << min << std::endl;
+    LOG(INFO) << "max: " << max << std::endl;
 
     cv::minMaxLoc(evalImage,&min,&max);
 
-    std::cout << "min: " << min << std::endl;
-    std::cout << "max: " << max << std::endl;
+    LOG(INFO) << "min: " << min << std::endl;
+    LOG(INFO) << "max: " << max << std::endl;
 
 
 

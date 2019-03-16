@@ -1,5 +1,5 @@
 #include <comm/ros/listenerCamera.hpp>
-
+#include <glog/logging.h>
 namespace Comm {
 
 	ListenerCamera::ListenerCamera(int argc, char** argv, std::string nodeName, std::string topic){
@@ -19,7 +19,7 @@ namespace Comm {
 			ros::init(a, nullptr, name);
 			ros::NodeHandle nh;
 			this->sub = nh.subscribe(this->topic, 1001, &ListenerCamera::imagecallback, this);
-			std::cout << "listen from "+ this->topic << std::endl;
+			LOG(INFO) << "listen from "+ this->topic << std::endl;
 
 			this->spinner = new ros::AsyncSpinner(1);
 		}

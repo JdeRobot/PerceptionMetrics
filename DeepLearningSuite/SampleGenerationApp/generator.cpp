@@ -140,7 +140,7 @@ public:
 
             while (converter->getNextSample(sample)) {
                 int samples_to_skip=distr(eng);
-                std::cout << "Skipping. " << samples_to_skip << std::endl;
+                LOG(WARNING) << "Skipping. " << samples_to_skip << std::endl;
                 bool validSample=false;
                 for (size_t i = 0; i < samples_to_skip; i++){
                     validSample=converter->getNextSample(sample);
@@ -183,7 +183,7 @@ public:
 
             while (readerImp->getReader()->getNextSample(sample)) {
                 int samples_to_skip=distr(eng);
-                std::cout << "Skipping. " << samples_to_skip << std::endl;
+                LOG(WARNING) << "Skipping. " << samples_to_skip << std::endl;
                 bool validSample=false;
                 for (size_t i = 0; i < samples_to_skip; i++){
                     validSample=readerImp->getReader()->getNextSample(sample);

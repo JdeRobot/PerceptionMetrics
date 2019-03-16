@@ -20,7 +20,7 @@ COCODatasetReader::COCODatasetReader(const std::string &path,const std::string& 
 
 
 bool COCODatasetReader::find_img_directory(const path & dir_path, path & path_found, std::string& img_dirname) {
-    std::cout << dir_path.string() << '\n';
+    LOG(INFO) << dir_path.string() << '\n';
 
 
 
@@ -47,7 +47,7 @@ bool COCODatasetReader::find_img_directory(const path & dir_path, path & path_fo
 }
 
 bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std::string &datasetPrefix) {
-    std::cout << "Dataset Path: " << datasetPath << '\n';                //path to json Annotations file
+    LOG(INFO) << "Dataset Path: " << datasetPath << '\n';                //path to json Annotations file
     std::ifstream inFile(datasetPath);
 
     path boostDatasetPath(datasetPath);
@@ -92,7 +92,7 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 
 
         if (find_img_directory(boostDatasetPath.parent_path().parent_path(), img_dir, img_dirname)) {
-            std::cout << "Image Directory Found: " << img_dir.string() << '\n';
+            LOG(INFO) << "Image Directory Found: " << img_dir.string() << '\n';
         } else {
             throw std::invalid_argument("Corresponding Image Directory, can't be located, please place it in the same Directory as annotations"
             "If you wish to continue without reading images");

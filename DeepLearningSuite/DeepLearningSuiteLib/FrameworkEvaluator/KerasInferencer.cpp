@@ -1,7 +1,7 @@
 #include <Common/Sample.h>
 #include <DatasetConverters/ClassTypeGeneric.h>
 #include "KerasInferencer.h"
-
+#include <glog/logging.h>
 KerasInferencer::KerasInferencer(const std::string &netConfig, const std::string &netWeights,const std::string& classNamesFile): netConfig(netConfig),netWeights(netWeights) {
 
 	this->classNamesFile=classNamesFile;
@@ -24,7 +24,7 @@ KerasInferencer::KerasInferencer(const std::string &netConfig, const std::string
 
 	init();
 
-	std::cout << "InterPreter Initailized" << '\n';
+	LOG(INFO) << "InterPreter Initailized" << '\n';
 
 	pName = PyString_FromString("keras_detect");
 
@@ -32,7 +32,7 @@ KerasInferencer::KerasInferencer(const std::string &netConfig, const std::string
 	pModule = PyImport_Import(pName);
 	Py_DECREF(pName);
 
-	std::cout << "Loading Keras Model" << '\n';
+	LOG(INFO) << "Loading Keras Model" << '\n';
 
 	if (pModule != NULL) {
 		pClass = PyObject_GetAttrString(pModule, "KerasDetector");
@@ -59,7 +59,7 @@ KerasInferencer::KerasInferencer(const std::string &netConfig, const std::string
 		fprintf(stderr, "Cannot find function \"keras_detect\"\n");
 	}
 
-	std::cout << "Loaded Keras Model" << '\n';
+	LOG(INFO) << "Loaded Keras Model" << '\n';
 
 }
 
@@ -82,7 +82,7 @@ Sample KerasInferencer::detectImp(const cv::Mat &image, double confidence_thresh
 	int result = getKerasInferences(rgbImage, confidence_threshold);
 
 	if (result == 0) {
-		std::cout << "Error Occured during getting inferences" << '\n';
+		LOG(ERROR) << "Error Occured during getting inferences" << '\n';
 	}
 
 	Sample sample;
@@ -94,7 +94,7 @@ Sample KerasInferencer::detectImp(const cv::Mat &image, double confidence_thresh
 		typeConverter.setId(it->classId);
 		regions->add(it->boundingBox,typeConverter.getClassString(), it->probability);
 		//std::cout<< it->boundingBox.x << " " << it->boundingBox.y << " " << it->boundingBox.height << " " << it->boundingBox.width << std::endl;
-		std::cout<< typeConverter.getClassString() << ": " << it->probability << std::endl;
+		LOG(INFO)<< typeConverter.getClassString() << ": " << it->probability << std::endl;
 	}
 
 	sample.setColorImage(image);
@@ -172,7 +172,7 @@ int KerasInferencer::getKerasInferences(const cv::Mat& image, double confidence_
 		sizes[0] = image.rows;
 		sizes[1] = image.cols;
 	} else {
-		std::cout << "Invalid Image Passed" << '\n';
+		LOG(ERROR) << "Invalid Image Passed" << '\n';
 		return 0;
 	}
 
@@ -202,7 +202,7 @@ int KerasInferencer::getKerasInferences(const cv::Mat& image, double confidence_
 	Py_DECREF(pArgs);
     if (pValue != NULL) {
 		output_result(pValue, sizes);
-        std::cout << "Num Detections: " << this->detections.size() << '\n';
+        LOG(INFO) << "Num Detections: " << this->detections.size() << '\n';
         Py_DECREF(pValue);
 	}
 	else {

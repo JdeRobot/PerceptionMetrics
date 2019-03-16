@@ -7,7 +7,7 @@
 #include <string>
 #include <Utils/SampleGenerationApp.h>
 #include <DatasetConverters/readers/GenericDatasetReader.h>
-
+#include <glog/logging.h>
 
 class MyApp:public SampleGenerationApp{
 public:
@@ -38,7 +38,7 @@ public:
 
         Sample sample;
         while (reader->getReader()->getNextSample(sample)){
-            std::cout << "number of elements: " << sample.getRectRegions()->getRegions().size() << std::endl;
+            LOG(INFO) << "number of elements: " << sample.getRectRegions()->getRegions().size() << std::endl;
             cv::Mat image =sample.getSampledColorImage();
             cv::imshow("Viewer", image);
             cv::waitKey(0);

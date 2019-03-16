@@ -29,7 +29,7 @@ namespace SampleGeneratorHandler {
 
 
         while (reader->getReader()->getNextSample(sample)){
-            std::cout << "number of elements: " << sample.getRectRegions()->getRegions().size() << std::endl;
+            LOG(INFO) << "number of elements: " << sample.getRectRegions()->getRegions().size() << std::endl;
 
             if (!sample.show(readerImplementation[0], windowName, 0, showDepth))
                 break;

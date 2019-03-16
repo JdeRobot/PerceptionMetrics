@@ -22,9 +22,9 @@ bool CameraReader::getNextSample(Sample &sample) {
 
     try {
         while (!cap->read(image)) {
-            std::cout << "Frame not valid " << std::endl;
+            LOG(ERROR) << "Frame not valid " << std::endl;
 			if (count >= 5) {
-				std::cout << "Video Ended" << '\n';
+				LOG(INFO) << "Video Ended" << '\n';
 				return false;
 			}						// Video Ended
 			count++;

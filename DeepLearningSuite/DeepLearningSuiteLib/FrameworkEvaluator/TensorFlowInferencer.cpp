@@ -1,10 +1,10 @@
 #include <Common/Sample.h>
 #include <DatasetConverters/ClassTypeGeneric.h>
 #include "TensorFlowInferencer.h"
-
+#include <glog/logging.h>
 TensorFlowInferencer::TensorFlowInferencer(const std::string &netConfig, const std::string &netWeights,const std::string& classNamesFile): netConfig(netConfig),netWeights(netWeights) {
 
-	std::cout << "in tensorflow constructor" << '\n';
+	LOG(INFO) << "in tensorflow constructor" << '\n';
 	this->classNamesFile=classNamesFile;
 
 	/* Code below adds path of python models to sys.path so as to enable python
@@ -25,7 +25,7 @@ TensorFlowInferencer::TensorFlowInferencer(const std::string &netConfig, const s
 
 	init();
 
-	std::cout << "InterPreter Initailized" << '\n';
+	LOG(INFO) << "InterPreter Initailized" << '\n';
 
 	pName = PyString_FromString("tensorflow_detect");
 
@@ -33,7 +33,7 @@ TensorFlowInferencer::TensorFlowInferencer(const std::string &netConfig, const s
 	pModule = PyImport_Import(pName);
 	Py_DECREF(pName);
 
-	std::cout << "Loading Detection Graph" << '\n';
+	LOG(INFO) << "Loading Detection Graph" << '\n';
 
 	if (pModule != NULL) {
 		pClass = PyObject_GetAttrString(pModule, "TensorFlowDetector");
@@ -60,7 +60,7 @@ TensorFlowInferencer::TensorFlowInferencer(const std::string &netConfig, const s
 		fprintf(stderr, "Cannot find function \"tensorflow_detect\"\n");
 	}
 
-	std::cout << "Detection Graph Loaded" << '\n';
+	LOG(INFO) << "Detection Graph Loaded" << '\n';
 
 }
 
@@ -83,7 +83,7 @@ Sample TensorFlowInferencer::detectImp(const cv::Mat &image, double confidence_t
 	int result = gettfInferences(rgbImage, confidence_threshold);
 
 	if (result == 0) {
-		std::cout << "Error Occured during getting inferences" << '\n';
+		LOG(ERROR) << "Error Occured during getting inferences" << '\n';
 	}
 
 	Sample sample;
@@ -98,7 +98,7 @@ Sample TensorFlowInferencer::detectImp(const cv::Mat &image, double confidence_t
 		if (this->hasMasks)
         	rleRegions->add(it->rleRegion, typeConverter.getClassString(), it->probability);
 		//std::cout<< it->boundingBox.x << " " << it->boundingBox.y << " " << it->boundingBox.height << " " << it->boundingBox.width << std::endl;
-		std::cout<< typeConverter.getClassString() << ": " << it->probability << std::endl;
+		LOG(INFO)<< typeConverter.getClassString() << ": " << it->probability << std::endl;
 	}
 
 	sample.setColorImage(image);
@@ -234,7 +234,7 @@ int TensorFlowInferencer::gettfInferences(const cv::Mat& image, double confidenc
 		sizes[0] = image.rows;
 		sizes[1] = image.cols;
 	} else {
-		std::cout << "Invalid Image Passed" << '\n';
+		LOG(ERROR) << "Invalid Image Passed" << '\n';
 		return 0;
 	}
 

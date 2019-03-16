@@ -3,7 +3,7 @@
 //
 
 #include "StatsUtils.h"
-
+#include <glog/logging.h>
 double StatsUtils::getIOU(const cv::Rect_<double> &gt, const cv::Rect_<double> &detection, bool isCrowd) {
     //compute iou
 
@@ -99,7 +99,7 @@ void StatsUtils::computeIOUMatrix(Sample gt, Sample detection, Eval::EvalMatrix&
 
     } else {
 
-        std::cout << "For Seg regions" << '\n';
+        LOG(INFO) << "For Seg regions" << '\n';
 
         auto detectionRegions = detection.getRleRegions()->getRegions();
         auto gtRegions = gt.getRleRegions()->getRegions();

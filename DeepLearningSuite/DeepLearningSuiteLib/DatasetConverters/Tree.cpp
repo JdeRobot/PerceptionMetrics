@@ -1,4 +1,5 @@
 #include "Tree.h"
+#include <glog/logging.h>
 
 Tree::Tree(std::string filename) {
     boost::property_tree::ptree tree;
@@ -70,7 +71,7 @@ void Tree::setParent(Tree* tree) {
 
 void Tree::printChildren() {
      if (this->children.empty()) {
-          std::cout << "This is a leaf node and has no children" << '\n';
+          LOG(INFO) << "This is a leaf node and has no children" << '\n';
           return;
      }
 
@@ -144,7 +145,7 @@ std::vector<std::string> Tree::getImmediateSynonmys(std::string passedClassName)
 }
 
 void Tree::printClassName() {
-     std::cout << "Class Name is: " << this->className << '\n';
+     LOG(INFO) << "Class Name is: " << this->className << '\n';
 }
 
 void Tree::setClassName(std::string passedClassName) {

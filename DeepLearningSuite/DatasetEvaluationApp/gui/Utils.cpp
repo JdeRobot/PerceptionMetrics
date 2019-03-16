@@ -3,7 +3,7 @@
 //
 
 #include "Utils.h"
-
+#include <glog/logging.h>
 bool Utils::getListViewContent(const QListView *list, std::vector<std::string> &content, const std::string &prefix) {
     content.clear();
 
@@ -88,7 +88,7 @@ bool Utils::getInferencerParamsContent(const QGroupBox* inferencer_params, std::
 bool Utils::getCameraParamsContent(const QGroupBox* camera_params, int& cameraID) {
 
     cameraID = camera_params->findChild<QSpinBox*>("deployer_camera_spinBox")->value();
-    std::cout << cameraID << '\n';
+    LOG(INFO) << cameraID << '\n';
     if (cameraID < -1) {
         return false;
     }

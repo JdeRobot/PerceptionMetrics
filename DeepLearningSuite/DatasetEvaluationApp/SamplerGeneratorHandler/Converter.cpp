@@ -6,7 +6,7 @@
 #include <gui/Utils.h>
 #include "Converter.h"
 #include "SamplerGenerationHandler.h"
-
+#include <glog/logging.h>
 void SampleGeneratorHandler::Converter::process(QListView *datasetList, QListView *namesList, QListView *readerImpList,
                                                 QListView *filterClasses, QListView *writerImpList, QListView* writerNamesList, bool useWriterNames,
                                                 const std::string& datasetPath, const std::string& namesPath, const std::string &outputPath,
@@ -20,7 +20,7 @@ void SampleGeneratorHandler::Converter::process(QListView *datasetList, QListVie
 
 
     if (!reader)
-        return;                                                                                                                        
+        return;
 
 
     std::vector<std::string> writerImp;
@@ -61,9 +61,9 @@ void SampleGeneratorHandler::Converter::process(QListView *datasetList, QListVie
             counter= counter % 10;
         }
 
-        std::cout << "Train: " << std::endl;
+        LOG(INFO) << "Train: " << std::endl;
         readerTrain->printDatasetStats();
-        std::cout << "Test: " << std::endl;
+        LOG(INFO) << "Test: " << std::endl;
         readerTest->printDatasetStats();
 
         if (useWriterNames) {

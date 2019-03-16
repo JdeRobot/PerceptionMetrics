@@ -9,7 +9,7 @@
 #include <rapidjson/writer.h>
 #include <fstream>
 #include "rapidjson/filereadstream.h"
-
+#include <glog/logging.h>
 ContourRegions::ContourRegions(const std::string &jsonPath) {
     FILE* fp = fopen(jsonPath.c_str(), "rb"); // non-Windows use "r"
     char readBuffer[65536];
@@ -141,5 +141,5 @@ bool ContourRegions::empty() {
 
 void ContourRegions::print() {
     //todo
-    std::cout << "Not yet implemented" << std::endl;
+    LOG(ERROR) << "Not yet implemented" << std::endl;
 }

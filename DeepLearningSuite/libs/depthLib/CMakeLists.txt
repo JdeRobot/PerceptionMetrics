@@ -10,7 +10,7 @@ ADD_LIBRARY (depthLib STATIC DepthFilter.cpp  DepthFilter.h  DepthSampler.cpp  D
 TARGET_LINK_LIBRARIES(depthLib ${Boost_LIBRARIES})
 
 ADD_LIBRARY (depthLibshare SHARED DepthFilter.cpp  DepthFilter.h  DepthSampler.cpp  DepthSampler.h)
-TARGET_LINK_LIBRARIES(depthLibshare ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
+TARGET_LINK_LIBRARIES(depthLibshare ${Boost_LIBRARIES} ${OpenCV_LIBRARIES} ${GLOG_LIBRARIES})
 
 
 ## Export library variables (like find_package)

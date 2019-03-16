@@ -32,7 +32,7 @@ DetectionsValidator::DetectionsValidator(const std::string& pathToSave,double sc
                             std::to_string(this->validationCounter);
             char confirmation = 'a';
             while (confirmation != 'y' && confirmation != 'n') {
-                std::cout << "Do you want to continue? (y/n)" << std::endl;
+                LOG(INFO) << "Do you want to continue? (y/n) \n";
                 std::cin >> confirmation;
             }
             if (confirmation == 'n') {
@@ -138,7 +138,7 @@ void DetectionsValidator::validate(const Sample &inputSample) {
     cv::Mat initialImage=inputSample.getColorImage().clone();
     cv::imshow("Source Image", initialImage);
     cv::waitKey(100);
-    std::cout << "Number of detections: " << rectDetections.size() << std::endl;
+    LOG(INFO) << "Number of detections: " << rectDetections.size() << std::endl;
 
     BoundingValidator validatorNumber(initialImage, this->scale);
 

@@ -7,6 +7,7 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include "DepthFilter.h"
+#include <glog/logging.h>
 
 namespace jderobot {
 
@@ -334,7 +335,7 @@ DepthFilter::update(cv::Mat imageIn, cv::Mat& imageOut){
 			filterMeanNonMotion1Channels(imageIn, imageOut);
 			break;
 		default:
-			std::cout << "Filter method: " << this->type << "not implemented" << std::endl;
+			LOG(ERROR) << "Filter method: " << this->type << "not implemented" << std::endl;
 			break;
 	}
 }

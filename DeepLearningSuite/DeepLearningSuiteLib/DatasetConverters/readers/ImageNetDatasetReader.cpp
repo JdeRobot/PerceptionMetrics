@@ -19,9 +19,9 @@ bool ImageNetDatasetReader::find_img_directory( const path & ann_dir_path, path 
     for ( directory_iterator itr( parent_folder2 ); itr != end_itr; ++itr ) {
         if ( is_directory(itr->status()) ) {
 
-            std::cout << itr->path().string() << '\n';
+            LOG(INFO) << itr->path().string() << '\n';
             if (itr->path().string() == parent_folder1.string()) {
-                std::cout << "skipping" << itr->path().string() << '\n';
+                LOG(WARNING) << "skipping" << itr->path().string() << '\n';
                 continue;
             } else if (itr->path().filename() == ann_dir_path.filename() ) {
                 if ( find_directory(itr->path(), ann_dir_path.filename().string(), path_found ) )  // find the deepest nested directory
@@ -82,10 +82,10 @@ bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const 
 
     if (imagesRequired) {
         if (find_img_directory(boostDatasetPath, img_dir)) {
-            std::cout << img_dir.string() << '\n';
-            std::cout << "Image Directory Found" << '\n';
+            LOG(INFO) << img_dir.string() << '\n';
+            LOG(INFO) << "Image Directory Found" << '\n';
         } else {
-            std::cout << "Corresponding Image Directory, can't be located, Skipping" << '\n';
+            LOG(WARNING) << "Corresponding Image Directory, can't be located, Skipping" << '\n';
         }
 
     }
@@ -95,7 +95,7 @@ bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const 
     for (boost::filesystem::directory_iterator itr(boostDatasetPath); itr!=end_itr; ++itr)
     {
         if (!boost::filesystem::is_directory(*itr)){
-            std::cout << itr->path().string() << '\n';
+            LOG(INFO) << itr->path().string() << '\n';
             boost::property_tree::ptree tree;
 
             boost::property_tree::read_xml(itr->path().string(), tree);

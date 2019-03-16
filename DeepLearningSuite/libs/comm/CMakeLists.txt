@@ -81,6 +81,7 @@ target_link_libraries(${PROJECT_NAME}
     ${ZeroCIce_LIBRARIES}
     ${Boost_LIBRARIES}
     ${ros_LIBRARIES}
+    ${GLOG_LIBRARIES}
     colorspacesmm
     config
     DetectionSuiteUtils

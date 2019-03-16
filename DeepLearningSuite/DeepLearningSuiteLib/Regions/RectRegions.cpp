@@ -10,7 +10,7 @@
 #include <fstream>
 #include "rapidjson/filereadstream.h"
 #include <DatasetConverters/ClassTypeOwn.h>
-
+#include <glog/logging.h>
 
 
 RectRegions::RectRegions(const std::string &jsonPath) {
@@ -164,10 +164,10 @@ bool RectRegions::empty() {
 }
 
 void RectRegions::print() {
-    std::cout << "-------------------" << std::endl;
+    LOG(INFO) << "-------------------" << std::endl;
     for (auto it = this->regions.begin(), end = this->regions.end(); it != end; ++it){
         int idx = std::distance(this->regions.begin(),it);
-        std::cout << "[" << idx << "]: " << it->region << " (" << it->classID << ")" << std::endl;
+        LOG(INFO) << "[" << idx << "]: " << it->region << " (" << it->classID << ")" << std::endl;
     }
-    std::cout << "-------------------" << std::endl;
+    LOG(INFO) << "-------------------" << std::endl;
 }

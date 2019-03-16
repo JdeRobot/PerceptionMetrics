@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     LOG(WARNING) << "Warning message";
     LOG(ERROR) << "Error message";
     myFunction();
-    std::cout << "no" << std::endl;
+    LOG(INFO) << "no" << std::endl;
     int num_cookies = 11;
     LOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
 

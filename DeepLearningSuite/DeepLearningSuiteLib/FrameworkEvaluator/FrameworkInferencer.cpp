@@ -4,7 +4,7 @@
 
 
 #include "FrameworkInferencer.h"
-
+#include <glog/logging.h>
 
 
 Sample FrameworkInferencer::detect(const cv::Mat &image, double confidence_threshold) {
@@ -32,5 +32,5 @@ FrameworkInferencer::FrameworkInferencer() {
 }
 
 FrameworkInferencer::~FrameworkInferencer() {
-    std::cout << "Mean inference time: " << this->getMeanDurationTime() << "(ms)" <<  std::endl;
+    LOG(INFO) << "Mean inference time: " << this->getMeanDurationTime() << "(ms)" <<  std::endl;
 }
