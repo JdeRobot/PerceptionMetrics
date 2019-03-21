@@ -68,6 +68,7 @@ Name=$APP
 Icon=$APP
 Exec=AppRun
 Type=Application
+Terminal=true
 Categories=Education;
 EOF
 
