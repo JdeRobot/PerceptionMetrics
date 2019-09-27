@@ -1,0 +1,39 @@
+# main links
+main:
+  - title: Installation
+    url: /installation
+  - title: Functionality
+    url: /functionality
+  - title: About
+    url: /about
+
+
+# left side bar
+docs:
+
+  - title: Functionality
+    children:
+      - title: "Automatic Evaluation"
+        url: /functionality/automatic_evaluation
+      - title: "Converter"
+        url: /functionality/converter/
+      - title: "Deployer"
+        url: /functionality/deployer/
+      - title: "Detector"
+        url: /functionality/detector
+      - title: "Evaluator"
+        url: /functionality/evaluator
+      - title: "Viewer"
+        url: /functionality/viewer
+
+
+      - title: "Class Names"
+        url: /functionality/class_names
+      - title: "Frameworks"
+        url: /functionality/frameworks
+      - title: "Model zoo"
+        url: /functionality/model_zoo
+      - title: "Testing DetectionSuite"
+        url: /functionality/testing_detectionsuite
+      - title: "Tutorial"
+        url: /functionality/tutorial
