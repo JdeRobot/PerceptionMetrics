@@ -247,8 +247,8 @@ If you have any issue feel free to drop a mail <vinay04sharma@icloud.com> or cre
 
 ## Sample of input and output
 
-<img src="./docs/screen1.png" alt="Screenshot" style="max-width:100%;">
+<img src="../assets/images/screen1.png" alt="Screenshot" style="max-width:100%;">
 
-<img src="./docs/screen2.png" alt="Screenshot" style="max-width:100%;">
+<img src="../assets/images/screen2.png" alt="Screenshot" style="max-width:100%;">
 
-<img src="./docs/screen3.png" alt="Screenshot" style="max-width:100%;">
+<img src="../assets/images/screen3.png" alt="Screenshot" style="max-width:100%;">
