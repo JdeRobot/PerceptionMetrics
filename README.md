@@ -44,7 +44,7 @@ Sample Generation Tool has been developed in order to simply the process of gene
 
 # Installation
 #### We have AppImages !!!  
-###  [Download from here](https://github.com/vinay0410/dl-DetectionSuite/releases/tag/continuous)  
+###  [Download from here](https://github.com/JdeRobot/DetectionSuite/releases/tag/continuous)  
 
 
 To run,  
@@ -83,7 +83,7 @@ Now you need to start the docker deamon using
 sudo service docker start
 ```
 
-After starting the deamon , get the dl-detectionsuite docker file using
+After starting the deamon , get the DetectionSuite docker file using
 ```
 sudo docker pull jderobot/dl-detectionsuite
 ```
@@ -93,10 +93,10 @@ Now run the docker image using
 sudo docker run -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix jderobot/dl-detectionsuite
 ```
 where the ```-it``` flag instructs Docker to allocate a pseudo-TTY connected to the container’s stdin; creating an interactive ```bash``` shell in the container ,```-e``` tag is used to set the environment variable, in this case ```DISPLAY```, this is required because you will be using GUI for interaction through out rest of the tutorials.
-Voila!! You can now use dl-detectionsuite. Proceed to [beginner's tutorial](https://github.com/JdeRobot/dl-DetectionSuite/wiki/Beginner's-Tutorial-to-DetectionSuite-Part-1) to get started.
+Voila!! You can now use DetectionDuite. Proceed to [beginner's tutorial](https://github.com/JdeRobot/DetectionSuite/wiki/Beginner's-Tutorial-to-DetectionSuite-Part-1) to get started.
 
 # Compile and Install from source
-To use the latest version of dl-DetectionSuite you need to compile and install it from source.
+To use the latest version of DetectionSuite you need to compile and install it from source.
 To get started you can either read along or follow [these video tutorials](https://www.youtube.com/watch?v=HYuFFTnEn5s&list=PLgB5c9xg9C91DJ30WFlHfHAhMECeho-gU).
 ## Requirements
 
@@ -258,8 +258,8 @@ Each one of them has some Dependencies, and are mentioned below.
 Once you have all the required Dependencies installed just:
 
 ```
-    git clone https://github.com/JdeRobot/dl-DetectionSuite
-    cd dl-DetectionSuite/DeepLearningSuite
+    git clone https://github.com/JdeRobot/DetectionSuite
+    cd DetectionSuite/DeepLearningSuite
     mkdir build && cd build
 ```
 ```
@@ -280,13 +280,13 @@ To enable Darknet support with GPU:
 Once it is build you will find various executables in different folders ready to be executed :smile:.
 
 ## Starting with DetectionSuite
-The best way to start is with our [beginner's tutorial](https://github.com/JdeRobot/dl-DetectionSuite/wiki/Beginner's-Tutorial-to-DetectionSuite-Part-1) for DetectionSuite.
+The best way to start is with our [beginner's tutorial](https://github.com/JdeRobot/DetectionSuite/wiki/Beginner's-Tutorial-to-DetectionSuite-Part-1) for DetectionSuite.
 If you have any issue feel free to drop a mail <vinay04sharma@icloud.com> or create an issue for the same.
 
 ## Sample of input and output
 
-<img src="./docs/assets/images/screen1.png" alt="Screenshot" style="max-width:100%;">
+<img src="../../../Downloads/DetectionSuite-master/docs/assets/images/screen1.png" alt="Screenshot" style="max-width:100%;">
 
-<img src="./docs/assets/images/screen2.png" alt="Screenshot" style="max-width:100%;">
+<img src="../../../Downloads/DetectionSuite-master/docs/assets/images/screen2.png" alt="Screenshot" style="max-width:100%;">
 
-<img src="./docs/assets/images/screen3.png" alt="Screenshot" style="max-width:100%;">
+<img src="../../../Downloads/DetectionSuite-master/docs/assets/images/screen3.png" alt="Screenshot" style="max-width:100%;">

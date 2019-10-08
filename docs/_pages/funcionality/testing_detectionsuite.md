@@ -30,7 +30,7 @@ Once you have your custom appConfig.txt you can run the DatasetEvaluationApp.
 TensorFlow can also be used for Object Detection in this tool. All you need is a frozen inference graph and a video to run inferences on.
 Some sample pre-trained graphs are available at [TensorFlow Object Detection Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) trained on datasets such as COCO, KITTI and Open Images.
 
-More instructions and tutorials on using the same are mentioned [here(Github's Wiki)](https://github.com/JdeRobot/dl-DetectionSuite/wiki).
+More instructions and tutorials on using the same are mentioned [here(Github's Wiki)](https://github.com/JdeRobot/DetectionSuite/wiki).
 
 
 # References.
