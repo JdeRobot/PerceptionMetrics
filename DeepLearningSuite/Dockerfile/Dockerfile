@@ -14,7 +14,7 @@ RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efac
     echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
 
 RUN apt-get update
-COPY ./keyboard /etc/default/keyboard
+COPY ../../../../../Downloads/DetectionSuite-master/DeepLearningSuite/Dockerfile/keyboard /etc/default/keyboard
 RUN apt-get install -y cuda
 
 #common depds
@@ -53,7 +53,7 @@ RUN   mkdir -p devel && cd devel && mkdir install && \
 
 
 RUN   cd devel && \
-        git clone https://github.com/JdeRobot/dl-DetectionSuite && \
-        cd dl-DetectionSuite/DeepLearningSuite && mkdir build && \
+        git clone https://github.com/JdeRobot/DetectionSuite && \
+        cd DetectionSuite/DeepLearningSuite && mkdir build && \
         cd build/ && cmake -DDARKNET_PATH=$DARKNET_DIR ..  && \
         make -j4

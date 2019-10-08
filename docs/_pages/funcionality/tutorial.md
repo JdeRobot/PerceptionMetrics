@@ -24,7 +24,13 @@ DetectionSuite has both GUI Application and Command Line Tools to execute its fu
 
 But as a beginner on should always start with GUI app, namely ```DatasetEvaluationApp```. We will start with ```Deployer Tab``` in the same app.
 
-Once you've build DeepLearningSuite ( for building, [refer here](https://github.com/JdeRobot/dl-DetectionSuite#how-to-compile-dl_detectionsuite) ), navigate to DatasetEvaluationApp directory in the build directory. There you will find an executable, to run that you need the following.
+Once you've build DeepLearningSuite (for building, [refer here](https://github.com/JdeRobot/DetectionSuite#how-to-compile-dl_detectionsuite)), navigate to DatasetEvaluationApp directory in the build directory using the following command from DetectionSuite's root directory:
+
+```
+cd DeepLearningSuite/build/DatasetEvaluationApp/
+```
+ 
+You will find an executable there, to run it you need:
 
 * Config file
 * Inferencer
