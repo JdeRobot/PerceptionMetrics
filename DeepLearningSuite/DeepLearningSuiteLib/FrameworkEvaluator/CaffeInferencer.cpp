@@ -2,6 +2,7 @@
 #include <DatasetConverters/ClassTypeGeneric.h>
 #include "CaffeInferencer.h"
 #include <glog/logging.h>
+
 CaffeInferencer::CaffeInferencer(const std::string &netConfig, const std::string &netWeights,const std::string& classNamesFile, std::map<std::string, std::string>* inferencerParamsMap): netConfig(netConfig),netWeights(netWeights) {
     this->classNamesFile=classNamesFile;
     this->netConfig=netConfig;

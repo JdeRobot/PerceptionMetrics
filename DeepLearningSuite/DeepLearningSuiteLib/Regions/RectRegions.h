@@ -19,17 +19,27 @@ struct RectRegions:Regions {
     void add(const std::vector<cv::Point_<double>>& detections, const std::string classId, const bool isCrowd = false);
     void add(double x, double y, double w, double h, const std::string classId, const bool isCrowd = false);
     void add(double x, double y, double w, double h, const std::string classId, const double confidence_score, const bool isCrowd = false);
-
+    // void CallBackFunc(int event, int x, int y, int flags, void* userdata);
     void saveJson(const std::string& outPath);
     RectRegion getRegion(int id);
     std::vector<RectRegion> getRegions();
+    void setRegions(std::vector<RectRegion> &data);
+    // cv::Mat* getImage();
     void drawRegions(cv::Mat& image);
+    // void doit(cv::Mat& image);
     void filterSamplesByID(std::vector<std::string> filteredIDS);
     bool empty();
     void print();
+    // static void CallBackFunc(int event, int x, int y, int flags, void* userdata);
+    // void SetPoints(int x, int y);
+    // void Draw();
+    // void img_pointer();
 
     std::vector<RectRegion> regions;
+    // cv::Mat img;
 };
+
+
 
 typedef boost::shared_ptr<RectRegions> RectRegionsPtr;
 

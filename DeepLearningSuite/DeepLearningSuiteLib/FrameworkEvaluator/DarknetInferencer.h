@@ -5,7 +5,7 @@
 #ifndef SAMPLERGENERATOR_DARKNETEVALUATOR_H
 #define SAMPLERGENERATOR_DARKNETEVALUATOR_H
 
-#include <DarknetAPI/DarknetAPI.h>
+#include "Wrappers/DarknetAPI.h"
 #include <boost/shared_ptr.hpp>
 #include "FrameworkInferencer.h"
 

@@ -17,6 +17,7 @@ include_directories(
         ${config_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIR}
         ${CMAKE_CURRENT_LIST_DIR}
+        ${QT_INCLUDE_DIRS}
         ${DeepLearningSuite_INCLUDE_DIR}
         ${depthLib_INCLUDE_DIRS}
 )
@@ -31,6 +32,7 @@ TARGET_LINK_LIBRARIES(SampleGenerationApp
         ${OpenCV_LIBRARIES}
         ${Boost_LIBRARIES}
         ${GLOG_LIBRARIES}
+        ${QT_LIBRARIES}
         ${Ice_LIBRARIES}
         ${PYTHON_LIBRARIES}
         ssl

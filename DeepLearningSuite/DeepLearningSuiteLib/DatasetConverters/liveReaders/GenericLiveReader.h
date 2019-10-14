@@ -13,7 +13,10 @@
 
 enum LIVEREADER_IMPLEMENTATIONS{RECORDER, STREAM, CAMERA, VIDEO};
 
-
+/*
+  A generic reader(one for all kind of) which has all kinds of reader
+  datatypes and implementations in it.
+*/
 class GenericLiveReader {
 public:
     GenericLiveReader(const std::string& path, const std::string& classNamesFile, const std::string& readerImplementation, std::map<std::string, std::string>* deployer_params_map = NULL, int cameraID = -1);
@@ -24,6 +27,8 @@ public:
     static std::vector<std::string> getAvailableImplementations();
 
 private:
+
+  // One datatype each, for different kinds of readers.
     LIVEREADER_IMPLEMENTATIONS imp;
     VideoReaderPtr videoReaderPtr;
     CameraReaderPtr cameraReaderPtr;

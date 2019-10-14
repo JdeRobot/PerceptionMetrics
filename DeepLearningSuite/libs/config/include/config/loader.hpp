@@ -51,9 +51,8 @@ std::string findConfigFile(const std::string& filename);
  * @return new Config::Config or passed one.
  */
 Config::Properties load(std::string filename);
-
-
-
+Config::Properties load(YAML::Node node);
+Config::Properties load(std::string filepath,bool isPath);
 }}//NS
 
 

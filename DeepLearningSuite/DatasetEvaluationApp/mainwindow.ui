@@ -1829,6 +1829,19 @@
        </property>
       </widget>
      </widget>
+     <widget class="QCheckBox" name="Labeling">
+      <property name="geometry">
+       <rect>
+        <x>770</x>
+        <y>200</y>
+        <width>141</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Use for labeling</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

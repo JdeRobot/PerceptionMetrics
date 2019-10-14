@@ -17,5 +17,5 @@ TARGET_INCLUDE_DIRECTORIES ( DeepLearningSuite_GenerationUtils PUBLIC
   ${utils_INCLUDE_DIRS}
   ${CMAKE_CURRENT_LIST_DIR}
   ${DeepLearningSuite_INCLUDE_DIR}
-
+  ${QT_INCLUDE_DIRS}
 )

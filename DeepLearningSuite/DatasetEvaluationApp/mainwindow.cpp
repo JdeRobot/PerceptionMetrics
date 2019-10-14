@@ -17,6 +17,7 @@
 #include <SamplerGeneratorHandler/Deployer.h>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+// #include "gui/Appcfg.hpp"
 
 MainWindow::MainWindow(SampleGenerationApp* app,QWidget *parent) :
     app(app),
@@ -40,6 +41,7 @@ MainWindow::MainWindow(SampleGenerationApp* app,QWidget *parent) :
     connect(ui->pushButton_deploy_input, SIGNAL (released()),this, SLOT (handleSelectDeployInputSource()));
     connect(ui->pushButton_deploy_process, SIGNAL (released()),this, SLOT (handleProcessDeploy()));
     connect(ui->checkBox_deployer_saveOutput, SIGNAL (released()), this, SLOT( handleDeployerSaveOutputCheckboxChange()));
+    // connect(ui->checkBox_deployer_saveOutput, SIGNAL (released()), this, SLOT( handleDeployerSaveOutputCheckboxChange()));
     connect(ui->pushButton_stop_deployer_process, SIGNAL(released()), this, SLOT(handleDeployerStop()));
     connect(ui->pushButton_deployer_output_folder, SIGNAL(released()), this, SLOT(handleSelectOutputFolderButtonDeployer()));
     connect(ui->deployer_conf_horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(handleDeployerConfidenceSliderChange(int)));
@@ -491,10 +493,11 @@ void MainWindow::handleProcessDeploy() {
     }
 
     try{
+        // LOG(INFO) << " sad : " << ui->Labeling->isChecked() << std::endl;
         SampleGeneratorHandler::Deployer::process(ui->listView_deploy_input_imp,ui->listView_deploy_weights,
                                                   ui->listView_deploy_net_config,ui->listView_deploy_impl,ui->listView_deploy_names_inferencer, &this->stopDeployer,
                                                   &confidence_threshold, deployer_params, camera_params, inferencer_params, app->getConfig().asString("weightsPath"),
-                                                  app->getConfig().asString("netCfgPath"),app->getConfig().asString("namesPath"),inputInfo, outputFolder);
+                                                  app->getConfig().asString("netCfgPath"),app->getConfig().asString("namesPath"),inputInfo, outputFolder,ui->Labeling->isChecked());
     }
     catch (const std::string& msg){
         LOG(ERROR) << "Exception detected: " << msg;

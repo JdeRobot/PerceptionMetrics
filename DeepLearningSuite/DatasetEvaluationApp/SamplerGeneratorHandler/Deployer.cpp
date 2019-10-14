@@ -6,14 +6,16 @@
 #include <gui/Utils.h>
 #include <FrameworkEvaluator/GenericInferencer.h>
 #include <FrameworkEvaluator/MassInferencer.h>
+#include <FrameworkEvaluator/labeling.h>
 #include "Deployer.h"
 #include "SamplerGenerationHandler.h"
+#include "gui/Appcfg.hpp"
 
 void
 SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *weightsList, QListView *netConfigList,
                                           QListView *inferencerImpList, QListView *inferencerNamesList,
                                           bool* stopButton, double* confidence_threshold, QGroupBox* deployer_params, QGroupBox* camera_params, QGroupBox* inferencer_params, const std::string &weightsPath, const std::string &cfgPath,
-                                          const std::string &inferencerNamesPath, const std::string &inputInfo, const std::string &outputFolder) {
+                                          const std::string &inferencerNamesPath, const std::string &inputInfo, const std::string &outputFolder,bool labeling) {
 
     GenericLiveReaderPtr reader;
 
@@ -28,13 +30,16 @@ SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *w
 
      }
 
+   // The below variable stores the selected weights's path
     std::vector<std::string> weights;
+   // If no weights has been selected warn the user to select and exit.
     if (! Utils::getListViewContent(weightsList,weights,weightsPath+ "/")){
         LOG(WARNING)<<"Select the weightsList";
         return;
     }
-
+    // The below variable stores the selected Configuration's path
     std::vector<std::string> netConfiguration;
+    // If no required Configuration has been selected warn the user to select and exit.
     if (! Utils::getListViewContent(netConfigList,netConfiguration,cfgPath+ "/")){
         LOG(WARNING)<<"Select the netConfiguration";
         return;
@@ -46,19 +51,28 @@ SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *w
         return;
     }
 
+    //Which inferencer to be used is stored it the below variable
     std::vector<std::string> inferencerNames;
+    // If no inferencer has been selected warn the user to select and exit.
     if (! Utils::getListViewContent(inferencerNamesList,inferencerNames,inferencerNamesPath + "/")){
-        LOG(WARNING)<<"Select the inferencer type";
+        LOG(WARNING)<<"Select the class names";
         return;
     }
 
+    /*
+      If inferencer Parameters exists, store them in the Parameters map
+      else set the map to NULL.
+      This map only accesseble caffe is used as an inferencer.
+    */
     std::map<std::string, std::string>* inferencerParamsMap = new std::map<std::string, std::string>();
     try {
         if(! Utils::getInferencerParamsContent(inferencer_params, *inferencerParamsMap)) {
             inferencerParamsMap = NULL;
         }
 
-    } catch(std::exception& ex) {
+    }
+    // If something strange happens exit with logging the exceptions.
+    catch(std::exception& ex) {
         LOG(WARNING)<< ex.what();
         return;
     }
@@ -82,8 +96,17 @@ SampleGeneratorHandler::Deployer::process(QListView *deployImpList, QListView *w
         }
 
     }
-
+    DatasetReaderPtr data_reader=reader->getReader();
+    data_reader->SetClassNamesFile(&inferencerNames[0]);
+    LOG(INFO) << "netConfigList : " << netConfiguration[0] << " ; weights : " << weights[0] << " ; inferencerNames : " << inferencerNames[0] << " ; inferencerImp : " << inferencerImp[0] << std::endl;
     GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0], inferencerParamsMap));
-    MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),outputFolder, stopButton, confidence_threshold, true);
-    massInferencer.process(false);
+    if(labeling){
+      Labeling massInferencer(data_reader,inferencer->getInferencer(),outputFolder, stopButton, confidence_threshold, true);
+      massInferencer.process(false);
+    }
+    else{
+      MassInferencer massInferencer(data_reader,inferencer->getInferencer(),outputFolder, stopButton, confidence_threshold, true);
+      massInferencer.process(false);
+    }
+
 }

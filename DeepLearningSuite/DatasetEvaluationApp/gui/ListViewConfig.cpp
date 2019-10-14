@@ -12,6 +12,10 @@
 
 bool ListViewConfig::configureDatasetInput(QMainWindow* mainWindow, QListView *qlistView, const std::string &path,bool multipleSelection) {
 
+    /*
+        Check if the paths provided in the config file exists ,else output the
+        path that does not exist.
+    */
     if (!boost::filesystem::exists(boost::filesystem::path(path))){
         LOG(WARNING)<< "path: " + path  + " does not exist";
         return false;
@@ -51,75 +55,6 @@ bool ListViewConfig::configureDatasetInput(QMainWindow* mainWindow, QListView *q
 }
 
 void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::vector<std::string>& content) {
-
-    /*QString Qpath(path.c_str());
-    QDirIterator itr(Qpath);
-    while (itr.hasNext()) {
-        itr.next();
-
-        std::vector<std::string> possibleContent;
-        if (itr.fileInfo().isDir() && itr.fileName().toStdString() != "." && itr.fileName().toStdString() != ".."){
-            //check if yolo (should contain a *.txt
-            bool isOwnFormat=false;
-            bool takeParent=false;
-            int skip_count = 0;
-            QDirIterator itr2(itr.filePath());
-            while (itr2.hasNext()) {
-                itr2.next();
-
-                if (itr2.fileName().toLower().toStdString().find(".txt") != std::string::npos){
-                    possibleContent.push_back(itr2.filePath().toStdString());
-                    takeParent = true;
-                }
-                else if(itr2.fileName().toLower().toStdString().find(".json") != std::string::npos){
-                    possibleContent.push_back(itr2.filePath().toStdString());
-                    takeParent = true;
-                }
-                else if(itr2.fileName().toLower().toStdString().find(".xml") != std::string::npos){
-                    takeParent = true;
-                    //Only Take Parent and break this will prevent displaying multiple xml files
-                    break;
-                    //possibleContent.push_back(itr2->path().string());
-                }
-                else if(itr2.fileInfo().completeSuffix().toLower().toStdString() == "png"
-                        || itr2.fileInfo().completeSuffix().toLower().toStdString() == "jpeg"
-                        || itr2.fileInfo().completeSuffix().toLower().toStdString() == "jpg"
-                        || itr2.fileInfo().completeSuffix().toLower().toStdString() == "ppm"
-                        || itr2.fileInfo().completeSuffix().toLower().toStdString() == "pgm")  {
-                    if (skip_count >= 15) {         // If a directory contains more than 15 images, then it is aimge direcory for a dataset
-                        break;                      // and it won't be indexed
-                    }
-                    skip_count++;
-                }
-                else if ((itr2.fileName().toLower().toStdString().find(".png") != std::string::npos) || (itr2.fileName().toLower().toStdString().find(".json") != std::string::npos)){
-                    isOwnFormat=true;
-                    break;
-                }
-
-            }
-
-
-
-            if (takeParent) {
-                possibleContent.push_back(itr.filePath().toStdString());
-            }
-
-            if (possibleContent.size() != 0){
-                for (auto it = possibleContent.begin(), end = possibleContent.end(); it != end; ++it){
-                    content.push_back(*it);
-                }
-            }
-            else if (isOwnFormat){
-                content.push_back(itr.filePath().toStdString());
-            }
-            else if (skip_count < 15){
-                getPathContentDatasetInput(itr.filePath().toStdString(),content);
-            }
-        }
-
-    }*/
-
-
 
     boost::filesystem::directory_iterator end_itr;
     boost::filesystem::path boostPath(path);
@@ -208,18 +143,28 @@ bool ListViewConfig::configureInputByFile(QMainWindow *mainWindow, QListView *ql
     qlistView->setModel(model);
     if (multipleSelection)
         qlistView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    return true;}
+    return true;
+}
 
+
+/*
+    Get all the files(Only) present in a given PATH.
+*/
 void ListViewConfig::getPathContentOnlyFiles(const std::string &path, std::vector<std::string> &content) {
-    boost::filesystem::directory_iterator end_itr;
+    boost::filesystem::directory_iterator end_itr; // An iterator to iterate through directories.
     boost::filesystem::path boostPath(path);
 
     for (boost::filesystem::directory_iterator itr(boostPath); itr!=end_itr; ++itr)
     {
+        /*
+          Check if the current path is a direcory, if yes then recursively call
+          this function until you reach a file.
+        */
         if (boost::filesystem::is_directory(*itr)){
             getPathContentOnlyFiles(itr->path().string(),content);
         }
         else{
+          // If not a directory then push the file(path) into "content".
             content.push_back(itr->path().string());
         }
     }

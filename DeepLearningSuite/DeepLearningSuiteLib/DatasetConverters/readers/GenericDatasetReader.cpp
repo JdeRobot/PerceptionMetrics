@@ -20,7 +20,7 @@ GenericDatasetReader::GenericDatasetReader(const std::string &path, const std::s
             case PASCALVOC:
                 this->pascalvocDatasetReaderPtr = PascalVOCDatasetReaderPtr( new PascalVOCDatasetReader(path,classNamesFile,imagesRequired));
                 break;
-            case YOLO:
+            case YOLO_1:
                 this->yoloDatasetReaderPtr = YoloDatasetReaderPtr( new YoloDatasetReader(path,classNamesFile,imagesRequired));
                 break;
             case SPINELLO:
@@ -58,7 +58,7 @@ GenericDatasetReader::GenericDatasetReader(const std::vector<std::string> &paths
                     this->imagenetDatasetReaderPtr->appendDataset(*it,ss.str());
                 }
                 break;
-            case YOLO:
+            case YOLO_1:
                 this->yoloDatasetReaderPtr = YoloDatasetReaderPtr( new YoloDatasetReader(classNamesFile, imagesRequired));
                 for (auto it =paths.begin(), end= paths.end(); it != end; ++it){
                     int idx = std::distance(paths.begin(),it);
@@ -120,7 +120,7 @@ READER_IMPLEMENTATIONS GenericDatasetReader::getImplementation(const std::string
         return PASCALVOC;
     }
     if (readerImplementation == "yolo"){
-        return YOLO;
+        return YOLO_1;
     }
     if (readerImplementation == "spinello"){
         return SPINELLO;
@@ -141,7 +141,7 @@ DatasetReaderPtr GenericDatasetReader::getReader() {
             return this->cocoDatasetReaderPtr;
         case PASCALVOC:
             return this->pascalvocDatasetReaderPtr;
-        case YOLO:
+        case YOLO_1:
             return this->yoloDatasetReaderPtr;
         case SPINELLO:
             return this->spinelloDatasetReaderPtr;

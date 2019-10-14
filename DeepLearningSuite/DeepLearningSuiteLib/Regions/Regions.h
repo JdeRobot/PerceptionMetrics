@@ -12,6 +12,7 @@
 
 struct Regions{
     Regions(){};
+    // Saves the detections at the path specified in JSON format
     virtual void saveJson(const std::string& outPath)=0;
     virtual void drawRegions(cv::Mat& image)=0;
     virtual void filterSamplesByID(std::vector<std::string> filteredIDS)=0;

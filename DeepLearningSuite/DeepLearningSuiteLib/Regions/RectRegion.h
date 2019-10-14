@@ -34,6 +34,7 @@ struct RectRegion {
    }
 
     cv::Rect_<double> region;
+    cv::Rect_<double> nameRect;
     std::string classID;
     bool isCrowd = false;      // Can be substantial for COCO dataset, which ignores iscrowd in evaluations
     long double area;          // This can be either Bounding Box area or Contour Area, necessary for

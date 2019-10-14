@@ -127,6 +127,7 @@ public:
 
 	YAML::Node getNode();
 
+	void SetProperty(std::string key,std::string value);
 
 private:
 	YAML::Node node;

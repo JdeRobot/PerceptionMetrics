@@ -26,9 +26,10 @@ RectRegions::RectRegions(const std::string &jsonPath) {
         id= (*it)["id"].GetString();
         regions.push_back(RectRegion(reg,id));
     }
+    // this->img = new cv::Mat();
 }
 RectRegions::RectRegions() {
-
+  // this->img = new cv::Mat();
 }
 
 
@@ -117,7 +118,25 @@ RectRegion RectRegions::getRegion(int id) {
         return RectRegion();
 }
 
+// void RectRegions::Draw(){
+//   return;
+// }
+
+// void RectRegions::SetPoints(int x, int y){
+//   this->mouse.first=x;
+//   this->mouse.second=y;
+// }
+
+// void RectRegions::CallBackFunc(int event, int x, int y, int flags, void* userdata){
+//         // LOG(INFO) << "This is fintec : " << it->region.x << std::endl;
+//     // RectRegions::drawRegions(((RectRegions *)(userdata))->img);
+// }
+
+
+
 void RectRegions::drawRegions(cv::Mat &image) {
+  // std::pair<int ,int > mouser(0,0);
+  // this->img=image;
     if (!image.empty())
         for (auto it = regions.begin(), end=regions.end(); it != end; ++it) {
             ClassTypeOwn classType(it->classID);
@@ -138,15 +157,18 @@ void RectRegions::drawRegions(cv::Mat &image) {
                 nameRectangle.x=0;
             if (nameRectangle.y<0)
                 nameRectangle.y=0;
-
+            it->nameRect = nameRectangle;
             image(nameRectangle)=cv::Scalar(classType.getColor());
             cv::putText(image, classType.getClassString(),cv::Point(nameRectangle.x - nameRectangle.height/4 + 5 ,nameRectangle.y + nameRectangle.height - 5),cv::FONT_HERSHEY_TRIPLEX,0.4,cv::Scalar(0,0,0),1);
         }
-
 }
 
 std::vector<RectRegion> RectRegions::getRegions() {
     return this->regions;
+}
+
+void RectRegions::setRegions(std::vector<RectRegion> &ans){
+  this->regions = ans;
 }
 
 void RectRegions::filterSamplesByID(std::vector<std::string> filteredIDS) {
@@ -171,3 +193,7 @@ void RectRegions::print() {
     }
     LOG(INFO) << "-------------------" << std::endl;
 }
+
+// cv::Mat* RectRegions::getImage(){
+  // return this->img;
+// }

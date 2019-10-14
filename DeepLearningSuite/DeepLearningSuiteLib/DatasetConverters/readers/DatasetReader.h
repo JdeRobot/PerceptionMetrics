@@ -28,8 +28,13 @@ public:
     virtual bool appendDataset(const std::string& datasetPath, const std::string& datasetPrefix="");
     void addSample(Sample sample);
     std::string getClassNamesFile();
+    void SetClassNamesFile(std::string *names);
+    void SetClasses(const std::string& classesFile);
+    std::vector<std::string>* getClassNames();
     virtual ~DatasetReader();
-
+    bool IsVideo();
+    bool IsValidFrame();
+    long long int TotalFrames();
 protected:
     std::vector<Sample> samples;
     //std::string datasetPath;
@@ -37,6 +42,9 @@ protected:
     std::string classNamesFile;
     std::vector<std::string> classNames;
     bool imagesRequired;
+    bool isVideo;
+    bool validFrame;
+    long long int framesCount;
     unsigned int skip_count = 10;           //max Number of annotations that can be skipped if Corresponding images weren't found
 };
 

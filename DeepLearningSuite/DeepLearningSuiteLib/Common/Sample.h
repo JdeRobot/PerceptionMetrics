@@ -2,12 +2,20 @@
 // Created by frivas on 22/01/17.
 //
 
+// This is the main variable which is shared across different components while
+// running DetectionSuite.
+
 #ifndef SAMPLERGENERATOR_SAMPLE_H
 #define SAMPLERGENERATOR_SAMPLE_H
 
 #include <Regions/RectRegions.h>
 #include <Regions/ContourRegions.h>
 #include <Regions/RleRegions.h>
+#include <QApplication>
+#include <Utils/setclass.h>
+#include <Utils/addclass.h>
+
+
 
 struct Sample {
     Sample(const std::string& path, const std::string& id, bool loadDepth=true);
@@ -51,14 +59,17 @@ struct Sample {
     void save(const std::string& outPath);
     void print();
     bool show(const std::string readerImplementation, const std::string windowName, const int waitKey, const bool showDepth);
+    static void CallBackFunc(int event, int x, int y, int flags, void* userdat);
 
     bool isDepthImageValid();
     bool isValid();
     void filterSamplesByID(std::vector<std::string> filteredIDS);
     std::string getSampleID();
-
-
-
+    void SetMousy(bool mousy);
+    bool GetMousy();
+    bool AdjustBox(int x,int y);
+    void SetClassy(int x, int y,std::vector<std::string> *classNames);
+    void AddDetection(cv::Rect &detection,std::vector<std::string> *classNames);
 private:
     RectRegionsPtr rectRegions;
     ContourRegionsPtr contourRegions;
@@ -70,6 +81,7 @@ private:
     std::string sampleID;
     int width = -1;
     int height = -1;
+    bool mousy;
 };
 
 

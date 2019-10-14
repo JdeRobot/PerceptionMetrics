@@ -22,8 +22,6 @@ void SampleGeneratorHandler::Detector::process(QListView* datasetList,QListView*
 
     if (!reader)
         return;
-
-
     std::vector<std::string> weights;
     if (! Utils::getListViewContent(weightsList,weights,weightsPath+ "/")){
         LOG(WARNING)<<"Select the weightsList";

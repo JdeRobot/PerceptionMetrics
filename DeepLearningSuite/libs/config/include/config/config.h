@@ -32,6 +32,7 @@
 #include <yaml-cpp/yaml.h>
 #include <config/loader.hpp>
 #include <config/properties.hpp>
+#include <iostream>
 
 namespace Config{
 
@@ -45,11 +46,12 @@ namespace Config{
  *
  * @return config class with all properties
  */
-inline
-Config::Properties load(int argc, char* argv[])
-{
-	std::string filename (argv[1]);
-    return jderobotconfig::loader::load(filename);}
-
+inline Config::Properties load(int argc, char* argv[]){
+		std::string filename (argv[1]);
+    return jderobotconfig::loader::load(filename);
+	}
+inline Config::Properties load(YAML::Node node){
+    return jderobotconfig::loader::load(node);
+	}
 } //NS
 #endif // JDEROBOT_CONFIG_CONFIG_H

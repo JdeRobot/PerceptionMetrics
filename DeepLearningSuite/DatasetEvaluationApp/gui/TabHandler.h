@@ -13,13 +13,17 @@
 
 class TabHandler {
 public:
+    // Constructor function.
     TabHandler();
+    // Get the context provided index.
     std::string getStringContext(int index);
+    // Get entire an entire vector of elements present in context.
     std::vector<std::string> getAllContexts();
 
 private:
+    // A vector of strings to store different elements like "viewer","converter",etc.
     std::vector<std::string> contexts;
-
+    // Fill "contexts" with certain elements.
     void fillContexts();
 };
 

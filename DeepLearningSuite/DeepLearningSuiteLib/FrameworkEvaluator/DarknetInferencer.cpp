@@ -6,6 +6,7 @@
 #include <DatasetConverters/ClassTypeGeneric.h>
 #include "DarknetInferencer.h"
 #include <glog/logging.h>
+
 DarknetInferencer::DarknetInferencer(const std::string &netConfig, const std::string &netWeights,const std::string& classNamesFile): netConfig(netConfig),netWeights(netWeights) {
     this->classNamesFile=classNamesFile;
     this->cnn = boost::shared_ptr<DarknetAPI>(new DarknetAPI((char*)this->netConfig.c_str(), (char*)this->netWeights.c_str()));

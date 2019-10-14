@@ -40,6 +40,7 @@ Properties::showConfig() {
        LOG(INFO) << '\n';
         // it->second.as<std::string>(); // can't do this until it's type is checked!!
    }
+
    LOG(INFO) << "------------------------------------------------------------------" << std::endl;
    LOG(INFO) << "------------------------------------------------------------------" << std::endl;
 
@@ -223,5 +224,8 @@ Properties::searchNode(YAML::Node n, std::vector<std::string> names){
     }
 }
 
+void Properties::SetProperty(std::string key, std::string value){
+  this->node[key] = value;
+}
 
 }//NS

@@ -46,16 +46,38 @@ findConfigFile(const std::string& filename){
 Config::Properties
 load(std::string filename){
     std::string filepath = findConfigFile(filename);
+    // load_path(filepath);
     if (filepath.empty()){
         YAML::Exception e(YAML::Mark(),"jderobot/config/loader.cpp: file " + filepath + " Not Found");
         throw e;
     }
     YAML::Node nodeConfig = YAML::LoadFile(filepath);
 
+    // nodeConfig["namesPath"]   = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets/names";
+    // nodeConfig["netCfgPath"]  = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets/cfg";
+    // nodeConfig["weightsPath"] = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets/weights";
+    // nodeConfig["datasetPath"] = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets";
+    // nodeConfig["evaluationsPath"] = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets/eval";
     Config::Properties config(nodeConfig);
     LOG(INFO)<<"[Info] loaded YAML Config file: "<<filepath<<std::endl;
     //properties->setProperty("Ice.Config", filepath);
     return config;
+}
+
+Config::Properties
+load(std::string filepath,bool isPath){
+    YAML::Node nodeConfig = YAML::LoadFile(filepath);
+    Config::Properties config(nodeConfig);
+    LOG(INFO)<<"[Info] loaded YAML Config file: "<<filepath<<std::endl;
+    return config;
+}
+
+
+Config::Properties
+load(YAML::Node node){
+  Config::Properties config(node);
+  //properties->setProperty("Ice.Config", filepath);
+  return config;
 }
 
 

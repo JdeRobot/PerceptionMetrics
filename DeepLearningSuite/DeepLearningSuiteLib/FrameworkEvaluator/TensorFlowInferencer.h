@@ -12,17 +12,17 @@ public:
     int gettfInferences(const cv::Mat& image, double confidence_threshold);
     void output_result(int num_detections, int width, int height, PyObject* bounding_boxes, PyObject* detection_scores, PyObject* classIds, PyObject* detections_masks=NULL );
     static void init();
+    static void CallBackFunc(int event, int x, int y, int flags, void* userdata);
 private:
     std::string netConfig;
     std::string netWeights;
     struct detection {
         cv::Rect boundingBox;
-        //std::vector<cv::Point> mask;
         RLE rleRegion;
         float probability;
         int classId;
     };
-
+    bool mousy;
     PyObject *pName, *pModule, *pClass, *pInstance;
     PyObject *pArgs, *pValue, *pmodel;
 

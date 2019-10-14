@@ -30,42 +30,6 @@ void RleRegions::add(RLE region, const std::string& classId, const double confid
 
 void RleRegions::saveJson(const std::string &outPath) {
     rapidjson::Document d;
-    /*d.SetObject();
-    d.SetArray();
-    for (auto it = this->regions.begin(), end=this->regions.end(); it != end; it++){
-        rapidjson::Value detection;
-        detection.SetObject();
-        rapidjson::Value idValue(it->classID.c_str(),d.GetAllocator());
-        detection.AddMember("classID",idValue,d.GetAllocator());
-
-        rapidjson::Value regionValue;
-        regionValue.SetArray();
-
-        for (auto it2=it->region.begin(), end2= it->region.end(); it2 != end2; ++it2) {
-            rapidjson::Value point;
-            point.SetObject();
-            rapidjson::Value xValue(it2->x);
-            point.AddMember("x", xValue, d.GetAllocator());
-
-            rapidjson::Value yValue(it2->y);
-            point.AddMember("y", yValue, d.GetAllocator());
-
-            regionValue.PushBack(point, d.GetAllocator());
-        }
-        detection.AddMember("region",regionValue,d.GetAllocator());
-        d.PushBack(detection,d.GetAllocator());
-    }
-
-    rapidjson::StringBuffer buffer;
-
-    buffer.Clear();
-
-    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-    d.Accept(writer);
-
-    std::ofstream outFile(outPath);
-    outFile << buffer.GetString() << std::endl;
-    outFile.close();*/
 }
 
 

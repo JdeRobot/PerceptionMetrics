@@ -8,6 +8,7 @@ SET(FrameworkEvaluator_SOURCE_FILES
   GenericInferencer
   TensorFlowInferencer
   KerasInferencer
+  labeling
 )
 
 IF(DARKNET_ACTIVE)
@@ -29,7 +30,7 @@ TARGET_INCLUDE_DIRECTORIES ( DeepLearningSuite_FrameworkEvaluator PUBLIC
   ${GLOG_INCLUDE_DIRS}
   ${CMAKE_CURRENT_LIST_DIR}
   ${DeepLearningSuite_INCLUDE_DIR}
-
+  ${QT_INCLUDE_DIRS}
 )
 
 IF(DARKNET_ACTIVE)

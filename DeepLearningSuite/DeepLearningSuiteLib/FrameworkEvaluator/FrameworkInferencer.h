@@ -14,16 +14,23 @@
 
 class FrameworkInferencer{
 public:
+    // Constructor function
     FrameworkInferencer();
+    // Destructor function
     ~   FrameworkInferencer();
+    // Detect objects in a image and return the information stored in a sample.
     Sample detect(const cv::Mat& image, double confidence_threshold);
+    // Get the total time taken for inferencing different objects.
     int getMeanDurationTime();
+    // Below one will be defined by the child class which inherits this as parent.
     virtual Sample detectImp(const cv::Mat& image, double confidence_threshold) =0;
 
 protected:
+    // Path where the class names are stored.
     std::string classNamesFile;
 
 private:
+    // This vector stores the time taken to detect an object in an image.
     std::vector<long> durationVector;
 };
 

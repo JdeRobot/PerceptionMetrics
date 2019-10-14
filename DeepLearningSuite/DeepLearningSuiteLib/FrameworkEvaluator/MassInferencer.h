@@ -7,6 +7,7 @@
 
 #include <DatasetConverters/readers/DatasetReader.h>
 #include <FrameworkEvaluator/FrameworkInferencer.h>
+#include "Utils/Playback.hpp"
 
 class MassInferencer {
 public:
@@ -15,9 +16,14 @@ public:
     MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer, const std::string &resultsPath, bool* stopDeployer, double* confidence_threshold = NULL, bool debug=true);
     MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer, double* confidence_threshold = NULL, bool debug=true);
     MassInferencer(DatasetReaderPtr reader, FrameworkInferencerPtr inferencer, bool debug=true);
-    void process(bool writeImages, DatasetReaderPtr readerDetection = NULL);
-    FrameworkInferencerPtr getInferencer() const;
+    MassInferencer(FrameworkInferencerPtr inferencer, const std::string &resultsPath, double* confidence_threshold , bool debug);
 
+    void process(bool writeImages, DatasetReaderPtr readerDetection = NULL);
+    void process(bool writeImages, cv::Mat image2detect);
+
+    FrameworkInferencerPtr getInferencer() const;
+    RectRegionsPtr detections();
+    Sample getSample();
 private:
     DatasetReaderPtr reader;
     FrameworkInferencerPtr inferencer;
@@ -28,7 +34,8 @@ private:
     bool* stopDeployer = NULL;
     double* confidence_threshold = NULL;
     double default_confidence_threshold = 0.2;
-
+    Playback playback;
+    Sample CurrFrame;
 };
 
 

@@ -45,22 +45,28 @@ FIND_PACKAGE(Boost REQUIRED program_options filesystem)
 
 #darknet
 
-FIND_PATH( DARKNET_INCLUDE_DIR NAMES DarknetAPI/DarknetAPI.h  PATHS ${DARKNET_PATH}/include )
+FIND_PATH( DARKNET_INCLUDE_DIR NAMES darknet.h  PATHS ${DARKNET_PATH}/include )
+# MESSAGE(${DARKNET_PATH_DIR})
+# file(GLOB DARKNET_LIBRARIES ${DARKNET_PATH}/obj
+#     "*.o"
+# )
+
 SET(DARKNET_NAMES darknetAPILib darknetExamplesLib darknetLib)
-#SET(DARKNET_NAMES darknetLib)
+# SET(DARKNET_NAMES darknetLib)
 
- FOREACH(N ${DARKNET_NAMES})
-	FIND_LIBRARY( DARKNET_LIBRARIES_${N} NAMES ${N} PATHS ${DARKNET_PATH}/lib )
-	SET(DARKNET_LIBRARIES ${DARKNET_LIBRARIES} ${DARKNET_LIBRARIES_${N}})
-
-ENDFOREACH()
-
+# FOREACH(N ${DARKNET_NAMES})
+  # MESSAGE(${N})
+  # MESSAGE(${DARKNET_LIBRARIES_${N}})
+	# FIND_LIBRARY( DARKNET_LIBRARIES_${N} NAMES ${N} PATHS ${DARKNET_PATH}/lib )
+	# SET(DARKNET_LIBRARIES ${DARKNET_LIBRARIES} ${DARKNET_LIBRARIES_${N}})
+# ENDFOREACH()
+# MESSAGE(${DARKNET_LIBRARIES})
 #UNSET(DARKNET_INCLUDE_DIR CACHE)
 #UNSET(DARKNET_LIBRARIES CACHE)
 
 
-if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)				## Sometimes it may be found without specifing DARNKNET_PATH
-
+# if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)				## Sometimes it may be found without specifing DARNKNET_PATH
+if (DARKNET_INCLUDE_DIR)
 	if (USE_GPU_DARKNET)
 		MESSAGE("Darknet must be build with GPU support")
 		FIND_PACKAGE(CUDA REQUIRED)
@@ -72,8 +78,8 @@ if (DARKNET_INCLUDE_DIR AND DARKNET_LIBRARIES)				## Sometimes it may be found w
 	SET(DARKNET_ACTIVE ON)
 	ADD_DEFINITIONS(-DDARKNET_ACTIVE)
 else()
-	#message("DARKNET_INCLUDE_DIR: ${DARKNET_INCLUDE_DIR}")
-	#message("DARKNET_LIBRARIES: ${DARKNET_LIBRARIES}")
+	message("DARKNET_INCLUDE_DIR: ${DARKNET_INCLUDE_DIR}")
+	message("DARKNET_LIBRARIES: ${DARKNET_LIBRARIES}")
 	if (NOT DARKNET_PATH)
 		MESSAGE("To enable Darknet define DARKNET_PATH equal to Darknet Installation Path")
 		MESSAGE(WARNING "Darknet Inferencing support is Disabled")
@@ -98,13 +104,14 @@ if(OpenCV_FOUND)
 endif(OpenCV_FOUND)
 
  add_subdirectory(libs)
- add_subdirectory(DeepLearningSuiteLib)
  if (QT_FOUND)
+   add_subdirectory(DeepLearningSuiteLib)
    add_subdirectory(DatasetEvaluationApp)
  endif(QT_FOUND)
  add_subdirectory(SampleGenerationApp)
  add_subdirectory(Tools)
 
+add_subdirectory(detection_suite)
 
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ClassMappingHierarchy.xml
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
