@@ -9,11 +9,11 @@ sidebar:
 ---
 
 ## TensorFlow Models
-TensorFlow models can be downloaded from [TensorFlow model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md), or from our own set of models available [here](http://jderobot.org/store/deeplearning-networks/TensorFlow/).
+TensorFlow models can be downloaded from [TensorFlow model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md), or from our own set of models available [here](http://wiki.jderobot.org/store/deeplearning-networks/TensorFlow/).
 
 ## Keras Models
 We have made our own set of Keras Models, compatible with the latest version, requiring on the HDF5 file to load the model completely.
-Here's the [link](http://jderobot.org/store/deeplearning-networks/Keras/).
+Here's the [link](http://wiki.jderobot.org/store/deeplearning-networks/Keras/).
 
 ## Caffe Models
 Caffe Models can be downloaded from [here](https://github.com/opencv/opencv/tree/master/samples/dnn#model-zoo) and the config files are available [here](https://github.com/opencv/opencv_extra/tree/master/testdata/dnn). We will soon index them at our own server, for easier access. 
