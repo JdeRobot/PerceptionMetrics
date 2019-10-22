@@ -22,7 +22,7 @@ DetectionSuite consists of a set of utilities oriented to simplify developing an
 
 ## DeepLearningSuite
 
-DeepLearningSuite is a tool designed to experiment upon Datasets and Networks using various FrameWorks. Currently it has following Utilities:
+DeepLearningSuite is a tool designed to experiment upon datasets and networks using various frameworks. Currently it has the following utilities:
 
 + Auto Evaluator
 + Viewer
@@ -31,24 +31,24 @@ DeepLearningSuite is a tool designed to experiment upon Datasets and Networks us
 + Evaluator
 + Deployer
 
-Every Tool in DeepLearningSuite requires a config file to run, and currently YAML file format is supported. See Below on how to create a custom Config File.
-Each tool may have different requirements for keys in Config File, and they can be known by passing the ```--help``` flag.
+Every tool in DeepLearningSuite requires a config file to run, and currently YAML file format is supported. See below on how to create a custom config file.
+Each tool may have different requirements for keys in config file, and they can be known by passing the ```--help``` flag.
 
-### Creating a Custom ```appConfig.yml```
+### Creating a custom ```appConfig.yml```
 It is recommended to create and assign a dedicated directory for storing all datasets, weights and config files, for easier access and a cleaner ```appConfig.yml``` file.
 
 For Instance we will be using ```/opt/datasets/``` for demonstration purposes.
 
-Create some directories in ```/opt/datasets/``` such as ```cfg```, ```names```, ```weights``` and ```eval```.
+Create the following directories in ```/opt/datasets/```: ```cfg```, ```names```, ```weights``` and ```eval```.
 
-Again, these names are temporary and can be changed, but must also be changed in appConfig.yml.
+Again, these names are temporary and can be changed, but must also be changed in ```appConfig.yml```.
 
-```cfg```: This directory will store config files for various networks. For example, yolo-voc.cfg [2].
-```names```: This directory will contain class names for various datasets. For example, voc.names [3].
-```weights```: This directory will contain weights for various networks, such as yolo-voc.weights [1] for yolo or a frozen inference graph for tensorflow trained networks.
-```eval```: Evaluations path
+* ```cfg```: This directory will store config files for various networks. For example, [*yolo-voc.cfg*](https://github.com/pjreddie/darknet/blob/master/cfg/yolo-voc.cfg).
+* ```names```: This directory will contain class names for various datasets. For example, [*voc.names*](https://github.com/pjreddie/darknet/blob/master/data/voc.names).
+* ```weights```: This directory will contain weights for various networks, such as [*yolo-voc.weights*](https://pjreddie.com/media/files/yolo-voc.weights) for yolo or a frozen inference graph for tensorflow trained networks.
+* ```eval```: Evaluations path.
 
-Once done, you can create you own custom appConfig.yml like the one mentioned below.
+Once done, you can create your own custom appConfig.yml like the one mentioned.
 
 ```
 
@@ -68,10 +68,7 @@ inferencesPath: /opt/datasets
 
 Place your weights in weights directory, config files in cfg directory, classname files in names. And you are ready to go ⚡️ .
 
-## Sample of input and output
+## Examples of input and output
 
-<img src="../assets/images/screen1.png" alt="Screenshot" style="max-width:100%;">
-
-<img src="../assets/images/screen2.png" alt="Screenshot" style="max-width:100%;">
-
-<img src="../assets/images/screen3.png" alt="Screenshot" style="max-width:100%;">
+![](../assets/images/screen1.png)  |  ![](../assets/images/screen2.png) 
+![](../assets/images/screen3.png)  |  
