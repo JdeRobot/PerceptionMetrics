@@ -43,9 +43,9 @@ Create the following directories in ```/opt/datasets/```: ```cfg```, ```names```
 
 Again, these names are temporary and can be changed, but must also be changed in ```appConfig.yml```.
 
-* ```cfg```: This directory will store config files for various networks. For example, *yolo-voc.cfg*.
-* ```names```: This directory will contain class names for various datasets. For example, *voc.names*.
-* ```weights```: This directory will contain weights for various networks, such as *yolo-voc.weights* for yolo or a frozen inference graph for tensorflow trained networks.
+* ```cfg```: This directory will store config files for various networks. For example, [*yolo-voc.cfg*](https://github.com/pjreddie/darknet/blob/master/cfg/yolo-voc.cfg).
+* ```names```: This directory will contain class names for various datasets. For example, [*voc.names*](https://github.com/pjreddie/darknet/blob/master/data/voc.names).
+* ```weights```: This directory will contain weights for various networks, such as [*yolo-voc.weights*](https://pjreddie.com/media/files/yolo-voc.weights) for yolo or a frozen inference graph for tensorflow trained networks.
 * ```eval```: Evaluations path.
 
 Once done, you can create your own custom appConfig.yml like the one mentioned.
