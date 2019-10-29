@@ -8,14 +8,35 @@ sidebar:
   nav: "docs"
 ---
 
+
+The Evaluator takes two datasets, one considered the ground truth, and compares them based on different metrics. 
+In order to use the Evaluator functionality, the configuration file need an `inferencesPath` value, so the config file could be as follows:
+
+```
+datasetPath: /opt/datasets/
+
+evaluationsPath: /opt/datasets/eval
+
+weightsPath: /opt/datasets/weights
+
+netCfgPath: /opt/datasets/cfg
+
+namesPath: /opt/datasets/names
+
+inferencesPath: /opt/datasets/
+```
+
+
+
+The video shows the evaluator tab of DetectionSuite evaluating Detector Generated results for COCO Val2017 dataset. After evaluation a summary of results is printed which contains both COCO mAP (mean average precision) metric and Pascal VOC metric.
+More detailed results are written in a CSV file with the name `Evaluation Results.csv` which contains class wise and overall results for the given dataset.
+
 <p align="center">
 <kbd><a href="http://www.youtube.com/watch?feature=player_embedded&v=Vk6Hdv6mRZk" target="_blank"><img src="http://img.youtube.com/vi/bOjt0v_h640/0.jpg"
 alt="IMAGE ALT TEXT HERE" width="480" height="360" border="8"/></a>
 </kbd>
 </p>
 
-Above video demonstrates the evaluator tab of DetectionSuite evaluating Detector Generated results for COCO Val2017 dataset. After evaluation a summary of results is printed which contains both COCO mAP (mean average precision) metric and Pascal VOC metric.
-More detailed results are written in a CSV file with the name `Evaluation Results.csv` which contains class wise and overall results for the given dataset.
 
 Also, the calculated metrics are very accurate and have been confirmed by running the same Ground Truth and Detections combination on COCO API and the results are identical.
 
