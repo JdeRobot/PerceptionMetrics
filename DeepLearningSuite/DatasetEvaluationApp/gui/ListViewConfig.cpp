@@ -122,7 +122,9 @@ bool ListViewConfig::configureInputByFile(QMainWindow *mainWindow, QListView *ql
         for (int i = 0; i < filesID.size(); i = i + 1) {
             std::size_t found_pb = filesID[i].find(".pb");
             std::size_t found_h5 = filesID[i].find(".h5");
-            if (found_pb != std::string::npos || found_h5 != std::string::npos) {
+            std::size_t found_pth = filesID[i].find(".pth");
+            std::size_t found_weights = filesID[i].find(".weights");
+            if (found_pb != std::string::npos || found_h5 != std::string::npos || found_pth != std::string::npos || found_weights != std::string::npos) {
                 filteredFilesID.push_back(filesID[i]);
             }
         }
