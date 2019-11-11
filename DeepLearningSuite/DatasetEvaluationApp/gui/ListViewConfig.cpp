@@ -29,6 +29,15 @@ bool ListViewConfig::configureDatasetInput(QMainWindow* mainWindow, QListView *q
 
     getPathContentDatasetInput(path,filesID);
 
+    std::vector<std::string> filteredFilesID;
+    for (int i = 0; i < filesID.size(); i = i + 1) {
+        std::size_t found_json = filesID[i].find(".json");
+        std::size_t found_txt = filesID[i].find(".txt");
+        if (found_json != std::string::npos || found_txt != std::string::npos) {
+            filteredFilesID.push_back(filesID[i]);
+        }
+    }
+    filesID = filteredFilesID;
 
     std::sort(filesID.begin(),filesID.end());
 
