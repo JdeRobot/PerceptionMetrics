@@ -33,7 +33,9 @@ bool ListViewConfig::configureDatasetInput(QMainWindow* mainWindow, QListView *q
     for (int i = 0; i < filesID.size(); i = i + 1) {
         std::size_t found_json = filesID[i].find(".json");
         std::size_t found_txt = filesID[i].find(".txt");
-        if (found_json != std::string::npos || found_txt != std::string::npos) {
+        std::size_t found_xml = filesID[i].find(".xml");
+        std::size_t found_file = filesID[i].find(".");
+        if (found_json != std::string::npos || found_txt != std::string::npos || found_xml != std::string::npos || found_file == std::string::npos) {
             filteredFilesID.push_back(filesID[i]);
         }
     }
@@ -169,7 +171,7 @@ void ListViewConfig::getPathContentOnlyFiles(const std::string &path, std::vecto
     for (boost::filesystem::directory_iterator itr(boostPath); itr!=end_itr; ++itr)
     {
         /*
-          Check if the current path is a direcory, if yes then recursively call
+          Check if the current path is a directory, if yes then recursively call
           this function until you reach a file.
         */
         if (boost::filesystem::is_directory(*itr)){
