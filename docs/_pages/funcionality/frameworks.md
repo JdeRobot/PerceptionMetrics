@@ -8,6 +8,9 @@ sidebar:
   nav: "docs"
 ---
 
+DetectionSuite gives support for a set of different deep learning frameworks: Darknet, Tensorflow, Keras and Caffe.
+Here, information on how to use each one of them with DetectionSuite is provided.
+
 ## Darknet
 <!-- As an example you can use Pascal VOC dataset on darknet format using the following instructions to convert to the desired format:
 ```bash
@@ -37,9 +40,9 @@ To use Darknet as your framework it is necessary to install it from JdeRobot's D
 
 * ### Installation
 
-  Darknet supports both GPU and CPU builds, and GPU build is enabled by default.
-  If your computer doesn't have a NVIDIA Graphics card, then it is necessary to turn off GPU build in cmake by 
-  passing ```-DUSE_GPU=OFF``` as an option in cmake.
+  Darknet supports both GPU and CPU builds (enabled by default).
+  If your computer doesn't have a NVIDIA graphics card, it is necessary to turn off GPU build by 
+  setting `-DUSE_GPU=OFF` as option in cmake.
 
    ```
     git clone https://github.com/JdeRobot/darknet
@@ -89,21 +92,21 @@ First of all, you need tensorflow installed in your system, and you can get it i
     pip install tensorflow
   ```
 
-For using TensorFlow as your framework, you would need a TensorFlow Trained Network. Some sample Networks/models are available at [TensorFlow model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md).
+For using TensorFlow as your framework, you would need a TensorFlow Trained Network. Some sample networks/models are available at [TensorFlow model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md).
 
-Download one of them and untar it and place it into the weights directory.
+Download one of them, uncompress it and place it into the weights directory.
 
 We will be using a COCO trained model for this example, but you can choose any model. Although you would have to create a class names file for that particular dataset written in a correct order.
 
-Sample coco.names file for COCO dataset: [coco.names](https://github.com/pjreddie/darknet/blob/master/data/coco.names).<br>
+Sample ```coco.names``` file for COCO dataset: [coco.names](https://github.com/pjreddie/darknet/blob/master/data/coco.names).
 All it contains is a list of classes being used for this dataset in the correct order.
 Place this file in the names directory.
 
-Now create an empty foo.cfg file and place it in the cfg directory. It is empty because tensorflow doesn't require any cfg file, just the frozen inference graph.
+Now create an empty ```foo.cfg``` file and place it in the cfg directory. It is empty because TensorFlow doesn't require any cfg file, just the frozen inference graph.
 
 All done! Now you are ready to go!
 
-Sample video using SSD MobileNet COCO on TensorFlow framework in DetectionSuite.
+Below, an example video using SSD MobileNet COCO on TensorFlow framework in DetectionSuite.
 
 {% include video id="AWVdt7djJBg" provider="youtube" %}
 
