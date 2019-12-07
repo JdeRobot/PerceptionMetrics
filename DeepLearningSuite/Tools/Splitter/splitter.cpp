@@ -18,6 +18,7 @@ public:
     MyApp(int argc, char* argv[]):SampleGenerationApp(argc,argv){
         this->requiredArguments.push_back("inputPath");
         this->requiredArguments.push_back("readerImplementation");
+        this->requiredArguments.push_back("writerImplementation");
         this->requiredArguments.push_back("outputPath");
         this->requiredArguments.push_back("trainRatio");
         this->requiredArguments.push_back("readerNames");
@@ -67,12 +68,12 @@ public:
         DatasetReaderPtr readerTrain(new DatasetReader(true));
 
 
-        int ratio=trainRatioNode.as<int>();
+        double ratio=trainRatioNode.as<double>();
 
         Sample sample;
         int counter=0;
         while (readerPtr->getNextSample(sample)){
-            if (counter <ratio){
+            if (counter < ratio){
                 readerTrain->addSample(sample);
             }
             else{
@@ -88,10 +89,10 @@ public:
         readerTest->printDatasetStats();
 
 
-        GenericDatasetWriterPtr writerTest( new GenericDatasetWriter(testPath,readerTest,writerImplementationNode.as<std::string>()));
+        GenericDatasetWriterPtr writerTest(new GenericDatasetWriter(testPath,readerTest,writerImplementationNode.as<std::string>()));
         writerTest->getWriter()->process();
 
-        GenericDatasetWriterPtr writerTrain( new GenericDatasetWriter(trainPath,readerTrain,writerImplementationNode.as<std::string>()));
+        GenericDatasetWriterPtr writerTrain(new GenericDatasetWriter(trainPath,readerTrain,writerImplementationNode.as<std::string>()));
         writerTrain->getWriter()->process();
 
     };

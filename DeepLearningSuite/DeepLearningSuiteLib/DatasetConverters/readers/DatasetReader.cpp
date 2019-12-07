@@ -141,9 +141,9 @@ std::string DatasetReader::getClassNamesFile() {
 }
 
 void DatasetReader::addSample(Sample sample) {
-    if (imagesRequired && (!sample.getColorImage().empty() || !sample.getDepthImage().empty())) {
-        throw std::invalid_argument("Dataset Reader Requires Images, and sample doesn't contain any !!\n"
-        "The Class which has instantiated dataset Reader, requires it to contain images, whereas the sample doesn't contain any!");
+    if (imagesRequired && (!sample.getColorImage().empty() && !sample.getDepthImage().empty())) {
+        throw std::invalid_argument("Dataset reader requires I¡images, and sample doesn't contain any!!\n"
+        "The class which has instantiated dataset reader requires it to contain images but the sample doesn't contain any!");
     }
 
     this->samples.push_back(sample);
