@@ -25,6 +25,8 @@ docs:
         url: /functionality/evaluator
       - title: "Viewer"
         url: /functionality/viewer
+      - title: "ROS Node"
+        url: /functionality/ros_node
       - title: "Class Names"
         url: /functionality/class_names
       - title: "Frameworks"
