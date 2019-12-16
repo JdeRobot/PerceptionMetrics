@@ -3,7 +3,7 @@ main:
   - title: Installation
     url: /installation
   - title: Functionality
-    url: /functionality/automatic_evaluation
+    url: /functionality/command_line_application
   - title: About
     url: /about
 
@@ -13,8 +13,8 @@ docs:
 
   - title: Functionality
     children:
-      - title: "Automatic Evaluation"
-        url: /functionality/automatic_evaluation
+      - title: "Command line application (Auto Evaluator)"
+        url: /functionality/command_line_application
       - title: "Converter"
         url: /functionality/converter/
       - title: "Deployer"

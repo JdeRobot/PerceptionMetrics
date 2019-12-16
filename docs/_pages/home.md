@@ -24,7 +24,7 @@ The application comes with a GUI (based on Qt) but it can also be used through c
 
 The application is designed to experiment with datasets and neural networks using various frameworks. Currently it comes with the following utilities:
 
-+ [Auto Evaluator](functionality/automatic_evaluation/)
++ [Command line application (Auto Evaluator)](functionality/command_line_application/)
 + [Converter](functionality/converter/)
 + [Deployer](functionality/deployer/)
 + [Detector](functionality/detector/)
