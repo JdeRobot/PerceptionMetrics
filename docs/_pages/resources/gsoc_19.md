@@ -1,11 +1,11 @@
 ---
 layout: home
 title: New functionality
-permalink: /functionality/gsoc_19/
+permalink: /resources/gsoc_19/
 
 
 sidebar:
-  nav: "docs"
+  nav: "resources"
 ---
 
 ## Playback
@@ -41,5 +41,3 @@ Apart from this feature, new detections can be added. The workflow starts creati
 object a class name and probability.
 
 {% include video id="PPNjKML9vUw" provider="youtube" %}
-
-## ROS Node

@@ -1,11 +1,11 @@
 ---
 layout: home
 title: Class names
-permalink: /functionality/class_names/
+permalink: /resources/class_names/
 
 
 sidebar:
-  nav: "docs"
+  nav: "resources"
 ---
 
 You can find here class names files for the different supported datasets.

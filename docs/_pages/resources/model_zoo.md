@@ -1,11 +1,11 @@
 ---
 layout: home
 title: Model zoo
-permalink: /functionality/model_zoo/
+permalink: /resources/model_zoo/
 
 
 sidebar:
-  nav: "docs"
+  nav: "resources"
 ---
 
 Here, you can find models for the different supported frameworks.

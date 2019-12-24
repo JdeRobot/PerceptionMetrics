@@ -1,11 +1,11 @@
 ---
 layout: home
 title: Frameworks
-permalink: /functionality/frameworks/
+permalink: /resources/frameworks/
 
 
 sidebar:
-  nav: "docs"
+  nav: "resources"
 ---
 
 DetectionSuite gives support for a set of different deep learning frameworks: Darknet, Tensorflow, Keras and Caffe.

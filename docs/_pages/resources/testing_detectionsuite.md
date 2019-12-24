@@ -1,11 +1,11 @@
 ---
 layout: home
 title: Testing DetectionSuite
-permalink: /functionality/testing_detectionsuite/
+permalink: /resources/testing_detectionsuite/
 
 
 sidebar:
-  nav: "docs"
+  nav: "resources"
 ---
 
 As an example you can use Pascal VOC dataset on darknet format using the following instructions to convert to the desired format:

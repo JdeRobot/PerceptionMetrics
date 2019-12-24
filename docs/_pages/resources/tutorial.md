@@ -1,11 +1,11 @@
 ---
 layout: home
 title: Beginner's Tutorial
-permalink: /functionality/tutorial/
+permalink: /resources/tutorial/
 
 
 sidebar:
-  nav: "docs"
+  nav: "resources"
 ---
 
 Sample video depicting results of this tutorial:  
