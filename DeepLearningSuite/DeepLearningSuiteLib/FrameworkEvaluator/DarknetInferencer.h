@@ -5,7 +5,7 @@
 #ifndef SAMPLERGENERATOR_DARKNETEVALUATOR_H
 #define SAMPLERGENERATOR_DARKNETEVALUATOR_H
 
-#include "Wrappers/DarknetAPI.h"
+//#include "Wrappers/DarknetAPI.h"
 #include <boost/shared_ptr.hpp>
 #include "FrameworkInferencer.h"
 
@@ -17,7 +17,7 @@ public:
 private:
     std::string netConfig;
     std::string netWeights;
-    boost::shared_ptr<DarknetAPI> cnn;
+    //boost::shared_ptr<DarknetAPI> cnn;
 };
 
 
