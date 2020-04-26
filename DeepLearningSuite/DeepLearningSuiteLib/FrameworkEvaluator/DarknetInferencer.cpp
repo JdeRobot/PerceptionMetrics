@@ -34,10 +34,15 @@ DarknetInferencer::DarknetInferencer(const std::string &netConfig, const std::st
 	string line;
         while (getline(ifs, line)) classes.push_back(line);
 	this->classes=classes;
-    	/*Net net = readNetFromDarknet(this->netConfig, this->netWeights);
+    	Net net = readNetFromDarknet(this->netConfig, this->netWeights);
         net.setPreferableBackend(DNN_BACKEND_OPENCV);
         net.setPreferableTarget(DNN_TARGET_CPU);
-	this->net=net;*/ 
+	//net.setPreferableTarget(DNN_TARGET_OPENCL);
+	this->net=net;
+
+	this->outNames=net.getUnconnectedOutLayersNames();
+	//vector<String> outNames = net.getUnconnectedOutLayersNames();
+		
 }
 
 Sample DarknetInferencer::detectImp(const cv::Mat &image, double confThreshold) {
@@ -52,11 +57,11 @@ Sample DarknetInferencer::detectImp(const cv::Mat &image, double confThreshold) 
 	int inpHeight = (image.rows/32) * 32;;
 
         // Load the network
-	Net net = readNetFromDarknet(this->netConfig, this->netWeights);
-	net.setPreferableBackend(DNN_BACKEND_OPENCV);
-        net.setPreferableTarget(DNN_TARGET_CPU);
+	//Net net = readNetFromDarknet(this->netConfig, this->netWeights);
+	//net.setPreferableBackend(DNN_BACKEND_OPENCV);
+        //net.setPreferableTarget(DNN_TARGET_CPU);
         // net.setPreferableTarget(DNN_TARGET_OPENCL);
-        vector<String> outNames = net.getUnconnectedOutLayersNames();	
+        //vector<String> outNames = net.getUnconnectedOutLayersNames();	
         Mat rgbImage;
         resize(image, rgbImage, Size(inpWidth, inpHeight), 1, 1);
 
@@ -70,13 +75,13 @@ Sample DarknetInferencer::detectImp(const cv::Mat &image, double confThreshold) 
     	net.forward(outs, outNames);
     	// postprocess
 
-        static vector<int> outLayers = net.getUnconnectedOutLayers();
-        static string outLayerType = net.getLayer(outLayers[0])->type;
+        //static vector<int> outLayers = net.getUnconnectedOutLayers();
+        //static string outLayerType = net.getLayer(outLayers[0])->type;
         vector<int> classIds;
         vector<float> confidences;
 	vector<Rect> boxes;
     
-    	cout << outLayerType << endl;
+    	//cout << outLayerType << endl;
 
         for (size_t i = 0; i < outs.size(); i++)
         {

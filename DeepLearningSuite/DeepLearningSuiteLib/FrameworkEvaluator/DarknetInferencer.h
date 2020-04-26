@@ -8,6 +8,13 @@
 //#include "Wrappers/DarknetAPI.h"
 #include <boost/shared_ptr.hpp>
 #include "FrameworkInferencer.h"
+#include <opencv2/dnn.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+
+using namespace std;
+using namespace cv;
+using namespace dnn;
 
 class DarknetInferencer: public FrameworkInferencer {
 public:
@@ -18,7 +25,8 @@ private:
     std::string netConfig;
     std::string netWeights;
     std::vector<std::string> classes;
-    //boost::shared_ptr<DarknetAPI> cnn;
+    Net net;
+    vector<String> outNames;
 };
 
 

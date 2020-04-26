@@ -22,6 +22,11 @@ ENDIF()
 ADD_LIBRARY(DeepLearningSuite_FrameworkEvaluator OBJECT ${FrameworkEvaluator_SOURCE_FILES})
 
 
+message("OPENCV DIRS:")
+message(${OpenCV_INCLUDE_DIRS})
+set(OpenCV_INCLUDE_DIRS /usr/local/include/opencv2)
+message("OPENCV DIRS:")
+message(${OpenCV_INCLUDE_DIRS})
 
 TARGET_INCLUDE_DIRECTORIES ( DeepLearningSuite_FrameworkEvaluator PUBLIC
   ${OpenCV_INCLUDE_DIRS}
