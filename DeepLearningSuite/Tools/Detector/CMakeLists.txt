@@ -1,14 +1,3 @@
-IF (DARKNET_ACTIVE)
-    SET(EXTRA_LIBS ${EXTRA_LIBS}
-         ${DARKNET_LIBRARIES}
-         ${CUDA_LIBRARIES}
-         ${CUDA_LIBRARIES}
-         ${CUDA_CUBLAS_LIBRARIES}
-         ${CUDA_curand_LIBRARY})
-
-    include_directories(${DARKNET_INCLUDE_DIR})
-ENDIF()
-
 
 include_directories(
         ${OpenCV_INCLUDE_DIRS}

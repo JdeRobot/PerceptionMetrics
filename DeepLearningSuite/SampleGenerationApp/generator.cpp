@@ -12,11 +12,7 @@
 #include <glog/logging.h>
 #include <Utils/SampleGenerationApp.h>
 #include <FrameworkEvaluator/FrameworkInferencer.h>
-
-#ifdef DARKNET_ACTIVE
 #include <FrameworkEvaluator/DarknetInferencer.h>
-#endif
-
 #include <DatasetConverters/readers/GenericDatasetReader.h>
 
 class MyApp:public SampleGenerationApp{
@@ -114,11 +110,7 @@ public:
             FrameworkInferencerPtr inferencer;
 
             if (inferencerImplementationKey.as<std::string>()=="yolo") {
-#ifdef DARKNET_ACTIVE
                 inferencer = DarknetInferencerPtr( new DarknetInferencer(inferencerConfigKey.as<std::string>(), inferencerWeightsKey.as<std::string>(), inferencerNamesKey.as<std::string>()));
-#else
-                LOG(WARNING) << "Darknet inferencer is not available";
-#endif
             }
             else{
                 LOG(WARNING) << inferencerImplementationKey.as<std::string>() + " is not a valid inferencer implementation";

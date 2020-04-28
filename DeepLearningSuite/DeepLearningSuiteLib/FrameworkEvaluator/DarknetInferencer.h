@@ -5,7 +5,6 @@
 #ifndef SAMPLERGENERATOR_DARKNETEVALUATOR_H
 #define SAMPLERGENERATOR_DARKNETEVALUATOR_H
 
-//#include "Wrappers/DarknetAPI.h"
 #include <boost/shared_ptr.hpp>
 #include "FrameworkInferencer.h"
 #include <opencv2/dnn.hpp>
@@ -30,9 +29,6 @@ private:
     float nmsThreshold;
 };
 
-
 typedef boost::shared_ptr<DarknetInferencer> DarknetInferencerPtr;
-
-
 
 #endif //SAMPLERGENERATOR_DARKNETEVALUATOR_H

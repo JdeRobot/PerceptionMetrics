@@ -9,11 +9,8 @@ SET(FrameworkEvaluator_SOURCE_FILES
   TensorFlowInferencer
   KerasInferencer
   Labelling
+  DarknetInferencer
 )
-
-IF(DARKNET_ACTIVE)
-    SET( FrameworkEvaluator_SOURCE_FILES ${FrameworkEvaluator_SOURCE_FILES} DarknetInferencer )
-ENDIF()
 
 IF(ENABLE_DNN_CAFFE)
     SET( FrameworkEvaluator_SOURCE_FILES ${FrameworkEvaluator_SOURCE_FILES} CaffeInferencer )
@@ -37,7 +34,3 @@ TARGET_INCLUDE_DIRECTORIES ( DeepLearningSuite_FrameworkEvaluator PUBLIC
   ${DeepLearningSuite_INCLUDE_DIR}
   ${QT_INCLUDE_DIRS}
 )
-
-IF(DARKNET_ACTIVE)
-  TARGET_INCLUDE_DIRECTORIES( DeepLearningSuite_FrameworkEvaluator PUBLIC ${DARKNET_INCLUDE_DIR})
-ENDIF()

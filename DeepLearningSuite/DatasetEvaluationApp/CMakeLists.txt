@@ -2,19 +2,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-
-IF (DARKNET_ACTIVE)
-    SET(EXTRA_LIBS ${EXTRA_LIBS}
-         ${DARKNET_LIBRARIES}
-         ${CUDA_LIBRARIES}
-         ${CUDA_LIBRARIES}
-         ${CUDA_CUBLAS_LIBRARIES}
-         ${CUDA_curand_LIBRARY})
-
-    include_directories(${DARKNET_INCLUDE_DIR})
-ENDIF()
-
-
 set (SOURCES main.cpp
         mainwindow
         gui/Appcfg

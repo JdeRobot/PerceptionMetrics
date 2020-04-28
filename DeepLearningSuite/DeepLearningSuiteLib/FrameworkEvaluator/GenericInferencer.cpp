@@ -17,15 +17,12 @@ GenericInferencer::GenericInferencer(const std::string &netConfig, const std::st
         imp = getImplementation(implementation);
         // Inference the image image using the selected inferencer(Currently supports 4 different inferencers).
         switch (imp) {
-#ifdef DARKNET_ACTIVE
             case INF_YOLO:
                 this->darknetInferencerPtr = DarknetInferencerPtr( new DarknetInferencer(netConfig, netWeights,classNames));
                 break;
-#endif
             case INF_TENSORFLOW:
                 this->tensorFlowInferencerPtr = TensorFlowInferencerPtr( new TensorFlowInferencer(netConfig, netWeights,classNames));
                 break;
-
             case INF_KERAS:
                 this->kerasInferencerPtr = KerasInferencerPtr( new KerasInferencer(netConfig, netWeights,classNames));
                 break;
@@ -50,11 +47,7 @@ GenericInferencer::GenericInferencer(const std::string &netConfig, const std::st
     Check if a certain inferencer is available, if available store that in data, else skip.
 */
 void GenericInferencer::configureAvailablesImplementations(std::vector<std::string>& data) {
-  // If darknet exists push "yolo"
-#ifdef DARKNET_ACTIVE
     data.push_back("yolo");
-#endif
-
     // Push tensorflow and keras, as they are neccessary dependencies to use this tool.
     // If they don't exist an error should have popped up while building the tool.
     data.push_back("tensorflow");
@@ -94,12 +87,8 @@ INFERENCER_IMPLEMENTATIONS GenericInferencer::getImplementation(const std::strin
 */
 FrameworkInferencerPtr GenericInferencer::getInferencer() {
     switch (imp) {
-// If darknet is selected, return darknet pointer.
-#ifdef DARKNET_ACTIVE
         case INF_YOLO:
             return this->darknetInferencerPtr;
-#endif
-//Similarly for tensorflow and keras.
         case INF_TENSORFLOW:
             return this->tensorFlowInferencerPtr;
         case INF_KERAS:

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <chrono>
 // OpenCV
 #include <opencv2/dnn.hpp>
 #include <opencv2/imgproc.hpp>
@@ -14,7 +15,6 @@
 #include <DatasetConverters/ClassTypeGeneric.h>
 #include "DarknetInferencer.h"
 #include <glog/logging.h>
-
 
 
 using namespace std;
@@ -46,9 +46,6 @@ DarknetInferencer::DarknetInferencer(const std::string &netConfig, const std::st
 }
 
 Sample DarknetInferencer::detectImp(const cv::Mat &image, double confThreshold) {
-	cout << "Width -> " << image.cols << endl;
-	cout << "Height -> " << image.rows << endl;
-
 	int inpWidth = (image.cols/32) * 32; // Width of network's input image
 	int inpHeight = (image.rows/32) * 32;;
 
@@ -62,7 +59,12 @@ Sample DarknetInferencer::detectImp(const cv::Mat &image, double confThreshold) 
     	
 	// END preprocess
     	vector<Mat> outs;
+	cout << "Starting inference" << endl;
+	auto start = std::chrono::system_clock::now();
     	net.forward(outs, outNames);
+	auto end = std::chrono::system_clock::now();
+	chrono::duration<double> elapsed_seconds = end-start;
+        cout << "Inference Time: " << elapsed_seconds.count() << " seconds" << endl;
     	// postprocess
 
         vector<int> classIds;
@@ -93,8 +95,7 @@ Sample DarknetInferencer::detectImp(const cv::Mat &image, double confThreshold) 
                 	}
             	}
         }
-        cout << classIds.size() << endl;
-
+	cout << "Num Detections: " << classIds.size() << endl;
         vector<int> indices;
         NMSBoxes(boxes, confidences, confThreshold, nmsThreshold, indices);
 
@@ -105,9 +106,10 @@ Sample DarknetInferencer::detectImp(const cv::Mat &image, double confThreshold) 
                 Rect box = boxes[idx];
                 string label = this->classes[classIds[idx]];
 		regions->add(box, label, confidences[idx]);
-		LOG(INFO) << "Label -> " << label << " Confidence -> " << confidences[idx] << endl;
-        }
+        	LOG(INFO)<< label << ": " << confidences[idx] << std::endl;
+	}
 
+	sample.setColorImage(image);
 	sample.setRectRegions(regions);
 	return sample;
 }
