@@ -28,9 +28,7 @@ DarknetInferencer::DarknetInferencer(const std::string &netConfig, const std::st
 	this->netWeights=netWeights;
 
 	std::vector<string> classes = {};
-        string classesFile = "/home/docker/darknet/data/coco.names";
-        // ifstream ifs(this->classNamesFile.c_str());
-        ifstream ifs(classesFile.c_str());
+        ifstream ifs(this->classNamesFile.c_str());
 	string line;
         while (getline(ifs, line)) classes.push_back(line);
 	this->classes=classes;

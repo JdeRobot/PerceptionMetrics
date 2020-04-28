@@ -168,30 +168,7 @@ Each one of them has some dependencies, and are mentioned below.
     Choose your favourite one and go ahead.
 
     * #### Darknet (jderobot fork)
-        Darknet supports both GPU and CPU builds, and GPU build is enabled by default.
-        If your computer doesn't have a NVIDIA Graphics card, then it is necessary to turn of GPU build in cmake by passing ```-DUSE_GPU=OFF``` as an option in cmake.
-        
-        ```
-            git clone https://github.com/JdeRobot/darknet
-            cd darknet
-            mkdir build && cd build
-        ```
-        
-        For **GPU** users:<br>
-        ```
-            cmake -DCMAKE_INSTALL_PREFIX=<DARKNET_DIR> ..
-        ```
-        For **Non-GPU** users (CPU build):
-        
-        ```
-            cmake -DCMAKE_INSTALL_PREFIX=<DARKNET_DIR> -DUSE_GPU=OFF ..
-        ```
-        Change ```<DARKNET_DIR>``` to your custom installation path.
-        
-        ``` 
-            make -j4
-            sudo make -j4 install
-        ``` 
+    Included in OpenCV libraries.
 
     * #### TensorFlow
     The only dependency for using TensorFlow as an inferencing framework is TensorFlow.
@@ -218,16 +195,10 @@ Once you have all the required dependencies installed just run:
 ```
     cmake ..
 ```
-To enable Darknet support with GPU:
-```
-    cmake -DARKNET_PATH=<DARKNET_INSTALLETION_DIR> -DUSE_GPU_DARKNET=ON ..
-```
-**Note:** GPU support is enabled by default for other Frameworks
+**Note:** GPU support is enabled by default
 ```
     make -j4
 ```
-
-**Note:** To enable Darknet support just pass an optimal parameter in cmake `-D DARKNET_PATH ` equal to Darknet installation directory, and is same as `<DARKNET_DIR>` passed above in darknet installation.
 
 Once it is built, you will find various executables in different folders ready to be executed :smile:.
 
