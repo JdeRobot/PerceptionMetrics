@@ -8,14 +8,10 @@
 
 #include "FrameworkInferencer.h"
 
-// If Darknet is present include the header files of Darknet inferencer.
-#ifdef DARKNET_ACTIVE
-#include <FrameworkEvaluator/DarknetInferencer.h>
-#endif
-
-// Include the header files of tensorflow and keras inferencers.
+// Include the header files of tensorflow, keras and darknet inferencers.
 #include <FrameworkEvaluator/TensorFlowInferencer.h>
 #include <FrameworkEvaluator/KerasInferencer.h>
+#include <FrameworkEvaluator/DarknetInferencer.h>
 
 // If Caffe is present include it's header files as well.
 #ifdef ENABLE_DNN_CAFFE
@@ -37,12 +33,8 @@ public:
 
 private:
     INFERENCER_IMPLEMENTATIONS imp;
-#ifdef DARKNET_ACTIVE
     DarknetInferencerPtr darknetInferencerPtr;
-#endif
-
     TensorFlowInferencerPtr tensorFlowInferencerPtr;
-
     KerasInferencerPtr kerasInferencerPtr;
 
 #ifdef ENABLE_DNN_CAFFE

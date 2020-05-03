@@ -12,67 +12,7 @@ DetectionSuite gives support for a set of different deep learning frameworks: Da
 Here, information on how to use each one of them with DetectionSuite is provided.
 
 ## Darknet
-<!-- As an example you can use Pascal VOC dataset on darknet format using the following instructions to convert to the desired format:
-```bash
-wget https://pjreddie.com/media/files/VOCtrainval_11-May-2012.tar
-wget https://pjreddie.com/media/files/VOCtrainval_06-Nov-2007.tar
-wget https://pjreddie.com/media/files/VOCtest_06-Nov-2007.tar
-tar xf VOCtrainval_11-May-2012.tar
-tar xf VOCtrainval_06-Nov-2007.tar
-tar xf VOCtest_06-Nov-2007.tar
-
-wget https://pjreddie.com/media/files/voc_label.py
-python voc_label.py
-cat 2007_train.txt 2007_val.txt 2012_*.txt > train.txt
-```
-
-In order to use darknet to detect objects over the images, you have to download the network configuration and the network weights [5] and [6]. Then set the corresponding paths into DeepLearningSuite/appConfig.txt. You have also to create a file with the corresponding name for each class detection for darknet, you can download the file directly from [7]
-
-Once you have your custom appConfig.txt( see [creating-a-custom-appconfigtxt]( #creating-a-custom-appconfigtxt) ) you can run the DatasetEvaluationApp.
-
-
-[1] https://pjreddie.com/media/files/yolo-voc.weights <br>
-[2] https://github.com/pjreddie/darknet/blob/master/cfg/yolo-voc.cfg <br>
-[3] https://github.com/pjreddie/darknet/blob/master/data/voc.names <br>
-
--->
-To use Darknet as your framework it is necessary to install it from JdeRobot's Darknet Fork.
-
-* ### Installation
-
-  Darknet supports both GPU and CPU builds (enabled by default).
-  If your computer doesn't have a NVIDIA graphics card, it is necessary to turn off GPU build by 
-  setting `-DUSE_GPU=OFF` as option in cmake.
-
-   ```
-    git clone https://github.com/JdeRobot/darknet
-    cd darknet
-    mkdir build && cd build
-   ```
-
-   For **GPU** users:<br>
-   ```
-    cmake -DCMAKE_INSTALL_PREFIX=<DARKNET_DIR> ..
-   ```
-   For **Non-GPU** users (CPU build):
-
-   ```
-    cmake -DCMAKE_INSTALL_PREFIX=<DARKNET_DIR> -DUSE_GPU=OFF ..
-   ```
-   Change ```<DARKNET_DIR>``` to your custom installation path.
-
-    ```
-    make -j4 
-    ``` 
-    ``` 
-    sudo make -j4 install 
-    ```
-
-   **Note:** After installing Darknet using above methods, you have to pass Darknet installation directory as an option
- in DetectionSuite's CMake like `cmake -D DARKNET_PATH=<DARKNET_DIR> ..`. Now, this `<DARKNET_DIR>` 
-   is the same as `<DARKNET_DIR>` passed above.
-   Cmake will throw a warning if it couldn't find Darknet libraries, just look for that and you are all done :zap: :boom: .
-
+To use Darknet as your framework you only need OpenCV installed, which is a prerequisite.
 
 
 ## TensorFlow
@@ -126,17 +66,7 @@ Some sample pre-trained models are available at our [model zoo](../model_zoo), o
 
 ## Caffe
 
-For using Caffe, you will require OpenCV 3.4 or greater with it's dnn module built. Following are the steps to install OpenCV 3.4 from source, though we will be shipping compiled binary packages of the same in the future, so as to speed up installation.
-
-* ### Installation
-    ```
-    git clone https://github.com/opencv/opencv.git
-    git checkout 3.4
-    cmake -D WITH_QT=ON -D WITH_GTK=OFF ..
-    make -j4
-    sudo make install
-    ```
-    
-Then, just build again, and just look out for a warning stating ```OpenCV 3.4 not Found, Caffe Support will be disabled```. If that warning persists than OpenCV 3.4 or higher hasn't been installed correctly, any you may want to look into that, else you are Good to Go.
+For using Caffe, you will require OpenCV with it's dnn module built.
+Steps for installing OpenCV 4.2 are available in [installation](../../installation)
 
 To Use Caffe you would require some pre-trained models on Caffe, some are available at our own [model zoo](../model_zoo). But wait, you will also need to add custom parameters for Caffe, and our model zoo contains those parameters for each of the inferencer, just directly use that. 

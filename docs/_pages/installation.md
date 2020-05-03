@@ -71,67 +71,29 @@ To get started you can either read along or follow [these video tutorials](https
 ### Common deps
 
 
-<table>
-<tr>
-<td>
-<center><b>Ubuntu</b></center>
-</td>
-<td>
-<center><b>MacOS</b></center>
-</td>
-</tr>
-<tr>
-<td>
-<pre>
-sudo apt install build-essential git cmake rapidjson-dev libssl-dev
-sudo apt install libboost-dev libboost-filesystem-dev libboost-system-dev libboost-program-options-dev
-</pre>
-</td>
-<td>
-<pre>
-sudo easy_install numpy
-brew install cmake boost rapidjson
-</pre>
-</td>
-</tr>
-<tr>
-<td>
-<pre>
-sudo apt install libgoogle-glog-dev libyaml-cpp-dev qt5-default libqt5svg5-dev
-</pre>
-</td>
-<td>
-<pre>
-brew install glog yaml-cpp qt
-</pre>
-<br/>
-Also, just add qt in your PATH by running:<br/>
-<pre>
-echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
-</pre>
-</td>
-</tr>
-<tr>
-<td>
-Install OpenCV 3.4
-<pre>
-git clone https://github.com/opencv/opencv.git
-cd opencv
-git checkout 3.4
-mkdir build && cd build
-cmake -D WITH_QT=ON -D WITH_GTK=OFF ..
-make -j4
-sudo make install
-</pre>
-</td>
-<td>
-<pre>
-brew install opencv
-</pre>
+| Ubuntu   |      MacOS      |  
+|:-------------:|:-------------:|
+| `sudo apt install build-essential git cmake rapidjson-dev libssl-dev` <br> `sudo apt install libboost-dev libboost-filesystem-dev libboost-system-dev libboost-program-options-dev` | `sudo easy_install numpy` <br> `brew install cmake boost rapidjson` | 
+       
 
-</td>
-</tr>
-</table>
+| Ubuntu   |      MacOS      |  
+|:-------------:|:-------------:|
+| `sudo apt install libgoogle-glog-dev libyaml-cpp-dev qt5-default libqt5svg5-dev` |    `brew install glog yaml-cpp qt` <br> Also, just add qt in your PATH by running: <br> `echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile`   |
+
+### OpenCV 4.2 (with CUDA GPU support) 
+
+If you don't need GPU support (only applicable for Darknet YOLO with OpenCV), just ignore cmake options related with CUDA and GPU.
+
+| Ubuntu   |      MacOS      |  
+|:-------------:|:-------------:|
+| `cd ~ `<br> `wget -O opencv.zip https://github.com/opencv/opencv/archive/4.2.0.zip` <br> `wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/4.2.0.zip` <br> `unzip opencv.zip <br> unzip opencv_contrib.zip` <br> `mv opencv-4.2.0 opencv` <br> `mv opencv_contrib-4.2.0 opencv_contrib` | `brew install opencv` |
+| `cd ~/opencv` <br> `mkdir build` <br> `cd build` | |
+|  You must change *CUDA_ARCH_BIN* version to yours GPU architecture version. <br> `cmake -D WITH_QT=ON -D WITH_GTK=OFF -D WITH_CUDA=ON -D WITH_CUDNN=ON -D OPENCV_DNN_CUDA=ON -D ENABLE_FAST_MATH=1 -D CUDA_FAST_MATH=1 -D CUDA_ARCH_BIN=**7.0 [CHANGE THIS ONE]** -D WITH_CUBLAS=1 ..` | |
+| `make -j8` | |
+| `sudo make install` | |
+
+Reference: [How to use OpenCV DNN module with Nvdia GPUs, CUDA and CUDNN](https://www.pyimagesearch.com/2020/02/03/how-to-use-opencvs-dnn-module-with-nvidia-gpus-cuda-and-cudnn/)
+
 
 ## Optional Dependencies
 
@@ -168,30 +130,7 @@ Each one of them has some dependencies, and are mentioned below.
     Choose your favourite one and go ahead.
 
     * #### Darknet (jderobot fork)
-        Darknet supports both GPU and CPU builds, and GPU build is enabled by default.
-        If your computer doesn't have a NVIDIA Graphics card, then it is necessary to turn of GPU build in cmake by passing ```-DUSE_GPU=OFF``` as an option in cmake.
-        
-        ```
-            git clone https://github.com/JdeRobot/darknet
-            cd darknet
-            mkdir build && cd build
-        ```
-        
-        For **GPU** users:<br>
-        ```
-            cmake -DCMAKE_INSTALL_PREFIX=<DARKNET_DIR> ..
-        ```
-        For **Non-GPU** users (CPU build):
-        
-        ```
-            cmake -DCMAKE_INSTALL_PREFIX=<DARKNET_DIR> -DUSE_GPU=OFF ..
-        ```
-        Change ```<DARKNET_DIR>``` to your custom installation path.
-        
-        ``` 
-            make -j4
-            sudo make -j4 install
-        ``` 
+    Included in OpenCV libraries.
 
     * #### TensorFlow
     The only dependency for using TensorFlow as an inferencing framework is TensorFlow.
@@ -201,7 +140,7 @@ Each one of them has some dependencies, and are mentioned below.
     Similarly, the only dependency for using Keras as an inferencing framework is Keras.
     
     * #### Caffe
-    For using Caffe as an inferencing framework, it is necessary to install OpenCV 3.4 or greater.
+    For using Caffe as an inferencing framework, it is necessary to install OpenCV.
 
 
 **Note:** Be Sure to checkout [functionality](../functionality/command_line_application) for tutorials on how to use the above mentioned functionalities and frameworks.  
@@ -218,16 +157,10 @@ Once you have all the required dependencies installed just run:
 ```
     cmake ..
 ```
-To enable Darknet support with GPU:
-```
-    cmake -DARKNET_PATH=<DARKNET_INSTALLETION_DIR> -DUSE_GPU_DARKNET=ON ..
-```
-**Note:** GPU support is enabled by default for other Frameworks
+**Note:** GPU support is enabled by default
 ```
     make -j4
 ```
-
-**Note:** To enable Darknet support just pass an optimal parameter in cmake `-D DARKNET_PATH ` equal to Darknet installation directory, and is same as `<DARKNET_DIR>` passed above in darknet installation.
 
 Once it is built, you will find various executables in different folders ready to be executed :smile:.
 

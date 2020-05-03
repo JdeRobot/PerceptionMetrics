@@ -9,11 +9,8 @@ SET(FrameworkEvaluator_SOURCE_FILES
   TensorFlowInferencer
   KerasInferencer
   Labelling
+  DarknetInferencer
 )
-
-IF(DARKNET_ACTIVE)
-    SET( FrameworkEvaluator_SOURCE_FILES ${FrameworkEvaluator_SOURCE_FILES} DarknetInferencer )
-ENDIF()
 
 IF(ENABLE_DNN_CAFFE)
     SET( FrameworkEvaluator_SOURCE_FILES ${FrameworkEvaluator_SOURCE_FILES} CaffeInferencer )
@@ -22,6 +19,11 @@ ENDIF()
 ADD_LIBRARY(DeepLearningSuite_FrameworkEvaluator OBJECT ${FrameworkEvaluator_SOURCE_FILES})
 
 
+message("OPENCV DIRS:")
+message(${OpenCV_INCLUDE_DIRS})
+set(OpenCV_INCLUDE_DIRS /usr/local/include/opencv4)
+message("OPENCV DIRS:")
+message(${OpenCV_INCLUDE_DIRS})
 
 TARGET_INCLUDE_DIRECTORIES ( DeepLearningSuite_FrameworkEvaluator PUBLIC
   ${OpenCV_INCLUDE_DIRS}
@@ -32,7 +34,3 @@ TARGET_INCLUDE_DIRECTORIES ( DeepLearningSuite_FrameworkEvaluator PUBLIC
   ${DeepLearningSuite_INCLUDE_DIR}
   ${QT_INCLUDE_DIRS}
 )
-
-IF(DARKNET_ACTIVE)
-  TARGET_INCLUDE_DIRECTORIES( DeepLearningSuite_FrameworkEvaluator PUBLIC ${DARKNET_INCLUDE_DIR})
-ENDIF()
