@@ -74,7 +74,7 @@ PyTorchInferencer::PyTorchInferencer( const std::string &netConfig, const std::s
 	} else {
 		if (PyErr_Occurred())
 		PyErr_Print();
-		fprintf(stderr, "Cannot find function \"tensorflow_detect\"\n");
+		fprintf(stderr, "Cannot find function \"pytorch_detect\"\n");
 	}
 
 	LOG(INFO) << "Detection Graph Loaded" << '\n';
@@ -135,7 +135,7 @@ void PyTorchInferencer::output_result(int num_detections, int width, int height,
             		this->hasMasks = true;
             		mask_dims = PyArray_NDIM(detection_masks_cont);
             		if (mask_dims != 3) {
-                	throw std::invalid_argument("Returned Mask by tensorflow doesn't have 2 dimensions");
+                	throw std::invalid_argument("Returned Mask by pytorch doesn't have 2 dimensions");
             		}
             		mask_shape = (long long int*) PyArray_SHAPE(detection_masks_cont);
         	}
