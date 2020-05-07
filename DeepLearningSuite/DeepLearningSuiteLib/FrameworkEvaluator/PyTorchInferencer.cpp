@@ -111,7 +111,7 @@ Sample PyTorchInferencer::detectImp(const cv::Mat &image, double confidence_thre
 	RectRegionsPtr regions(new RectRegions());
   	RleRegionsPtr rleRegions(new RleRegions());
 	ClassTypeGeneric typeConverter(classNamesFile);
-	
+	LOG(ERROR) << "DETECTIONS " << this->detections << "\n";	
 	for (auto it = detections.begin(), end=detections.end(); it !=end; ++it){
 		typeConverter.setId(it->classId);
 		regions->add(it->boundingBox,typeConverter.getClassString(),it->probability);
@@ -135,8 +135,13 @@ void PyTorchInferencer::output_result(int num_detections, int width, int height,
 	this->hasMasks = false;
     	int mask_dims;
     	long long int* mask_shape;
-	
+	LOG(ERROR) << "NUM DETECTIONS " << num_detections << "\n";	
+	LOG(ERROR) << "WIDTH " << width << "\n";
+	LOG(ERROR) << "HEIGHT" << height << "\n";
+	LOG(ERROR) << "BOUNDING BOXES" << bounding_boxes << "\n";
+	LOG(ERROR) << "CLASS IDS" << classIds << "\n";
 	if( PyArray_Check(bounding_boxes) && PyArray_Check(detection_scores) && PyArray_Check(classIds) ) {
+		LOG(ERROR) << "ENTRA" << "\n";
 		PyArrayObject* detection_masks_cont = NULL;
 
         	if (pDetection_masks != NULL && PyArray_Check(pDetection_masks)) {
@@ -229,6 +234,7 @@ int PyTorchInferencer::gettfInferences(const cv::Mat& image, double confidence_t
 		PyObject* pDetection_scores = PyDict_GetItem(pValue, PyUnicode_FromString("detection_scores") );
 		PyObject* classIds = PyDict_GetItem(pValue, PyUnicode_FromString("detection_classes") );
 		PyObject* key = PyUnicode_FromString("detection_masks");
+		LOG(ERROR) << "CLASS IDS " << classIds << "\n";
 		if (PyDict_Contains(pValue, key)) {
 			PyObject* pDetection_masks = PyDict_GetItem(pValue, PyUnicode_FromString("detection_masks") );
             		output_result(num_detections, image.cols, image.rows, pBounding_boxes, pDetection_scores, classIds, pDetection_masks);
