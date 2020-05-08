@@ -82,12 +82,12 @@ PyTorchInferencer::PyTorchInferencer( const std::string &netConfig, const std::s
 
 }
 
-#if PY_MAJOR_VERSION >= 3
+/*#if PY_MAJOR_VERSION >= 3
 int*
 #else
 void
-#endif
-PyTorchInferencer::init() {
+#endif*/
+void PyTorchInferencer::init() {
 	import_array();
 }
 
@@ -111,7 +111,6 @@ Sample PyTorchInferencer::detectImp(const cv::Mat &image, double confidence_thre
 	RectRegionsPtr regions(new RectRegions());
   	RleRegionsPtr rleRegions(new RleRegions());
 	ClassTypeGeneric typeConverter(classNamesFile);
-	LOG(ERROR) << "DETECTIONS " << this->detections << "\n";	
 	for (auto it = detections.begin(), end=detections.end(); it !=end; ++it){
 		typeConverter.setId(it->classId);
 		regions->add(it->boundingBox,typeConverter.getClassString(),it->probability);
@@ -140,8 +139,9 @@ void PyTorchInferencer::output_result(int num_detections, int width, int height,
 	LOG(ERROR) << "HEIGHT" << height << "\n";
 	LOG(ERROR) << "BOUNDING BOXES" << bounding_boxes << "\n";
 	LOG(ERROR) << "CLASS IDS" << classIds << "\n";
+	LOG(ERROR) << "LLEGA AQUI" << "\n";
 	if( PyArray_Check(bounding_boxes) && PyArray_Check(detection_scores) && PyArray_Check(classIds) ) {
-		LOG(ERROR) << "ENTRA" << "\n";
+		LOG(ERROR) << "ENTRA!11!!1!!!" << "\n";
 		PyArrayObject* detection_masks_cont = NULL;
 
         	if (pDetection_masks != NULL && PyArray_Check(pDetection_masks)) {
@@ -174,6 +174,7 @@ void PyTorchInferencer::output_result(int num_detections, int width, int height,
 			detections[i].boundingBox.x = bounding_box_data[boxes++] * width;
 			detections[i].boundingBox.height = bounding_box_data[boxes++] * height - detections[i].boundingBox.y;
 			detections[i].boundingBox.width = bounding_box_data[boxes++] * width - detections[i].boundingBox.x;
+			LOG(ERROR) << "CLASS ID: " << detections[i].classId << " PROB: " << detections[i].probability << "\n";
 			if (this->hasMasks) {
 				cv::Mat image_mask(height, width, CV_8UC1, cv::Scalar(0));
 				cv::Mat mask = cv::Mat(mask_shape[1], mask_shape[2], CV_32F, detection_masks_data + i*mask_shape[1]*mask_shape[2]);
@@ -192,6 +193,11 @@ void PyTorchInferencer::output_result(int num_detections, int width, int height,
 		Py_XDECREF(bounding_boxes);
 		Py_XDECREF(detection_scores);
 		Py_XDECREF(classIds);
+	} else {
+		LOG(ERROR) << "ERROR" << "\n";
+		LOG(ERROR) << "BOUNDING BOXES -> " << PyArray_Check(bounding_boxes) << "\n";
+		LOG(ERROR) << "DETECTION SCORES -> " << PyArray_Check(detection_scores) << "\n";
+		LOG(ERROR) << "CLASS IDS -> " << PyArray_Check(classIds) << "\n";
 	}
 }
 

@@ -1,3 +1,8 @@
+import sys
+print("Python version")
+print (sys.version)
+print("Version info.")
+print (sys.version_info)
 import numpy as np
 import sys
 from distutils.version import StrictVersion
@@ -133,7 +138,15 @@ class TensorFlowDetector:
         if 'detection_masks' in output_dict:
             new_dict['detection_masks'] = output_dict['detection_masks'][0:len(new_dict['detection_scores']), :]
 
-
+        print('----- DETECTION SCORES -----')
+        print(new_dict['detection_scores'])
+        print('------ DETECTION BOXES -----')
+        print(new_dict['detection_boxes'])
+        print('------ DETECITON CLASSES ------')
+        print(new_dict['detection_classes'])
+        print('------ DETECTION NUMBER ------')
+        print(new_dict['num_detections'])
+        print(type(new_dict['detection_scores']))
         #mask = new_dict['detection_masks'][0]
         #mask = mask > 0.5
         #cv2.imshow("my mask", mask)

@@ -20,18 +20,21 @@ class PyTorchDetector:
         self.model.eval()
 
     def run_inference_for_single_image(self, image):
-        print('RUN INFERENCE')
+        #print('RUN INFERENCE')
         self.model.eval()
         detections = self.model([image])
         output_dict = {}
         output_dict['num_detections'] = len(detections[0]['labels'])
-        output_dict['detection_classes'] = list(detections[0]['labels'].cpu().numpy())
-        output_dict['detection_boxes'] = [[(i[0], i[1]), (i[2], i[3])] for i in list(detections[0]['boxes'].detach().cpu().numpy())]
-        output_dict['detection_scores'] = list(detections[0]['scores'].detach().cpu().numpy())
+        output_dict['detection_classes'] = detections[0]['labels'].cpu().numpy()
+        output_dict['detection_boxes'] = detections[0]['boxes'].detach().cpu().numpy()
+        #output_dict['detection_boxes'] = [[i[0],i[1], i[2], i[3]] for i in detections[0]['boxes'].detach().cpu().numpy()]
+        output_dict['detection_scores'] = detections[0]['scores'].detach().cpu().numpy()
         return output_dict
 
     def detect(self, img, threshold):
-        print('DETECT')
+        #print('DETECT')
+        threshold = 0.99
+        #print(threshold)
         img_size=416
         Tensor = torch.cuda.FloatTensor
 
@@ -46,23 +49,34 @@ class PyTorchDetector:
         output_dict = self.run_inference_for_single_image(input_img)
         print("Inference Time: " + str(time.time() - start_time) + " seconds")
         
-        pred_t = [output_dict['detection_scores'].index(x) for x in output_dict['detection_scores'] if x > threshold][-1]
-        pred_boxes = output_dict['detection_boxes'][:pred_t+1]
-        
-        pred_class = output_dict['detection_classes'][:pred_t+1]
+        #pred_t = [output_dict['detection_scores'].index(x) for x in output_dict['detection_scores'] if x > threshold][-1]
+        #pred_t = [output_dict['detection_scores'][x] for x in output_dict['detection_scores'] if x > threshold][-1]
+        #pred_boxes = output_dict['detection_boxes'][:pred_t+1]
+        #pred_class = output_dict['detection_classes'][:pred_t+1]
         new_dict = {}
-        new_dict['detection_scores'] = pred_t
-        new_dict['detection_boxes'] = pred_boxes
-        new_dict['detection_classes'] = pred_class
-        new_dict['num_detections'] = new_dict['detection_scores']
+        new_dict['detection_scores'] = output_dict['detection_scores'][output_dict['detection_scores']>=threshold]
+        new_dict['detection_boxes'] = output_dict['detection_boxes'][0:len(new_dict['detection_scores']), :]
+        new_dict['detection_classes'] = output_dict['detection_classes'][0:len(new_dict['detection_scores'])]
+        new_dict['num_detections'] = len(new_dict['detection_scores'])
+
+
+        #new_dict['detection_scores'] = pred_t
+        #new_dict['detection_scores'] = output_dict['detection_scores'][output_dict['detection_scores']>=threshold]
+        #new_dict['detection_scores'] = output_dict['detection_scores']
+        #new_dict['detection_scores'] = output_dict['detection_scores'][output_dict['detection_scores']>=threshold]
+        #new_dict['detection_boxes'] = pred_boxes
+        #new_dict['detection_classes'] = pred_class
+        #new_dict['num_detections'] = len(new_dict['detection_scores'])
         print('----- DETECTION SCORES -----')
         print(new_dict['detection_scores'])
         print('------ DETECTION BOXES -----')
         print(new_dict['detection_boxes'])
         print('------ DETECITON CLASSES ------')
         print(new_dict['detection_classes'])
-        print('------ DETECTION SCORES ------')
-        print(new_dict['detection_scores'])
+        print('------ DETECTION NUMBER ------')
+        print(new_dict['num_detections'])
         
+        #print(type(new_dict['detection_scores']))
+
         return new_dict
 
