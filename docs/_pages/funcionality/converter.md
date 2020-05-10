@@ -9,7 +9,7 @@ sidebar:
 ---
 
 This tool takes a dataset from a specific format and converts it to another format.
-To complete this process, DetectionSuite needs the input dataset format (reader) and its class names and additionally 
+To complete this process, DetectionStudio needs the input dataset format (reader) and its class names and additionally 
 the output dataset wanted. More options are available, like splitting the new dataset into 2 separated parts (train and test set).
 
 ### Command line use example

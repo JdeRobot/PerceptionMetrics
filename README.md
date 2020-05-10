@@ -56,7 +56,7 @@ If you have any issue feel free to drop a mail <vinay04sharma@icloud.com> or cre
 
 GUI             |  Screenshot 1
 :-------------------------:|:-------------------------:
-![](./docs/assets/images/detection_suite_gui.png)  |  ![](./docs/assets/images/screen1.png)   
+![](docs/assets/images/detection_studio_gui.png)  |  ![](./docs/assets/images/screen1.png)   
 Screenshot 2             |  Screenshot 3
 ![](./docs/assets/images/screen2.png) |  ![](./docs/assets/images/screen3.png)
 

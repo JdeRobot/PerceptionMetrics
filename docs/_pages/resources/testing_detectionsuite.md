@@ -1,7 +1,7 @@
 ---
 layout: home
-title: Testing DetectionSuite
-permalink: /resources/testing_detectionsuite/
+title: Testing DetectionStudio
+permalink: /resources/testing_detectionstudio/
 
 
 sidebar:

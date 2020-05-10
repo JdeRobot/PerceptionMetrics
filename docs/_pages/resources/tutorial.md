@@ -12,14 +12,14 @@ Sample video depicting results of this tutorial:
 
 {% include video id="xX2c_Trp9qY" provider="youtube" %}
 
-DetectionSuite Supports lot's of functionalities for both Datasets and Inferencers, some of them are viewing different datasets (**Viewer**), converting datasets from one to another (**Converter**), generating detection datasets (**Detector**), 
+DetectionStudio Supports lot's of functionalities for both Datasets and Inferencers, some of them are viewing different datasets (**Viewer**), converting datasets from one to another (**Converter**), generating detection datasets (**Detector**), 
 evaluating datasets using inferencers (**Evaluator**, **Auto Evaluator**) and finally deploying datasets(**Deployer**).
 
-DetectionSuite has both GUI app and command line tools to execute its functionalities.
+DetectionStudio has both GUI app and command line tools to execute its functionalities.
 
 But as a beginner on should always start with GUI app, named ```DatasetEvaluationApp```. We will start with ```Deployer Tab``` in the same app.
 
-Once you've build DeepLearningSuite (for building, [refer here](../../installation/)), navigate to DatasetEvaluationApp directory in the build directory using the following command from DetectionSuite's root directory:
+Once you've build DeepLearningSuite (for building, [refer here](../../installation/)), navigate to DatasetEvaluationApp directory in the build directory using the following command from DetectionStudio's root directory:
 
 ```
 cd DeepLearningSuite/build/DatasetEvaluationApp/
@@ -56,7 +56,7 @@ For this tutorial we will need inferencer weights, config files and a class name
 For this tutorial, we will be using SSD MobileNet v1, trained on COCO, and would require following files:
 - Model: [ssd_mobilenet_v1_coco](http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_2018_01_28.tar.gz).
 - Config: Just Create an empty foo.cfg file in `cfg/`.
-- ClassNames: Download [COCO ClassNames File](https://github.com/JdeRobot/DetectionSuite/blob/master/samples/names/coco.names).
+- ClassNames: Download [COCO ClassNames File](https://github.com/JdeRobot/DetectionStudio/blob/master/samples/names/coco.names).
 
 
 
@@ -83,7 +83,7 @@ Just type ``` ./DatasetEvaluationApp -c appConfig.yml ```
 
 And you will see a GUI pop like this: 
  
-![DetectionSuite StartUp](../../assets/images/detection_suite_gui.png)
+![DetectionStudio StartUp](../../assets/images/detection_studio_gui.png)
 
 Configuring Parameters:
 * **Deployer Implementation:** Method to fetch input images, can be `Camera`, `Video` or `Streams`. For video, select a video file. For streams, select between ROS or ICE, and enter the config parameters manually or select a config YAML file.

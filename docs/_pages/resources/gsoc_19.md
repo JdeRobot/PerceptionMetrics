@@ -18,7 +18,7 @@ This feature lets the user pause the video at any time and also go back and forw
 {% include video id="dX895_HzVHA" provider="youtube" %}
 
 ## Better user experience
-If a user does not add a config file when executing Detection Suite, a pop up window shows and asks the user to give the 
+If a user does not add a config file when executing Detection Studio, a pop up window shows and asks the user to give the 
 needed information.
 
 <img src="../../assets/images/week3_1.png" alt="Screenshot" style="max-width:100%;">

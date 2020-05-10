@@ -8,16 +8,16 @@ sidebar:
   nav: "functionality"
 ---
 
-DetectionSuite Deployer functionality is provided as a **ROS Node**.
+DetectionStudio Deployer functionality is provided as a **ROS Node**.
 This node uses some input images stream (it could be a video) and 
 makes inferences over the images passed, detecting the objects in realtime. 
 Currently it only supports tensorflow as inferencer, but a broader support is expected
 in the future.
 
-To use DetectionSuite ROS Node, it needs to subscribe to a rostopic. It would publish images
+To use DetectionStudio ROS Node, it needs to subscribe to a rostopic. It would publish images
 that the node would infer.
 
-In the build/devel directory inside DetectionSuite folder, execute:
+In the build/devel directory inside DetectionStudio folder, execute:
 
 ```
 source setup.bash
@@ -30,7 +30,7 @@ While the video is playing, start the ros node with the following command:
 rosrun detection_suite test _topic:=<topic name> _configfile:=<path/to/configfile>
 ```
 
-*_topic* is the topic detection suite is suscribed to and *_confilefile* the configuration file with the inferencer, class names...
+*_topic* is the topic detection studio is suscribed to and *_confilefile* the configuration file with the inferencer, class names...
 The detections are publishes at *my_topic*. Run the following command to see available topics:
 
 ```

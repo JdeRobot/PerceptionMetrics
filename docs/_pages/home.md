@@ -12,9 +12,9 @@ excerpt:
 ---
 
 
-# What is DetectionSuite?
+# What is DetectionStudio?
 
-DetectionSuite is an application that provides a toolbox of utilities oriented to simplify the development and testing of solutions based on object detection.
+DetectionStudio is an application that provides a toolbox of utilities oriented to simplify the development and testing of solutions based on object detection.
 The application comes with a GUI (based on Qt) but it can also be used through command line.
 
 
@@ -33,8 +33,8 @@ The application is designed to experiment with datasets and neural networks usin
 + [ROS Node](functionality/ros_node/)
 + [Labelling](resources/gsoc_19/)
 
-Every tool in DetectionSuite requires a config file to run, where the main parameters needed are provided. Currently, YAML config file format is supported. See below on how to create a custom config file.
-Each tool may have different requirements for keys in config file, and they can be known by passing the ```--help``` flag when using DetectionSuite from
+Every tool in DetectionStudio requires a config file to run, where the main parameters needed are provided. Currently, YAML config file format is supported. See below on how to create a custom config file.
+Each tool may have different requirements for keys in config file, and they can be known by passing the ```--help``` flag when using DetectionStudio from
 the command line.
 
 ### Creating a custom ```appConfig.yml```
