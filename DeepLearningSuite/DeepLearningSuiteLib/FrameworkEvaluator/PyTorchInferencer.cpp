@@ -43,9 +43,12 @@ PyTorchInferencer::PyTorchInferencer( const std::string &netConfig, const std::s
 	LOG(INFO) << "Loading Detection Graph" << '\n';
 	if (pModule != NULL) {
 		pClass = PyObject_GetAttrString(pModule, "PyTorchDetector");
-		pArgs = PyTuple_New(1);
+		pArgs = PyTuple_New(2);
 		pmodel = PyUnicode_FromString(netWeights.c_str());
+		pconfig = PyUnicode_FromString(netConfig.c_str());
+		
 		PyTuple_SetItem(pArgs, 0, pmodel);
+		PyTuple_SetItem(pArgs, 1, pconfig);
 		pInstance = PyObject_CallObject(pClass, pArgs);
 		if (pInstance == NULL) {
 			Py_DECREF(pArgs);

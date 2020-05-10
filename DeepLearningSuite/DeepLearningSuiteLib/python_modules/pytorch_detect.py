@@ -1,42 +1,44 @@
 import torch
 from torchvision import transforms
-import torchvision.models as models
 from torch.autograd import Variable
 from PIL import Image
 import numpy as np
 import time
-
-#import torch.utils.model_zoo as model_zoo
-#
-#    We should ask for the .py where the model class is stored and the class name.
-#    Additionally, ask for the .pth to load the state dict. 
-#    With this info, load the model that will be tested.
-#
-
-import os, sys
-CURRENT_DIR = '/home/docker/pytorch_example/'
-sys.path.append(os.path.dirname(CURRENT_DIR))
-from  pytorch_model import resnet18
-model_urls = {
-  'resnet18': 'https://s3.amazonaws.com/pytorch/models/resnet18-5c106cde.pth',
-}
-
+import yaml
+import importlib
 
 class PyTorchDetector:
-    def __init__(self, patch_to_ckpt):
-        #self.model = models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
-        
-        self.model = resnet18()
-        self.model.load_state_dict(torch.load('/home/docker/resnet18-5c106cde.pth'))
-        #self.model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
-        
+    def __init__(self, patch_to_ckpt, configuration_file):
+        with open(configuration_file, 'r') as stream:
+            data_loaded = yaml.safe_load(stream)
+            print('Model path: ' + data_loaded['modelPath'])
+            print('Model name: ' + data_loaded['modelName'])
+            print('Import name: ' + data_loaded['importName'])
+            model_path = data_loaded['modelPath']
+            model_name = data_loaded['modelName']
+            import_name = data_loaded['importName']
+        try:
+            sys.path.append(os.path.dirname(model_path))
+        except:
+            print('Model path undefined')
+        models = importlib.import_module(import_name)
+        self.model = getattr(models, model_name)(pretrained=True)
+
+        # self.model = models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+        # self.model.load_state_dict(torch.load(patch_to_ckpt), strict=False)
+        # self.model.load_state_dict(torch.load('/home/docker/resnet50-19c8e357.pth'), strict=False)
+        self.model.load_state_dict(torch.load(patch_to_ckpt), strict=False)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self.model.to(device)
         self.model.eval()
     
     def run_inference_for_single_image(self, image):
         self.model.eval()
+        print('Starting inference')
+        start_time = time.time()
         detections = self.model([image])
+        print("Inference Time: " + str(time.time() - start_time) + " seconds")
+        
         output_dict = {}
         output_dict['num_detections'] = len(detections[0]['labels'])
         output_dict['detection_classes'] = detections[0]['labels'].cpu().numpy()
@@ -54,10 +56,7 @@ class PyTorchDetector:
         img_transforms=transforms.Compose([transforms.ToTensor(),])
         image_tensor = img_transforms(img)
         input_img = Variable(image_tensor.type(Tensor))
-        print('Starting inference')
-        start_time = time.time()
         output_dict = self.run_inference_for_single_image(input_img)
-        print("Inference Time: " + str(time.time() - start_time) + " seconds")
         
         
         new_dict = {}

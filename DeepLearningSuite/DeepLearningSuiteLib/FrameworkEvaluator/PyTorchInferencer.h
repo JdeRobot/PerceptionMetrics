@@ -30,7 +30,7 @@ private:
     };
     bool mousy;
     PyObject *pName, *pModule, *pClass, *pInstance;
-    PyObject *pArgs, *pValue, *pmodel;
+    PyObject *pArgs, *pValue, *pmodel, *pconfig;
 
     std::vector<detection> detections;
     bool hasMasks;
