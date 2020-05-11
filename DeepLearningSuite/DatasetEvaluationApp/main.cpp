@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
     YAML::Node noder = app.get_node();
     // Check if appconfig is passed
     if(noder["appconfig"]){
-      // If yes , convert that to a string and run detection suite
+      // If yes, convert that to a string and run Detection Studio
       MyApp myApp(noder["appconfig"].as<std::string>(),true);
       myApp.process();
     }

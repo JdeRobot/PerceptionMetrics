@@ -1,10 +1,10 @@
-# DetectionSuite 
+# DetectionStudio
 
 [![Build Status](https://travis-ci.org/JdeRobot/DetectionSuite.svg?branch=master)](https://travis-ci.org/JdeRobot/DetectionSuite)
 
-### Please refer to the official documentation webpage [here](https://jderobot.github.io/DetectionSuite/).
+### Please refer to the official documentation webpage [here](https://jderobot.github.io/DetectionStudio/).
 
-DetectionSuite is a set of tool that simplify the evaluation of most common object detection datasets with several object detection neural networks.
+DetectionStudio is a set of tool that simplify the evaluation of most common object detection datasets with several object detection neural networks.
 
 The idea is to offer a generic infrastructure to evaluates object detection algorithms againts a dataset and compute most common statistics:
 * Intersecion Over Union
@@ -46,13 +46,13 @@ Sample Generation Tool has been developed in order to simply the process of gene
 
 # Installation
 
-Check the intallation guide [here](https://jderobot.github.io/DetectionSuite/installation/).
+Check the intallation guide [here](https://jderobot.github.io/DetectionStudio/installation/).
 
-# Starting with DetectionSuite
-The best way to start is with our [beginner's tutorial](https://jderobot.github.io/DetectionSuite/functionality/tutorial/) for DetectionSuite.
+# Starting with DetectionStudio
+The best way to start is with our [beginner's tutorial](https://jderobot.github.io/DetectionStudio/functionality/tutorial/) for DetectionStudio.
 If you have any issue feel free to drop a mail <vinay04sharma@icloud.com> or create an issue for the same.
 
-### DetectionSuite's sample images
+### DetectionStudio's sample images
 
 GUI             |  Screenshot 1
 :-------------------------:|:-------------------------:

@@ -53,11 +53,6 @@ load(std::string filename){
     }
     YAML::Node nodeConfig = YAML::LoadFile(filepath);
 
-    // nodeConfig["namesPath"]   = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets/names";
-    // nodeConfig["netCfgPath"]  = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets/cfg";
-    // nodeConfig["weightsPath"] = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets/weights";
-    // nodeConfig["datasetPath"] = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets";
-    // nodeConfig["evaluationsPath"] = "/home/issiki/dl-DetectionSuite/DeepLearningSuite/build/DatasetEvaluationApp/datasets/eval";
     Config::Properties config(nodeConfig);
     LOG(INFO)<<"[Info] loaded YAML Config file: "<<filepath<<std::endl;
     //properties->setProperty("Ice.Config", filepath);

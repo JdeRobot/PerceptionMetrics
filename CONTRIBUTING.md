@@ -1,4 +1,4 @@
-# Contributing to DetectionSuite
+# Contributing to DetectionStudio
 
 Thanks for your interest on contributing!
 
@@ -42,7 +42,7 @@ The two following points are different depending on the permissions you have to 
 * **Testing and merging pull requests**
 Your pull request will be automatically tested by Travis CI. If any jobs have failed, you should fix them. 
 To rerun the automatic builds just push changes to your branch on GitHub. No need to close that pull request and open a new one!
-Once all the builders are "green", one of DetectionSuite's developers will review your code. Reviewer could ask you to modify your pull request.
+Once all the builders are "green", one of DetectionStudio's developers will review your code. Reviewer could ask you to modify your pull request.
  Please provide timely response for reviewers (within weeks, not months), otherwise you submission could be postponed or even rejected.
  
 * **[If you have write permission] Don't accept your own pull requests:** Wait for a project maintainer to accept the changes you made. They will probably comment the pull request with some feedback and will consider if it can be merge to the master branch.

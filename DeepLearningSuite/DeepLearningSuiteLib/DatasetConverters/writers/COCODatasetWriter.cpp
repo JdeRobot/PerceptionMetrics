@@ -181,7 +181,7 @@ void COCODatasetWriter::process(bool writeImages, bool useDepth) {
             writer_anns.Double(h);
             writer_anns.EndArray();
             writer_anns.Key("category_id");
-            writer_anns.Int(classId + 1);        // Classes in DetectionSuite start
+            writer_anns.Int(classId + 1);        // Classes in DetectionStudio start
                                                 // 0 wherease it starts from 1 in
                                                 // COCO dataset, that's why +
             writer_anns.Key("score");

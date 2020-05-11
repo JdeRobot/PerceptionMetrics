@@ -3,7 +3,7 @@
 //
 
 // This is the main variable which is shared across different components while
-// running DetectionSuite.
+// running DetectionStudio.
 
 #ifndef SAMPLERGENERATOR_SAMPLE_H
 #define SAMPLERGENERATOR_SAMPLE_H

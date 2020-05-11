@@ -24,13 +24,13 @@ ADD_LIBRARY (colorspacesmm SHARED colorspaces/imagecv.cpp colorspaces/imagecv.h 
 
 TARGET_LINK_LIBRARIES(colorspacesmm ${OpenCV_LIBRARIES} ${OpenCVGUI_LIBRARIES})
 if (ZeroCIce_FOUND)
-  ADD_LIBRARY (DetectionSuiteUtils ${UTILS_SOURCES})
+  ADD_LIBRARY (DetectionStudioUtils ${UTILS_SOURCES})
 
-  TARGET_LINK_LIBRARIES(DetectionSuiteUtils colorspaces colorspacesmm colorspacesshare)
+  TARGET_LINK_LIBRARIES(DetectionStudioUtils colorspaces colorspacesmm colorspacesshare)
 
 else()
-  ADD_LIBRARY (DetectionSuiteUtils INTERFACE)
+  ADD_LIBRARY (DetectionStudioUtils INTERFACE)
 
-  TARGET_LINK_LIBRARIES(DetectionSuiteUtils INTERFACE colorspaces colorspacesmm colorspacesshare)
+  TARGET_LINK_LIBRARIES(DetectionStudioUtils INTERFACE colorspaces colorspacesmm colorspacesshare)
 
 endif()

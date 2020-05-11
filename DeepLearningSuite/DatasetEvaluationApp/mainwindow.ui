@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>DetectionSuite</string>
+            <string>DetectionStudio</string>
         </property>
         <widget class="QWidget" name="centralWidget">
             <widget class="QTabWidget" name="tabWidget">
@@ -1260,7 +1260,7 @@
                                 </rect>
                             </property>
                             <property name="text">
-                                <string>DetectionSuite/Deployer</string>
+                                <string>DetectionStudio/Deployer</string>
                             </property>
                         </widget>
                         <widget class="QLineEdit" name="lineEdit_deployer_name">

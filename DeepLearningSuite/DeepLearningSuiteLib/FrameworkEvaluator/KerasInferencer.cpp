@@ -104,7 +104,7 @@ Sample KerasInferencer::detectImp(const cv::Mat &image, double confidence_thresh
 
 /*
 This function converts the output from python scripts into a fromat compatible
-DetectionSuite to read bounding boxes, classes and detection scores, which are
+DetectionStudio to read bounding boxes, classes and detection scores, which are
 drawn on the image to show detections.
 */
 
@@ -129,7 +129,7 @@ void KerasInferencer::output_result(PyObject* result, int sizes[])
 		for( i=0; i<dims[0]; i++ ) {
 
 			detections.push_back(detection());
-			detections[i].classId = (int) result_data[k++] - 1;  // In Keras id's start from 1 whereas detectionsuite starts from 0s
+			detections[i].classId = (int) result_data[k++] - 1;  // In Keras id's start from 1 whereas DetectionStudio starts from 0s
 			detections[i].probability = result_data[k++];
 
 			detections[i].boundingBox.x = result_data[k++] * sizes[1];
@@ -152,7 +152,7 @@ void KerasInferencer::output_result(PyObject* result, int sizes[])
 
 
 /* This function gets inferences from the Python script by calling coressponding
-function and the uses output_result() to convert it into a DetectionSuite C++
+function and the uses output_result() to convert it into a DetectionStudio C++
 readble format.
 */
 

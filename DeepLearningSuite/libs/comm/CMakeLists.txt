@@ -84,7 +84,7 @@ target_link_libraries(${PROJECT_NAME}
     ${GLOG_LIBRARIES}
     colorspacesmm
     config
-    DetectionSuiteUtils
+    DetectionStudioUtils
     )
 
 

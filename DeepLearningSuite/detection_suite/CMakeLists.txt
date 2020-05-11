@@ -57,7 +57,7 @@ include_directories(
         ${Boost_INCLUDE_DIR}
         ${QT_INCLUDE_DIRS}
         ${CMAKE_CURRENT_LIST_DIR}
-        ${CMAKE_CURRENT_LIST_DIR}/include/detectionsuite
+        ${CMAKE_CURRENT_LIST_DIR}/include/detectionstudio
         ${DeepLearningSuite_INCLUDE_DIR}
         ${catkin_INCLUDE_DIRS}
 )
@@ -92,7 +92,7 @@ target_link_libraries(detection_node
   crypto
 )
 
-add_executable(test src/test.cpp include/detectionsuite/DeployerNode.hpp src/DeployerNode.cpp)
+add_executable(test src/test.cpp include/detectionstudio/DeployerNode.hpp src/DeployerNode.cpp)
 add_dependencies(test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(test
