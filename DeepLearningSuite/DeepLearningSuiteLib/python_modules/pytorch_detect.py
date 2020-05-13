@@ -1,7 +1,6 @@
 import torch
 from torchvision import transforms
 from torch.autograd import Variable
-#from PIL import Image
 import numpy as np
 import time
 import yaml
