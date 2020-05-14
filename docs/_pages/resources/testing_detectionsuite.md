@@ -1,6 +1,6 @@
 ---
 layout: home
-title: Testing DetectionStudio
+title: Testing Detection Studio
 permalink: /resources/testing_detectionstudio/
 
 

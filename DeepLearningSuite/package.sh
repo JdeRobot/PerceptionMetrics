@@ -10,9 +10,9 @@ export ARCH=$(arch)
 
 if [[ "$TO_TEST" == "WITH_ROS_AND_ICE" ]];
 then
-APP=DetectionSuite_with_ROS_and_ICE
+APP=DetectionStudio_with_ROS_and_ICE
 else
-APP=DetectionSuite
+APP=DetectionStudio
 fi
 
 LOWERAPP=${APP,,}

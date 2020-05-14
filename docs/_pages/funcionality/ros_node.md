@@ -8,16 +8,16 @@ sidebar:
   nav: "functionality"
 ---
 
-DetectionStudio Deployer functionality is provided as a **ROS Node**.
+Detection Studio Deployer functionality is provided as a **ROS Node**.
 This node uses some input images stream (it could be a video) and 
 makes inferences over the images passed, detecting the objects in realtime. 
 Currently it only supports tensorflow as inferencer, but a broader support is expected
 in the future.
 
-To use DetectionStudio ROS Node, it needs to subscribe to a rostopic. It would publish images
+To use Detection Studio ROS Node, it needs to subscribe to a rostopic. It would publish images
 that the node would infer.
 
-In the build/devel directory inside DetectionStudio folder, execute:
+In the build/devel directory inside Detection Studio folder, execute:
 
 ```
 source setup.bash

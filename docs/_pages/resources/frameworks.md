@@ -8,8 +8,8 @@ sidebar:
   nav: "resources"
 ---
 
-DetectionStudio gives support for a set of different deep learning frameworks: Darknet, Tensorflow, Keras, PyTorch and Caffe.
-Here, information on how to use each one of them with DetectionStudio is provided.
+Detection Studio gives support for a set of different deep learning frameworks: Darknet, Tensorflow, Keras, PyTorch and Caffe.
+Here, information on how to use each one of them with Detection Studio is provided.
 
 ## Darknet
 To use Darknet as your framework you only need OpenCV installed, which is a prerequisite.
@@ -46,7 +46,7 @@ Now create an empty ```foo.cfg``` file and place it in the cfg directory. It is 
 
 All done! Now you are ready to go!
 
-Below, an example video using SSD MobileNet COCO on TensorFlow framework in DetectionStudio.
+Below, an example video using SSD MobileNet COCO on TensorFlow framework in Detection Studio.
 
 {% include video id="AWVdt7djJBg" provider="youtube" %}
 

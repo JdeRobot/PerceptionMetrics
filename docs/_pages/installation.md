@@ -6,7 +6,7 @@ permalink: /installation/
 ---
 
 <br>
-# Install DetectionStudio application
+# Install Detection Studio application
  
 The application can be directly downloaded from the [repository releases](https://github.com/JdeRobot/DetectionStudio/releases/tag/continuous).
 
@@ -44,7 +44,7 @@ To install Pytorch:
 ```
 
 # Compile and Install from source
-To use the latest version of DetectionStudio you need to compile and install it from source.
+To use the latest version of Detection Studio you need to compile and install it from source.
 To get started you can either read along or follow [these video tutorials](https://www.youtube.com/watch?v=HYuFFTnEn5s&list=PLgB5c9xg9C91DJ30WFlHfHAhMECeho-gU).
 ## Requirements
 
@@ -101,10 +101,10 @@ Update and install
 Below is a list of more optional dependencies you may require depending on your usage.
 
 * ### Camera Streaming Support
-DetectionStudio can currently read ROS and ICE Camera Streams. So, to enable Streaming support, install any one of them.
+Detection Studio can currently read ROS and ICE Camera Streams. So, to enable Streaming support, install any one of them.
 
 * ### Inferencing Frameworks
-DetectionStudio currently supports many Inferencing Frameworks namely Darknet, TensorFlow, Keras, PyTorch and Caffe.
+Detection Studio currently supports many Inferencing Frameworks namely Darknet, TensorFlow, Keras, PyTorch and Caffe.
 Each one of them has some dependencies, and are mentioned below.
 
     Choose your favourite one and go ahead.
@@ -125,7 +125,7 @@ Each one of them has some dependencies, and are mentioned below.
 
 **Note:** Be Sure to checkout [functionality](../functionality/command_line_application) for tutorials on how to use the above mentioned functionalities and frameworks.  
 
-# How to compile DetectionStudio:
+# How to compile Detection Studio:
 
 Once you have all the required dependencies installed just run:
 
@@ -144,7 +144,7 @@ Once you have all the required dependencies installed just run:
 
 Once it is built, you will find various executables in different folders ready to be executed :smile:.
 
-## Starting with DetectionStudio
-The best way to start is with our [beginner's tutorial](../resources/tutorial/) for DetectionStudio.
+## Starting with Detection Studio
+The best way to start is with our [beginner's tutorial](../resources/tutorial/) for Detection Studio.
 
 If you have any issue feel free to drop a mail <vinay04sharma@icloud.com> or create an [issue](https://github.com/JdeRobot/DetectionStudio/issues) for the same.
