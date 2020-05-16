@@ -19,10 +19,10 @@ Detection Studio has both GUI app and command line tools to execute its function
 
 But as a beginner on should always start with GUI app, named ```DatasetEvaluationApp```. We will start with ```Deployer Tab``` in the same app.
 
-Once you've build DeepLearningSuite (for building, [refer here](../../installation/)), navigate to DatasetEvaluationApp directory in the build directory using the following command from Detection Studio's root directory:
+Once you've build DetectionStudio (for building, [refer here](../../installation/)), navigate to DatasetEvaluationApp directory in the build directory using the following command from Detection Studio's root directory:
 
 ```
-cd DeepLearningSuite/build/DatasetEvaluationApp/
+cd DetectionStudio/build/DatasetEvaluationApp/
 ```
  
 You will find an executable there, to run it you need:

@@ -131,7 +131,7 @@ Once you have all the required dependencies installed just run:
 
 ```
     git clone https://github.com/JdeRobot/DetectionStudio
-    cd DetectionStudio/DeepLearningSuite
+    cd DetectionStudio/DetectionStudio
     mkdir build && cd build
 ```
 ```
