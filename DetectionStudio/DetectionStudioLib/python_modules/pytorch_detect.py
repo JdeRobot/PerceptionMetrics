@@ -29,10 +29,10 @@ class PyTorchDetector:
             try:
                 value = int(var)
             except Exception as e:
-                try:
+                if (str(var) != 'True' and str(var) != 'False'):
+                    value = str(var)
+                else:
                     value = bool(var)
-                except Exception:
-                    value = var
             setattr(self, name, value)
         # The number of parameters modifies the way the function gets called
         self.model = eval(self.get_model_function(len(variables)))
@@ -61,7 +61,7 @@ class PyTorchDetector:
             start_time = time.time()
             detections = self.model([image])
             print("Inference Time: " + str(time.time() - start_time) + " seconds")
-        except TypeError:
+        except Exception as e:
             # Try with image tensor alone
             start_time = time.time()
             image = image.unsqueeze(1)
