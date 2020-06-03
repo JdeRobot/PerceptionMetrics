@@ -1,4 +1,4 @@
-# DetectionStudio
+# Detection Studio
 
 [![Build Status](https://travis-ci.org/JdeRobot/DetectionSuite.svg?branch=master)](https://travis-ci.org/JdeRobot/DetectionSuite)
 
@@ -28,7 +28,7 @@ The idea is to offer a generic infrastructure to evaluate object detection model
 | Support | Detail                                                  |
 | ------ | ------------------------------------------------------------ |
 | Supported OS  | Linux, MacOS                 |
-| Supported datasets  | YOLO, COCO, ImageNet, Pascal VOC, Jderobot recorder logs, Princeton RGB dataset, Spinello dataset |                |
+| Supported datasets  | COCO, ImageNet, Pascal VOC, Jderobot recorder logs, Princeton RGB dataset, Spinello dataset |                |
 | Supported frameworks   | TensorFlow, Keras, PyTorch, Yolo-OpenCV, Caffe, Background substraction  |
 | Supported inputs in Deployer   | WebCamera/USB Camera, Videos, Streams from ROS, Streams from ICE, JdeRobot Recorder Logs |
 
@@ -38,6 +38,6 @@ The idea is to offer a generic infrastructure to evaluate object detection model
 
 Check the installation guide [here](https://jderobot.github.io/DetectionStudio/installation/).
 
-# Starting with DetectionStudio
-The best way to start is with the [beginner's tutorial](https://jderobot.github.io/DetectionStudio/functionality/tutorial/) for DetectionStudio.
+# Starting with Detection Studio
+Check out the [beginner's tutorial](https://jderobot.github.io/DetectionStudio/resources/tutorial/).
 
