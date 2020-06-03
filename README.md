@@ -53,6 +53,16 @@ The idea is to offer a generic infrastructure to evaluate object detection model
 * JdeRobot Recorder Logs
 
 
+| Number | Description                                                  |
+| ------ | ------------------------------------------------------------ |
+| Tools   | Viewer, Detection, Evaluator, Deployer, Converter, Command line application (CLI), Detection Studio as ROS Node                               | WIP    |
+| Supported OS  | Linux, MacOS                 |
+| Supported datasets  | YOLO, COCO, ImageNet, Pascal VOC, Jderobot recorder logs, Princeton RGB dataset, Spinello dataset |                |
+| Supported frameworks   | TensorFlow, Keras, PyTorch, Yolo-OpenCV, Caffe, Background substraction  |
+| Supported inputs in Deployer   | WebCamera/USB Camera, Videos, Streams from ROS, Streams from ICE, JdeRobot Recorder Logs |
+
+
+
 # Installation
 
 Check the installation guide [here](https://jderobot.github.io/DetectionStudio/installation/).
