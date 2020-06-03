@@ -18,6 +18,7 @@ The tools provided are:
 * [Converter](https://jderobot.github.io/DetectionStudio/functionality/converter/): convert a dataset into another dataset format.
 * [Command line application (CLI)](https://jderobot.github.io/DetectionStudio/functionality/command_line_application/): access Detection Studio toolset through command line
 * [Detection Studio as ROS Node](https://jderobot.github.io/DetectionStudio/functionality/ros_node/): use Detection Studio as a ROS Node.
++ [Labelling](https://jderobot.github.io/DetectionStudio/resources/gsoc_19/): add or modify labels in the datasets in runtime when running Deployer.
 
 The idea is to offer a generic infrastructure to evaluate object detection models against a dataset and compute the common statistics:
 * mAP
@@ -41,4 +42,23 @@ Check the installation guide [here](https://jderobot.github.io/DetectionStudio/i
 
 # Starting with Detection Studio
 Check out the [beginner's tutorial](https://jderobot.github.io/DetectionStudio/resources/tutorial/).
+
+
+# General Detection Studio GUI
+
+The top toolbar shows the different tools available.
+
+![main_window](docs/assets/images/main_window.png)
+
+
+# Example of detection and console output in Detection Studio
+
+Two image views are displayed, one with the ground truth and the other with the detected annotations.
+In the console output, log info is shown.
+
+
+![detector](docs/assets/images/detector.png)
+
+
+
 

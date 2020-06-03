@@ -24,14 +24,14 @@ The application comes with a GUI (based on Qt) but it can also be used through c
 
 The application is designed to experiment with datasets and neural networks using various frameworks. Currently it comes with the following utilities:
 
-+ [Command line application (Auto Evaluator)](functionality/command_line_application/)
-+ [Converter](functionality/converter/)
-+ [Deployer](functionality/deployer/)
-+ [Detector](functionality/detector/)
-+ [Evaluator](functionality/evaluator/)
-+ [Viewer](functionality/viewer/)
-+ [ROS Node](functionality/ros_node/)
-+ [Labelling](resources/gsoc_19/)
+* [Viewer](functionality/viewer/): view the dataset images with the annotations.
+* [Detector](functionality/detector/): run a model over a dataset and get generate a new annotated dataset.
+* [Evaluator](functionality/evaluator/): evaluate the ground truth dataset with another one and get the comparison metrics.
+* [Deployer](functionality/deployer/): run a model over different inputs like a video or webcam and generate a new annotated dataset.
+* [Converter](functionality/converter/): convert a dataset into another dataset format.
+* [Command line application (CLI)](functionality/command_line_application/): access Detection Studio toolset through command line
+* [Detection Studio as ROS Node](functionality/ros_node/): use Detection Studio as a ROS Node.
++ [Labelling](resources/gsoc_19/): add or modify labels in the datasets in runtime when running Deployer
 
 Every tool in Detection Studio requires a config file to run, where the main parameters needed are provided. Currently, YAML config file format is supported. See below on how to create a custom config file.
 Each tool may have different requirements for keys in config file, and they can be known by passing the ```--help``` flag when using Detection Studio from
@@ -72,7 +72,24 @@ inferencesPath: /opt/datasets
 
 Place your weights in weights directory, config files in cfg directory, classname files in names. And you are ready to go ⚡️ .
 
-# Examples of input and output
+# General Detection Studio GUI
 
-![](../assets/images/screen1.png)  |  ![](../assets/images/screen2.png) 
-![](../assets/images/screen3.png)  |  
+The top toolbar shows the different tools available.
+
+{:refdef: style="text-align: center;"}
+<img src="../assets/images/main_window.png" style="border: 5px solid black;" alt="GUI" title="GUI" width="1000" height="1000" />
+{: refdef}
+
+
+
+# Example of detection and console output in Detection Studio
+
+Two image views are displayed, one with the ground truth and the other with the detected annotations.
+In the console output, log info is shown.
+
+
+{:refdef: style="text-align: center;"}
+<img src="../assets/images/detector.png" style="border: 5px solid black;" alt="Detector" title="Detector" width="1000" height="1000" />
+{: refdef}
+
+
