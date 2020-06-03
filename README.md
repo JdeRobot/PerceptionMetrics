@@ -48,14 +48,15 @@ Check out the [beginner's tutorial](https://jderobot.github.io/DetectionStudio/r
 
 The top toolbar shows the different tools available.
 
-![main_window](docs/assets/images/main_window.png)
+<p align="center">
+  <img  style="border: 5px solid black;" width="800" height="500" src="docs/assets/images/main_window.png" />
+</p>
 
 
 # Example of detection and console output in Detection Studio
 
 Two image views are displayed, one with the ground truth and the other with the detected annotations.
 In the console output, log info is shown.
-
 
 ![detector](docs/assets/images/detector.png)
 
