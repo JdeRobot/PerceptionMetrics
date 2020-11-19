@@ -11,6 +11,7 @@ SET (DatasetConverters_SOURCE_FILES
   writers/PascalVOCDatasetWriter
   readers/ImageNetDatasetReader
   readers/SpinelloDatasetReader
+  readers/OpenImagesDatasetReader
   ClassTypeGeneric
   ClassTypeOwn
   ClassTypeMapper
