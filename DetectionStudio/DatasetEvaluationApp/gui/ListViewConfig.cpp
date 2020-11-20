@@ -34,8 +34,10 @@ bool ListViewConfig::configureDatasetInput(QMainWindow* mainWindow, QListView *q
         std::size_t found_json = filesID[i].find(".json");
         std::size_t found_txt = filesID[i].find(".txt");
         std::size_t found_xml = filesID[i].find(".xml");
+	std::size_t found_csv = filesID[i].find(".csv");
+LOG(WARNING)<< "FOUND CSV: " << filesID[i] << "\n";	
         std::size_t found_file = filesID[i].find(".");
-        if (found_json != std::string::npos || found_txt != std::string::npos || found_xml != std::string::npos || found_file == std::string::npos) {
+        if (found_json != std::string::npos || found_txt != std::string::npos || found_xml != std::string::npos || found_csv != std::string::npos || found_file == std::string::npos) {
             filteredFilesID.push_back(filesID[i]);
         }
     }
@@ -80,6 +82,9 @@ void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::ve
                     possibleContent.push_back(itr2->path().string());
                 }
                 else if(itr2->path().string().find(".json") != std::string::npos){
+                    possibleContent.push_back(itr2->path().string());
+                }
+		else if(itr2->path().string().find(".csv") != std::string::npos){
                     possibleContent.push_back(itr2->path().string());
                 }
                 else if(itr2->path().string().find(".xml") != std::string::npos){
