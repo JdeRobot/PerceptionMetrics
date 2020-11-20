@@ -92,7 +92,7 @@ std::vector<std::string> readCSVRow(const std::string &row) {
 std::vector<std::vector<std::string>> readCSV(std::istream &in) {
     std::vector<std::vector<std::string>> table;
     std::string row;
-    int max_counter = 50;
+    int max_counter = 500;
     int counter = 0;
     while (!in.eof() and counter < max_counter) {
         std::getline(in, row);
@@ -102,7 +102,7 @@ std::vector<std::vector<std::string>> readCSV(std::istream &in) {
         auto fields = readCSVRow(row);
 	//for (auto i = fields.begin(); i != fields.end(); ++i)
     	//	std::cout << *i << ' ';
-	LOG(WARNING) << fields[0] << "\n";
+	LOG(WARNING) << fields[2] << "\n";
         table.push_back(fields);
 	counter++;
     }
@@ -118,7 +118,39 @@ bool OpenImagesDatasetReader::appendDataset(const std::string &datasetPath, cons
 
 
 	std::ifstream file(datasetPath);
-	readCSV(file);    
+	std::vector<std::vector<std::string>> table = readCSV(file); 
+
+LOG(INFO) << table[0][0] << "\n";
+LOG(INFO) << table.size() << "\n";
+LOG(INFO) << table[0].size() << "\n";
+	std::string previousImageID = table[1][0];
+
+	for (int i = 1; i < table.size(); i++) {
+		if (previousImageID != table[i][0]) {
+			// Create the sample with all the stored bounding boxes and start the list again
+			LOG(INFO) << "IMAGE ID :" << table[i][0] << "\n";
+			LOG(INFO) << "LABEL NAME: " << table[i][2] << "\n";
+			previousImageID = table[i][0];
+
+		} else {
+			// Save the bounding box in a list to then create the Sample
+			RectRegionsPtr rectRegions(new RectRegions());
+			LOG(INFO) << "IMAGE ID :" << table[i][4] << "\n"; 
+			double x, y, w, h;
+
+            		x = atof(table[i][4].c_str());
+            		y = atof(table[i][6].c_str());
+            		w = atof(table[i][5].c_str()) - atof(table[i][4].c_str());
+            		h = atof(table[i][7].c_str()) - atof(table[i][6].c_str());
+
+	               cv::Rect_<double> bounding = cv::Rect_<double>(x , y , w , h);
+		       rectRegions->add(bounding, table[i][4], atof(table[i][3].c_str()), 0);
+
+		}
+		
+
+	}
+
 
 /*	std::ifstream inFile(datasetPath);
     path boostDatasetPath(datasetPath);
