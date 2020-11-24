@@ -12,6 +12,7 @@ struct ClassTypeGeneric: public ClassType{
     ClassTypeGeneric(const std::string& classesFile);
     ClassTypeGeneric(const std::string& classesFile, int id);
     void setId(int id);
+    void setStringId(std::string id);
     void fillStringClassesVector(const std::string& classesFile);
     void Print();
 };

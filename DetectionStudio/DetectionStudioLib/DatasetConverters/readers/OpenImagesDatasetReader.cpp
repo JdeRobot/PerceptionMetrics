@@ -112,6 +112,7 @@ bool OpenImagesDatasetReader::appendDataset(const std::string &datasetPath, cons
     size_t first = filename.find_first_of('-');
     img_dirname = filename.substr(0, first);
 
+    ClassTypeGeneric typeConverter(this->classNamesFile);
     if (find_img_directory(boostDatasetPath.parent_path().parent_path(), img_dir,  img_dirname)) {
         LOG(INFO) << "Image Directory Found: " << img_dir.string() << '\n';
     } else {
@@ -153,7 +154,9 @@ bool OpenImagesDatasetReader::appendDataset(const std::string &datasetPath, cons
             w = (atof(table[i][5].c_str()) - atof(table[i][4].c_str())) * imgWidth;
             h = (atof(table[i][7].c_str()) - atof(table[i][6].c_str())) * imgHeight;
 	    cv::Rect_<double> bounding = cv::Rect_<double>(x , y , w , h);
-            rectRegions->add(bounding, table[i][2],atof(table[i][3].c_str()));
+           
+	    typeConverter.setStringId(table[i][2]);
+            rectRegions->add(bounding, typeConverter.getClassString(),  atof(table[i][3].c_str()));
 	}
     }
 
