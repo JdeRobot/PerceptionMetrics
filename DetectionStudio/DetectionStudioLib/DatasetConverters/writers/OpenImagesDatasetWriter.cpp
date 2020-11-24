@@ -32,33 +32,32 @@ OpenImagesDatasetWriter::OpenImagesDatasetWriter(const std::string &outPath, Dat
 
 
 void OpenImagesDatasetWriter::process(bool writeImages, bool useDepth) {
-    LOG(INFO) << "--2--" << "\n";
-
     // Write output to .csv file
     //
     // Add images to folder
-    //
-    //
-    //
 
     Sample sample;
+    std::string labelFilePath= this->fullLabelsPath + "/" + "instances_labels.csv";
+    std::ofstream out(labelFilePath);
+    out << "ImageID,Source,LabelName,Confidence,XMin,XMax,YMin,YMax,IsOccluded,IsTruncated,IsGroupOf,IsDepiction,IsInside" << std::endl;
 
     while (reader->getNextSample(sample)){
         auto boundingBoxes = sample.getRectRegions()->getRegions();
+	std::string sampleId = sample.getSampleID();
+	
 	//LOG(INFO) << "IMAGE PATH: " << sample.getColorImagePath() << "\n";
 
 	for (auto it = boundingBoxes.begin(), end=boundingBoxes.end(); it != end; ++it){
-	     double x = it->region.x;
+	    double x = it->region.x;
             double y = it->region.y;
             double w = it->region.width;
             double h = it->region.height;
             double confidence_score = it->confidence_score;
+	    std::string classId = it->classID;
 	    LOG(INFO) << "x: " << x << " y: " << y << " w: " << w << " h: " << h << " confidence: " << confidence_score << " class id: " << it->classID << "\n";
+	    out << sampleId << "," << "xclick" << "," << classId << "," << confidence_score << "," << x << "," << y << "," << w << "," << h << "," << 0 << "," << 0 << "," << 0 << "," << 0 << "," << 0 << std::endl;
 	}
 
-
     }
-
-
-
+    if (!out.good()) throw std::runtime_error ("Can't write to the file!");
 }
