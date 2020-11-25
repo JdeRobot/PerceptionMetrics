@@ -5,7 +5,6 @@
 #include <fstream>
 #include "ClassTypeGeneric.h"
 
-
 /*
     Constructor function when id is not given.
     Only a class vector containing the classes
@@ -43,6 +42,19 @@ void ClassTypeGeneric::fillStringClassesVector(const std::string &classesFile) {
 // Update/Set the classID
 void ClassTypeGeneric::setId(int id) {
     this->classID=this->classes[id];
+}
+
+void ClassTypeGeneric::setStringId(std::string id) {
+    bool found = false;
+    int i = 0;
+    while (i < this->classes.size() && !found) {
+	std::string className = this->classes[i].substr(0, this->classes[i].find(",")); 
+	if (className == id) {
+	    found = true;
+	    this->classID = this->classes[i].substr(this->classes[i].find(",") + 1, this->classes[i].size()-1);
+	}
+	i++;
+    }	
 }
 
 // Print all the classes 

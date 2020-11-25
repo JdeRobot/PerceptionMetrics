@@ -113,7 +113,7 @@ bool ImageNetDatasetReader::appendDataset(const std::string &datasetPath, const 
 
             if (imagesRequired) {
                 std::string imgPath = img_dir.string() + "/" + m_filename + ".JPEG";
-                sample.setColorImage(imgPath);
+                sample.setColorImagePath(imgPath);
 
             }
 

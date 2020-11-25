@@ -100,7 +100,7 @@ bool SpinelloDatasetReader::appendDataset(const std::string &datasetPath, const 
             }
             else{
                 sample.setSampleID(datasetPrefix + imageID);
-                sample.setColorImage(colorImagePath);
+                sample.setColorImagePath(colorImagePath);
                 sample.setDepthImage(ownDepthImage);
                 RectRegionsPtr colorRegions(new RectRegions());
                 colorRegions->add(colorRect,"person");

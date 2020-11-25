@@ -5,7 +5,7 @@
 #ifndef SAMPLERGENERATOR_GENERICDATASETWRITTER_H
 #define SAMPLERGENERATOR_GENERICDATASETWRITTER_H
 
-enum WRITER_IMPLEMENTATIONS{WR_OWN, WR_YOLO, WR_PASCALVOC, WR_COCO};
+enum WRITER_IMPLEMENTATIONS{WR_OWN, WR_YOLO, WR_PASCALVOC, WR_COCO, WR_OPENIMAGES};
 
 #include <string>
 #include "DatasetWriter.h"
@@ -13,6 +13,7 @@ enum WRITER_IMPLEMENTATIONS{WR_OWN, WR_YOLO, WR_PASCALVOC, WR_COCO};
 #include "YoloDatasetWriter.h"
 #include "COCODatasetWriter.h"
 #include "PascalVOCDatasetWriter.h"
+#include "OpenImagesDatasetWriter.h"
 
 class GenericDatasetWriter {
 public:
@@ -28,6 +29,7 @@ private:
     OwnDatasetWriterPtr ownDatasetWriterPtr;
     COCODatasetWriterPtr cocoDatasetWriterPtr;
     PascalVOCDatasetWriterPtr pascalvocDatasetWriterPtr;
+    OpenImagesDatasetWriterPtr openImagesDatasetWriterPtr;
 
     std::vector<std::string> availableImplementations;
 

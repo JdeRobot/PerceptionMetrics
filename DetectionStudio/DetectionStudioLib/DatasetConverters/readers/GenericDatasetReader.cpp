@@ -11,7 +11,10 @@ GenericDatasetReader::GenericDatasetReader(const std::string &path, const std::s
     if (std::find(this->availableImplementations.begin(), this->availableImplementations.end(), readerImplementation) != this->availableImplementations.end()){
         imp = getImplementation(readerImplementation);
         switch (imp) {
-            case IMAGENET:
+	    case OPENIMAGES:
+                this->openimagesDatasetReaderPtr = OpenImagesDatasetReaderPtr( new OpenImagesDatasetReader(path,classNamesFile,imagesRequired));
+                break;
+	    case IMAGENET:
                 this->imagenetDatasetReaderPtr = ImageNetDatasetReaderPtr( new ImageNetDatasetReader(path,classNamesFile,imagesRequired));
                 break;
             case COCO:
@@ -99,17 +102,21 @@ GenericDatasetReader::GenericDatasetReader(const std::vector<std::string> &paths
 
 
 void GenericDatasetReader::configureAvailablesImplementations(std::vector<std::string>& data) {
+    data.push_back("Open Images");
     data.push_back("ImageNet");
     data.push_back("COCO");
     data.push_back("Pascal VOC");
-    data.push_back("yolo");
-    data.push_back("spinello");
-    data.push_back("own");
-    data.push_back("princeton");
+    data.push_back("YOLO");
+    data.push_back("Spinello");
+    data.push_back("Own");
+    data.push_back("Princeton");
 
 }
 
 READER_IMPLEMENTATIONS GenericDatasetReader::getImplementation(const std::string& readerImplementation) {
+    if (readerImplementation == "Open Images") {
+	return OPENIMAGES;
+    }
     if (readerImplementation == "ImageNet"){
         return IMAGENET;
     }
@@ -119,22 +126,24 @@ READER_IMPLEMENTATIONS GenericDatasetReader::getImplementation(const std::string
     if (readerImplementation == "Pascal VOC"){
         return PASCALVOC;
     }
-    if (readerImplementation == "yolo"){
+    if (readerImplementation == "YOLO"){
         return YOLO_1;
     }
-    if (readerImplementation == "spinello"){
+    if (readerImplementation == "Spinello"){
         return SPINELLO;
     }
-    if (readerImplementation == "own"){
+    if (readerImplementation == "Own"){
         return OWN;
     }
-    if (readerImplementation == "princeton"){
+    if (readerImplementation == "Princeton"){
         return PRINCETON;
     }
 }
 
 DatasetReaderPtr GenericDatasetReader::getReader() {
     switch (imp) {
+	case OPENIMAGES:
+            return this->openimagesDatasetReaderPtr;
         case IMAGENET:
             return this->imagenetDatasetReaderPtr;
         case COCO:

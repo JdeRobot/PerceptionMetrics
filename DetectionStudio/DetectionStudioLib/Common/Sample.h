@@ -29,7 +29,7 @@ struct Sample {
     Sample(const cv::Mat& colorImage, const cv::Mat& depthImage, const RectRegionsPtr& rectRegions, const ContourRegionsPtr& contourRegions);
     ~Sample();
     void setSampleDims(const int width, const int height);
-    void setColorImage(const std::string& imagePath);
+    void setColorImagePath(const std::string& imagePath);
     void setColorImage(const cv::Mat& image);
     void setDepthImage(const cv::Mat& image);
     void setDepthImage(const std::string& imagePath);

@@ -143,6 +143,7 @@ void MassInferencer::process(bool useDepthImages, DatasetReaderPtr readerDetecti
         }
 
         detection.setSampleID(sample.getSampleID());
+	detection.setColorImagePath(sample.getColorImagePath());
 
         if (saveOutput)
             detection.save(this->resultsPath);

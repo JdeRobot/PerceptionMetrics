@@ -67,15 +67,13 @@ void SampleGeneratorHandler::Detector::process(QListView* datasetList,QListView*
         return;
     }
 
-    DatasetReaderPtr readerDetection ( new DatasetReader(true) );
+    DatasetReaderPtr readerDetection (new DatasetReader(true));
 
     GenericInferencerPtr inferencer(new GenericInferencer(netConfiguration[0],weights[0],inferencerNames[0],inferencerImp[0], inferencerParamsMap));
     MassInferencer massInferencer(reader->getReader(),inferencer->getInferencer(),std::string(), true);
     massInferencer.process(useDepth, readerDetection);
 
-    GenericDatasetWriterPtr writer( new GenericDatasetWriter(outputPath,readerDetection,writerImp[0], writerNames[0]));
+    GenericDatasetWriterPtr writer(new GenericDatasetWriter(outputPath,readerDetection,writerImp[0], writerNames[0]));
 
     writer->getWriter()->process(false);
-
-
 }

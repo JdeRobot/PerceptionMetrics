@@ -12,19 +12,22 @@ GenericDatasetWriter::GenericDatasetWriter(const std::string &path,DatasetReader
         imp = getImplementation(writerImplementation);
         switch (imp) {
             case WR_COCO:
-                this->cocoDatasetWriterPtr = COCODatasetWriterPtr( new COCODatasetWriter(path,reader, writerNamesFile));
+                this->cocoDatasetWriterPtr = COCODatasetWriterPtr(new COCODatasetWriter(path,reader, writerNamesFile));
                 break;
             case WR_PASCALVOC:
-                this->pascalvocDatasetWriterPtr = PascalVOCDatasetWriterPtr( new PascalVOCDatasetWriter(path, reader, writerNamesFile) );
+                this->pascalvocDatasetWriterPtr = PascalVOCDatasetWriterPtr(new PascalVOCDatasetWriter(path, reader, writerNamesFile));
                 break;
             case WR_YOLO:
-                this->yoloDatasetWriterPtr = YoloDatasetWriterPtr( new YoloDatasetWriter(path,reader));
+                this->yoloDatasetWriterPtr = YoloDatasetWriterPtr(new YoloDatasetWriter(path,reader));
                 break;
+	    case WR_OPENIMAGES:
+		this->openImagesDatasetWriterPtr = OpenImagesDatasetWriterPtr(new OpenImagesDatasetWriter(path, reader, writerNamesFile));
+		break;
             case WR_OWN:
                 this->ownDatasetWriterPtr = OwnDatasetWriterPtr( new OwnDatasetWriter(path,reader));
                 break;
             default:
-                LOG(WARNING)<<writerImplementation + " is not a valid writer implementation";
+                LOG(WARNING)<< writerImplementation + " is not a valid writer implementation";
                 break;
         }
     }
@@ -40,19 +43,23 @@ void GenericDatasetWriter::configureAvailableImplementations(std::vector<std::st
     data.push_back("yolo");
     data.push_back("Pascal VOC");
     data.push_back("COCO");
+    data.push_back("Open Images");
 }
 
 WRITER_IMPLEMENTATIONS GenericDatasetWriter::getImplementation(const std::string &writerImplementation) {
-    if (writerImplementation.compare("Pascal VOC")==0){
+    if (writerImplementation.compare("Pascal VOC") == 0) {
         return WR_PASCALVOC;
     }
-    if (writerImplementation.compare("COCO")==0){
+    if (writerImplementation.compare("COCO") == 0) {
         return WR_COCO;
     }
-    if (writerImplementation.compare("yolo")==0){
+    if (writerImplementation.compare("yolo") == 0) {
         return WR_YOLO;
     }
-    if (writerImplementation.compare("own")==0){
+    if (writerImplementation.compare("Open Images") == 0) {
+        return WR_OPENIMAGES;
+    }
+    if (writerImplementation.compare("own") == 0) {
         return WR_OWN;
     }
 }
@@ -65,6 +72,8 @@ DatasetWriterPtr GenericDatasetWriter::getWriter() {
             return this->cocoDatasetWriterPtr;
         case WR_YOLO:
             return this->yoloDatasetWriterPtr;
+	case WR_OPENIMAGES:
+	    return this->openImagesDatasetWriterPtr;
         case WR_OWN:
             return this->ownDatasetWriterPtr;
         default:

@@ -34,8 +34,9 @@ bool ListViewConfig::configureDatasetInput(QMainWindow* mainWindow, QListView *q
         std::size_t found_json = filesID[i].find(".json");
         std::size_t found_txt = filesID[i].find(".txt");
         std::size_t found_xml = filesID[i].find(".xml");
+	std::size_t found_csv = filesID[i].find(".csv");
         std::size_t found_file = filesID[i].find(".");
-        if (found_json != std::string::npos || found_txt != std::string::npos || found_xml != std::string::npos || found_file == std::string::npos) {
+        if (found_json != std::string::npos || found_txt != std::string::npos || found_xml != std::string::npos || found_csv != std::string::npos || found_file == std::string::npos) {
             filteredFilesID.push_back(filesID[i]);
         }
     }
@@ -67,8 +68,7 @@ void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::ve
     boost::filesystem::path boostPath(path);
     std::size_t path_last;
 
-    for (boost::filesystem::directory_iterator itr(boostPath); itr!=end_itr; ++itr)
-    {
+    for (boost::filesystem::directory_iterator itr(boostPath); itr!=end_itr; ++itr) {
         std::vector<std::string> possibleContent;
         if (boost::filesystem::is_directory(*itr)){
             //check if yolo (should contain a *.txt
@@ -76,23 +76,21 @@ void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::ve
             bool takeParent=true;
             boost::filesystem::path boostPath2(itr->path());
             for (boost::filesystem::directory_iterator itr2(boostPath2); itr2!=end_itr; ++itr2) {
-                if (itr2->path().string().find(".txt") != std::string::npos){
+                if (itr2->path().string().find(".txt") != std::string::npos) {
                     possibleContent.push_back(itr2->path().string());
-                }
-                else if(itr2->path().string().find(".json") != std::string::npos){
+                } else if(itr2->path().string().find(".json") != std::string::npos) {
                     possibleContent.push_back(itr2->path().string());
-                }
-                else if(itr2->path().string().find(".xml") != std::string::npos){
+                } else if(itr2->path().string().find(".csv") != std::string::npos) {
+                    possibleContent.push_back(itr2->path().string());
+                } else if(itr2->path().string().find(".xml") != std::string::npos) {
                     //Only Take Parent and break this will prevent displaying multiple xml files
                     break;
                     //possibleContent.push_back(itr2->path().string());
-                }
-                else if ((itr2->path().string().find("png") != std::string::npos) || (itr2->path().string().find("json") != std::string::npos)){
+                } else if ((itr2->path().string().find("png") != std::string::npos) || (itr2->path().string().find("json") != std::string::npos)) {
                     isOwnFormat=true;
                     takeParent=false;
                     break;
-                }
-                else {
+                } else {
                     takeParent=false;
                 }
             }
@@ -100,15 +98,13 @@ void ListViewConfig::getPathContentDatasetInput(const std::string &path, std::ve
                 possibleContent.push_back(itr->path().string());
             }
 
-            if (possibleContent.size() != 0){
+            if (possibleContent.size() != 0) {
                 for (auto it = possibleContent.begin(), end = possibleContent.end(); it != end; ++it){
                     content.push_back(*it);
                 }
-            }
-            else if (isOwnFormat){
+            } else if (isOwnFormat) {
                 content.push_back(itr->path().string());
-            }
-            else{
+            } else{
                 getPathContentDatasetInput(itr->path().string(),content);
             }
         }
@@ -174,18 +170,16 @@ void ListViewConfig::getPathContentOnlyFiles(const std::string &path, std::vecto
           Check if the current path is a directory, if yes then recursively call
           this function until you reach a file.
         */
-        if (boost::filesystem::is_directory(*itr)){
+        if (boost::filesystem::is_directory(*itr)) {
             getPathContentOnlyFiles(itr->path().string(),content);
-        }
-        else{
+        } else {
           // If not a directory then push the file(path) into "content".
             content.push_back(itr->path().string());
         }
     }
 }
 
-bool
-ListViewConfig::configureInputByData(QMainWindow *mainWindow, QListView *qlistView, const std::vector<std::string>& data,bool multipleSelection) {
+bool ListViewConfig::configureInputByData(QMainWindow *mainWindow, QListView *qlistView, const std::vector<std::string>& data,bool multipleSelection) {
     QStringListModel *model;
     model = new QStringListModel(mainWindow);
     QStringList List;

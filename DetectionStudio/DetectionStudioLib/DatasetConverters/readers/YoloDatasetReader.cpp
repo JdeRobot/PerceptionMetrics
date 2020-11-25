@@ -34,7 +34,7 @@ bool YoloDatasetReader::appendDataset(const std::string &datasetPath, const std:
     while (getline(inFile,line)){
         Sample sample;
         sample.setSampleID(datasetPrefix + boost::filesystem::path(line).filename().stem().string());
-        sample.setColorImage(line);
+        sample.setColorImagePath(line);
         LOG(INFO) << "Loading sample: " + line;
         cv::Mat image = cv::imread(line);
         replace(line,"JPEGImages", "labels");

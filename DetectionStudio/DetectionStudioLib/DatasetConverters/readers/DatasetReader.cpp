@@ -6,6 +6,7 @@
 #include "DatasetReader.h"
 #include "DatasetConverters/ClassTypeOwn.h"
 #include <glog/logging.h>
+#include <fstream>
 
 DatasetReader::DatasetReader(const bool imagesRequired):readerCounter(0),imagesRequired(imagesRequired),isVideo(false),validFrame(true){
 }

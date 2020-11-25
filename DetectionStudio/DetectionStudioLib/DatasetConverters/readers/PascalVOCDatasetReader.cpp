@@ -87,7 +87,7 @@ bool PascalVOCDatasetReader::appendDataset(const std::string &datasetPath, const
 
             if (imagesRequired) {
                 std::string imgPath = img_dir.string() + "/" + m_imgfile;
-                sample.setColorImage(imgPath);
+                sample.setColorImagePath(imgPath);
 
             }
 

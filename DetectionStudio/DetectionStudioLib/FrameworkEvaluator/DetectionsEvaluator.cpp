@@ -149,7 +149,7 @@ void DetectionsEvaluator::evaluate(bool isIouTypeBbox) {
             LOG(WARNING) << "No detection sample available, Creating Dummy Sample\n";
             Sample dummy;
             dummy.setSampleID(gtSample.getSampleID());
-            dummy.setColorImage(gtSample.getColorImagePath());
+            dummy.setColorImagePath(gtSample.getColorImagePath());
             evaluateSample(gtSample, dummy, isIouTypeBbox);
             this->detections->decrementReaderCounter();
             const std::string error="Both dataset has not the same structure ids mismatch from:" + gtSample.getSampleID() + " to " + detectionSample.getSampleID();

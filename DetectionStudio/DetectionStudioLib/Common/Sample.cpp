@@ -379,7 +379,7 @@ void Sample::filterSamplesByID(std::vector<std::string> filteredIDS) {
         this->contourRegions->filterSamplesByID(filteredIDS);
 }
 
-void Sample::setColorImage(const std::string &imagePath) {
+void Sample::setColorImagePath(const std::string &imagePath) {
     this->colorImagePath=imagePath;
 }
 
