@@ -38,6 +38,19 @@ The idea is to offer a generic infrastructure to evaluate object detection model
 
 # Installation
 
+### Install packaged image
+
+To quickly get started with Detection Studio, we provide a docker image.
+
+* Download docker image and run it
+```
+    docker run -dit --name detection-studio -v [local_directory]:/root/volume/ -e DISPLAY=host.docker.internal:0 jderobot/detection-studio:latest
+```
+
+This will start the GUI, provide a configuration file (appConfig.yml can be used) and you are ready to go. Check out the [web](https://jderobot.github.io/DetectionStudio/i9 for more information
+
+### Installation from source
+
 Check the installation guide [here](https://jderobot.github.io/DetectionStudio/installation/).
 
 # Starting with Detection Studio
