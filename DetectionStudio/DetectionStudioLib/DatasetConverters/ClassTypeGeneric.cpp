@@ -48,7 +48,7 @@ void ClassTypeGeneric::setStringId(std::string id) {
     bool found = false;
     int i = 0;
     while (i < this->classes.size() && !found) {
-	    std::string className = this->classes[i].substr(0, this->classes[i].find(",")); 
+	std::string className = this->classes[i].substr(0, this->classes[i].find(",")); 
 	if (className == id) {
 	    found = true;
 	    this->classID = this->classes[i].substr(this->classes[i].find(",") + 1, this->classes[i].size()-1);

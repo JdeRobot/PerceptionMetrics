@@ -182,7 +182,7 @@ bool COCODatasetReader::appendDataset(const std::string &datasetPath, const std:
 		    return pair.second;
 		    });
 
-    printDatasetStats();
+    //printDatasetStats();
 }
 
 
