@@ -8,16 +8,16 @@ sidebar:
   nav: "functionality"
 ---
 
-Detection Studio Deployer functionality is provided as a **ROS Node**.
+Detection Metrics Deployer functionality is provided as a **ROS Node**.
 This node uses some input images stream (it could be a video) and 
 makes inferences over the images passed, detecting the objects in realtime. 
 Currently it only supports tensorflow as inferencer, but a broader support is expected
 in the future.
 
-To use Detection Studio ROS Node, it needs to subscribe to a rostopic. It would publish images
+To use Detection Metrics ROS Node, it needs to subscribe to a rostopic. It would publish images
 that the node would infer.
 
-In the build/devel directory inside Detection Studio folder, execute:
+In the build/devel directory inside Detection Metrics folder, execute:
 
 ```
 source setup.bash
@@ -27,10 +27,10 @@ source setup.bash
 While the video is playing, start the ros node with the following command:
 
 ```
-rosrun DetectionStudioROS test _topic:=<topic name> _configfile:=<path/to/configfile>
+rosrun DetectionMetricsROS test _topic:=<topic name> _configfile:=<path/to/configfile>
 ```
 
-*_topic* is the topic detection studio is suscribed to and *_confilefile* the configuration file with the inferencer, class names...
+*_topic* is the topic Detection Metrics is suscribed to and *_confilefile* the configuration file with the inferencer, class names...
 The detections are publishes at *my_topic*. Run the following command to see available topics:
 
 ```

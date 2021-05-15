@@ -1,7 +1,7 @@
 ---
 layout: home
-title: Testing Detection Studio
-permalink: /resources/testing_detectionstudio/
+title: Testing Detection Metrics
+permalink: /resources/testing_detectionmetrics/
 
 
 sidebar:

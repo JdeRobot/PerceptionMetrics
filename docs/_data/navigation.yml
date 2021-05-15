@@ -43,8 +43,8 @@ resources:
         url: /resources/frameworks
       - title: "Model zoo"
         url: /resources/model_zoo
-      - title: "Testing Detection Studio"
-        url: /resources/testing_detectionstudio
+      - title: "Testing Detection Metrics"
+        url: /resources/testing_detectionmetrics
       - title: "Tutorial"
         url: /resources/tutorial
       - title: "New Functionality"

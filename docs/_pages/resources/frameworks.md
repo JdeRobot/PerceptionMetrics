@@ -8,8 +8,8 @@ sidebar:
   nav: "resources"
 ---
 
-Detection Studio gives support for a set of different deep learning frameworks: Darknet, Tensorflow, Keras, PyTorch and Caffe.
-Here, information on how to use each one of them with Detection Studio is provided.
+Detection Metrics gives support for a set of different deep learning frameworks: Darknet, Tensorflow, Keras, PyTorch and Caffe.
+Here, information on how to use each one of them with Detection Metrics is provided.
 
 ## Darknet
 To use Darknet as your framework you only need OpenCV installed, which is a prerequisite.
@@ -38,7 +38,7 @@ Download one of them, uncompress it and place it into the weights directory.
 
 We will be using a COCO trained model for this example, but you can choose any model. Although you would have to create a class names file for that particular dataset written in a correct order.
 
-Sample ```coco.names``` file for COCO dataset: [coco.names](https://github.com/JdeRobot/DetectionStudio/blob/master/samples/names/coco.names).
+Sample ```coco.names``` file for COCO dataset: [coco.names](https://github.com/JdeRobot/DetectionMetrics/blob/master/samples/names/coco.names).
 All it contains is a list of classes being used for this dataset in the correct order.
 Place this file in the names directory.
 
@@ -46,7 +46,7 @@ Now create an empty ```foo.cfg``` file and place it in the cfg directory. It is 
 
 All done! Now you are ready to go!
 
-Below, an example video using SSD MobileNet COCO on TensorFlow framework in Detection Studio.
+Below, an example video using SSD MobileNet COCO on TensorFlow framework in Detection Metrics.
 
 {% include video id="AWVdt7djJBg" provider="youtube" %}
 

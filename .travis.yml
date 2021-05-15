@@ -66,7 +66,7 @@ before_install:
   - ./install_darknet.sh
 
 before_script:
-  - cd DetectionStudio
+  - cd DetectionMetrics
   - mkdir build
   - cd build
   - cmake ..
@@ -78,7 +78,7 @@ after_success:
   - ls -lh out/*            # Assuming you have some files in out/ that you would like to upload
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - travis_wait bash upload.sh out/*
-  - cd $TRAVIS_BUILD_DIR && rm -rf DetectionStudio/build
+  - cd $TRAVIS_BUILD_DIR && rm -rf DetectionMetrics/build
   - wget https://jderobot.org/resources/assets/jderobot.png
   - doxygen
   - echo "" > html/.nojekyll

@@ -16,14 +16,14 @@ minimal_mistakes_skin    : "air"
 
 # Site Settings
 #locale                   : "en-US"
-title                    : "Detection Studio"
+title                    : "Detection Metrics"
 title_separator          : "-"
 subtitle                 : Powered by JdeRobot
 name                     : "JdeRobot"
 description              : "Learn Robotics and Computer Vision with JdeRobot."
 url                      : # the base hostname & protocol for your site e.g. "http://jderobot.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
-repository               : # GitHub username/repo-name e.g. "DetectionStudio"
+repository               : # GitHub username/repo-name e.g. "DetectionMetrics"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     : /assets/images/logo.png
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
@@ -124,7 +124,7 @@ analytics:
 #      url: "https://twitter.com/JdeRobot"
 #    - label: "GitHub"
 #      icon: "fab fa-fw fa-github"
-#      url: "https://github.com/JdeRobot/DetectionStudio"
+#      url: "https://github.com/JdeRobot/DetectionMetrics"
 #    - label: "Youtube"
 #      icon: "fab fa-fw fa-youtube"
 #      url: "https://www.youtube.com/channel/UCS9IvIytJNqQqImT99g-d6g"
@@ -137,7 +137,7 @@ footer:
       url: "https://twitter.com/JdeRobot"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/JdeRobot/DetectionStudio"
+      url: "https://github.com/JdeRobot/DetectionMetrics"
     - label: "GitLab"
       icon: "fab fa-fw fa-gitlab"
       # url:

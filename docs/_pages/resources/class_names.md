@@ -16,7 +16,7 @@ Text file listing *Pascal VOC* class names in the correct order: [voc.names](htt
 
 ## COCO
 
-Text file listing *COCO* class names in the correct order: [coco.names](https://github.com/JdeRobot/DetectionStudio/blob/master/samples/names/coco.names).
+Text file listing *COCO* class names in the correct order: [coco.names](https://github.com/JdeRobot/DetectionMetrics/blob/master/samples/names/coco.names).
 
 ## Imagenet
 
@@ -27,4 +27,4 @@ Faster R-CNN model for the same class names file [here](http://wiki.jderobot.org
 
 ## Open Images dataset
 
-You can find Open Images dataset class names [here](https://github.com/JdeRobot/DetectionStudio/blob/master/samples/names/class-descriptions-boxable.csv).
+You can find Open Images dataset class names [here](https://github.com/JdeRobot/DetectionMetrics/blob/master/samples/names/class-descriptions-boxable.csv).

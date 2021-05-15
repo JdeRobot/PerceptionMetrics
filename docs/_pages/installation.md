@@ -6,9 +6,9 @@ permalink: /installation/
 ---
 <br>
 
-# Install Detection Studio using Docker
+# Install Detection Metrics using Docker
 
-To quickly get started with Detection Studio, we provide a docker image.
+To quickly get started with Detection Metrics, we provide a docker image.
 
 * Download docker image and run it
 ```
@@ -19,9 +19,9 @@ This will start the GUI, provide a configuration file (appConfig.yml can be used
 
 
 
-# Install Detection Studio from source for developers (only Linux)
+# Install Detection Metrics from source for developers (only Linux)
  
-To use the latest version of Detection Studio you need to compile and install it from source.
+To use the latest version of Detection Metrics you need to compile and install it from source.
 
 ## Requirements
 
@@ -112,18 +112,18 @@ Update and install
 Below is a list of more optional dependencies you may require depending on your usage.
 
 * ### Camera Streaming Support
-Detection Studio can currently read ROS and ICE Camera Streams. So, to enable Streaming support, install any one of them.
+Detection Metrics can currently read ROS and ICE Camera Streams. So, to enable Streaming support, install any one of them.
 
 
 **Note:** Be Sure to checkout [functionality](../functionality/command_line_application) for tutorials on how to use the above mentioned functionalities and frameworks.  
 
-# How to compile Detection Studio:
+# How to compile Detection Metrics:
 
 Once you have all the required dependencies installed just run:
 
 ```
-    git clone https://github.com/JdeRobot/DetectionStudio
-    cd DetectionStudio/DetectionStudio
+    git clone https://github.com/JdeRobot/DetectionMetrics
+    cd DetectionMetrics/DetectionMetrics
     mkdir build && cd build
 ```
 ```
@@ -136,7 +136,7 @@ Once you have all the required dependencies installed just run:
 
 Once it is built, you will find various executables in different folders ready to be executed :smile:.
 
-## Starting with Detection Studio
-The best way to start is with our [beginner's tutorial](../resources/tutorial/) for Detection Studio.
+## Starting with Detection Metrics
+The best way to start is with our [beginner's tutorial](../resources/tutorial/) for Detection Metrics.
 
-If you have any issue feel free to drop a mail <vinay04sharma@icloud.com> or create an [issue](https://github.com/JdeRobot/DetectionStudio/issues) for the same.
+If you have any issue feel free to drop a mail <vinay04sharma@icloud.com> or create an [issue](https://github.com/JdeRobot/DetectionMetrics/issues) for the same.
