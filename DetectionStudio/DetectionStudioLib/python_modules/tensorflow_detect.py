@@ -3,8 +3,7 @@ import sys
 from distutils.version import StrictVersion
 
 if not hasattr(sys, 'argv'):
-    sys.argv  = ['']
-
+    sys.argv = ['']
 
 import tensorflow as tf
 import time
@@ -12,7 +11,7 @@ import time
 np.set_printoptions(threshold=sys.maxsize)
 
 if StrictVersion(tf.__version__) < StrictVersion('1.4.0'):
-  raise ImportError('Please upgrade your TensorFlow installation to v1.4.* or later!')
+    raise ImportError('Please upgrade your TensorFlow installation to v1.4.* or later!')
 
 
 class TensorFlowDetector:
@@ -42,9 +41,8 @@ class TensorFlowDetector:
 
         self.sess = tf.compat.v1.Session(graph=detection_graph)
         print("Initializing")
-        dummy_tensor = np.zeros((1,1,1,3), dtype=np.int32)
+        dummy_tensor = np.zeros((1, 1, 1, 3), dtype=np.int32)
         self.sess.run(self.tensor_dict, feed_dict={self.image_tensor: dummy_tensor})
-
 
     def run_inference_for_single_image(self, image):
 
@@ -52,20 +50,18 @@ class TensorFlowDetector:
         image_expanded = np.expand_dims(image, axis=0)
 
         output_dict = self.sess.run(
-                            self.tensor_dict,
-                            feed_dict={self.image_tensor: image_expanded})
+            self.tensor_dict,
+            feed_dict={self.image_tensor: image_expanded})
 
         output_dict['num_detections'] = int(output_dict['num_detections'][0])
         output_dict['detection_classes'] = output_dict[
-          'detection_classes'][0].astype(np.uint8)
+            'detection_classes'][0].astype(np.uint8)
         output_dict['detection_boxes'] = output_dict['detection_boxes'][0]
         output_dict['detection_scores'] = output_dict['detection_scores'][0]
         if 'detection_masks' in output_dict:
             output_dict['detection_masks'] = output_dict['detection_masks'][0]
 
-
         return output_dict
-
 
     def detect(self, img, threshold):
 
@@ -76,10 +72,10 @@ class TensorFlowDetector:
         # result image with boxes and labels on it.
         # image_np = load_image_into_numpy_array(image)
         image_passed = img
-        #print image_np.shape
-        #print image_passed.shape
+        # print image_np.shape
+        # print image_passed.shape
 
-        #detection_graph = load_graph(model_path)
+        # detection_graph = load_graph(model_path)
 
         # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
         # image_np_expanded = np.expand_dims(image_np, axis=0)
@@ -91,16 +87,16 @@ class TensorFlowDetector:
 
         new_dict = {}
 
-        new_dict['detection_scores'] = output_dict['detection_scores'][output_dict['detection_scores']>=threshold]
+        new_dict['detection_scores'] = output_dict['detection_scores'][output_dict['detection_scores'] >= threshold]
         new_dict['detection_boxes'] = output_dict['detection_boxes'][0:len(new_dict['detection_scores']), :]
         new_dict['detection_classes'] = output_dict['detection_classes'][0:len(new_dict['detection_scores'])]
         new_dict['num_detections'] = len(new_dict['detection_scores'])
         if 'detection_masks' in output_dict:
             new_dict['detection_masks'] = output_dict['detection_masks'][0:len(new_dict['detection_scores']), :]
 
-        #mask = new_dict['detection_masks'][0]
-        #mask = mask > 0.5
-        #cv2.imshow("my mask", mask)
-        #cv2.waitKey(0)
+        # mask = new_dict['detection_masks'][0]
+        # mask = mask > 0.5
+        # cv2.imshow("my mask", mask)
+        # cv2.waitKey(0)
 
         return new_dict

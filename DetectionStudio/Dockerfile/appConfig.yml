@@ -1,11 +1,11 @@
-datasetPath:  /root/volume/datasets/
+datasetPath: /root/volume/datasets/
 
-evaluationsPath:  /root/volume/datasets/eval
+evaluationsPath: /root/volume/datasets/eval
 
-weightsPath:  /root/volume/datasets/weights
+weightsPath: /root/volume/datasets/weights
 
-netCfgPath:  /root/volume/datasets/cfg
+netCfgPath: /root/volume/datasets/cfg
 
-namesPath:  /root/volume/datasets/names
+namesPath: /root/volume/datasets/names
 
-inferencesPath:  /root/volume/datasets/
+inferencesPath: /root/volume/datasets/
