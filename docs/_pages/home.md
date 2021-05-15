@@ -12,15 +12,15 @@ excerpt:
 ---
 
 
-# What is Detection Studio?
+# What is Detection Metrics?
 
-Detection Studio is an application that provides a toolbox of utilities oriented to simplify the development and testing of solutions based on object detection.
+Detection Metrics is an application that provides a toolbox of utilities oriented to simplify the development and testing of solutions based on object detection.
 The application comes with a GUI (based on Qt) but it can also be used through command line.
 
 
 {% include video id="gDP9nWCL0Vg" provider="youtube" %}
 
-# What's supported in Detection Studio.
+# What's supported in Detection Metrics.
 
 | Support | Detail                                                  |
 | ------ | ------------------------------------------------------------ |
@@ -40,12 +40,12 @@ The application is designed to experiment with datasets and neural networks usin
 * [Evaluator](functionality/evaluator/): evaluate the ground truth dataset with another one and get the comparison metrics.
 * [Deployer](functionality/deployer/): run a model over different inputs like a video or webcam and generate a new annotated dataset.
 * [Converter](functionality/converter/): convert a dataset into another dataset format.
-* [Command line application (CLI)](functionality/command_line_application/): access Detection Studio toolset through command line
-* [Detection Studio as ROS Node](functionality/ros_node/): use Detection Studio as a ROS Node.
+* [Command line application (CLI)](functionality/command_line_application/): access Detection Metrics toolset through command line
+* [Detection Metrics as ROS Node](functionality/ros_node/): use Detection Metrics as a ROS Node.
 + [Labelling](resources/gsoc_19/): add or modify labels in the datasets in runtime when running Deployer
 
-Every tool in Detection Studio requires a config file to run, where the main parameters needed are provided. Currently, YAML config file format is supported. See below on how to create a custom config file.
-Each tool may have different requirements for keys in config file, and they can be known by passing the ```--help``` flag when using Detection Studio from
+Every tool in Detection Metrics requires a config file to run, where the main parameters needed are provided. Currently, YAML config file format is supported. See below on how to create a custom config file.
+Each tool may have different requirements for keys in config file, and they can be known by passing the ```--help``` flag when using Detection Metrics from
 the command line.
 
 ### Creating a custom ```appConfig.yml```
@@ -83,14 +83,14 @@ inferencesPath: /opt/datasets
 
 Place your weights in weights directory, config files in cfg directory, classname files in names. And you are ready to go ⚡️ .
 
-# General Detection Studio GUI
+# General Detection Metrics GUI
 
 The top toolbar shows the different tools available.
 
 
 ![Detector](../assets/images/main_window.png)
 
-# Example of detection and console output in Detection Studio
+# Example of detection and console output in Detection Metrics
 
 Two image views are displayed, one with the ground truth and the other with the detected annotations.
 In the console output, log info is shown.

@@ -8,7 +8,7 @@ sidebar:
   nav: "functionality"
 ---
 
-Detection Studio supports both a Qt based UI and some command line based applications both requiring a config file to run.
+Detection Metrics supports both a Qt based UI and some command line based applications both requiring a config file to run.
 Some users might prefer using the command line tools which can give results in a single run without the need to use the Graphical User Interface.
 
 The current supported command line applications are:

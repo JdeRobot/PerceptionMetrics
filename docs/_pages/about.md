@@ -5,7 +5,7 @@ permalink: /about/
 
 ---
 
-## Detection Studio main maintainers:
+## Detection Metrics main maintainers:
 
 + ### [Sergio Paniego](https://github.com/sergiopaniego)
 

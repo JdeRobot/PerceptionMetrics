@@ -11,7 +11,7 @@ sidebar:
 This tool makes inferences using images from different sources. Having the input, the user provides the weights and several configuration parameters
 and pressing **Process**, a new window pops up showing the images with the inferences in real time.
 
-![Detection Studio StartUp](../../assets/images/detection_studio_gui.png)
+![Detection Metrics StartUp](../../assets/images/detection_studio_gui.png)
 
 Several inferencers and input sources are supported. This functionality is only available in the GUI mode.
 
@@ -35,7 +35,7 @@ To use video select the corresponding video file using **Select Input**.
 Simply select the **camera** option and it will automatically select a camera.
 
 * ### 1.4. Stream
-Currently, Detection Studio supports ROS (Robot Operating System) and ICE (Internet Communication Engine) for reading streams,
+Currently, Detection Metrics supports ROS (Robot Operating System) and ICE (Internet Communication Engine) for reading streams,
 and both of them are optional dependencies and required only if you plan to use one of them.
 After selecting **stream**, you can choose between the following:
 
@@ -46,11 +46,11 @@ After selecting **stream**, you can choose between the following:
    * ### 1.4.2. ICE
         Similarly, for ICE just select it and enter the corresponding params or a *.yaml* file as you please.
 
-**Note:** If you find any one of the above disabled then, it isn't probably installed or you Detection Studio didn't find it.
+**Note:** If you find any one of the above disabled then, it isn't probably installed or you Detection Metrics didn't find it.
 
 ## 2. Network
 As any other tool, you would need a network to infer, on any one of the supported frameworks. Just fill up the following parameters,
-to let Detection Studio know more about the Inferencer.
+to let Detection Metrics know more about the Inferencer.
     
    * ### 2.1. Net weights:
         Select the Network's Weights file. It would be *.pb* (frozen inference graph) for TensorFlow, 
