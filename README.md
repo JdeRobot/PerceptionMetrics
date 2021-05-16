@@ -44,7 +44,7 @@ To quickly get started with Detection Metrics, we provide a docker image.
 
 * Download docker image and run it
 ```
-    docker run -dit --name detection-studio -v [local_directory]:/root/volume/ -e DISPLAY=host.docker.internal:0 jderobot/detection-studio:latest
+    docker run -dit --name detection-metrics -v [local_directory]:/root/volume/ -e DISPLAY=host.docker.internal:0 jderobot/detection-metrics:latest
 ```
 
 This will start the GUI, provide a configuration file (appConfig.yml can be used) and you are ready to go. Check out the [web](https://jderobot.github.io/DetectionMetrics) for more information
