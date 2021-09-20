@@ -30,7 +30,7 @@ To use the latest version of Detection Metrics you need to compile and install i
 
 | Ubuntu   |      MacOS      |  
 |:-------------:|:-------------:|
-| `sudo apt install build-essential git cmake rapidjson-dev libssl-dev` <br> `sudo apt install libboost-dev libboost-filesystem-dev libboost-system-dev libboost-program-options-dev` | `sudo easy_install numpy` <br> `brew install cmake boost rapidjson` | 
+| `sudo apt install build-essential git cmake rapidjson-dev libssl-dev` <br> `sudo apt install libboost-dev libboost-filesystem-dev libboost-system-dev libboost-program-options-dev python-dev python-numpy` | `sudo easy_install numpy` <br> `brew install cmake boost rapidjson` | 
        
 
 | Ubuntu   |      MacOS      |  
