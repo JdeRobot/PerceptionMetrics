@@ -1,0 +1,11 @@
+datasetPath: /opt/datasets
+
+evaluationsPath: /opt/datasets/eval
+
+weightsPath: /opt/datasets/weights
+
+netCfgPath: /opt/datasets/cfg
+
+namesPath: /opt/datasets/names
+
+inferencesPath: /opt/datasets

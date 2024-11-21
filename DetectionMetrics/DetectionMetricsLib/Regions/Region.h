@@ -1,0 +1,8 @@
+//
+// Created by frivas on 25/01/17.
+//
+
+#ifndef SAMPLERGENERATOR_REGION_H
+#define SAMPLERGENERATOR_REGION_H
+
+#endif //SAMPLERGENERATOR_REGION_H

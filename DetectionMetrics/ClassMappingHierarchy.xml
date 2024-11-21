@@ -1,0 +1,99 @@
+<mappings>
+
+    <class>
+        <name>flying vehicle</name>
+        <children>
+            <class>
+                <name>airplane</name>
+
+            </class>
+            <class>
+                <name>plane</name>
+
+            </class>
+            <class>
+                <name>aircraft</name>
+
+            </class>
+            <class>
+                <name>aeroplane</name>
+
+            </class>
+        </children>
+    </class>
+    <class>
+        <name>table</name>
+        <children>
+            <class>
+                <name>dining table</name>
+
+            </class>
+            <class>
+                <name>diningtable</name>
+
+            </class>
+
+        </children>
+    </class>
+    <class>
+        <name>plant</name>
+        <children>
+            <class>
+                <name>pottedplant</name>
+            </class>
+            <class>
+                <name>potted plant</name>
+            </class>
+        </children>
+    </class>
+
+    <class>
+        <name>appliance</name>
+        <children>
+            <class>
+                <name>tv</name>
+            </class>
+            <class>
+                <name>tvmonitor</name>
+            </class>
+            <class>
+                <name>tv monitor</name>
+            </class>
+            <class>
+                <name>television</name>
+            </class>
+        </children>
+    </class>
+    <class>
+        <name>vehicle</name>
+        <children>
+            <class>
+                <name>motorbike</name>
+            </class>
+            <class>
+                <name>motorcycle</name>
+            </class>
+            <class>
+                <name>bike</name>
+            </class>
+            <class>
+                <name>motor bike</name>
+            </class>
+            <class>
+                <name>motor cycle</name>
+            </class>
+        </children>
+    </class>
+    <class>
+        <name>furniture</name>
+        <children>
+            <class>
+                <name>sofa</name>
+            </class>
+            <class>
+                <name>couch</name>
+            </class>
+        </children>
+    </class>
+
+</mappings>
