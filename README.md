@@ -1,86 +1,78 @@
 <a href="https://mmg-ai.com/en/"><img src="https://jderobot.github.io/assets/images/logo.png" width="100 " align="right" /></a>
-
 # Detection Metrics
 
+[![Publish Docker image](https://github.com/JdeRobot/DetectionStudio/actions/workflows/main.yml/badge.svg)](https://github.com/JdeRobot/DetectionStudio/actions/workflows/main.yml)
 
-#### Docs [here](https://html-preview.github.io/?url=https://github.com/JdeRobot/DetectionMetrics/blob/dph/v2/py_docs/_build/html/index.html)
+#### More info and documentation [here](https://jderobot.github.io/DetectionMetrics/).
 
-Detection Metrics is a set of tools to evaluate semantic segmentation and object detection models. With a current focus on semantic segmentation in unstructured outdoor environments, it is built in such a way that it can be easily extended to new tasks, datasets or deep learning frameworks.
+Detection Metrics is a set of tools to evaluate object detection neural networks models over the common object detection datasets.
+The tools can be accessed using the GUI or the command line applications. In the picture below, the general architecture is displayed.
 
-# What's supported in Detection Metrics
-## Image semantic segmentation
-- Datasets:
-    - [Rellis3D](https://www.unmannedlab.org/research/RELLIS-3D)
-    - [GOOSE](https://goose-dataset.de/)
-    - Custom GAIA format
-- Models:
-    - PyTorch ([TorchScript](https://pytorch.org/docs/stable/jit.html) format):
-        - Input shape: `(batch, channels, height, width)`
-        - Output shape: `(batch, classes, height, width)`
-        - JSON configuration file format:
+![general_architecture](docs/assets/images/architecture.png)
 
-        ```json
-        {
-            "normalization": {
-                "mean":[<r>, <g>, <b>],
-                "std": : [<r>, <g>, <b>]
-            }
-        }
-        ```
-    - Tensorflow ([SavedModel](https://www.tensorflow.org/guide/saved_mode`) format):
-        - Input shape: `(batch, height, width, channels)`
-        - Output shape: `(batch, height, width, classes)`
-        - JSON configuration file format:
+The tools provided are:
+* [Viewer](https://jderobot.github.io/DetectionMetrics/functionality/viewer/): view the dataset images with the annotations.
+* [Detector](https://jderobot.github.io/DetectionMetrics/functionality/detector/): run a model over a dataset and get generate a new annotated dataset.
+* [Evaluator](https://jderobot.github.io/DetectionMetrics/functionality/evaluator/): evaluate the ground truth dataset with another one and get the comparison metrics.
+* [Deployer](https://jderobot.github.io/DetectionMetrics/functionality/deployer/): run a model over different inputs like a video or webcam and generate a new annotated dataset.
+* [Converter](https://jderobot.github.io/DetectionMetrics/functionality/converter/): convert a dataset into another dataset format.
+* [Command line application (CLI)](https://jderobot.github.io/DetectionMetrics/functionality/command_line_application/): access Detection Metrics toolset through command line
+* [Detection Metrics as ROS Node](https://jderobot.github.io/DetectionMetrics/functionality/ros_node/): use Detection Metrics as a ROS Node.
++ [Labelling](https://jderobot.github.io/DetectionMetrics/resources/gsoc_19/): add or modify labels in the datasets in runtime when running Deployer.
 
-        ```json
-        {
-            "image_size": [<height>, <width>]
-        }
-        ```
-    - ONNX: coming soon
-- Metrics:
-    - Intersection over Union (IoU)
+The idea is to offer a generic infrastructure to evaluate object detection models against a dataset and compute the common statistics:
+* mAP
+* mAR
+* Mean inference time.
 
-## LiDAR semantic segmentation
-Coming soon.
+# What's supported in Detection Metrics.
 
-## Object detection
-Coming soon.
+| Support | Detail                                                  |
+| ------ | ------------------------------------------------------------ |
+| Supported OS  | Multiplatform using Docker                 |
+| Supported datasets  | <ul><li>COCO</li><li>ImageNet</li><li>Pascal VOC</li><li>Jderobot recorder logs</li><li>Princeton RGB dataset</li><li>Spinello dataset</li><li>Open images dataset</li></ul> |                |
+| Supported frameworks   | <ul><li>TensorFlow</li><li>Keras</li><li>PyTorch</li><li>Yolo-OpenCV</li><li>Caffe</li><li>Background substraction</li></ul>  |
+| Supported inputs in Deployer   | <ul><li>WebCamera/USB Camera</li><li>Videos</li><li>Streams from ROS</li><li>Streams from ICE</li><li>JdeRobot Recorder Logs</li></ul> |
+
 
 
 # Installation
-### Using venv
-Create your virtual environment:
+
+### Install packaged image
+
+To quickly get started with Detection Metrics, we provide a docker image.
+
+* Download docker image and run it
 ```
-mkdir .venv
-python3 -m venv .venv
+    docker run -dit --name detection-metrics -v [local_directory]:/root/volume/ -e DISPLAY=host.docker.internal:0 jderobot/detection-metrics:noetic
 ```
 
-Activate your environment and install as pip package:
-```
-source .venv/bin/activate
-pip install -e .
-```
+This will start the GUI, provide a configuration file (appConfig.yml can be used) and you are ready to go. Check out the [web](https://jderobot.github.io/DetectionMetrics) for more information
 
-### Using poetry
+### Installation from source (Linux only)
 
-Install Poetry (if not done before):
-```
-python3 -m pip install --user pipx
-pipx install poetry
-```
+Check the installation guide [here](https://jderobot.github.io/DetectionMetrics/installation/). This is also the recommended installation 
+for **contributors**.
 
-Install dependencies and activate poetry environment (you can get out of the Poetry shell by running `exit`):
-```
-poetry install
-poetry shell
-```
+# Starting with Detection Metrics
+Check out the [beginner's tutorial](https://jderobot.github.io/DetectionMetrics/resources/tutorial/).
 
-### Common
-Install your deep learning framework of preference in your environment. We have tested:
-- CUDA Version: `12.6`
-- `torch==2.4.1`
-- `torchvision==0.19.1`
-- `tensorflow[and-cuda]==2.17.1`
+# General Detection Metrics GUI
 
-And it's done! You can check the `examples` directory for inspiration and run some of the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
+The top toolbar shows the different tools available.
+
+<p align="center">
+  <img  style="border: 5px solid black;" width="800" height="500" src="docs/assets/images/main_window.png" />
+</p>
+
+
+# Example of detection and console output in Detection Metrics
+
+Two image views are displayed, one with the ground truth and the other with the detected annotations.
+In the console output, log info is shown.
+
+![detector](docs/assets/images/detector.png)
+
+
+
+

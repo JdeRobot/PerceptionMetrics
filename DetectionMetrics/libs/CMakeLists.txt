@@ -1,0 +1,6 @@
+add_subdirectory(interfaces)
+add_subdirectory(types)
+add_subdirectory(config)
+add_subdirectory(utils)
+add_subdirectory(depthLib)
+add_subdirectory(comm)
