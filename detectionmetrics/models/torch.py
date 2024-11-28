@@ -86,25 +86,40 @@ class TorchImageSegmentationModel(ImageSegmentationModel):
         # Check that provided path exist and load model
         assert os.path.isfile(model_fname), "Model file not found"
         self.model = torch.jit.load(model_fname).to(self.device)
-        self.model.to(self.device).eval()
+        self.model.eval()
 
         # Init transformations for input images, output labels, and GT labels
-        self.t_in = [v2.ToImage(), v2.ToDtype(torch.float32, scale=True)]
+        self.t_in = []
+        self.t_label = []
+
+        if "image_size" in self.model_cfg:
+            self.t_in += [v2.Resize(tuple(self.model_cfg["image_size"]))]
+            self.t_label += [
+                v2.Resize(
+                    tuple(self.model_cfg["image_size"]),
+                    interpolation=v2.InterpolationMode.NEAREST_EXACT,
+                )
+            ]
+
+        self.t_in += [v2.ToImage(), v2.ToDtype(torch.float32, scale=True)]
+        self.t_label += [v2.ToImage(), v2.ToDtype(torch.int64)]
+
         if "normalization" in self.model_cfg:
-            self.t_in.append(
+            self.t_in += [
                 v2.Normalize(
                     mean=self.model_cfg["normalization"]["mean"],
                     std=self.model_cfg["normalization"]["std"],
                 )
-            )
+            ]
+
         self.t_in = v2.Compose(self.t_in)
+        self.t_label = v2.Compose(self.t_label)
         self.t_out = v2.Compose(
             [
                 lambda x: torch.argmax(x.squeeze(), axis=0).squeeze().to(torch.uint8),
                 v2.ToPILImage(),
             ]
         )
-        self.t_label = v2.Compose([v2.ToImage(), v2.ToDtype(torch.int64)])
 
     def inference(self, image: Image.Image) -> Image.Image:
         """Perform inference for a single image
@@ -114,7 +129,7 @@ class TorchImageSegmentationModel(ImageSegmentationModel):
         :return: segmenation result as PIL image
         :rtype: Image.Image
         """
-        tensor = self.t_in(image).unsqueeze(0)
+        tensor = self.t_in(image).unsqueeze(0).to(self.device)
         result = self.model(tensor)
 
         # TODO: check if this is consistent across different models
@@ -171,7 +186,8 @@ class TorchImageSegmentationModel(ImageSegmentationModel):
 
         # Init metrics
         results = {}
-        iou = um.MeanIoU(self.n_classes)
+        iou = um.IoU(self.n_classes)
+        acc = um.Accuracy(self.n_classes)
 
         # Evaluation loop
         with torch.no_grad():
@@ -179,28 +195,36 @@ class TorchImageSegmentationModel(ImageSegmentationModel):
             for image, label in pbar:
                 pred = self.model(image.to(self.device))
                 if isinstance(pred, dict):
-                    pred = pred["out"][:, : self.n_classes]
+                    pred = pred["out"]
 
                 if lut_ontology is not None:
                     label = lut_ontology[label]
 
-                label = label.squeeze(dim=1)
+                label = label.squeeze(dim=1).cpu()
+                pred = torch.argmax(pred, axis=1).cpu()
+                acc.update(pred.numpy(), label.numpy())
+
                 label = torch.nn.functional.one_hot(label, num_classes=self.n_classes)
-                label = label.permute(0, 3, 1, 2).cpu().numpy()
+                label = label.permute(0, 3, 1, 2)
 
-                pred = torch.argmax(pred, axis=1)
                 pred = torch.nn.functional.one_hot(pred, num_classes=self.n_classes)
-                pred = pred.permute(0, 3, 1, 2).cpu().numpy()
+                pred = pred.permute(0, 3, 1, 2)
 
-                iou.update(pred, label)
+                iou.update(pred.numpy(), label.numpy())
 
         # Get metrics results
-        iou = [float(n) for n in iou.compute()]
+        iou_per_class, iou = iou.compute()
+        acc_per_class, acc = acc.compute()
+        iou_per_class = [float(n) for n in iou_per_class]
+        acc_per_class = [float(n) for n in acc_per_class]
 
         # Build results dataframe
         results = {}
         for class_name, class_data in self.ontology.items():
-            results[class_name] = {"iou": iou[class_data["idx"]]}
-        results["global"] = {"iou": np.nanmean(iou)}
+            results[class_name] = {
+                "iou": iou_per_class[class_data["idx"]],
+                "acc": acc_per_class[class_data["idx"]],
+            }
+        results["global"] = {"iou": iou, "acc": acc}
 
         return pd.DataFrame(results)

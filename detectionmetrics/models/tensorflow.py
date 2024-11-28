@@ -28,6 +28,8 @@ class ImageSegmentationTensorflowDataset:
     :type batch_size: int, optional
     :param split: Split to be used from the dataset, defaults to "all"
     :type split: str, optional
+    :param lut_ontology: LUT to transform label classes, defaults to None
+    :type lut_ontology: dict, optional
     """
 
     def __init__(
@@ -36,6 +38,7 @@ class ImageSegmentationTensorflowDataset:
         image_size: Tuple[int, int],
         batch_size: int = 1,
         split: str = "all",
+        lut_ontology: Optional[dict] = None,
     ):
         self.image_size = image_size
 
@@ -43,6 +46,15 @@ class ImageSegmentationTensorflowDataset:
         if split != "all":
             dataset.dataset = dataset.dataset[dataset.dataset["split"] == split]
         dataset.make_fname_global()
+
+        self.lut_ontology = None
+        if lut_ontology is not None:
+            keys = tf.constant(range(len(lut_ontology)), dtype=tf.int32)
+            values = tf.constant(list(lut_ontology), dtype=tf.int32)
+            self.lut_ontology = tf.lookup.StaticHashTable(
+                initializer=tf.lookup.KeyValueTensorInitializer(keys, values),
+                default_value=0,
+            )
 
         # Build tensorflow dataset
         fnames = (dataset.dataset["image"], dataset.dataset["label"])
@@ -62,16 +74,25 @@ class ImageSegmentationTensorflowDataset:
         :return: Tensorflow tensor containing read image or label
         :rtype: tf.Tensor
         """
-        # Use nearest neighbors to avoid interpolation when dealing with labels
-        resize_method = "nearest" if label else "bilinear"
-        n_channels = 1 if label else 3
-
+        # Read image file
         image = tf_io.read_file(fname)
+
+        # Decode image
+        n_channels = 1 if label else 3
         image = tf_image.decode_png(image, channels=n_channels)
         image.set_shape([None, None, n_channels])
-        image = tf_image.resize(
-            images=image, size=self.image_size, method=resize_method
-        )
+
+        # Apply LUT for transforming ontology if required
+        if label and self.lut_ontology is not None:
+            image = tf.cast(
+                self.lut_ontology.lookup(tf.cast(image, tf.int32)), tf.uint8
+            )
+
+        # Resize (use NN to avoid interpolation when dealing with labels)
+        method = "nearest" if label else "bilinear"
+        image = tf_image.resize(images=image, size=self.image_size, method=method)
+        if label:
+            image = tf.round(image)
 
         return image
 
@@ -170,12 +191,6 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             lut_ontology = uc.get_ontology_conversion_lut(
                 dataset.ontology, self.ontology, ontology_translation
             )
-            keys = tf.constant(range(len(lut_ontology)), dtype=tf.int32)
-            values = tf.constant(list(lut_ontology), dtype=tf.int32)
-            lut_ontology = tf.lookup.StaticHashTable(
-                initializer=tf.lookup.KeyValueTensorInitializer(keys, values),
-                default_value=0,
-            )
 
         # Get Tensorflow dataset
         dataset = ImageSegmentationTensorflowDataset(
@@ -183,11 +198,13 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             image_size=self.model_cfg["image_size"],
             batch_size=batch_size,
             split=split,
+            lut_ontology=lut_ontology,
         )
 
         # Init metrics
         results = {}
-        iou = um.MeanIoU(self.n_classes)
+        iou = um.IoU(self.n_classes)
+        acc = um.Accuracy(self.n_classes)
 
         # Evaluation loop
         pbar = tqdm(dataset.dataset)
@@ -197,25 +214,30 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
                 pred = pred["output_0"]
 
             label = tf.squeeze(label, axis=3)
-            if lut_ontology is not None:
-                label = tf.cast(lut_ontology.lookup(tf.cast(label, tf.int32)), tf.uint8)
-
             pred = tf.argmax(pred, axis=3)
+            acc.update(pred.numpy(), label.numpy())
+
             pred = tf.one_hot(pred, self.n_classes)
-            pred = tf.transpose(pred, perm=[0, 3, 1, 2]).numpy()
+            pred = tf.transpose(pred, perm=[0, 3, 1, 2])
 
             label = tf.one_hot(label, self.n_classes)
-            label = tf.transpose(label, perm=[0, 3, 1, 2]).numpy()
+            label = tf.transpose(label, perm=[0, 3, 1, 2])
 
-            iou.update(pred, label)
+            iou.update(pred.numpy(), label.numpy())
 
         # Get metrics results
-        iou = [float(n) for n in iou.compute()]
+        iou_per_class, iou = iou.compute()
+        acc_per_class, acc = acc.compute()
+        iou_per_class = [float(n) for n in iou_per_class]
+        acc_per_class = [float(n) for n in acc_per_class]
 
         # Build results dataframe
         results = {}
         for class_name, class_data in self.ontology.items():
-            results[class_name] = {"iou": iou[class_data["idx"]]}
-        results["global"] = {"iou": np.nanmean(iou)}
+            results[class_name] = {
+                "iou": iou_per_class[class_data["idx"]],
+                "acc": acc_per_class[class_data["idx"]],
+            }
+        results["global"] = {"iou": iou, "acc": acc}
 
         return pd.DataFrame(results)
