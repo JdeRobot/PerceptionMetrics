@@ -12,7 +12,6 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
 
 <table style='font-size:100%'>
   <tr>
-    <th><i>DetectionMetrics v2</i></th>
     <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics">Code</a></th>
     <th>&#128295; <a href="https://jderobot.github.io/DetectionMetrics/v2/installation">Installation</a></th>
     <th>&#129513; <a href="https://jderobot.github.io/DetectionMetrics/v2/compatibility">Compatibility</a></th>
@@ -20,7 +19,6 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   </tr>
 </table>
 
-In the following diagram you can see a broad overview of how the core classes in our library are organized (this might evolve quickly):
 ![diagram](docs/assets/images/detectionmetricsv2_diagram.png)
 
 # What's supported in DetectionMetrics
@@ -101,9 +99,8 @@ Our previous release, ***DetectionMetrics v1***, introduced a versatile suite fo
 
 <table style='font-size:100%'>
   <tr>
-    <th><i>DetectionMetrics v1</i></th>
     <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics/releases/tag/v1.0.0">Code</a></th>
-    <th>&#128214; <a href="/v1">Docs</a></th>
+    <th>&#128214; <a href="https://jderobot.github.io/DetectionMetrics/v1">Docs</a></th>
     <th>&#128011; <a href="https://hub.docker.com/r/jderobot/detection-metrics">Docker</a></th>
     <th>&#128240; <a href="https://www.mdpi.com/1424-8220/22/12/4575">Paper</a></th>
   </tr>

@@ -10,31 +10,23 @@ header:
 excerpt:
   Unified evaluation for perception models
 ---
+>&#9888;&#65039; ***DetectionMetrics v1*** website referenced in our *Sensors* paper is still available [here](https://jderobot.github.io/DetectionMetrics/v1)
 
 # What is DetectionMetrics?
-*DetectionMetrics* is a family of toolkits designed to unify and streamline the evaluation of perception models across different frameworks and datasets. With the release of ***DetectionMetrics v1*** we introduced a versatile suite of tools focused on object detection, supporting cross-framework evaluation and analysis. [Cite our work](#cite) if you use it in your research!
+*DetectionMetrics* is a family of toolkits designed to unify and streamline the evaluation of perception models across different frameworks and datasets. Looking for our published ***DetectionMetrics v1***? Check out all the [relevant links](#v1) below.
+
+Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the flexibility of our previous release, *DetectionMetrics* has been redesigned with an expanded focus on image segmentation, with plans to extend support to object detection and LiDAR applications. As we move forward, *v2* will be the actively maintained version, featuring continued updates and enhancements to keep pace with evolving AI and computer vision technologies.
 
 <table style='font-size:100%'>
   <tr>
-    <th><i>DetectionMetrics v1</i></th>
-    <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics/releases/tag/v1.0.0">Code</a></th>
-    <th>&#128214; <a href="/v1">Docs</a></th>
-    <th>&#128011; <a href="https://hub.docker.com/r/jderobot/detection-metrics">Docker</a></th>
-    <th>&#128240; <a href="https://www.mdpi.com/1424-8220/22/12/4575">Paper</a></th>
-  </tr>
-</table>
-
-Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the flexibility of our previous release, *DetectionMetrics v2* is designed with an expanded focus on image segmentation, with plans to extend support to object detection and LiDAR applications. As we move forward, *v2* will be the actively maintained version, featuring continued updates and enhancements to keep pace with evolving AI and computer vision technologies.
-
-<table style='font-size:100%'>
-  <tr>
-    <th><i>DetectionMetrics v2</i></th>
     <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics">Code</a></th>
     <th>&#128295; <a href="/v2/installation">Installation</a></th>
     <th>&#129513; <a href="/v2/compatibility">Compatibility</a></th>
     <th>&#128214; <a href="/py_docs/_build/html/index.html">Docs</a></th>
   </tr>
 </table>
+
+![diagram](../assets/images/detectionmetricsv2_diagram.png)
 
 # What's supported in DetectionMetrics
 
@@ -67,6 +59,20 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
 </table>
 
 More details in the [Compatibility](/v2/compatibility) section.
+
+# DetectionMetrics v1
+{: #v1}
+
+Our previous release, ***DetectionMetrics v1***, introduced a versatile suite focused on object detection, supporting cross-framework evaluation and analysis. [Cite our work](#cite) if you use it in your research!
+
+<table style='font-size:100%'>
+  <tr>
+    <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics/releases/tag/v1.0.0">Code</a></th>
+    <th>&#128214; <a href="/v1">Docs</a></th>
+    <th>&#128011; <a href="https://hub.docker.com/r/jderobot/detection-metrics">Docker</a></th>
+    <th>&#128240; <a href="https://www.mdpi.com/1424-8220/22/12/4575">Paper</a></th>
+  </tr>
+</table>
 
 # Cite our work
 {: #cite}
