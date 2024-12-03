@@ -20,9 +20,9 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
 <table style='font-size:100%'>
   <tr>
     <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics">Code</a></th>
-    <th>&#128295; <a href="/v2/installation">Installation</a></th>
-    <th>&#129513; <a href="/v2/compatibility">Compatibility</a></th>
-    <th>&#128214; <a href="/py_docs/_build/html/index.html">Docs</a></th>
+    <th>&#128295; <a href="https://jderobot.github.io/DetectionMetrics/v2/installation">Installation</a></th>
+    <th>&#129513; <a href="https://jderobot.github.io/DetectionMetrics/v2/compatibility">Compatibility</a></th>
+    <th>&#128214; <a href="https://jderobot.github.io/DetectionMetrics/py_docs/_build/html/index.html">Docs</a></th>
   </tr>
 </table>
 
@@ -52,8 +52,8 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td>Object detection</td>
     <td>Image</td>
-    <td>Check <a href="/v1"><i>DetectionMetrics v1</i></a></td>
-    <td>Check <a href="/v1"><i>DetectionMetrics v1</i></a></td>
+    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
+    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
   </tr>
 </tbody>
 </table>
@@ -68,7 +68,7 @@ Our previous release, ***DetectionMetrics v1***, introduced a versatile suite fo
 <table style='font-size:100%'>
   <tr>
     <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics/releases/tag/v1.0.0">Code</a></th>
-    <th>&#128214; <a href="/v1">Docs</a></th>
+    <th>&#128214; <a href="https://jderobot.github.io/DetectionMetrics/v1">Docs</a></th>
     <th>&#128011; <a href="https://hub.docker.com/r/jderobot/detection-metrics">Docker</a></th>
     <th>&#128240; <a href="https://www.mdpi.com/1424-8220/22/12/4575">Paper</a></th>
   </tr>
@@ -90,6 +90,5 @@ Our previous release, ***DetectionMetrics v1***, introduced a versatile suite fo
   pubmedid = {35746357},
   issn = {1424-8220},
   doi = {10.3390/s22124575},
-  image = {/assets/img/pub_img/transformer_transform.png},
 }
 ```

@@ -11,7 +11,7 @@ sidebar:
 This tool makes inferences using images from different sources. Having the input, the user provides the weights and several configuration parameters
 and pressing **Process**, a new window pops up showing the images with the inferences in real time.
 
-![Detection Metrics StartUp](../../assets/images/detection_studio_gui.png)
+![Detection Metrics StartUp](../../../assets/images/detection_studio_gui.png)
 
 Several inferencers and input sources are supported. This functionality is only available in the GUI mode.
 

@@ -83,7 +83,7 @@ Just type ``` ./DatasetEvaluationApp -c appConfig.yml ```
 
 And you will see a GUI pop like this:
 
-![Detection Metrics StartUp](../../assets/images/detection_studio_gui.png)
+![Detection Metrics StartUp](../../../assets/images/detection_studio_gui.png)
 
 Configuring Parameters:
 * **Deployer Implementation:** Method to fetch input images, can be `Camera`, `Video` or `Streams`. For video, select a video file. For streams, select between ROS or ICE, and enter the config parameters manually or select a config YAML file.

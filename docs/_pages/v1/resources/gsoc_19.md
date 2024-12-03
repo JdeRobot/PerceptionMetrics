@@ -13,7 +13,7 @@ This feature lets the user pause the video at any time and also go back and forw
 
 **How to pause the video:** press space bar, 'p' or 'k'.
 
-<img src="../../assets/images/week_1.png" alt="Screenshot" style="max-width:100%;">
+<img src="../../../assets/images/week_1.png" alt="Screenshot" style="max-width:100%;">
 
 {% include video id="dX895_HzVHA" provider="youtube" %}
 
@@ -21,7 +21,7 @@ This feature lets the user pause the video at any time and also go back and forw
 If a user does not add a config file when executing Detection Metrics, a pop up window shows and asks the user to give the
 needed information.
 
-<img src="../../assets/images/week3_1.png" alt="Screenshot" style="max-width:100%;">
+<img src="../../../assets/images/week3_1.png" alt="Screenshot" style="max-width:100%;">
 
 A pop up window is also shown when the user forgets to give certain config paths, so this information can be included.
 

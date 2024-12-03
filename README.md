@@ -45,8 +45,8 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td>Object detection</td>
     <td>Image</td>
-    <td>Check <a href="/v1"><i>DetectionMetrics v1</i></a></td>
-    <td>Check <a href="/v1"><i>DetectionMetrics v1</i></a></td>
+    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
+    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
   </tr>
 </tbody>
 </table>
@@ -121,6 +121,5 @@ Our previous release, ***DetectionMetrics v1***, introduced a versatile suite fo
   pubmedid = {35746357},
   issn = {1424-8220},
   doi = {10.3390/s22124575},
-  image = {/assets/img/pub_img/transformer_transform.png},
 }
 ```

@@ -90,11 +90,11 @@ Place your weights in weights directory, config files in cfg directory, classnam
 The top toolbar shows the different tools available.
 
 
-![Detector](../assets/images/main_window.png)
+![Detector](../../assets/images/main_window.png)
 
 # Example of detection and console output in Detection Metrics
 
 Two image views are displayed, one with the ground truth and the other with the detected annotations.
 In the console output, log info is shown.
 
-![Detector](../assets/images/detector.png)
+![Detector](../../assets/images/detector.png)
