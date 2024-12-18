@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.datasets.rellis3d import Rellis3dLiDARSegmentationDataset
+from detectionmetrics.datasets.rellis3d import Rellis3DLiDARSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:
@@ -42,7 +42,7 @@ def main():
     """Main function"""
     args = parse_args()
 
-    dataset = Rellis3dLiDARSegmentationDataset(
+    dataset = Rellis3DLiDARSegmentationDataset(
         dataset_dir=args.dataset_dir,
         split_dir=args.split_dir,
         ontology_fname=args.ontology_fname,

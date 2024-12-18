@@ -71,7 +71,6 @@ def main():
 
     results = model.eval(
         dataset,
-        batch_size=4,
         split=args.split,
         ontology_translation=args.ontology_translation,
     )
