@@ -533,7 +533,6 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         end_th = self.model_cfg.get("end_th", 0.5)
         with torch.no_grad():
             pbar = tqdm(dataset, total=len(dataset), leave=True)
-            i = 0
             for points, projected_indices, (label, _), sampler in pbar:
                 # Iterate over the sampled point cloud until all points reach the end
                 # threshold. If no sampler is provided, the inference is performed in a
@@ -616,10 +615,6 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
                     label.numpy(),
                     valid_mask.numpy() if valid_mask is not None else None,
                 )
-
-                i += 1
-                if i > 15:
-                    break
 
         # Get metrics results
         iou_per_class, iou = iou.compute()

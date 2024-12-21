@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.datasets.goose import GOOSEImageSegmentationDataset
+from detectionmetrics.datasets.goose import GOOSELiDARSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:
@@ -10,6 +10,7 @@ def parse_args() -> argparse.Namespace:
     :rtype: argparse.Namespace
     """
     parser = argparse.ArgumentParser()
+
     parser.add_argument(
         "--train_dataset_dir",
         type=str,
@@ -40,7 +41,7 @@ def main():
     """Main function"""
     args = parse_args()
 
-    dataset = GOOSEImageSegmentationDataset(
+    dataset = GOOSELiDARSegmentationDataset(
         train_dataset_dir=args.train_dataset_dir,
         val_dataset_dir=args.val_dataset_dir,
         test_dataset_dir=args.test_dataset_dir,
