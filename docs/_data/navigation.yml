@@ -1,53 +1,62 @@
 # main links
 main:
   - title: Installation
-    url: /installation
-  - title: Functionality
-    url: /functionality/command_line_application
-  - title: Resources
-    url: /resources/class_names
+    url: /v2/installation
+  - title: Compatibility
+    url: /v2/compatibility
+  - title: DetectionMetrics v1
+    url: /v1
   - title: About
     url: /about
 
-
-# left side bar
-functionality:
-
+# v1 links
+main_v1:
+  - title: Home
+    url: /v1
+  - title: Installation
+    url: /v1/installation
   - title: Functionality
+    url: /v1/functionality/command_line_application
     children:
       - title: "Command line application (Auto Evaluator)"
-        url: /functionality/command_line_application
+        url: /v1/functionality/command_line_application
       - title: "Converter"
-        url: /functionality/converter/
+        url: /v1/functionality/converter/
       - title: "Deployer"
-        url: /functionality/deployer/
+        url: /v1/functionality/deployer/
       - title: "Detector"
-        url: /functionality/detector
+        url: /v1/functionality/detector
       - title: "Evaluator"
-        url: /functionality/evaluator
+        url: /v1/functionality/evaluator
       - title: "Viewer"
-        url: /functionality/viewer
+        url: /v1/functionality/viewer
       - title: "ROS Node"
-        url: /functionality/ros_node
-
-# left side bar
-resources:
-
+        url: /v1/functionality/ros_node
   - title: Resources
+    url: /v1/resources/class_names
     children:
       - title: "Datasets"
-        url: /resources/datasets
+        url: /v1/resources/datasets
       - title: "Class Names"
-        url: /resources/class_names
+        url: /v1/resources/class_names
       - title: "Frameworks"
-        url: /resources/frameworks
+        url: /v1/resources/frameworks
       - title: "Model zoo"
-        url: /resources/model_zoo
+        url: /v1/resources/model_zoo
       - title: "Testing Detection Metrics"
-        url: /resources/testing_detectionmetrics
+        url: /v1/resources/testing_detectionmetrics
       - title: "Tutorial"
-        url: /resources/tutorial
+        url: /v1/resources/tutorial
       - title: "New Functionality"
-        url: /resources/gsoc_19
+        url: /v1/resources/gsoc_19
       - title: "Talks"
-        url: /resources/talks
+        url: /v1/resources/talks
+
+# v2 links
+main_v2:
+  - title: Home
+    url: /
+  - title: Installation
+    url: /v2/installation
+  - title: Compatibility
+    url: /v2/compatibility

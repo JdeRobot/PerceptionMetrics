@@ -1,4 +1,10 @@
-.clang_complete
+.vscode
 
-# Py byte files
-*.py[cod]
+.mypy_cache
+__pycache__
+
+.venv
+dist
+poetry.lock
+
+local/*

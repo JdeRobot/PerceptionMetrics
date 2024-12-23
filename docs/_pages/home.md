@@ -7,92 +7,88 @@ header:
   #actions:
   #  - label: "<i class='fas fa-download'></i> Install now"
   #    url: "/installation/"
-excerpt: 
-  Evaluation of object detection dataset simplified
+excerpt:
+  Unified evaluation for perception models
 ---
+>&#9888;&#65039; ***DetectionMetrics v1*** website referenced in our *Sensors* paper is still available [here](https://jderobot.github.io/DetectionMetrics/v1)
 
+# What is DetectionMetrics?
+*DetectionMetrics* is a family of toolkits designed to unify and streamline the evaluation of perception models across different frameworks and datasets. Looking for our published ***DetectionMetrics v1***? Check out all the [relevant links](#v1) below.
 
-# What is Detection Metrics?
+Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the flexibility of our previous release, *DetectionMetrics* has been redesigned with an expanded focus expanded focus on image and LiDAR segmentation. As we move forward, *v2* will be the actively maintained version, featuring continued updates and enhancements to keep pace with evolving AI and computer vision technologies.
 
-Detection Metrics is an application that provides a toolbox of utilities oriented to simplify the development and testing of solutions based on object detection.
-The application comes with a GUI (based on Qt) but it can also be used through command line.
+<table style='font-size:100%'>
+  <tr>
+    <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics">Code</a></th>
+    <th>&#128295; <a href="https://jderobot.github.io/DetectionMetrics/v2/installation">Installation</a></th>
+    <th>&#129513; <a href="https://jderobot.github.io/DetectionMetrics/v2/compatibility">Compatibility</a></th>
+    <th>&#128214; <a href="https://jderobot.github.io/DetectionMetrics/py_docs/_build/html/index.html">Docs</a></th>
+  </tr>
+</table>
 
+![diagram](../assets/images/detectionmetricsv2_diagram.png)
 
-{% include video id="gDP9nWCL0Vg" provider="youtube" %}
+# What's supported in DetectionMetrics
 
-# What's supported in Detection Metrics.
+<table><thead>
+  <tr>
+    <th>Task</th>
+    <th>Modality</th>
+    <th>Datasets</th>
+    <th>Framework</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td rowspan="2">Segmentation</td>
+    <td>Image</td>
+    <td>Rellis3D, GOOSE, custom GAIA format</td>
+    <td>PyTorch, Tensorflow</td>
+  </tr>
+  <tr>
+    <td>LiDAR</td>
+    <td>Rellis3D, GOOSE, custom GAIA format</td>
+    <td>PyTorch (RandLA-Net from <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>)</td>
+  </tr>
+  <tr>
+    <td>Object detection</td>
+    <td>Image</td>
+    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
+    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
+  </tr>
+</tbody>
+</table>
 
-| Support | Detail                                                  |
-| ------ | ------------------------------------------------------------ |
-| Supported OS  | Multiplatform using Docker                 |
-| Supported datasets  | {::nomarkdown}<ul><li><a href="https://cocodataset.org/#home" target="blank">COCO</a></li><li><a href="http://www.image-net.org/" target="blank">ImageNet</a></li><li><a href="http://host.robots.ox.ac.uk/pascal/VOC/" target="blank">Pascal VOC</a></li><li>Jderobot recorder logs</li><li><a href="https://rgbd.cs.princeton.edu/" target="blank">Princeton RGB dataset</a></li><li><a href="http://www2.informatik.uni-freiburg.de/~spinello/RGBD-dataset.html" target="blank">Spinello dataset</a></li><li><a href="https://storage.googleapis.com/openimages/web/index.html" target="blank">Open images dataset</a></li></ul>{:/} |
-| Supported frameworks   | {::nomarkdown}<ul><li>TensorFlow</li><li>Keras</li><li>PyTorch</li><li>Yolo-OpenCV</li><li>Caffe</li><li>Background substraction</li></ul>{:/}  |
-| Supported inputs in Deployer   | {::nomarkdown}<ul><li>WebCamera/USB Camera</li><li>Videos</li><li>Streams from ROS</li><li>Streams from ICE</li><li>JdeRobot Recorder Logs</li></ul>{:/} |
+More details in the [Compatibility](/v2/compatibility) section.
 
+# DetectionMetrics v1
+{: #v1}
 
+Our previous release, ***DetectionMetrics v1***, introduced a versatile suite focused on object detection, supporting cross-framework evaluation and analysis. [Cite our work](#cite) if you use it in your research!
 
-# Toolbox
+<table style='font-size:100%'>
+  <tr>
+    <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics/releases/tag/v1.0.0">Code</a></th>
+    <th>&#128214; <a href="https://jderobot.github.io/DetectionMetrics/v1">Docs</a></th>
+    <th>&#128011; <a href="https://hub.docker.com/r/jderobot/detection-metrics">Docker</a></th>
+    <th>&#128240; <a href="https://www.mdpi.com/1424-8220/22/12/4575">Paper</a></th>
+  </tr>
+</table>
 
-The application is designed to experiment with datasets and neural networks using various frameworks. Currently it comes with the following utilities:
-
-* [Viewer](functionality/viewer/): view the dataset images with the annotations.
-* [Detector](functionality/detector/): run a model over a dataset and get generate a new annotated dataset.
-* [Evaluator](functionality/evaluator/): evaluate the ground truth dataset with another one and get the comparison metrics.
-* [Deployer](functionality/deployer/): run a model over different inputs like a video or webcam and generate a new annotated dataset.
-* [Converter](functionality/converter/): convert a dataset into another dataset format.
-* [Command line application (CLI)](functionality/command_line_application/): access Detection Metrics toolset through command line
-* [Detection Metrics as ROS Node](functionality/ros_node/): use Detection Metrics as a ROS Node.
-+ [Labelling](resources/gsoc_19/): add or modify labels in the datasets in runtime when running Deployer
-
-Every tool in Detection Metrics requires a config file to run, where the main parameters needed are provided. Currently, YAML config file format is supported. See below on how to create a custom config file.
-Each tool may have different requirements for keys in config file, and they can be known by passing the ```--help``` flag when using Detection Metrics from
-the command line.
-
-### Creating a custom ```appConfig.yml```
-
-It is recommended to create and assign a dedicated directory for storing all datasets, weights and config files, for easier access and a cleaner ```appConfig.yml``` file.
-
-For instance, we will be using ```/opt/datasets/``` for demonstration purposes.
-
-Create the following directories in ```/opt/datasets/```: ```cfg```, ```names```, ```weights``` and ```eval```.
-
-Again, these names are just examples and can be changed, but must also be changed in ```appConfig.yml```.
-
-* ```cfg```: This directory will store config files for various networks. For example, [*yolo-voc.cfg*](https://github.com/pjreddie/darknet/blob/master/cfg/yolov3-voc.cfg).
-* ```names```: This directory will contain class names for various datasets. For example, [*voc.names*](https://github.com/pjreddie/darknet/blob/master/data/voc.names).
-* ```weights```: This directory will contain weights for various networks, such as [*yolo-voc.weights*](https://pjreddie.com/media/files/yolo-voc.weights) for YOLO or a frozen inference graph for Tensorflow trained networks.
-* ```eval```: Evaluations path.
-
-Once completed, you can create your own custom appConfig.yml like the one mentioned. For example:
-
-```
-
-datasetPath: /opt/datasets/
-
-evaluationsPath: /opt/datasets/eval
-
-weightsPath: /opt/datasets/weights
-
-netCfgPath: /opt/datasets/cfg
-
-namesPath: /opt/datasets/names
-
-inferencesPath: /opt/datasets
+# Cite our work
+{: #cite}
 
 ```
-
-Place your weights in weights directory, config files in cfg directory, classname files in names. And you are ready to go ⚡️ .
-
-# General Detection Metrics GUI
-
-The top toolbar shows the different tools available.
-
-
-![Detector](../assets/images/main_window.png)
-
-# Example of detection and console output in Detection Metrics
-
-Two image views are displayed, one with the ground truth and the other with the detected annotations.
-In the console output, log info is shown.
-
-![Detector](../assets/images/detector.png)
+@article{PaniegoOSAssessment2022,
+  author = {Paniego, Sergio and Sharma, Vinay and Cañas, José María},
+  title = {Open Source Assessment of Deep Learning Visual Object Detection},
+  journal = {Sensors},
+  volume = {22},
+  year = {2022},
+  number = {12},
+  article-number = {4575},
+  url = {https://www.mdpi.com/1424-8220/22/12/4575},
+  pubmedid = {35746357},
+  issn = {1424-8220},
+  doi = {10.3390/s22124575},
+}
+```
