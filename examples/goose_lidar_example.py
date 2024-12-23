@@ -14,7 +14,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--train_dataset_dir",
         type=str,
-        required=True,
         help="Directory where train dataset split is stored",
     )
     parser.add_argument(

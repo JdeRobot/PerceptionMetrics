@@ -10,10 +10,10 @@ import detectionmetrics.utils.conversion as uc
 
 
 def build_dataset(
-    train_dataset_dir: str,
     data_type: str,
     data_suffix: str,
     label_suffix: str,
+    train_dataset_dir: Optional[str] = None,
     val_dataset_dir: Optional[str] = None,
     test_dataset_dir: Optional[str] = None,
 ) -> Tuple[dict, dict]:
@@ -36,18 +36,23 @@ def build_dataset(
     :return: Dataset and onotology
     :rtype: Tuple[dict, dict]
     """
-    # Check that provided paths exist
-    assert os.path.isdir(train_dataset_dir), "Train dataset directory not found"
-    dataset_dirs = {"train": train_dataset_dir}
-    if val_dataset_dir is not None:
-        assert os.path.isdir(val_dataset_dir), "Val. dataset directory not found"
-        dataset_dirs["val"] = val_dataset_dir
-    if test_dataset_dir is not None:
-        assert os.path.isdir(test_dataset_dir), "Test dataset directory not found"
-        dataset_dirs["test"] = test_dataset_dir
+    if not any([train_dataset_dir, val_dataset_dir, test_dataset_dir]):
+        raise ValueError("At least one dataset directory must be provided")
+
+    # Check that provided paths exist and get first valid ontology
+    dataset_dirs = {
+        "train": train_dataset_dir,
+        "val": val_dataset_dir,
+        "test": test_dataset_dir,
+    }
+    dataset_dirs = {split: d for split, d in dataset_dirs.items() if d is not None}
+    ontology_fname = os.path.join(
+        next(iter(dataset_dirs.values())), "goose_label_mapping.csv"
+    )
+    if ontology_fname is None:
+        raise ValueError("No valid dataset directory found")
 
     # Load and adapt ontology
-    ontology_fname = os.path.join(train_dataset_dir, "goose_label_mapping.csv")
     assert os.path.isfile(ontology_fname), "Ontology file not found"
 
     ontology, ontology_dataframe = ({}, pd.read_csv(ontology_fname))
@@ -95,15 +100,15 @@ class GOOSEImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
 
     def __init__(
         self,
-        train_dataset_dir: str,
+        train_dataset_dir: Optional[str] = None,
         val_dataset_dir: Optional[str] = None,
         test_dataset_dir: Optional[str] = None,
     ):
         dataset, ontology = build_dataset(
-            train_dataset_dir,
             "images",
             "windshield_vis.png",
             "labelids.png",
+            train_dataset_dir,
             val_dataset_dir,
             test_dataset_dir,
         )
@@ -115,7 +120,11 @@ class GOOSEImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
         # Report results
         print(f"Samples retrieved: {len(dataset)}")
 
-        super().__init__(dataset, train_dataset_dir, ontology)
+        # Select dataset directory
+        all_dataset_dirs = [train_dataset_dir, val_dataset_dir, test_dataset_dir]
+        dataset_dir = [d for d in all_dataset_dirs if d is not None][0]
+
+        super().__init__(dataset, dataset_dir, ontology)
 
 
 class GOOSELiDARSegmentationDataset(dm_dataset.LiDARSegmentationDataset):
@@ -135,15 +144,15 @@ class GOOSELiDARSegmentationDataset(dm_dataset.LiDARSegmentationDataset):
 
     def __init__(
         self,
-        train_dataset_dir: str,
+        train_dataset_dir: Optional[str] = None,
         val_dataset_dir: Optional[str] = None,
         test_dataset_dir: Optional[str] = None,
     ):
         dataset, ontology = build_dataset(
-            train_dataset_dir,
             "lidar",
             "vls128.bin",
             "goose.label",
+            train_dataset_dir,
             val_dataset_dir,
             test_dataset_dir,
         )
@@ -155,4 +164,8 @@ class GOOSELiDARSegmentationDataset(dm_dataset.LiDARSegmentationDataset):
         # Report results
         print(f"Samples retrieved: {len(dataset)}")
 
-        super().__init__(dataset, train_dataset_dir, ontology)
+        # Select dataset directory
+        all_dataset_dirs = [train_dataset_dir, val_dataset_dir, test_dataset_dir]
+        dataset_dir = [d for d in all_dataset_dirs if d is not None][0]
+
+        super().__init__(dataset, dataset_dir, ontology)
