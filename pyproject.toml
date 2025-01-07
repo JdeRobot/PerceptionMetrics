@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "detectionmetrics"
-version = "2.1.0"
+version = "2.1.1"
 description = "Tools for evaluating segmentation and object detection models"
 authors = ["JdeRobot", "d.pascualhe <d.pascualhe@gmail.com>"]
 readme = "README.md"
