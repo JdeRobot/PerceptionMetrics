@@ -1,7 +1,7 @@
 <a href="https://mmg-ai.com/en/"><img src="https://jderobot.github.io/assets/images/logo.png" width="50" align="right" /></a>
 
 # DetectionMetrics
-### Unified evaluation for perception models
+### _Unified evaluation for perception models_
 
 #### Project webpage [here](https://jderobot.github.io/DetectionMetrics)
 
@@ -126,7 +126,7 @@ Our previous release, ***DetectionMetrics v1***, introduced a versatile suite fo
 }
 ```
 # How to Contribute 
-To make your first contribution, follow this [tutorial](https://github.com/JdeRobot/base/wiki/How-To-Contribute).
+_To make your first contribution, follow this [Guide](https://github.com/JdeRobot/DetectionMetrics/blob/master/CONTRIBUTING.md)._
 
 # Acknowledgements
 Utils for LiDAR segmentation, such as sampling or recentering, are based on [Open3D-ML](https://github.com/isl-org/Open3D-ML).
