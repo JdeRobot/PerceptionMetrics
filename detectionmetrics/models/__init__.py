@@ -1,14 +1,22 @@
-from detectionmetrics.models.torch import (
-    TorchImageSegmentationModel,
-    TorchLiDARSegmentationModel,
-)
-from detectionmetrics.models.tensorflow import (
-    TensorflowImageSegmentationModel,
-)
+REGISTRY = {}
 
+try:
+    from detectionmetrics.models.torch import (
+        TorchImageSegmentationModel,
+        TorchLiDARSegmentationModel,
+    )
 
-REGISTRY = {
-    "torch_image_segmentation": TorchImageSegmentationModel,
-    "torch_lidar_segmentation": TorchLiDARSegmentationModel,
-    "tensorflow_image_segmentation": TensorflowImageSegmentationModel,
-}
+    REGISTRY["torch_image_segmentation"] = TorchImageSegmentationModel
+    REGISTRY["torch_lidar_segmentation"] = TorchLiDARSegmentationModel
+except ImportError:
+    print("Torch not available")
+
+try:
+    from detectionmetrics.models.tensorflow import TensorflowImageSegmentationModel
+
+    REGISTRY["tensorflow_image_segmentation"] = TensorflowImageSegmentationModel
+except ImportError:
+    print("Tensorflow not available")
+
+if not REGISTRY:
+    raise Exception("No valid deep learning framework found")
