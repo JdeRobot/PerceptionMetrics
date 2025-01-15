@@ -80,27 +80,32 @@ def batch(command, jobs_cfg):
         pbar.set_description(f"Processing {job_id}")
 
         ctx = click.get_current_context()
-        result = ctx.invoke(
-            cli_registry[command],
-            task=jobs_cfg["task"],
-            input_type=jobs_cfg["input_type"],
-            model_format=model_cfg["format"],
-            model=model_cfg["path"],
-            model_ontology=model_cfg["ontology"],
-            model_cfg=model_cfg["cfg"],
-            dataset_format=dataset_cfg["format"],
-            dataset_fname=dataset_cfg.get("fname", None),
-            dataset_dir=dataset_cfg.get("dir", None),
-            train_dataset_dir=dataset_cfg.get("train_dir", None),
-            val_dataset_dir=dataset_cfg.get("val_dir", None),
-            test_dataset_dir=dataset_cfg.get("test_dir", None),
-            data_suffix=dataset_cfg.get("data_suffix", None),
-            label_suffix=dataset_cfg.get("label_suffix", None),
-            dataset_ontology=dataset_cfg.get("ontology", None),
-            split=dataset_cfg["split"],
-            ontology_translation=jobs_cfg.get("ontology_translation", None),
-            out_fname=job_out_fname,
-        )
+        try:
+            result = ctx.invoke(
+                cli_registry[command],
+                task=jobs_cfg["task"],
+                input_type=jobs_cfg["input_type"],
+                model_format=model_cfg["format"],
+                model=model_cfg["path"],
+                model_ontology=model_cfg["ontology"],
+                model_cfg=model_cfg["cfg"],
+                dataset_format=dataset_cfg["format"],
+                dataset_fname=dataset_cfg.get("fname", None),
+                dataset_dir=dataset_cfg.get("dir", None),
+                split_dir=dataset_cfg.get("split_dir", None),
+                train_dataset_dir=dataset_cfg.get("train_dir", None),
+                val_dataset_dir=dataset_cfg.get("val_dir", None),
+                test_dataset_dir=dataset_cfg.get("test_dir", None),
+                data_suffix=dataset_cfg.get("data_suffix", None),
+                label_suffix=dataset_cfg.get("label_suffix", None),
+                dataset_ontology=dataset_cfg.get("ontology", None),
+                split=dataset_cfg["split"],
+                ontology_translation=jobs_cfg.get("ontology_translation", None),
+                out_fname=job_out_fname,
+            )
+        except Exception as e:
+            print(f"Error processing job {job_id}: {e}")
+            continue
 
         # We assume that the command returns the results as a pandas DataFrame
         result["job_id"] = job_id

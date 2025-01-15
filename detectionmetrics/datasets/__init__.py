@@ -23,6 +23,6 @@ REGISTRY = {
     "generic_lidar_segmentation": GenericLiDARSegmentationDataset,
     "goose_image_segmentation": GOOSEImageSegmentationDataset,
     "goose_lidar_segmentation": GOOSELiDARSegmentationDataset,
-    "rellis_image_segmentation": Rellis3DImageSegmentationDataset,
-    "rellis_lidar_segmentation": Rellis3DLiDARSegmentationDataset,
+    "rellis3d_image_segmentation": Rellis3DImageSegmentationDataset,
+    "rellis3d_lidar_segmentation": Rellis3DLiDARSegmentationDataset,
 }

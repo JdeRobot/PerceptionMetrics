@@ -21,6 +21,7 @@ def get_dataset(
     dataset_format,
     dataset_fname,
     dataset_dir,
+    split_dir,
     train_dataset_dir,
     val_dataset_dir,
     test_dataset_dir,
@@ -33,8 +34,13 @@ def get_dataset(
     if dataset_format == "gaia" and dataset_fname is None:
         raise ValueError("--dataset is required for 'gaia' format")
 
-    elif dataset_format == "rellis3d" and dataset_dir is None:
-        raise ValueError("--dataset_dir is required for 'rellis3d' format")
+    elif dataset_format == "rellis3d":
+        if dataset_dir is None:
+            raise ValueError("--dataset_dir is required for 'rellis3d' format")
+        if split_dir is None:
+            raise ValueError("--split_dir is required for 'rellis3d' format")
+        if ontology is None:
+            raise ValueError("--dataset_ontology is required for 'rellis3d' format")
 
     elif dataset_format in ["goose", "generic"]:
         if split == "train" and train_dataset_dir is None:
@@ -62,7 +68,11 @@ def get_dataset(
     if dataset_format == "gaia":
         dataset_args = {"dataset_fname": dataset_fname}
     elif dataset_format == "rellis3d":
-        dataset_args = {"dataset_dir": dataset_dir}
+        dataset_args = {
+            "dataset_dir": dataset_dir,
+            "split_dir": split_dir,
+            "ontology_fname": ontology,
+        }
     elif dataset_format == "goose":
         dataset_args = {
             "train_dataset_dir": train_dataset_dir,
@@ -99,7 +109,9 @@ def get_dataset(
 # model
 @click.option(
     "--model_format",
-    type=click.Choice(["torch", "tensorflow"], case_sensitive=False),
+    type=click.Choice(
+        ["torch", "tensorflow", "tensorflow_explicit"], case_sensitive=False
+    ),
     show_default=True,
     default="torch",
     help="Trained model format",
@@ -141,6 +153,11 @@ def get_dataset(
     help="Dataset directory (used for 'Rellis3D' format)",
 )
 @click.option(
+    "--split_dir",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True),
+    help="Directory containing .lst split files (used for 'Rellis3D' format)",
+)
+@click.option(
     "--train_dataset_dir",
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="Train dataset directory (used for 'GOOSE' and 'Generic' formats)",
@@ -168,7 +185,7 @@ def get_dataset(
 @click.option(
     "--dataset_ontology",
     type=click.Path(exists=True, dir_okay=False),
-    help="JSON file containing dataset ontology (used for 'Generic' format)",
+    help="JSON containing dataset ontology (used for 'Generic' and 'Rellis3D' formats)",
 )
 @click.option(
     "--split",
@@ -199,6 +216,7 @@ def evaluate(
     dataset_format,
     dataset_fname,
     dataset_dir,
+    split_dir,
     train_dataset_dir,
     val_dataset_dir,
     test_dataset_dir,
@@ -218,6 +236,7 @@ def evaluate(
         dataset_format,
         dataset_fname,
         dataset_dir,
+        split_dir,
         train_dataset_dir,
         val_dataset_dir,
         test_dataset_dir,
