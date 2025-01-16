@@ -98,7 +98,7 @@ class IoU(Metric):
 
 class ConfusionMatrix:
     """Class to compute and store the confusion matrix, as well as related metrics
-    (e.g. accuracy, precision, recall, etc.)
+    (e.g. accuracy, precision, recall, F1-score, etc.)
 
     :param n_classes: Number of classes to evaluate
     :type n_classes: int
@@ -160,3 +160,44 @@ class ConfusionMatrix:
         )
         acc = np.sum(correct_per_class) / np.sum(total_per_class)
         return acc_per_class, acc
+
+    def get_precision(self) -> np.ndarray:
+        """Compute precision from confusion matrix. 
+        Precision = true positives/ predicted positives.
+
+        :return: per class precision
+        :rtype: np.ndarray
+        """
+        true_positives = np.diag(self.confusion_matrix)
+        predicted_positives = np.sum(self.confusion_matrix, axis=0)
+        precision = np.where(
+            predicted_positives > 0, true_positives / predicted_positives, np.nan
+        )
+        return precision
+
+    def get_recall(self) -> np.ndarray:
+        """Compute recall from Confusion matrix.
+        Recall = true positives / 
+
+        :return: per class recall
+        :rtype: np.ndarray
+        """
+        true_positives = np.diag(self.confusion_matrix)
+        actual_positives = np.sum(self.confusion_matrix, axis=1)
+        recall = np.where(
+            actual_positives > 0, true_positives / actual_positives, np.nan
+        )
+        return recall
+
+    def get_f1_score(self) -> np.ndarray:
+        """Compute F1-score for each class
+
+        :return: per class F1-score
+        :rtype: np.ndarray
+        """
+        precision = self.get_precision()
+        recall = self.get_recall()
+        f1_score = np.where(
+            (precision + recall) > 0, 2 * (precision * recall) / (precision + recall), np.nan
+        )
+        return f1_score
