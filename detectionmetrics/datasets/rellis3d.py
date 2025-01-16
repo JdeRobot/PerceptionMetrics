@@ -25,7 +25,8 @@ def build_dataset(
     :return: Dataset and onotology
     :rtype: Tuple[dict, dict]
     """
-    # Check that provided paths exist
+    # Check that provided paths exist and ensure they are absolute
+    dataset_dir = os.path.abspath(dataset_dir)
     assert os.path.isdir(dataset_dir), "Dataset directory not found"
     for split_fname in split_fnames.values():
         assert os.path.isfile(split_fname), f"{split_fname} split file not found"

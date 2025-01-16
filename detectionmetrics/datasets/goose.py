@@ -36,16 +36,19 @@ def build_dataset(
     :return: Dataset and onotology
     :rtype: Tuple[dict, dict]
     """
-    if not any([train_dataset_dir, val_dataset_dir, test_dataset_dir]):
-        raise ValueError("At least one dataset directory must be provided")
-
-    # Check that provided paths exist and get first valid ontology
+    # Define dataset directories and ensure they are absolute paths
     dataset_dirs = {
         "train": train_dataset_dir,
         "val": val_dataset_dir,
         "test": test_dataset_dir,
     }
-    dataset_dirs = {split: d for split, d in dataset_dirs.items() if d is not None}
+    dataset_dirs = {
+        split: os.path.abspath(d) for split, d in dataset_dirs.items() if d is not None
+    }
+    if not dataset_dirs:
+        raise ValueError("At least one dataset directory must be provided")
+
+    # Get ontology filename
     ontology_fname = os.path.join(
         next(iter(dataset_dirs.values())), "goose_label_mapping.csv"
     )
