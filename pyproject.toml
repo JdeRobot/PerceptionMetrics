@@ -20,10 +20,12 @@ open3d = "^0.18.0"
 addict = "^2.4.0"
 matplotlib = "^3.10.0"
 click = "^8.1.8"
+tensorboard = "^2.18.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
 pylint = "^3.3.1"
+ipykernel = "^6.29.5"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^8.1.3"

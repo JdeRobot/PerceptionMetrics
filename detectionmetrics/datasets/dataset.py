@@ -25,7 +25,7 @@ class SegmentationDataset(ABC):
 
     def __init__(self, dataset: pd.DataFrame, dataset_dir: str, ontology: dict):
         self.dataset = dataset
-        self.dataset_dir = dataset_dir
+        self.dataset_dir = os.path.abspath(dataset_dir)
         self.ontology = ontology
 
     def __len__(self):
