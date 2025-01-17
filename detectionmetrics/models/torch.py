@@ -1,4 +1,5 @@
 import os
+import time
 from typing import Optional, Tuple, Union
 
 import numpy as np
@@ -39,6 +40,24 @@ def data_to_device(
         return data
 
 
+def get_data_shape(data: Union[tuple, list]) -> Union[tuple, list]:
+    """Get the shape of the provided data
+
+    :param data: Data provided (it can be a single or multiple tensors)
+    :type data: Union[tuple, list]
+    :return: Data shape
+    :rtype: Union[tuple, list]
+    """
+    if isinstance(data, (tuple, list)):
+        return type(data)(
+            tuple(d.shape) if torch.is_tensor(d) else get_data_shape(d) for d in data
+        )
+    elif torch.is_tensor(data):
+        return tuple(data.shape)
+    else:
+        return tuple(data.shape)
+
+
 def unsqueeze_data(data: Union[tuple, list], dim: int = 0) -> Union[tuple, list]:
     """Unsqueeze provided data along given dimension
 
@@ -58,6 +77,54 @@ def unsqueeze_data(data: Union[tuple, list], dim: int = 0) -> Union[tuple, list]
         return data.unsqueeze(dim)
     else:
         return data
+
+
+def get_computational_cost(
+    model: torch.jit.ScriptModule,
+    model_fname: str,
+    dummy_input: torch.Tensor,
+    runs: int = 30,
+    warm_up_runs: int = 5,
+) -> dict:
+    """Get different metrics related to the computational cost of the model
+
+    :param model: TorchScript model
+    :type model: torch.jit.ScriptModule
+    :param model_fname: Path to the model file
+    :type model_fname: str
+    :param dummy_input: Dummy input data for the model
+    :type dummy_input: torch.Tensor
+    :param runs: Number of runs to measure inference time, defaults to 30
+    :type runs: int, optional
+    :param warm_up_runs: Number of warm-up runs, defaults to 5
+    :type warm_up_runs: int, optional
+    :return: Dictionary containing computational cost information
+    """
+
+    computational_cost = {}
+
+    computational_cost["input_shape"] = get_data_shape(dummy_input)
+    computational_cost["size_mb"] = os.path.getsize(model_fname) / 1024**2
+    computational_cost["n_params"] = sum(p.numel() for p in model.parameters())
+
+    # Measure inference time with GPU synchronization
+    dummy_input = dummy_input if isinstance(dummy_input, tuple) else (dummy_input,)
+
+    for _ in range(warm_up_runs):
+        model(*dummy_input)
+
+    inference_times = []
+    for _ in range(runs):
+        torch.cuda.synchronize()
+        start_time = time.time()
+        model(*dummy_input)
+        torch.cuda.synchronize()
+        end_time = time.time()
+        inference_times.append(end_time - start_time)
+
+    computational_cost["time_s"] = np.mean(inference_times)
+
+    return computational_cost
 
 
 class ImageSegmentationTorchDataset(Dataset):
@@ -389,6 +456,20 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
 
         return pd.DataFrame(results)
 
+    def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
+        """Get different metrics related to the computational cost of the model
+
+        :param runs: Number of runs to measure inference time, defaults to 30
+        :type runs: int, optional
+        :param warm_up_runs: Number of warm-up runs, defaults to 5
+        :type warm_up_runs: int, optional
+        :return: Dictionary containing computational cost information
+        """
+        dummy_input = torch.randn(1, 3, *self.model_cfg["image_size"]).to(self.device)
+        return get_computational_cost(
+            self.model, self.model_fname, dummy_input, runs, warm_up_runs
+        )
+
 
 class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
 
@@ -647,3 +728,35 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         results.index.name = "metric"
 
         return results
+
+    def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
+        """Get different metrics related to the computational cost of the model
+
+        :param runs: Number of runs to measure inference time, defaults to 30
+        :type runs: int, optional
+        :param warm_up_runs: Number of warm-up runs, defaults to 5
+        :type warm_up_runs: int, optional
+        :return: Dictionary containing computational cost information
+        """
+        # Build dummy input data (process is a bit complex for LiDAR models)
+        dummy_points = np.random.rand(1000000, 4)
+        dummy_points, search_tree, _ = self.preprocess(dummy_points, self.model_cfg)
+
+        sampler = None
+        if "sampler" in self.model_cfg:
+            sampler = ul.Sampler(
+                point_cloud_size=dummy_points.shape[0],
+                search_tree=search_tree,
+                sampler_name=self.model_cfg["sampler"],
+                num_classes=self.n_classes,
+            )
+
+        dummy_input, _ = self.transform_input(dummy_points, self.model_cfg, sampler)
+        dummy_input = data_to_device(dummy_input, self.device)
+        if self.model_cfg["input_format"] != "o3d_kpconv":
+            dummy_input = unsqueeze_data(dummy_input)
+
+        # Get computational cost
+        return get_computational_cost(
+            self.model, self.model_fname, dummy_input, runs, warm_up_runs
+        )
