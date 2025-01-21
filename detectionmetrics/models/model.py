@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -15,13 +15,22 @@ import detectionmetrics.utils.io as uio
 class SegmentationModel(ABC):
     """Parent segmentation model class
 
-    :param ontology_fname: JSON file containing model output ontology
-    :type ontology_fname: str
+    :param model: Segmentation model object
+    :type model: Any
+    :param model_type: Model type (e.g. scripted, compiled, etc.)
+    :type model_type: str
     :param model_cfg: JSON file containing model configuration
     :type model_cfg: str
+    :param ontology_fname: JSON file containing model output ontology
+    :type ontology_fname: str
     """
 
-    def __init__(self, ontology_fname: str, model_cfg: str):
+    def __init__(
+        self, model: Any, model_type: str, model_cfg: str, ontology_fname: str
+    ):
+        self.model = model
+        self.model_type = model_type
+
         # Check that provided paths exist
         assert os.path.isfile(ontology_fname), "Ontology file not found"
         assert os.path.isfile(model_cfg), "Model configuration not found"
@@ -30,8 +39,6 @@ class SegmentationModel(ABC):
         self.ontology = uio.read_json(ontology_fname)
         self.model_cfg = uio.read_json(model_cfg)
         self.n_classes = len(self.ontology)
-
-        self.model = None
 
     @abstractmethod
     def inference(
@@ -94,15 +101,21 @@ class SegmentationModel(ABC):
 class ImageSegmentationModel(SegmentationModel):
     """Parent image segmentation model class
 
-    :param ontology_fname: JSON file containing model output ontology
-    :type ontology_fname: str
+    :param model: Image segmentation model object
+    :type model: Any
+    :param model_type: Model type (e.g. scripted, compiled, etc.)
+    :type model_type: str
     :param model_cfg: JSON file containing model configuration (e.g. image size or
     normalization parameters)
     :type model_cfg: str
+    :param ontology_fname: JSON file containing model output ontology
+    :type ontology_fname: str
     """
 
-    def __init__(self, ontology_fname: str, model_cfg: str):
-        super().__init__(ontology_fname, model_cfg)
+    def __init__(
+        self, model: Any, model_type: str, model_cfg: str, ontology_fname: str
+    ):
+        super().__init__(model, model_type, model_cfg, ontology_fname)
 
     @abstractmethod
     def inference(self, image: Image.Image) -> Image.Image:
@@ -141,15 +154,21 @@ class ImageSegmentationModel(SegmentationModel):
 class LiDARSegmentationModel(SegmentationModel):
     """Parent LiDAR segmentation model class
 
-    :param ontology_fname: JSON file containing model output ontology
-    :type ontology_fname: str
+    :param model: LiDAR segmentation model object
+    :type model: Any
+    :param model_type: Model type (e.g. scripted, compiled, etc.)
+    :type model_type: str
     :param model_cfg: JSON file containing model configuration (e.g. sampling method,
     input format, etc.)
     :type model_cfg: str
+    :param ontology_fname: JSON file containing model output ontology
+    :type ontology_fname: str
     """
 
-    def __init__(self, ontology_fname: str, model_cfg: str):
-        super().__init__(ontology_fname, model_cfg)
+    def __init__(
+        self, model: Any, model_type: str, model_cfg: str, ontology_fname: str
+    ):
+        super().__init__(model, model_type, model_cfg, ontology_fname)
 
     @abstractmethod
     def inference(self, points: np.ndarray) -> np.ndarray:
