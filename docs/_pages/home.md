@@ -47,8 +47,7 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td>LiDAR</td>
     <td>Rellis3D, GOOSE, custom GAIA format</td>
-    <td>PyTorch (RandLA-Net from <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>)</td>
-  </tr>
+    <td>PyTorch (tested with RandLA-Net and KPConv from <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>)</td>  </tr>
   <tr>
     <td>Object detection</td>
     <td>Image</td>
