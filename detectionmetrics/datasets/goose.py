@@ -23,11 +23,9 @@ def build_dataset(
     :type train_dataset_dir: str
     :param data_type: Data to be read (e.g. images or lidar)
     :type data_type: str
-    :param data_suffix: File suffix to be used to filter data (e.g., windshield_vis.png
-    or vls128.bin)
+    :param data_suffix: File suffix to be used to filter data (e.g., windshield_vis.png or vls128.bin)
     :type data_suffix: str
-    :param label_suffix: File suffix to be used to filter labels (e.g., vis_labelids.png
-    or goose.label)
+    :param label_suffix: File suffix to be used to filter labels (e.g., vis_labelids.png or goose.label)
     :type label_suffix: str
     :param val_dataset_dir: Directory containing validation data, defaults to None
     :type val_dataset_dir: str, optional
@@ -89,9 +87,9 @@ def build_dataset(
 class GOOSEImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
     """Specific class for GOOSE-styled image segmentation datasets. All data can be
     downloaded from the official webpage (https://goose-dataset.de):
-        train -> https://goose-dataset.de/storage/goose_2d_train.zip
-        val   -> https://goose-dataset.de/storage/goose_2d_val.zip
-        test  -> https://goose-dataset.de/storage/goose_2d_test.zip
+    train -> https://goose-dataset.de/storage/goose_2d_train.zip
+    val   -> https://goose-dataset.de/storage/goose_2d_val.zip
+    test  -> https://goose-dataset.de/storage/goose_2d_test.zip
 
     :param train_dataset_dir: Directory containing training data
     :type train_dataset_dir: str
@@ -133,9 +131,9 @@ class GOOSEImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
 class GOOSELiDARSegmentationDataset(dm_dataset.LiDARSegmentationDataset):
     """Specific class for GOOSE-styled LiDAR segmentation datasets. All data can be
     downloaded from the official webpage (https://goose-dataset.de):
-        train -> https://goose-dataset.de/storage/goose_3d_train.zip
-        val   -> https://goose-dataset.de/storage/goose_3d_val.zip
-        test  -> https://goose-dataset.de/storage/goose_3d_test.zip
+    train -> https://goose-dataset.de/storage/goose_3d_train.zip
+    val   -> https://goose-dataset.de/storage/goose_3d_val.zip
+    test  -> https://goose-dataset.de/storage/goose_3d_test.zip
 
     :param train_dataset_dir: Directory containing training data
     :type train_dataset_dir: str

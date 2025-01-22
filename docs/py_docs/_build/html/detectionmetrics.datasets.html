@@ -136,12 +136,10 @@
 <li><p><strong>dataset</strong> (<em>pd.DataFrame</em>) – LiDAR segmentation dataset as a pandas DataFrame</p></li>
 <li><p><strong>dataset_dir</strong> (<em>str</em>) – Dataset root directory</p></li>
 <li><p><strong>ontology</strong> (<em>dict</em>) – Dataset ontology definition</p></li>
-<li><p><strong>is_kitti_format</strong> – Whether the linked files in the dataset are stored in</p></li>
+<li><p><strong>is_kitti_format</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the linked files in the dataset are stored in SemanticKITTI format or not, defaults to True</p></li>
 </ul>
 </dd>
 </dl>
-<p>SemanticKITTI format or not, defaults to True
-:type is_kitti_format: bool, optional</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.datasets.dataset.LiDARSegmentationDataset.export">
 <span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.datasets.dataset.LiDARSegmentationDataset.export" title="Link to this definition"></a></dt>
@@ -280,12 +278,10 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.datasets.goose.</span></span><span class="sig-name descname"><span class="pre">GOOSEImageSegmentationDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataset_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataset_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.datasets.goose.GOOSEImageSegmentationDataset" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageSegmentationDataset</span></code></a></p>
 <p>Specific class for GOOSE-styled image segmentation datasets. All data can be
-downloaded from the official webpage (<a class="reference external" href="https://goose-dataset.de">https://goose-dataset.de</a>):</p>
-<blockquote>
-<div><p>train -&gt; <a class="reference external" href="https://goose-dataset.de/storage/goose_2d_train.zip">https://goose-dataset.de/storage/goose_2d_train.zip</a>
+downloaded from the official webpage (<a class="reference external" href="https://goose-dataset.de">https://goose-dataset.de</a>):
+train -&gt; <a class="reference external" href="https://goose-dataset.de/storage/goose_2d_train.zip">https://goose-dataset.de/storage/goose_2d_train.zip</a>
 val   -&gt; <a class="reference external" href="https://goose-dataset.de/storage/goose_2d_val.zip">https://goose-dataset.de/storage/goose_2d_val.zip</a>
 test  -&gt; <a class="reference external" href="https://goose-dataset.de/storage/goose_2d_test.zip">https://goose-dataset.de/storage/goose_2d_test.zip</a></p>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -302,12 +298,10 @@ test  -&gt; <a class="reference external" href="https://goose-dataset.de/storage
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.datasets.goose.</span></span><span class="sig-name descname"><span class="pre">GOOSELiDARSegmentationDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataset_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataset_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.datasets.goose.GOOSELiDARSegmentationDataset" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.datasets.dataset.LiDARSegmentationDataset" title="detectionmetrics.datasets.dataset.LiDARSegmentationDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">LiDARSegmentationDataset</span></code></a></p>
 <p>Specific class for GOOSE-styled LiDAR segmentation datasets. All data can be
-downloaded from the official webpage (<a class="reference external" href="https://goose-dataset.de">https://goose-dataset.de</a>):</p>
-<blockquote>
-<div><p>train -&gt; <a class="reference external" href="https://goose-dataset.de/storage/goose_3d_train.zip">https://goose-dataset.de/storage/goose_3d_train.zip</a>
+downloaded from the official webpage (<a class="reference external" href="https://goose-dataset.de">https://goose-dataset.de</a>):
+train -&gt; <a class="reference external" href="https://goose-dataset.de/storage/goose_3d_train.zip">https://goose-dataset.de/storage/goose_3d_train.zip</a>
 val   -&gt; <a class="reference external" href="https://goose-dataset.de/storage/goose_3d_val.zip">https://goose-dataset.de/storage/goose_3d_val.zip</a>
 test  -&gt; <a class="reference external" href="https://goose-dataset.de/storage/goose_3d_test.zip">https://goose-dataset.de/storage/goose_3d_test.zip</a></p>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -328,21 +322,19 @@ test  -&gt; <a class="reference external" href="https://goose-dataset.de/storage
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>train_dataset_dir</strong> (<em>str</em>) – Directory containing training data</p></li>
 <li><p><strong>data_type</strong> (<em>str</em>) – Data to be read (e.g. images or lidar)</p></li>
-<li><p><strong>data_suffix</strong> – File suffix to be used to filter data (e.g., windshield_vis.png</p></li>
+<li><p><strong>data_suffix</strong> (<em>str</em>) – File suffix to be used to filter data (e.g., windshield_vis.png or vls128.bin)</p></li>
+<li><p><strong>label_suffix</strong> (<em>str</em>) – File suffix to be used to filter labels (e.g., vis_labelids.png or goose.label)</p></li>
+<li><p><strong>val_dataset_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory containing validation data, defaults to None</p></li>
+<li><p><strong>test_dataset_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory containing test data, defaults to None</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dataset and onotology</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[dict, dict]</p>
+</dd>
 </dl>
-<p>or vls128.bin)
-:type data_suffix: str
-:param label_suffix: File suffix to be used to filter labels (e.g., vis_labelids.png
-or goose.label)
-:type label_suffix: str
-:param val_dataset_dir: Directory containing validation data, defaults to None
-:type val_dataset_dir: str, optional
-:param test_dataset_dir: Directory containing test data, defaults to None
-:type test_dataset_dir: str, optional
-:return: Dataset and onotology
-:rtype: Tuple[dict, dict]</p>
 </dd></dl>
 
 </section>
@@ -353,25 +345,20 @@ or goose.label)
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.datasets.rellis3d.</span></span><span class="sig-name descname"><span class="pre">Rellis3DImageSegmentationDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.datasets.rellis3d.Rellis3DImageSegmentationDataset" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageSegmentationDataset</span></code></a></p>
 <p>Specific class for Rellis3D-styled image segmentation datasets. All data can
-be downloaded from the official repo (<a class="reference external" href="https://github.com/unmannedlab/RELLIS-3D">https://github.com/unmannedlab/RELLIS-3D</a>):</p>
-<blockquote>
-<div><p>images   -&gt; <a class="reference external" href="https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV">https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV</a>
+be downloaded from the official repo (<a class="reference external" href="https://github.com/unmannedlab/RELLIS-3D">https://github.com/unmannedlab/RELLIS-3D</a>):
+images   -&gt; <a class="reference external" href="https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV">https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV</a>
 labels   -&gt; <a class="reference external" href="https://drive.google.com/file/d/16URBUQn_VOGvUqfms-0I8HHKMtjPHsu5">https://drive.google.com/file/d/16URBUQn_VOGvUqfms-0I8HHKMtjPHsu5</a>
 split    -&gt; <a class="reference external" href="https://drive.google.com/file/d/1zHmnVaItcYJAWat3Yti1W_5Nfux194WQ">https://drive.google.com/file/d/1zHmnVaItcYJAWat3Yti1W_5Nfux194WQ</a>
 ontology -&gt; <a class="reference external" href="https://drive.google.com/file/d/1K8Zf0ju_xI5lnx3NTDLJpVTs59wmGPI6">https://drive.google.com/file/d/1K8Zf0ju_xI5lnx3NTDLJpVTs59wmGPI6</a></p>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset_dir</strong> – Directory where both RGB images and annotations have been</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_dir</strong> (<em>str</em>) – Directory where both RGB images and annotations have been extracted to</p></li>
+<li><p><strong>split_dir</strong> (<em>str</em>) – Directory where train, val, and test files (.lst) have been extracted to</p></li>
+<li><p><strong>ontology_fname</strong> (<em>str</em>) – YAML file contained in the ontology compressed directory</p></li>
+</ul>
 </dd>
 </dl>
-<p>extracted to
-:type dataset_dir: str
-:param split_dir: Directory where train, val, and test files (.lst) have been
-extracted to
-:type split_dir: str
-:param ontology_fname: YAML file contained in the ontology compressed directory
-:type ontology_fname: str</p>
 </dd></dl>
 
 <dl class="py class">
@@ -379,25 +366,20 @@ extracted to
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.datasets.rellis3d.</span></span><span class="sig-name descname"><span class="pre">Rellis3DLiDARSegmentationDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.datasets.rellis3d.Rellis3DLiDARSegmentationDataset" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.datasets.dataset.LiDARSegmentationDataset" title="detectionmetrics.datasets.dataset.LiDARSegmentationDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">LiDARSegmentationDataset</span></code></a></p>
 <p>Specific class for Rellis3D-styled LiDAR segmentation datasets. All data can
-be downloaded from the official repo (<a class="reference external" href="https://github.com/unmannedlab/RELLIS-3D">https://github.com/unmannedlab/RELLIS-3D</a>):</p>
-<blockquote>
-<div><p>points   -&gt; <a class="reference external" href="https://drive.google.com/file/d/1lDSVRf_kZrD0zHHMsKJ0V1GN9QATR4wH">https://drive.google.com/file/d/1lDSVRf_kZrD0zHHMsKJ0V1GN9QATR4wH</a>
+be downloaded from the official repo (<a class="reference external" href="https://github.com/unmannedlab/RELLIS-3D">https://github.com/unmannedlab/RELLIS-3D</a>):
+points   -&gt; <a class="reference external" href="https://drive.google.com/file/d/1lDSVRf_kZrD0zHHMsKJ0V1GN9QATR4wH">https://drive.google.com/file/d/1lDSVRf_kZrD0zHHMsKJ0V1GN9QATR4wH</a>
 labels   -&gt; <a class="reference external" href="https://drive.google.com/file/d/12bsblHXtob60KrjV7lGXUQTdC5PhV8Er">https://drive.google.com/file/d/12bsblHXtob60KrjV7lGXUQTdC5PhV8Er</a>
 split    -&gt; <a class="reference external" href="https://drive.google.com/file/d/1raQJPySyqDaHpc53KPnJVl3Bln6HlcVS">https://drive.google.com/file/d/1raQJPySyqDaHpc53KPnJVl3Bln6HlcVS</a>
 ontology -&gt; <a class="reference external" href="https://drive.google.com/file/d/1K8Zf0ju_xI5lnx3NTDLJpVTs59wmGPI6">https://drive.google.com/file/d/1K8Zf0ju_xI5lnx3NTDLJpVTs59wmGPI6</a></p>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset_dir</strong> (<em>str</em>) – Directory where both points and labels have been extracted to</p></li>
-<li><p><strong>split_dir</strong> – Directory where train, val, and test files (.lst) have been</p></li>
+<li><p><strong>split_dir</strong> (<em>str</em>) – Directory where train, val, and test files (.lst) have been extracted to</p></li>
+<li><p><strong>ontology_fname</strong> (<em>str</em>) – YAML file contained in the ontology compressed directory</p></li>
 </ul>
 </dd>
 </dl>
-<p>extracted to
-:type split_dir: str
-:param ontology_fname: YAML file contained in the ontology compressed directory
-:type ontology_fname: str</p>
 </dd></dl>
 
 <dl class="py function">
@@ -406,18 +388,19 @@ ontology -&gt; <a class="reference external" href="https://drive.google.com/file
 <dd><p>Build dataset and ontology dictionaries from Rellis3D dataset structure</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset_dir</strong> – Directory where both RGB images and annotations have been</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_dir</strong> (<em>str</em>) – Directory where both RGB images and annotations have been extracted to</p></li>
+<li><p><strong>split_fnames</strong> – Dictionary that contains the paths where train, val, and test split files (.lst) have been extracted to</p></li>
+<li><p><strong>ontology_fname</strong> (<em>str</em>) – YAML file contained in the ontology compressed directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dataset and onotology</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[dict, dict]</p>
 </dd>
 </dl>
-<p>extracted to
-:type dataset_dir: str
-:param split_fnames: Dictionary that contains the paths where train, val, and test
-split files (.lst) have been extracted to
-:type split_dir: str
-:param ontology_fname: YAML file contained in the ontology compressed directory
-:type ontology_fname: str
-:return: Dataset and onotology
-:rtype: Tuple[dict, dict]</p>
 </dd></dl>
 
 </section>

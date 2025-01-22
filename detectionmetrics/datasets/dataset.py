@@ -147,8 +147,7 @@ class LiDARSegmentationDataset(SegmentationDataset):
     :type dataset_dir: str
     :param ontology: Dataset ontology definition
     :type ontology: dict
-    :param is_kitti_format: Whether the linked files in the dataset are stored in
-    SemanticKITTI format or not, defaults to True
+    :param is_kitti_format: Whether the linked files in the dataset are stored in SemanticKITTI format or not, defaults to True
     :type is_kitti_format: bool, optional
     """
 

@@ -255,24 +255,40 @@ class LiDARSegmentationTorchDataset(Dataset):
 
 class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
 
-    def __init__(self, model_fname: str, model_cfg: str, ontology_fname: str):
+    def __init__(
+        self,
+        model: Union[str, torch.nn.Module],
+        model_cfg: str,
+        ontology_fname: str,
+    ):
         """Image segmentation model for PyTorch framework
 
-        :param model_fname: PyTorch model saved using TorchScript
-        :type model_fname: str
+        :param model: Either the filename of a TorchScript model or the model already loaded into an arbitrary PyTorch module.
+        :type model: Union[str, torch.nn.Module]
         :param model_cfg: JSON file containing model configuration
         :type model_cfg: str
         :param ontology_fname: JSON file containing model output ontology
         :type ontology_fname: str
         """
-        super().__init__(model_fname, ontology_fname, model_cfg)
-
+        # Get device (CPU or GPU)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        # Check that provided path exist and load model
-        assert os.path.isfile(model_fname), "Model file not found"
-        self.model = torch.jit.load(model_fname).to(self.device)
-        self.model.eval()
+        # If 'model' contains a string, check that it is a valid filename and load model
+        if isinstance(model, str):
+            assert os.path.isfile(model), "TorchScript Model file not found"
+            model_fname = model
+            model = torch.jit.load(model)
+            model_type = "compiled"
+        # Otherwise, check that it is a PyTorch module
+        elif isinstance(model, torch.nn.Module):
+            model_fname = None
+            model_type = "native"
+        else:
+            raise ValueError("Model must be either a filename or a PyTorch module")
+
+        # Init parent class and model
+        super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
+        self.model = self.model.to(self.device).eval()
 
         # Init transformations for input images, output labels, and GT labels
         self.transform_input = []
@@ -352,13 +368,11 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
-        :param dataset: Image segmentation dataset for which the evaluation will
-        be performed
+        :param dataset: Image segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
         :param split: Split to be used from the dataset, defaults to "all"
         :type split: str, optional
-        :param ontology_translation: JSON file containing translation between dataset
-        and model output ontologies
+        :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
@@ -473,24 +487,37 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
 
 class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
 
-    def __init__(self, model_fname: str, model_cfg: str, ontology_fname: str):
+    def __init__(
+        self, model: Union[str, torch.nn.Module], model_cfg: str, ontology_fname: str
+    ):
         """LiDAR segmentation model for PyTorch framework
 
-        :param model_fname: PyTorch model saved using TorchScript
-        :type model_fname: str
+        :param model: Either the filename of a TorchScript model or the model already loaded into an arbitrary PyTorch module.
+        :type model: Union[str, torch.nn.Module]
         :param model_cfg: JSON file containing model configuration
         :type model_cfg: str
         :param ontology_fname: JSON file containing model output ontology
         :type ontology_fname: str
         """
-        super().__init__(model_fname, ontology_fname, model_cfg)
-
+        # Get device (CPU or GPU)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        # Check that provided path exist and load model
-        assert os.path.isfile(model_fname), "Model file not found"
-        self.model = torch.jit.load(model_fname).to(self.device)
-        self.model.eval()
+        # If 'model' contains a string, check that it is a valid filename and load model
+        if isinstance(model, str):
+            assert os.path.isfile(model), "TorchScript Model file not found"
+            model_fname = model
+            model = torch.jit.load(model)
+            model_type = "compiled"
+        # Otherwise, check that it is a PyTorch module
+        elif isinstance(model, torch.nn.Module):
+            model_fname = None
+            model_type = "native"
+        else:
+            raise ValueError("Model must be either a filename or a PyTorch module")
+
+        # Init parent class and model
+        super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
+        self.model = self.model.to(self.device).eval()
 
         # Init model specific functions
         if self.model_cfg["input_format"] == "o3d_randlanet":  # Open3D RandLaNet
@@ -587,13 +614,11 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
     ) -> pd.DataFrame:
         """Perform evaluation for a LiDAR segmentation dataset
 
-        :param dataset: LiDAR segmentation dataset for which the evaluation will
-        be performed
+        :param dataset: LiDAR segmentation dataset for which the evaluation will be performed
         :type dataset: LiDARSegmentationDataset
         :param split: Split to be used from the dataset, defaults to "all"
         :type split: str, optional
-        :param ontology_translation: JSON file containing translation between dataset
-        and model output ontologies
+        :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame

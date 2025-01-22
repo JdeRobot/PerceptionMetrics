@@ -14,11 +14,9 @@ def build_dataset(
 ) -> Tuple[dict, dict]:
     """Build dataset and ontology dictionaries from Rellis3D dataset structure
 
-    :param dataset_dir: Directory where both RGB images and annotations have been
-    extracted to
+    :param dataset_dir: Directory where both RGB images and annotations have been extracted to
     :type dataset_dir: str
-    :param split_fnames: Dictionary that contains the paths where train, val, and test
-    split files (.lst) have been extracted to
+    :param split_fnames: Dictionary that contains the paths where train, val, and test split files (.lst) have been extracted to
     :type split_dir: str
     :param ontology_fname: YAML file contained in the ontology compressed directory
     :type ontology_fname: str
@@ -78,16 +76,14 @@ def build_dataset(
 class Rellis3DImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
     """Specific class for Rellis3D-styled image segmentation datasets. All data can
     be downloaded from the official repo (https://github.com/unmannedlab/RELLIS-3D):
-        images   -> https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV
-        labels   -> https://drive.google.com/file/d/16URBUQn_VOGvUqfms-0I8HHKMtjPHsu5
-        split    -> https://drive.google.com/file/d/1zHmnVaItcYJAWat3Yti1W_5Nfux194WQ
-        ontology -> https://drive.google.com/file/d/1K8Zf0ju_xI5lnx3NTDLJpVTs59wmGPI6
+    images   -> https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV
+    labels   -> https://drive.google.com/file/d/16URBUQn_VOGvUqfms-0I8HHKMtjPHsu5
+    split    -> https://drive.google.com/file/d/1zHmnVaItcYJAWat3Yti1W_5Nfux194WQ
+    ontology -> https://drive.google.com/file/d/1K8Zf0ju_xI5lnx3NTDLJpVTs59wmGPI6
 
-    :param dataset_dir: Directory where both RGB images and annotations have been
-    extracted to
+    :param dataset_dir: Directory where both RGB images and annotations have been extracted to
     :type dataset_dir: str
-    :param split_dir: Directory where train, val, and test files (.lst) have been
-    extracted to
+    :param split_dir: Directory where train, val, and test files (.lst) have been extracted to
     :type split_dir: str
     :param ontology_fname: YAML file contained in the ontology compressed directory
     :type ontology_fname: str
@@ -112,15 +108,14 @@ class Rellis3DImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
 class Rellis3DLiDARSegmentationDataset(dm_dataset.LiDARSegmentationDataset):
     """Specific class for Rellis3D-styled LiDAR segmentation datasets. All data can
     be downloaded from the official repo (https://github.com/unmannedlab/RELLIS-3D):
-        points   -> https://drive.google.com/file/d/1lDSVRf_kZrD0zHHMsKJ0V1GN9QATR4wH
-        labels   -> https://drive.google.com/file/d/12bsblHXtob60KrjV7lGXUQTdC5PhV8Er
-        split    -> https://drive.google.com/file/d/1raQJPySyqDaHpc53KPnJVl3Bln6HlcVS
-        ontology -> https://drive.google.com/file/d/1K8Zf0ju_xI5lnx3NTDLJpVTs59wmGPI6
+    points   -> https://drive.google.com/file/d/1lDSVRf_kZrD0zHHMsKJ0V1GN9QATR4wH
+    labels   -> https://drive.google.com/file/d/12bsblHXtob60KrjV7lGXUQTdC5PhV8Er
+    split    -> https://drive.google.com/file/d/1raQJPySyqDaHpc53KPnJVl3Bln6HlcVS
+    ontology -> https://drive.google.com/file/d/1K8Zf0ju_xI5lnx3NTDLJpVTs59wmGPI6
 
     :param dataset_dir: Directory where both points and labels have been extracted to
     :type dataset_dir: str
-    :param split_dir: Directory where train, val, and test files (.lst) have been
-    extracted to
+    :param split_dir: Directory where train, val, and test files (.lst) have been extracted to
     :type split_dir: str
     :param ontology_fname: YAML file contained in the ontology compressed directory
     :type ontology_fname: str

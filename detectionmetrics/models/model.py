@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -15,27 +15,40 @@ import detectionmetrics.utils.io as uio
 class SegmentationModel(ABC):
     """Parent segmentation model class
 
-    :param model_fname: Model file
-    :type model_fname: str
-    :param ontology_fname: JSON file containing model output ontology
-    :type ontology_fname: str
+    :param model: Segmentation model object
+    :type model: Any
+    :param model_type: Model type (e.g. scripted, compiled, etc.)
+    :type model_type: str
     :param model_cfg: JSON file containing model configuration
     :type model_cfg: str
+    :param ontology_fname: JSON file containing model output ontology
+    :type ontology_fname: str
+    :param model_fname: Model file or directory, defaults to None
+    :type model_fname: Optional[str], optional
     """
 
-    def __init__(self, model_fname:str, ontology_fname: str, model_cfg: str):
+    def __init__(
+        self,
+        model: Any,
+        model_type: str,
+        model_cfg: str,
+        ontology_fname: str,
+        model_fname: Optional[str] = None,
+    ):
+        self.model = model
+        self.model_type = model_type
+        self.model_fname = model_fname
+
         # Check that provided paths exist
-        assert os.path.isfile(model_fname), "Model file not found"
         assert os.path.isfile(ontology_fname), "Ontology file not found"
         assert os.path.isfile(model_cfg), "Model configuration not found"
+        if self.model_fname is not None:
+            assert os.path.exists(model_fname), "Model file or directory not found"
 
         # Read ontology and model configuration
         self.ontology = uio.read_json(ontology_fname)
         self.model_cfg = uio.read_json(model_cfg)
         self.n_classes = len(self.ontology)
-
-        self.model = None
-        self.model_fname = model_fname
 
     @abstractmethod
     def inference(
@@ -63,8 +76,7 @@ class SegmentationModel(ABC):
         :type dataset: ImageSegmentationDataset
         :param split: Split to be used from the dataset, defaults to "all"
         :type split: str, optional
-        :param ontology_translation: JSON file containing translation between dataset
-        and model output ontologies
+        :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
@@ -90,8 +102,7 @@ class SegmentationModel(ABC):
 
         :param dataset_ontology: Image or LiDAR dataset ontology
         :type dataset_ontology: dict
-        :param ontology_translation: JSON file containing translation between model and
-        dataset ontologies, defaults to None
+        :param ontology_translation: JSON file containing translation between model and dataset ontologies, defaults to None
         :type ontology_translation: Optional[str], optional
         """
         lut_ontology = None
@@ -110,17 +121,27 @@ class SegmentationModel(ABC):
 class ImageSegmentationModel(SegmentationModel):
     """Parent image segmentation model class
 
-    :param model_fname: Model file
-    :type model_fname: str
+    :param model: Image segmentation model object
+    :type model: Any
+    :param model_type: Model type (e.g. scripted, compiled, etc.)
+    :type model_type: str
+    :param model_cfg: JSON file containing model configuration (e.g. image size or normalization parameters)
+    :type model_cfg: str
     :param ontology_fname: JSON file containing model output ontology
     :type ontology_fname: str
-    :param model_cfg: JSON file containing model configuration (e.g. image size or
-    normalization parameters)
-    :type model_cfg: str
+    :param model_fname: Model file or directory
+    :type model_fname: Optional[str], optional
     """
 
-    def __init__(self, model_fname, ontology_fname: str, model_cfg: str):
-        super().__init__(model_fname, ontology_fname, model_cfg)
+    def __init__(
+        self,
+        model: Any,
+        model_type: str,
+        model_cfg: str,
+        ontology_fname: str,
+        model_fname: Optional[str] = None,
+    ):
+        super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
 
     @abstractmethod
     def inference(self, image: Image.Image) -> Image.Image:
@@ -142,13 +163,11 @@ class ImageSegmentationModel(SegmentationModel):
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
-        :param dataset: Image segmentation dataset for which the evaluation will
-        be performed
+        :param dataset: Image segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
         :param split: Split to be used from the dataset, defaults to "all"
         :type split: str, optional
-        :param ontology_translation: JSON file containing translation between dataset
-        and model output ontologies
+        :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
@@ -159,17 +178,27 @@ class ImageSegmentationModel(SegmentationModel):
 class LiDARSegmentationModel(SegmentationModel):
     """Parent LiDAR segmentation model class
 
-    :param model_fname: Model file
-    :type model_fname: str
+    :param model: LiDAR segmentation model object
+    :type model: Any
+    :param model_type: Model type (e.g. scripted, compiled, etc.)
+    :type model_type: str
+    :param model_cfg: JSON file containing model configuration (e.g. sampling method, input format, etc.)
+    :type model_cfg: str
     :param ontology_fname: JSON file containing model output ontology
     :type ontology_fname: str
-    :param model_cfg: JSON file containing model configuration (e.g. sampling method,
-    input format, etc.)
-    :type model_cfg: str
+    :param model_fname: Model file or directory
+    :type model_fname: Optional[str], optional
     """
 
-    def __init__(self, model_fname, ontology_fname: str, model_cfg: str):
-        super().__init__(model_fname, ontology_fname, model_cfg)
+    def __init__(
+        self,
+        model: Any,
+        model_type: str,
+        model_cfg: str,
+        ontology_fname: str,
+        model_fname: Optional[str] = None,
+    ):
+        super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
 
     @abstractmethod
     def inference(self, points: np.ndarray) -> np.ndarray:
@@ -191,13 +220,11 @@ class LiDARSegmentationModel(SegmentationModel):
     ) -> pd.DataFrame:
         """Perform evaluation for a LiDAR segmentation dataset
 
-        :param dataset: LiDAR segmentation dataset for which the evaluation will be
-        be performed
+        :param dataset: LiDAR segmentation dataset for which the evaluation will be performed
         :type dataset: LiDARSegmentationDataset
         :param split: Split to be used from the dataset, defaults to "all"
         :type split: str, optional
-        :param ontology_translation: JSON file containing translation between dataset
-        and model output ontologies
+        :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame

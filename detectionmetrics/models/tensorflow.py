@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -116,25 +116,43 @@ class ImageSegmentationTensorflowDataset:
 class TensorflowImageSegmentationModel(ImageSegmentationModel):
     """Image segmentation model for Tensorflow framework
 
-    :param model_fname: Tensorflow model in SavedModel format
-    :type model_fname: str
+
+    :param model: Either the filename of a Tensorflow model in SavedModel format or the model already loaded into an arbitrary Tensorflow or Keras model.
+    :type model: Union[str, torch.nn.Module]
     :param model_cfg: JSON file containing model configuration
     :type model_cfg: str
     :param ontology_fname: JSON file containing model output ontology
     :type ontology_fname: str
     """
 
-    def __init__(self, model_fname: str, model_cfg: str, ontology_fname: str):
-        super().__init__(model_fname, ontology_fname, model_cfg)
+    def __init__(
+        self,
+        model: Union[str, tf.Module, tf.keras.Model],
+        model_cfg: str,
+        ontology_fname: str,
+    ):
+        # If 'model' contains a string, check that it is a valid filename and load model
+        if isinstance(model, str):
+            assert os.path.isdir(model), "SavedModel directory not found"
+            model_fname = model
+            model = tf.saved_model.load(model)
+            model_type = "compiled"
+        # Otherwise, check that it is a Tensorflow or Keras model
+        elif isinstance(model, tf.Module) or isinstance(model, tf.keras.Model):
+            model_fname = None
+            model_type = "native"
+        else:
+            raise ValueError(
+                "Model must be either a SavedModel directory or a TF/Keras model"
+            )
 
-        # Check that provided path exist and load model
-        assert os.path.isdir(model_fname), "Model file not found"
-        self.model = tf.saved_model.load(model_fname)
+        super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
 
         # Init transformation for input images
         def t_in(image):
             tensor = tf.convert_to_tensor(image)
             tensor = tf_image.resize(images=tensor, size=self.model_cfg["image_size"])
+            tensor = tf.expand_dims(tensor, axis=0)
             return tensor
 
         self.t_in = t_in
@@ -154,8 +172,13 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         """
         tensor = self.t_in(image)
 
-        # TODO: check if this is consistent across different models
-        result = self.model.signatures["serving_default"](tensor)
+        if self.model_type == "native":
+            result = self.model(tensor)
+        elif self.model_type == "compiled":
+            result = self.model.signatures["serving_default"](tensor)
+        else:
+            raise ValueError("Model type not recognized")
+
         if isinstance(result, dict):
             result = list(result.values())[0]
 
@@ -169,13 +192,11 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
-        :param dataset: Image segmentation dataset for which the evaluation will
-        be performed
+        :param dataset: Image segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
         :param split: Split to be used from the dataset, defaults to "all"
         :type split: str, optional
-        :param ontology_translation: JSON file containing translation between dataset
-        and model output ontologies
+        :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
@@ -200,8 +221,13 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         # Evaluation loop
         pbar = tqdm(dataset.dataset)
         for image, label in pbar:
-            # TODO: check if this is consistent across different models
-            pred = self.model.signatures["serving_default"](image)
+            if self.model_type == "native":
+                pred = self.model(image)
+            elif self.model_type == "compiled":
+                pred = self.model.signatures["serving_default"](image)
+            else:
+                raise ValueError("Model type not recognized")
+
             if isinstance(pred, dict):
                 pred = list(pred.values())[0]
 

@@ -41,7 +41,7 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td>LiDAR</td>
     <td>Rellis3D, GOOSE, custom GAIA format</td>
-    <td>PyTorch (RandLA-Net and KPConv from <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>)</td>  </tr>
+    <td>PyTorch (tested with RandLA-Net and KPConv from <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>)</td>  </tr>
   <tr>
     <td>Object detection</td>
     <td>Image</td>
@@ -51,7 +51,7 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
 </tbody>
 </table>
 
-More details about the specific metrics and input/output formats required fow each framework are provided in the [Compatibility](/v2/compatibility) section in our webpage.
+More details about the specific metrics and input/output formats required fow each framework are provided in the [Compatibility](https://jderobot.github.io/DetectionMetrics/v2/compatibility/) section in our webpage.
 
 
 # Installation
@@ -100,7 +100,7 @@ As of now, *DetectionMetrics* can either be used as a Python library or as a com
 You can check the `examples` directory for inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 
 ### Command-line interface
-DetectionMetrics currently provides a CLI with two commands, `dm_evaluate` and `dm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files. More details are provided in [DetectionMetrics website](https://jderobot.github.io/DetectionMetrics/v2/usage/cli).
+DetectionMetrics currently provides a CLI with two commands, `dm_evaluate` and `dm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files. More details are provided in [DetectionMetrics website](https://jderobot.github.io/DetectionMetrics/v2/usage/#command-line-interface).
 
 <h1 id="v1">DetectionMetrics v1</h1>
 
@@ -132,7 +132,7 @@ Our previous release, ***DetectionMetrics v1***, introduced a versatile suite fo
   doi = {10.3390/s22124575},
 }
 ```
-# How to Contribute 
+# How to Contribute
 _To make your first contribution, follow this [Guide](https://github.com/JdeRobot/DetectionMetrics/blob/master/CONTRIBUTING.md)._
 
 # Acknowledgements

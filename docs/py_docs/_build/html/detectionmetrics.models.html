@@ -94,37 +94,38 @@
 <span id="detectionmetrics-models-model-module"></span><h2>detectionmetrics.models.model module<a class="headerlink" href="#module-detectionmetrics.models.model" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.model.ImageSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">ImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.ImageSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">ImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.ImageSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.SegmentationModel" title="detectionmetrics.models.model.SegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationModel</span></code></a></p>
 <p>Parent image segmentation model class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Any</em>) – Image segmentation model object</p></li>
+<li><p><strong>model_type</strong> (<em>str</em>) – Model type (e.g. scripted, compiled, etc.)</p></li>
+<li><p><strong>model_cfg</strong> (<em>str</em>) – JSON file containing model configuration (e.g. image size or normalization parameters)</p></li>
 <li><p><strong>ontology_fname</strong> (<em>str</em>) – JSON file containing model output ontology</p></li>
-<li><p><strong>model_cfg</strong> – JSON file containing model configuration (e.g. image size or</p></li>
 </ul>
 </dd>
 </dl>
-<p>normalization parameters)
-:type model_cfg: str</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.model.ImageSegmentationModel.eval">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><span class="pre">ImageSegmentationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_translation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#detectionmetrics.models.model.ImageSegmentationModel.eval" title="Link to this definition"></a></dt>
 <dd><p>Perform evaluation for an image segmentation dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> – Image segmentation dataset for which the evaluation will</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><em>ImageSegmentationDataset</em></a>) – Image segmentation dataset for which the evaluation will be performed</p></li>
+<li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – Split to be used from the dataset, defaults to “all”</p></li>
+<li><p><strong>ontology_translation</strong> (<em>str</em><em>, </em><em>optional</em>) – JSON file containing translation between dataset and model output ontologies</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing evaluation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
-<p>be performed
-:type dataset: ImageSegmentationDataset
-:param split: Split to be used from the dataset, defaults to “all”
-:type split: str, optional
-:param ontology_translation: JSON file containing translation between dataset
-and model output ontologies
-:type ontology_translation: str, optional
-:return: DataFrame containing evaluation results
-:rtype: pd.DataFrame</p>
 </dd></dl>
 
 <dl class="py method">
@@ -148,37 +149,38 @@ and model output ontologies
 
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.model.LiDARSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">LiDARSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.LiDARSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">LiDARSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.LiDARSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.SegmentationModel" title="detectionmetrics.models.model.SegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationModel</span></code></a></p>
 <p>Parent LiDAR segmentation model class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Any</em>) – LiDAR segmentation model object</p></li>
+<li><p><strong>model_type</strong> (<em>str</em>) – Model type (e.g. scripted, compiled, etc.)</p></li>
+<li><p><strong>model_cfg</strong> (<em>str</em>) – JSON file containing model configuration (e.g. sampling method, input format, etc.)</p></li>
 <li><p><strong>ontology_fname</strong> (<em>str</em>) – JSON file containing model output ontology</p></li>
-<li><p><strong>model_cfg</strong> – JSON file containing model configuration (e.g. sampling method,</p></li>
 </ul>
 </dd>
 </dl>
-<p>input format, etc.)
-:type model_cfg: str</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.model.LiDARSegmentationModel.eval">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.LiDARSegmentationDataset" title="detectionmetrics.datasets.dataset.LiDARSegmentationDataset"><span class="pre">LiDARSegmentationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_translation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#detectionmetrics.models.model.LiDARSegmentationModel.eval" title="Link to this definition"></a></dt>
 <dd><p>Perform evaluation for a LiDAR segmentation dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> – LiDAR segmentation dataset for which the evaluation will be</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.LiDARSegmentationDataset" title="detectionmetrics.datasets.dataset.LiDARSegmentationDataset"><em>LiDARSegmentationDataset</em></a>) – LiDAR segmentation dataset for which the evaluation will be performed</p></li>
+<li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – Split to be used from the dataset, defaults to “all”</p></li>
+<li><p><strong>ontology_translation</strong> (<em>str</em><em>, </em><em>optional</em>) – JSON file containing translation between dataset and model output ontologies</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing evaluation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
-<p>be performed
-:type dataset: LiDARSegmentationDataset
-:param split: Split to be used from the dataset, defaults to “all”
-:type split: str, optional
-:param ontology_translation: JSON file containing translation between dataset
-and model output ontologies
-:type ontology_translation: str, optional
-:return: DataFrame containing evaluation results
-:rtype: pd.DataFrame</p>
 </dd></dl>
 
 <dl class="py method">
@@ -202,14 +204,16 @@ and model output ontologies
 
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.model.SegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">SegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.SegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">SegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.SegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Parent segmentation model class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ontology_fname</strong> (<em>str</em>) – JSON file containing model output ontology</p></li>
+<li><p><strong>model</strong> (<em>Any</em>) – Segmentation model object</p></li>
+<li><p><strong>model_type</strong> (<em>str</em>) – Model type (e.g. scripted, compiled, etc.)</p></li>
 <li><p><strong>model_cfg</strong> (<em>str</em>) – JSON file containing model configuration</p></li>
+<li><p><strong>ontology_fname</strong> (<em>str</em>) – JSON file containing model output ontology</p></li>
 </ul>
 </dd>
 </dl>
@@ -222,14 +226,16 @@ and model output ontologies
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset</strong> (<a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><em>ImageSegmentationDataset</em></a>) – Segmentation dataset for which the evaluation will be performed</p></li>
 <li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – Split to be used from the dataset, defaults to “all”</p></li>
-<li><p><strong>ontology_translation</strong> – JSON file containing translation between dataset</p></li>
+<li><p><strong>ontology_translation</strong> (<em>str</em><em>, </em><em>optional</em>) – JSON file containing translation between dataset and model output ontologies</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing evaluation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
 </dl>
-<p>and model output ontologies
-:type ontology_translation: str, optional
-:return: DataFrame containing evaluation results
-:rtype: pd.DataFrame</p>
 </dd></dl>
 
 <dl class="py method">
@@ -240,12 +246,10 @@ and model output ontologies
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset_ontology</strong> (<em>dict</em>) – Image or LiDAR dataset ontology</p></li>
-<li><p><strong>ontology_translation</strong> – JSON file containing translation between model and</p></li>
+<li><p><strong>ontology_translation</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – JSON file containing translation between model and dataset ontologies, defaults to None</p></li>
 </ul>
 </dd>
 </dl>
-<p>dataset ontologies, defaults to None
-:type ontology_translation: Optional[str], optional</p>
 </dd></dl>
 
 <dl class="py method">
@@ -272,7 +276,7 @@ and model output ontologies
 <span id="detectionmetrics-models-onnx-module"></span><h2>detectionmetrics.models.onnx module<a class="headerlink" href="#module-detectionmetrics.models.onnx" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.onnx.OnnxImageSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.onnx.</span></span><span class="sig-name descname"><span class="pre">OnnxImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.onnx.OnnxImageSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.onnx.</span></span><span class="sig-name descname"><span class="pre">OnnxImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.onnx.OnnxImageSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.ImageSegmentationModel" title="detectionmetrics.models.model.ImageSegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageSegmentationModel</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.onnx.OnnxImageSegmentationModel.eval">
@@ -280,18 +284,19 @@ and model output ontologies
 <dd><p>Perform evaluation for an image segmentation dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> – Image segmentation dataset for which the evaluation will</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><em>ImageSegmentationDataset</em></a>) – Image segmentation dataset for which the evaluation will be performed</p></li>
+<li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – Split to be used from the dataset, defaults to “all”</p></li>
+<li><p><strong>ontology_translation</strong> (<em>str</em><em>, </em><em>optional</em>) – JSON file containing translation between dataset and model output ontologies</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing evaluation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
-<p>be performed
-:type dataset: ImageSegmentationDataset
-:param split: Split to be used from the dataset, defaults to “all”
-:type split: str, optional
-:param ontology_translation: JSON file containing translation between dataset
-and model output ontologies
-:type ontology_translation: str, optional
-:return: DataFrame containing evaluation results
-:rtype: pd.DataFrame</p>
 </dd></dl>
 
 <dl class="py method">
@@ -334,7 +339,7 @@ and model output ontologies
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.tensorflow.ImageSegmentationTensorflowDataset.load_data">
-<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images_fnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels_fnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#detectionmetrics.models.tensorflow.ImageSegmentationTensorflowDataset.load_data" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images_fnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels_fnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tensorflow.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tensorflow.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#detectionmetrics.models.tensorflow.ImageSegmentationTensorflowDataset.load_data" title="Link to this definition"></a></dt>
 <dd><p>Function for loading data for each dataset sample</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -354,7 +359,7 @@ and model output ontologies
 
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.tensorflow.ImageSegmentationTensorflowDataset.read_image">
-<span class="sig-name descname"><span class="pre">read_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#detectionmetrics.models.tensorflow.ImageSegmentationTensorflowDataset.read_image" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">read_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tensorflow.Tensor</span></span></span><a class="headerlink" href="#detectionmetrics.models.tensorflow.ImageSegmentationTensorflowDataset.read_image" title="Link to this definition"></a></dt>
 <dd><p>Read a single image or label</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -376,13 +381,13 @@ and model output ontologies
 
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.tensorflow.</span></span><span class="sig-name descname"><span class="pre">TensorflowImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.tensorflow.</span></span><span class="sig-name descname"><span class="pre">TensorflowImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tensorflow.Module</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tensorflow.keras.Model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.ImageSegmentationModel" title="detectionmetrics.models.model.ImageSegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageSegmentationModel</span></code></a></p>
 <p>Image segmentation model for Tensorflow framework</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_fname</strong> (<em>str</em>) – Tensorflow model in SavedModel format</p></li>
+<li><p><strong>model</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>torch.nn.Module</em><em>]</em>) – Either the filename of a Tensorflow model in SavedModel format or the model already loaded into an arbitrary Tensorflow or Keras model.</p></li>
 <li><p><strong>model_cfg</strong> (<em>str</em>) – JSON file containing model configuration</p></li>
 <li><p><strong>ontology_fname</strong> (<em>str</em>) – JSON file containing model output ontology</p></li>
 </ul>
@@ -394,18 +399,19 @@ and model output ontologies
 <dd><p>Perform evaluation for an image segmentation dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> – Image segmentation dataset for which the evaluation will</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><em>ImageSegmentationDataset</em></a>) – Image segmentation dataset for which the evaluation will be performed</p></li>
+<li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – Split to be used from the dataset, defaults to “all”</p></li>
+<li><p><strong>ontology_translation</strong> (<em>str</em><em>, </em><em>optional</em>) – JSON file containing translation between dataset and model output ontologies</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing evaluation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
-<p>be performed
-:type dataset: ImageSegmentationDataset
-:param split: Split to be used from the dataset, defaults to “all”
-:type split: str, optional
-:param ontology_translation: JSON file containing translation between dataset
-and model output ontologies
-:type ontology_translation: str, optional
-:return: DataFrame containing evaluation results
-:rtype: pd.DataFrame</p>
 </dd></dl>
 
 <dl class="py method">
@@ -432,7 +438,7 @@ and model output ontologies
 <span id="detectionmetrics-models-torch-module"></span><h2>detectionmetrics.models.torch module<a class="headerlink" href="#module-detectionmetrics.models.torch" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.ImageSegmentationTorchDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">ImageSegmentationTorchDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><span class="pre">ImageSegmentationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Compose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Compose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.torch.ImageSegmentationTorchDataset" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">ImageSegmentationTorchDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.torch.ImageSegmentationTorchDataset" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
 <p>Dataset for image segmentation PyTorch models</p>
 <dl class="field-list simple">
@@ -449,7 +455,7 @@ and model output ontologies
 
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.LiDARSegmentationTorchDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">LiDARSegmentationTorchDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.LiDARSegmentationDataset" title="detectionmetrics.datasets.dataset.LiDARSegmentationDataset"><span class="pre">LiDARSegmentationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.torch.LiDARSegmentationTorchDataset" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">LiDARSegmentationTorchDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.torch.LiDARSegmentationTorchDataset" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
 <p>Dataset for LiDAR segmentation PyTorch models</p>
 <dl class="field-list simple">
@@ -467,7 +473,7 @@ and model output ontologies
 
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.TorchImageSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">TorchImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.torch.TorchImageSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">TorchImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">torch.nn.Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.torch.TorchImageSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.ImageSegmentationModel" title="detectionmetrics.models.model.ImageSegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageSegmentationModel</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.TorchImageSegmentationModel.eval">
@@ -475,18 +481,19 @@ and model output ontologies
 <dd><p>Perform evaluation for an image segmentation dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> – Image segmentation dataset for which the evaluation will</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.ImageSegmentationDataset" title="detectionmetrics.datasets.dataset.ImageSegmentationDataset"><em>ImageSegmentationDataset</em></a>) – Image segmentation dataset for which the evaluation will be performed</p></li>
+<li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – Split to be used from the dataset, defaults to “all”</p></li>
+<li><p><strong>ontology_translation</strong> (<em>str</em><em>, </em><em>optional</em>) – JSON file containing translation between dataset and model output ontologies</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing evaluation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
-<p>be performed
-:type dataset: ImageSegmentationDataset
-:param split: Split to be used from the dataset, defaults to “all”
-:type split: str, optional
-:param ontology_translation: JSON file containing translation between dataset
-and model output ontologies
-:type ontology_translation: str, optional
-:return: DataFrame containing evaluation results
-:rtype: pd.DataFrame</p>
 </dd></dl>
 
 <dl class="py method">
@@ -510,7 +517,7 @@ and model output ontologies
 
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.TorchLiDARSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">TorchLiDARSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.torch.TorchLiDARSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">TorchLiDARSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">torch.nn.Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.torch.TorchLiDARSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.LiDARSegmentationModel" title="detectionmetrics.models.model.LiDARSegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LiDARSegmentationModel</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.TorchLiDARSegmentationModel.eval">
@@ -518,18 +525,19 @@ and model output ontologies
 <dd><p>Perform evaluation for a LiDAR segmentation dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> – LiDAR segmentation dataset for which the evaluation will</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.LiDARSegmentationDataset" title="detectionmetrics.datasets.dataset.LiDARSegmentationDataset"><em>LiDARSegmentationDataset</em></a>) – LiDAR segmentation dataset for which the evaluation will be performed</p></li>
+<li><p><strong>split</strong> (<em>str</em><em>, </em><em>optional</em>) – Split to be used from the dataset, defaults to “all”</p></li>
+<li><p><strong>ontology_translation</strong> (<em>str</em><em>, </em><em>optional</em>) – JSON file containing translation between dataset and model output ontologies</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing evaluation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
-<p>be performed
-:type dataset: LiDARSegmentationDataset
-:param split: Split to be used from the dataset, defaults to “all”
-:type split: str, optional
-:param ontology_translation: JSON file containing translation between dataset
-and model output ontologies
-:type ontology_translation: str, optional
-:return: DataFrame containing evaluation results
-:rtype: pd.DataFrame</p>
 </dd></dl>
 
 <dl class="py method">
@@ -553,7 +561,7 @@ and model output ontologies
 
 <dl class="py function">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.data_to_device">
-<span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">data_to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch.data_to_device" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">data_to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.device</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch.data_to_device" title="Link to this definition"></a></dt>
 <dd><p>Move provided data to given device (CPU or GPU)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

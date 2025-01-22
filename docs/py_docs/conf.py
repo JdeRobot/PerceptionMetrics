@@ -27,3 +27,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']
+
+# exlude torch and tensorflow from autodoc
+autodoc_mock_imports = ['torch', 'torchvision', 'tensorflow', 'open3d']

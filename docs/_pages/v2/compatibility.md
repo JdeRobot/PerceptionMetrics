@@ -9,11 +9,12 @@ sidebar:
 
 ## Image semantic segmentation
 - Datasets:
-    - [Rellis3D](https://www.unmannedlab.org/research/RELLIS-3D)
-    - [GOOSE](https://goose-dataset.de/)
-    - Custom GAIA format
+    - **[Rellis3D](https://www.unmannedlab.org/research/RELLIS-3D)**
+    - **[GOOSE](https://goose-dataset.de/)**
+    - **Custom GAIA format**: *Parquet* file containing samples and labels relative paths and a JSON file with the dataset ontology.
+    - **Generic**: simply assumes a different directory per split, different suffixes for samples and labels, and a JSON file containing the dataset ontology.
 - Models:
-    - PyTorch ([TorchScript](https://pytorch.org/docs/stable/jit.html) format):
+    - **PyTorch ([TorchScript](https://pytorch.org/docs/stable/jit.html) compiled format and native modules)**:
         - Input shape: `(batch, channels, height, width)`
         - Output shape: `(batch, classes, height, width)`
         - JSON configuration file format:
@@ -27,7 +28,7 @@ sidebar:
             "batch_size": 4
         }
         ```
-    - Tensorflow ([SavedModel](https://www.tensorflow.org/guide/saved_mode`) format):
+    - **Tensorflow ([SavedModel](https://www.tensorflow.org/guide/saved_mode`) compiled format and native Tensorflow/Keras modules)**:
         - Input shape: `(batch, height, width, channels)`
         - Output shape: `(batch, height, width, classes)`
         - JSON configuration file format:
@@ -38,17 +39,18 @@ sidebar:
             "batch_size": 4
         }
         ```
-    - ONNX: coming soon
+    - **ONNX**: coming soon
 - Metrics:
     - Intersection over Union (IoU), Accuracy
 
 ## LiDAR semantic segmentation
 - Datasets:
-    - [Rellis3D](https://www.unmannedlab.org/research/RELLIS-3D)
-    - [GOOSE](https://goose-dataset.de/)
-    - Custom GAIA format
+    - **[Rellis3D](https://www.unmannedlab.org/research/RELLIS-3D)**
+    - **[GOOSE](https://goose-dataset.de/)**
+    - **Custom GAIA format**: *Parquet* file containing samples and labels relative paths and a JSON file with the dataset ontology.
+    - **Generic**: simply assumes a different directory per split, different suffixes for samples and labels, and a JSON file containing the dataset ontology.
 - Models:
-    - PyTorch ([TorchScript](https://pytorch.org/docs/stable/jit.html) format). Validated models: RandLA-Net and KPConv from [Open3D-ML](https://github.com/isl-org/Open3D-ML).
+    - **PyTorch ([TorchScript](https://pytorch.org/docs/stable/jit.html) compiled format and native modules)**. As of now, we have tested RandLA-Net and KPConv from [Open3D-ML](https://github.com/isl-org/Open3D-ML).
         - Input shape: defined by the `input_format` tag.
         - Output shape: `(num_points)`
         - JSON configuration file format:
@@ -78,7 +80,7 @@ sidebar:
             ]
         }
         ```
-    - ONNX: coming soon
+    - **ONNX**: coming soon
 - Metrics:
     - Intersection over Union (IoU), Accuracy
 
