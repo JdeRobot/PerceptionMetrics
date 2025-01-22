@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>detectionmetrics package &mdash; DetectionMetrics 2.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -149,6 +149,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.model.SegmentationModel"><code class="docutils literal notranslate"><span class="pre">SegmentationModel</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.model.SegmentationModel.eval"><code class="docutils literal notranslate"><span class="pre">SegmentationModel.eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.model.SegmentationModel.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">SegmentationModel.get_computational_cost()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.model.SegmentationModel.get_lut_ontology"><code class="docutils literal notranslate"><span class="pre">SegmentationModel.get_lut_ontology()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.model.SegmentationModel.inference"><code class="docutils literal notranslate"><span class="pre">SegmentationModel.inference()</span></code></a></li>
 </ul>
@@ -171,9 +172,11 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel"><code class="docutils literal notranslate"><span class="pre">TensorflowImageSegmentationModel</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel.eval"><code class="docutils literal notranslate"><span class="pre">TensorflowImageSegmentationModel.eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">TensorflowImageSegmentationModel.get_computational_cost()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel.inference"><code class="docutils literal notranslate"><span class="pre">TensorflowImageSegmentationModel.inference()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.tensorflow.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">get_computational_cost()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="detectionmetrics.models.html#module-detectionmetrics.models.torch">detectionmetrics.models.torch module</a><ul>
@@ -181,15 +184,19 @@
 <li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.LiDARSegmentationTorchDataset"><code class="docutils literal notranslate"><span class="pre">LiDARSegmentationTorchDataset</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.TorchImageSegmentationModel"><code class="docutils literal notranslate"><span class="pre">TorchImageSegmentationModel</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.TorchImageSegmentationModel.eval"><code class="docutils literal notranslate"><span class="pre">TorchImageSegmentationModel.eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.TorchImageSegmentationModel.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">TorchImageSegmentationModel.get_computational_cost()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.TorchImageSegmentationModel.inference"><code class="docutils literal notranslate"><span class="pre">TorchImageSegmentationModel.inference()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.TorchLiDARSegmentationModel"><code class="docutils literal notranslate"><span class="pre">TorchLiDARSegmentationModel</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.TorchLiDARSegmentationModel.eval"><code class="docutils literal notranslate"><span class="pre">TorchLiDARSegmentationModel.eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.TorchLiDARSegmentationModel.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">TorchLiDARSegmentationModel.get_computational_cost()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.TorchLiDARSegmentationModel.inference"><code class="docutils literal notranslate"><span class="pre">TorchLiDARSegmentationModel.inference()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.data_to_device"><code class="docutils literal notranslate"><span class="pre">data_to_device()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">get_computational_cost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.get_data_shape"><code class="docutils literal notranslate"><span class="pre">get_data_shape()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="detectionmetrics.models.html#detectionmetrics.models.torch.unsqueeze_data"><code class="docutils literal notranslate"><span class="pre">unsqueeze_data()</span></code></a></li>
 </ul>
 </li>

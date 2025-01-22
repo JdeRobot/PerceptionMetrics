@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>detectionmetrics.models package &mdash; DetectionMetrics 2.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -94,7 +94,7 @@
 <span id="detectionmetrics-models-model-module"></span><h2>detectionmetrics.models.model module<a class="headerlink" href="#module-detectionmetrics.models.model" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.model.ImageSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">ImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.ImageSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">ImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.ImageSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.SegmentationModel" title="detectionmetrics.models.model.SegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationModel</span></code></a></p>
 <p>Parent image segmentation model class</p>
 <dl class="field-list simple">
@@ -104,6 +104,7 @@
 <li><p><strong>model_type</strong> (<em>str</em>) – Model type (e.g. scripted, compiled, etc.)</p></li>
 <li><p><strong>model_cfg</strong> (<em>str</em>) – JSON file containing model configuration (e.g. image size or normalization parameters)</p></li>
 <li><p><strong>ontology_fname</strong> (<em>str</em>) – JSON file containing model output ontology</p></li>
+<li><p><strong>model_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Model file or directory</p></li>
 </ul>
 </dd>
 </dl>
@@ -149,7 +150,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.model.LiDARSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">LiDARSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.LiDARSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">LiDARSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.LiDARSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.SegmentationModel" title="detectionmetrics.models.model.SegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationModel</span></code></a></p>
 <p>Parent LiDAR segmentation model class</p>
 <dl class="field-list simple">
@@ -159,6 +160,7 @@
 <li><p><strong>model_type</strong> (<em>str</em>) – Model type (e.g. scripted, compiled, etc.)</p></li>
 <li><p><strong>model_cfg</strong> (<em>str</em>) – JSON file containing model configuration (e.g. sampling method, input format, etc.)</p></li>
 <li><p><strong>ontology_fname</strong> (<em>str</em>) – JSON file containing model output ontology</p></li>
+<li><p><strong>model_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Model file or directory</p></li>
 </ul>
 </dd>
 </dl>
@@ -204,7 +206,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.model.SegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">SegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.SegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.model.</span></span><span class="sig-name descname"><span class="pre">SegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.model.SegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Parent segmentation model class</p>
 <dl class="field-list simple">
@@ -214,6 +216,7 @@
 <li><p><strong>model_type</strong> (<em>str</em>) – Model type (e.g. scripted, compiled, etc.)</p></li>
 <li><p><strong>model_cfg</strong> (<em>str</em>) – JSON file containing model configuration</p></li>
 <li><p><strong>ontology_fname</strong> (<em>str</em>) – JSON file containing model output ontology</p></li>
+<li><p><strong>model_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Model file or directory, defaults to None</p></li>
 </ul>
 </dd>
 </dl>
@@ -234,6 +237,23 @@
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="detectionmetrics.models.model.SegmentationModel.get_computational_cost">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_computational_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#detectionmetrics.models.model.SegmentationModel.get_computational_cost" title="Link to this definition"></a></dt>
+<dd><p>Get different metrics related to the computational cost of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of runs to measure inference time, defaults to 30</p></li>
+<li><p><strong>warm_up_runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up runs, defaults to 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing computational cost information</p>
 </dd>
 </dl>
 </dd></dl>
@@ -276,7 +296,7 @@
 <span id="detectionmetrics-models-onnx-module"></span><h2>detectionmetrics.models.onnx module<a class="headerlink" href="#module-detectionmetrics.models.onnx" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="detectionmetrics.models.onnx.OnnxImageSegmentationModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.onnx.</span></span><span class="sig-name descname"><span class="pre">OnnxImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.onnx.OnnxImageSegmentationModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.onnx.</span></span><span class="sig-name descname"><span class="pre">OnnxImageSegmentationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.models.onnx.OnnxImageSegmentationModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#detectionmetrics.models.model.ImageSegmentationModel" title="detectionmetrics.models.model.ImageSegmentationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageSegmentationModel</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.onnx.OnnxImageSegmentationModel.eval">
@@ -415,6 +435,23 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel.get_computational_cost">
+<span class="sig-name descname"><span class="pre">get_computational_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel.get_computational_cost" title="Link to this definition"></a></dt>
+<dd><p>Get different metrics related to the computational cost of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of runs to measure inference time, defaults to 30</p></li>
+<li><p><strong>warm_up_runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up runs, defaults to 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing computational cost information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel.inference">
 <span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Image</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Image</span></span></span><a class="headerlink" href="#detectionmetrics.models.tensorflow.TensorflowImageSegmentationModel.inference" title="Link to this definition"></a></dt>
 <dd><p>Perform inference for a single image</p>
@@ -431,6 +468,26 @@
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="detectionmetrics.models.tensorflow.get_computational_cost">
+<span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.tensorflow.</span></span><span class="sig-name descname"><span class="pre">get_computational_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tensorflow.Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tensorflow.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#detectionmetrics.models.tensorflow.get_computational_cost" title="Link to this definition"></a></dt>
+<dd><p>Get different metrics related to the computational cost of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>tf.Module</em>) – Loaded TensorFlow SavedModel</p></li>
+<li><p><strong>dummy_input</strong> (<em>tf.Tensor</em>) – Dummy input data for the model</p></li>
+<li><p><strong>model_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Model filename used to measure model size, defaults to None</p></li>
+<li><p><strong>runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of runs to measure inference time, defaults to 30</p></li>
+<li><p><strong>warm_up_runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up runs, defaults to 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing computational cost information</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -497,6 +554,23 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="detectionmetrics.models.torch.TorchImageSegmentationModel.get_computational_cost">
+<span class="sig-name descname"><span class="pre">get_computational_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch.TorchImageSegmentationModel.get_computational_cost" title="Link to this definition"></a></dt>
+<dd><p>Get different metrics related to the computational cost of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of runs to measure inference time, defaults to 30</p></li>
+<li><p><strong>warm_up_runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up runs, defaults to 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing computational cost information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.TorchImageSegmentationModel.inference">
 <span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Image</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Image</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch.TorchImageSegmentationModel.inference" title="Link to this definition"></a></dt>
 <dd><p>Perform inference for a single image</p>
@@ -541,6 +615,23 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="detectionmetrics.models.torch.TorchLiDARSegmentationModel.get_computational_cost">
+<span class="sig-name descname"><span class="pre">get_computational_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch.TorchLiDARSegmentationModel.get_computational_cost" title="Link to this definition"></a></dt>
+<dd><p>Get different metrics related to the computational cost of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of runs to measure inference time, defaults to 30</p></li>
+<li><p><strong>warm_up_runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up runs, defaults to 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing computational cost information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.models.torch.TorchLiDARSegmentationModel.inference">
 <span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch.TorchLiDARSegmentationModel.inference" title="Link to this definition"></a></dt>
 <dd><p>Perform inference for a single point cloud</p>
@@ -572,6 +663,43 @@
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Data moved to device</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[tuple, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="detectionmetrics.models.torch.get_computational_cost">
+<span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">get_computational_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_runs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch.get_computational_cost" title="Link to this definition"></a></dt>
+<dd><p>Get different metrics related to the computational cost of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Any</em>) – Either a TorchScript model or an arbitrary PyTorch module</p></li>
+<li><p><strong>dummy_input</strong> (<em>torch.Tensor</em>) – Dummy input data for the model</p></li>
+<li><p><strong>model_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Model filename used to measure model size, defaults to None</p></li>
+<li><p><strong>runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of runs to measure inference time, defaults to 30</p></li>
+<li><p><strong>warm_up_runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up runs, defaults to 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing computational cost information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="detectionmetrics.models.torch.get_data_shape">
+<span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch.</span></span><span class="sig-name descname"><span class="pre">get_data_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch.get_data_shape" title="Link to this definition"></a></dt>
+<dd><p>Get the shape of the provided data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>tuple</em><em>, </em><em>list</em><em>]</em>) – Data provided (it can be a single or multiple tensors)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Data shape</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[tuple, list]</p>
