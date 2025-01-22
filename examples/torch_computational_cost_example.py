@@ -37,9 +37,12 @@ def main():
 
     print("--- Computational cost ---")
     print(f"Input shape: {computational_cost['input_shape']}")
-    print(f"Model size: {computational_cost['size_mb']:.2f} MB")
-    print(f"Number of parameters: {computational_cost['n_params'] / 1e6:.2f} M")
-    print(f"Inference time: {computational_cost['time_s'] * 1000:.2f} ms")
+    if computational_cost["n_params"] is not None:
+        print(f"Number of parameters: {computational_cost['n_params'] / 1e6:.2f} M")
+    if computational_cost["inference_time_s"] is not None:
+        print(f"Inference time: {computational_cost['inference_time_s'] * 1000:.2f} ms")
+    if computational_cost["size_mb"] is not None:
+        print(f"Model size: {computational_cost['size_mb']:.2f} MB")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.models.torch import TorchLiDARSegmentationModel
+from detectionmetrics.models.tensorflow import TensorflowImageSegmentationModel
 
 
 def parse_args() -> argparse.Namespace:
@@ -11,7 +11,7 @@ def parse_args() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--model", type=str, required=True, help="Scripted pytorch model"
+        "--model", type=str, required=True, help="Tensorflow model in SavedModel format"
     )
     parser.add_argument(
         "--ontology",
@@ -32,7 +32,7 @@ def main():
     """Main function"""
     args = parse_args()
 
-    model = TorchLiDARSegmentationModel(args.model, args.model_cfg, args.ontology)
+    model = TensorflowImageSegmentationModel(args.model, args.model_cfg, args.ontology)
     computational_cost = model.get_computational_cost()
 
     print("--- Computational cost ---")

@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -80,51 +80,53 @@ def unsqueeze_data(data: Union[tuple, list], dim: int = 0) -> Union[tuple, list]
 
 
 def get_computational_cost(
-    model: torch.jit.ScriptModule,
-    model_fname: str,
+    model: Any,
     dummy_input: torch.Tensor,
+    model_fname: Optional[str] = None,
     runs: int = 30,
     warm_up_runs: int = 5,
 ) -> dict:
     """Get different metrics related to the computational cost of the model
 
-    :param model: TorchScript model
-    :type model: torch.jit.ScriptModule
-    :param model_fname: Path to the model file
-    :type model_fname: str
+    :param model: Either a TorchScript model or an arbitrary PyTorch module
+    :type model: Any
     :param dummy_input: Dummy input data for the model
     :type dummy_input: torch.Tensor
+    :param model_fname: Model filename used to measure model size, defaults to None
+    :type model_fname: Optional[str], optional
     :param runs: Number of runs to measure inference time, defaults to 30
     :type runs: int, optional
     :param warm_up_runs: Number of warm-up runs, defaults to 5
     :type warm_up_runs: int, optional
     :return: Dictionary containing computational cost information
     """
-
-    computational_cost = {}
-
-    computational_cost["input_shape"] = get_data_shape(dummy_input)
-    computational_cost["size_mb"] = os.path.getsize(model_fname) / 1024**2
-    computational_cost["n_params"] = sum(p.numel() for p in model.parameters())
+    # Get model size if possible
+    if model_fname is not None:
+        size_mb = os.path.getsize(model_fname) / 1024**2
+    else:
+        size_mb = None
 
     # Measure inference time with GPU synchronization
-    dummy_input = dummy_input if isinstance(dummy_input, tuple) else (dummy_input,)
+    dummy_tuple = dummy_input if isinstance(dummy_input, tuple) else (dummy_input,)
 
     for _ in range(warm_up_runs):
-        model(*dummy_input)
+        model(*dummy_tuple)
 
     inference_times = []
     for _ in range(runs):
         torch.cuda.synchronize()
         start_time = time.time()
-        model(*dummy_input)
+        model(*dummy_tuple)
         torch.cuda.synchronize()
         end_time = time.time()
         inference_times.append(end_time - start_time)
 
-    computational_cost["time_s"] = np.mean(inference_times)
-
-    return computational_cost
+    return {
+        "input_shape": get_data_shape(dummy_input),
+        "n_params": sum(p.numel() for p in model.parameters()),
+        "size_mb": size_mb,
+        "inference_time_s": np.mean(inference_times),
+    }
 
 
 class ImageSegmentationTorchDataset(Dataset):
@@ -481,7 +483,7 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         """
         dummy_input = torch.randn(1, 3, *self.model_cfg["image_size"]).to(self.device)
         return get_computational_cost(
-            self.model, self.model_fname, dummy_input, runs, warm_up_runs
+            self.model, dummy_input, self.model_fname, runs, warm_up_runs
         )
 
 
@@ -783,5 +785,5 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
 
         # Get computational cost
         return get_computational_cost(
-            self.model, self.model_fname, dummy_input, runs, warm_up_runs
+            self.model, dummy_input, self.model_fname, runs, warm_up_runs
         )

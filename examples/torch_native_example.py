@@ -86,6 +86,17 @@ def main():
     results = model.eval(dataset)
     results.to_csv(args.out_fname)
 
+    computational_cost = model.get_computational_cost()
+
+    print("--- Computational cost ---")
+    print(f"Input shape: {computational_cost['input_shape']}")
+    if computational_cost["n_params"] is not None:
+        print(f"Number of parameters: {computational_cost['n_params'] / 1e6:.2f} M")
+    if computational_cost["inference_time_s"] is not None:
+        print(f"Inference time: {computational_cost['inference_time_s'] * 1000:.2f} ms")
+    if computational_cost["size_mb"] is not None:
+        print(f"Model size: {computational_cost['size_mb']:.2f} MB")
+
 
 if __name__ == "__main__":
     main()
