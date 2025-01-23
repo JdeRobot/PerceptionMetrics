@@ -71,7 +71,7 @@ def main():
         result = model.inference(point_cloud)
         lut = uc.ontology_to_rgb_lut(model.ontology)
         colors = lut[result] / 255.0
-        ul.render_point_cloud(point_cloud[:, :3], colors)
+        ul.view_point_cloud(point_cloud[:, :3], colors)
 
     results = model.eval(
         dataset,
