@@ -3,7 +3,18 @@ import random
 from typing import List, Optional, Tuple
 
 import open3d as o3d
+from PIL import Image
 from sklearn.neighbors import KDTree
+
+REFERENCE_SIZE = 100
+CAMERA_VIEWS = {
+    "3rd_person": {
+        "zoom": 0.12,
+        "front": np.array([1, 0, 0.5], dtype=np.float32),  # Camera front vector
+        "lookat": np.array([1, 0.0, 0.0], dtype=np.float32),  # Point camera looks at
+        "up": np.array([-0.5, 0, 1], dtype=np.float32),  # Camera up direction
+    }
+}
 
 
 class Sampler:
@@ -166,16 +177,106 @@ def recenter(points: np.ndarray, dims: List[int]) -> np.ndarray:
     return points
 
 
-def render_point_cloud(points: np.ndarray, colors: np.ndarray):
-    """Render a single point cloud
+def build_point_cloud(
+    points: np.ndarray, colors: np.ndarray
+) -> o3d.geometry.PointCloud:
+    """Build a point cloud
+
+    :param points: Point cloud data
+    :type points: np.ndarray
+    :param colors: Colors for the point cloud data
+    :type colors: np.ndarray
+    :return: Point cloud
+    :rtype: o3d.geometry.PointCloud
+    """
+    point_cloud = o3d.geometry.PointCloud()
+    point_cloud.points = o3d.utility.Vector3dVector(points)
+    point_cloud.colors = o3d.utility.Vector3dVector(colors)
+
+    return point_cloud
+
+
+def view_point_cloud(points: np.ndarray, colors: np.ndarray):
+    """Visualize a single point cloud
 
     :param points: Point cloud data
     :type points: np.ndarray
     :param colors: Colors for the point cloud data
     :type colors: np.ndarray
     """
-    point_cloud = o3d.geometry.PointCloud()
-    point_cloud.points = o3d.utility.Vector3dVector(points)
-    point_cloud.colors = o3d.utility.Vector3dVector(colors)
-
+    point_cloud = build_point_cloud(points, colors)
     o3d.visualization.draw_geometries([point_cloud])
+
+
+def render_point_cloud(
+    points: np.ndarray,
+    colors: np.ndarray,
+    camera_view: str = "3rd_person",
+    bg_color: Optional[List[float]] = [0.0, 0.0, 0.0, 1.0],
+    color_jitter: float = 0.05,
+    point_size: float = 3.0,
+    resolution: Tuple[int, int] = (1920, 1080),
+) -> Image:
+    """Render a given point cloud from a specific camera view and return the image
+
+    :param points: Point cloud data
+    :type points: np.ndarray
+    :param colors: Colors for the point cloud data
+    :type colors: np.ndarray
+    :param camera_view: Camera view, defaults to "3rd_person"
+    :type camera_view: str, optional
+    :param bg_color: Background color, defaults to black -> [0., 0., 0., 1.]
+    :type bg_color: Optional[List[float]], optional
+    :param color_jitter: Jitters the colors by a random value between [-color_jitter, color_jitter], defaults to 0.05
+    :type color_jitter: float, optional
+    :param point_size: Point size, defaults to 3.0
+    :type point_size: float, optional
+    :param resolution: Render resolution, defaults to (1920, 1080)
+    :type resolution: Tuple[int, int], optional
+    :return: Rendered point cloud
+    :rtype: Image
+    """
+    assert camera_view in CAMERA_VIEWS, f"Camera view {camera_view} not implemented"
+    view_settings = CAMERA_VIEWS[camera_view]
+
+    # Add color jitter if needed
+    if color_jitter > 0:
+        jitter = np.random.uniform(-color_jitter, color_jitter, (points.shape[0], 1))
+        colors += jitter
+
+    # Build point cloud object
+    point_cloud = build_point_cloud(points, colors)
+
+    # Set up the offscreen renderer
+    width, height = resolution
+    renderer = o3d.visualization.rendering.OffscreenRenderer(width, height)
+
+    # Create material and add the point cloud to the scene
+    material = o3d.visualization.rendering.MaterialRecord()
+    material.shader = "defaultUnlit"  # Use unlit shader for better visibility of colors
+    material.sRGB_color = True
+    material.point_size = point_size
+    renderer.scene.add_geometry("point_cloud", point_cloud, material)
+
+    # Set the background color
+    renderer.scene.set_background(bg_color)
+
+    # Set up the camera
+    camera_distance = 1 / view_settings["zoom"]
+    camera_position = view_settings["lookat"] + view_settings["front"] * camera_distance
+
+    renderer.setup_camera(
+        vertical_field_of_view=60.0,  # Field of view in degrees
+        center=view_settings["lookat"],
+        eye=camera_position,
+        up=view_settings["up"],
+    )
+
+    # Render the scene to an image
+    image = np.asarray(renderer.render_to_image())
+    image = Image.fromarray(image)
+
+    # Cleanup
+    renderer.scene.clear_geometry()
+
+    return image
