@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import os
 import shutil
-from typing import Tuple
+from typing import List, Optional, Tuple
 from typing_extensions import Self
 
 import cv2
@@ -10,6 +10,7 @@ import pandas as pd
 from tqdm import tqdm
 
 import detectionmetrics.utils.io as uio
+import detectionmetrics.utils.conversion as uc
 
 
 class SegmentationDataset(ABC):
@@ -63,10 +64,19 @@ class ImageSegmentationDataset(SegmentationDataset):
     :type dataset_dir: str
     :param ontology: Dataset ontology definition
     :type ontology: dict
+    :param is_label_rgb: Whether the labels are in RGB format or not, defaults to False
+    :type is_label_rgb: bool, optional
     """
 
-    def __init__(self, dataset: pd.DataFrame, dataset_dir: str, ontology: dict):
+    def __init__(
+        self,
+        dataset: pd.DataFrame,
+        dataset_dir: str,
+        ontology: dict,
+        is_label_rgb: bool = False,
+    ):
         super().__init__(dataset, dataset_dir, ontology)
+        self.is_label_rgb = is_label_rgb
 
     def make_fname_global(self):
         """Get all relative filenames in dataset and make global"""
@@ -79,16 +89,45 @@ class ImageSegmentationDataset(SegmentationDataset):
             )
             self.dataset_dir = None  # dataset_dir=None -> filenames must be relative
 
-    def export(self, outdir: str):
-        """Export dataset dataframe and image files
+    def export(
+        self,
+        outdir: str,
+        new_ontology: Optional[dict] = None,
+        ontology_translation: Optional[dict] = None,
+        ignored_classes: Optional[List[str]] = [],
+    ):
+        """Export dataset dataframe and image files in SemanticKITTI format. Optionally, modify ontology before exporting.
 
-        :param outdir: Directory where Parquet and image files will be stored
+        :param outdir: Directory where Parquet and images files will be stored
         :type outdir: str
+        :param new_ontology: Target ontology definition
+        :type new_ontology: dict
+        :param ontology_translation: Ontology translation dictionary, defaults to None
+        :type ontology_translation: Optional[dict], optional
+        :param ignored_classes: Classes to ignore from the old ontology, defaults to []
+        :type ignored_classes: Optional[List[str]], optional
         """
         os.makedirs(outdir, exist_ok=True)
 
         pbar = tqdm(self.dataset.iterrows())
 
+        # Check if ontology conversion is needed and possible
+        if new_ontology is not None and ontology_translation is None:
+            raise ValueError("Ontology translation must be provided")
+        if ontology_translation is not None and new_ontology is None:
+            raise ValueError("New ontology must be provided")
+
+        # Create ontology conversion lookup table
+        ontology_conversion_lut = None
+        if new_ontology is not None:
+            ontology_conversion_lut = uc.get_ontology_conversion_lut(
+                old_ontology=self.ontology,
+                new_ontology=new_ontology,
+                ontology_translation=ontology_translation,
+                ignored_classes=ignored_classes,
+            )
+
+        # Export each sample
         for sample_name, row in pbar:
             pbar.set_description(f"Exporting sample: {sample_name}")
 
@@ -118,16 +157,29 @@ class ImageSegmentationDataset(SegmentationDataset):
                 shutil.copy2(image_fname, os.path.join(outdir, rel_image_fname))
             self.dataset.at[sample_name, "image"] = rel_image_fname
 
-            # Same for labels
+            # Same for labels (plus ontology conversion if needed)
             if label_fname:
-                if uio.get_image_mode(label_fname) != "L":
-                    label = cv2.imread(label_fname, 0)  # convert to L
-                    cv2.imwrite(os.path.join(outdir, rel_label_fname), label)
-                else:
+                image_mode = uio.get_image_mode(label_fname)
+                if image_mode == "L" and ontology_conversion_lut is None:
                     shutil.copy2(label_fname, os.path.join(outdir, rel_label_fname))
+                else:
+                    if self.is_label_rgb:
+                        label_rgb = cv2.imread(label_fname)[:, :, ::-1]
+                        label = np.zeros(label_rgb.shape[:2], dtype=np.uint8)
+                        for class_data in self.ontology.values():
+                            idx = class_data["idx"]
+                            rgb = list(class_data["rgb"])
+                            label[(label_rgb == rgb).all(axis=2)] = idx
+                    else:
+                        label = cv2.imread(label_fname, 0)  # convert to L
+                        if ontology_conversion_lut is not None:
+                            label = ontology_conversion_lut[label]
+                    cv2.imwrite(os.path.join(outdir, rel_label_fname), label)
                 self.dataset.at[sample_name, "label"] = rel_label_fname
 
+        # Update dataset directory and ontology if needed
         self.dataset_dir = outdir
+        self.ontology = new_ontology if new_ontology is not None else self.ontology
 
         # Write ontology and store relative path in dataset attributes
         ontology_fname = "ontology.json"
@@ -172,13 +224,39 @@ class LiDARSegmentationDataset(SegmentationDataset):
             )
             self.dataset_dir = None  # dataset_dir=None -> filenames must be relative
 
-    def export(self, outdir: str):
-        """Export dataset dataframe and LiDAR files in SemanticKITTI format
+    def export(
+        self,
+        outdir: str,
+        new_ontology: Optional[dict] = None,
+        ontology_translation: Optional[dict] = None,
+        ignored_classes: Optional[List[str]] = [],
+    ):
+        """Export dataset dataframe and LiDAR files in SemanticKITTI format. Optionally, modify ontology before exporting.
 
         :param outdir: Directory where Parquet and LiDAR files will be stored
         :type outdir: str
+        :param new_ontology: Target ontology definition
+        :type new_ontology: dict
+        :param ontology_translation: Ontology translation dictionary, defaults to None
+        :type ontology_translation: Optional[dict], optional
+        :param ignored_classes: Classes to ignore from the old ontology, defaults to []
+        :type ignored_classes: Optional[List[str]], optional
         """
         os.makedirs(outdir, exist_ok=True)
+
+        if new_ontology is not None and ontology_translation is None:
+            raise ValueError("Ontology translation must be provided")
+        if ontology_translation is not None and new_ontology is None:
+            raise ValueError("New ontology must be provided")
+
+        ontology_conversion_lut = None
+        if new_ontology is not None:
+            ontology_conversion_lut = uc.get_ontology_conversion_lut(
+                old_ontology=self.ontology,
+                new_ontology=new_ontology,
+                ontology_translation=ontology_translation,
+                ignored_classes=ignored_classes,
+            )
 
         pbar = tqdm(self.dataset.iterrows())
 
@@ -203,9 +281,11 @@ class LiDARSegmentationDataset(SegmentationDataset):
                     label_fname = os.path.join(self.dataset_dir, label_fname)
 
             # If format is not appropriate: read, convert, and rewrite sample
-            if not self.is_kitti_format:
+            if not self.is_kitti_format or ontology_conversion_lut is not None:
                 points = self.read_points(points_fname)
                 label, _ = self.read_label(label_fname)
+                if ontology_conversion_lut is not None:
+                    label = ontology_conversion_lut[label]
                 points.tofile(os.path.join(outdir, rel_points_fname))
                 label.tofile(os.path.join(outdir, rel_label_fname))
             else:

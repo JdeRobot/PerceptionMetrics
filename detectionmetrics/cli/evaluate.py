@@ -25,6 +25,8 @@ def get_dataset(
     train_dataset_dir,
     val_dataset_dir,
     test_dataset_dir,
+    images_dir,
+    labels_dir,
     data_suffix,
     label_suffix,
     ontology,
@@ -64,6 +66,15 @@ def get_dataset(
             if ontology is None:
                 raise ValueError("--dataset_ontology is required for 'generic' format")
 
+    elif dataset_format == "rugd":
+        if images_dir is None:
+            raise ValueError("--images_dir is required for 'rugd' format")
+        if labels_dir is None:
+            raise ValueError("--labels_dir is required for 'rugd' format")
+
+    else:
+        raise ValueError(f"Dataset format not supported: {dataset_format}")
+
     # Get arguments to init dataset
     if dataset_format == "gaia":
         dataset_args = {"dataset_fname": dataset_fname}
@@ -87,6 +98,12 @@ def get_dataset(
             "train_dataset_dir": train_dataset_dir,
             "val_dataset_dir": val_dataset_dir,
             "test_dataset_dir": test_dataset_dir,
+        }
+    elif dataset_format == "rugd":
+        dataset_args = {
+            "images_dir": images_dir,
+            "labels_dir": labels_dir,
+            "ontology_fname": ontology,
         }
     else:
         raise ValueError(f"Dataset format not supported: {dataset_format}")
@@ -137,7 +154,9 @@ def get_dataset(
 # dataset
 @click.option(
     "--dataset_format",
-    type=click.Choice(["gaia", "rellis3d", "goose", "generic"], case_sensitive=False),
+    type=click.Choice(
+        ["gaia", "rellis3d", "goose", "generic", "rugd"], case_sensitive=False
+    ),
     show_default=True,
     default="gaia",
     help="Dataset format",
@@ -171,6 +190,16 @@ def get_dataset(
     "--test_dataset_dir",
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="Test dataset directory (used for 'GOOSE' and 'Generic' formats)",
+)
+@click.option(
+    "--images_dir",
+    type=click.STRING,
+    help="Directory containing data (used for 'RUGD' format)",
+)
+@click.option(
+    "--labels_dir",
+    type=click.STRING,
+    help="Directory containing annotations (used for 'RUGD' format)",
 )
 @click.option(
     "--data_suffix",
@@ -220,6 +249,8 @@ def evaluate(
     train_dataset_dir,
     val_dataset_dir,
     test_dataset_dir,
+    images_dir,
+    labels_dir,
     data_suffix,
     label_suffix,
     dataset_ontology,
@@ -240,6 +271,8 @@ def evaluate(
         train_dataset_dir,
         val_dataset_dir,
         test_dataset_dir,
+        images_dir,
+        labels_dir,
         data_suffix,
         label_suffix,
         dataset_ontology,

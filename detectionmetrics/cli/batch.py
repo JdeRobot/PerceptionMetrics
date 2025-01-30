@@ -96,6 +96,8 @@ def batch(command, jobs_cfg):
                 train_dataset_dir=dataset_cfg.get("train_dir", None),
                 val_dataset_dir=dataset_cfg.get("val_dir", None),
                 test_dataset_dir=dataset_cfg.get("test_dir", None),
+                images_dir=dataset_cfg.get("data_dir", None),
+                labels_dir=dataset_cfg.get("labels_dir", None),
                 data_suffix=dataset_cfg.get("data_suffix", None),
                 label_suffix=dataset_cfg.get("label_suffix", None),
                 dataset_ontology=dataset_cfg.get("ontology", None),
