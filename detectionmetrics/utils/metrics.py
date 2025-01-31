@@ -24,8 +24,7 @@ class Metric(ABC):
         :type pred: np.ndarray
         :param gt: Array containing ground truth
         :type gt: np.ndarray
-        :param valid_mask: Binary mask where False elements will be igonred, defaults
-        to None
+        :param valid_mask: Binary mask where False elements will be igonred, defaults to None
         :type valid_mask: Optional[np.ndarray], optional
         """
         raise NotImplementedError
@@ -61,8 +60,7 @@ class IoU(Metric):
         :type pred: np.ndarray
         :param gt: one-hot encoded ground truth array (batch, class, width, height)
         :type gt: np.ndarray
-        :param valid_mask: Binary mask where False elements will be igonred, defaults
-        to None
+        :param valid_mask: Binary mask where False elements will be igonred, defaults to None
         :type valid_mask: Optional[np.ndarray], optional
         """
         assert pred.shape == gt.shape, "Pred. and GT shapes don't match"
@@ -117,8 +115,7 @@ class ConfusionMatrix:
         :type pred: np.ndarray
         :param gt: Array containing ground truth
         :type gt: np.ndarray
-        :param valid_mask: Binary mask where False elements will be ignored, defaults
-        to None
+        :param valid_mask: Binary mask where False elements will be ignored, defaults to None
         :type valid_mask: Optional[np.ndarray], optional
         :return: Updated confusion matrix
         :rtype: np.ndarray
@@ -162,7 +159,7 @@ class ConfusionMatrix:
         return acc_per_class, acc
 
     def get_precision(self) -> Tuple[np.ndarray, float]:
-        """Compute precision from confusion matrix. 
+        """Compute precision from confusion matrix.
         Precision = true positives/ predicted positives.
 
         :return: per class precision
@@ -208,5 +205,5 @@ class ConfusionMatrix:
         global_f1_score = (
             2 * global_precision * global_recall
         ) / (global_precision + global_recall) if (global_precision + global_recall) > 0 else 0.0
-        
+
         return f1_score_per_class, global_f1_score

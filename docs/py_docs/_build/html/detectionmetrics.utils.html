@@ -280,7 +280,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">detectionmetrics.utils.metrics.</span></span><span class="sig-name descname"><span class="pre">ConfusionMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detectionmetrics.utils.metrics.ConfusionMatrix" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class to compute and store the confusion matrix, as well as related metrics
-(e.g. accuracy, precision, recall, etc.)</p>
+(e.g. accuracy, precision, recall, F1-score, etc.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_classes</strong> (<em>int</em>) – Number of classes to evaluate</p>
@@ -317,6 +317,51 @@ translation dictionary with old and new class names as keys and values, respecti
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="detectionmetrics.utils.metrics.ConfusionMatrix.get_f1_score">
+<span class="sig-name descname"><span class="pre">get_f1_score</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#detectionmetrics.utils.metrics.ConfusionMatrix.get_f1_score" title="Link to this definition"></a></dt>
+<dd><p>Compute F1-score for each class and global F1-score.
+F1 score = 2 * (precision * recall) / (precision + recall)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>per class F1-score and global F1-score</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[np.ndarray, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="detectionmetrics.utils.metrics.ConfusionMatrix.get_precision">
+<span class="sig-name descname"><span class="pre">get_precision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#detectionmetrics.utils.metrics.ConfusionMatrix.get_precision" title="Link to this definition"></a></dt>
+<dd><p>Compute precision from confusion matrix.
+Precision = true positives/ predicted positives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>per class precision</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="detectionmetrics.utils.metrics.ConfusionMatrix.get_recall">
+<span class="sig-name descname"><span class="pre">get_recall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#detectionmetrics.utils.metrics.ConfusionMatrix.get_recall" title="Link to this definition"></a></dt>
+<dd><p>Compute recall from Confusion matrix.
+Recall = true positives / actual positives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>per class recall</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="detectionmetrics.utils.metrics.ConfusionMatrix.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#detectionmetrics.utils.metrics.ConfusionMatrix.update" title="Link to this definition"></a></dt>
 <dd><p>Update the confusion matrix with new predictions and ground truth</p>
@@ -325,14 +370,16 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pred</strong> (<em>np.ndarray</em>) – Array containing prediction</p></li>
 <li><p><strong>gt</strong> (<em>np.ndarray</em>) – Array containing ground truth</p></li>
-<li><p><strong>valid_mask</strong> – Binary mask where False elements will be ignored, defaults</p></li>
+<li><p><strong>valid_mask</strong> (<em>Optional</em><em>[</em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – Binary mask where False elements will be ignored, defaults to None</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated confusion matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
 </dl>
-<p>to None
-:type valid_mask: Optional[np.ndarray], optional
-:return: Updated confusion matrix
-:rtype: np.ndarray</p>
 </dd></dl>
 
 </dd></dl>
@@ -371,12 +418,10 @@ and then the average per class is computed.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pred</strong> (<em>np.ndarray</em>) – one-hot encoded prediction array (batch, class, width, height)</p></li>
 <li><p><strong>gt</strong> (<em>np.ndarray</em>) – one-hot encoded ground truth array (batch, class, width, height)</p></li>
-<li><p><strong>valid_mask</strong> – Binary mask where False elements will be igonred, defaults</p></li>
+<li><p><strong>valid_mask</strong> (<em>Optional</em><em>[</em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – Binary mask where False elements will be igonred, defaults to None</p></li>
 </ul>
 </dd>
 </dl>
-<p>to None
-:type valid_mask: Optional[np.ndarray], optional</p>
 </dd></dl>
 
 </dd></dl>
@@ -414,12 +459,10 @@ and then the average per class is computed.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pred</strong> (<em>np.ndarray</em>) – Array containing prediction</p></li>
 <li><p><strong>gt</strong> (<em>np.ndarray</em>) – Array containing ground truth</p></li>
-<li><p><strong>valid_mask</strong> – Binary mask where False elements will be igonred, defaults</p></li>
+<li><p><strong>valid_mask</strong> (<em>Optional</em><em>[</em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – Binary mask where False elements will be igonred, defaults to None</p></li>
 </ul>
 </dd>
 </dl>
-<p>to None
-:type valid_mask: Optional[np.ndarray], optional</p>
 </dd></dl>
 
 </dd></dl>
