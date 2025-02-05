@@ -16,7 +16,6 @@
       <script src="_static/documentation_options.js?v=51b770b3"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -108,6 +107,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.SegmentationDataset"><code class="docutils literal notranslate"><span class="pre">SegmentationDataset</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.SegmentationDataset.append"><code class="docutils literal notranslate"><span class="pre">SegmentationDataset.append()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.SegmentationDataset.get_label_count"><code class="docutils literal notranslate"><span class="pre">SegmentationDataset.get_label_count()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.SegmentationDataset.make_fname_global"><code class="docutils literal notranslate"><span class="pre">SegmentationDataset.make_fname_global()</span></code></a></li>
 </ul>
 </li>
@@ -222,23 +222,22 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="detectionmetrics.utils.html#module-detectionmetrics.utils.metrics">detectionmetrics.utils.metrics module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix"><code class="docutils literal notranslate"><span class="pre">ConfusionMatrix</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.compute"><code class="docutils literal notranslate"><span class="pre">ConfusionMatrix.compute()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.get_accuracy"><code class="docutils literal notranslate"><span class="pre">ConfusionMatrix.get_accuracy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.get_f1_score"><code class="docutils literal notranslate"><span class="pre">ConfusionMatrix.get_f1_score()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.get_precision"><code class="docutils literal notranslate"><span class="pre">ConfusionMatrix.get_precision()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.get_recall"><code class="docutils literal notranslate"><span class="pre">ConfusionMatrix.get_recall()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.update"><code class="docutils literal notranslate"><span class="pre">ConfusionMatrix.update()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.IoU"><code class="docutils literal notranslate"><span class="pre">IoU</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.IoU.compute"><code class="docutils literal notranslate"><span class="pre">IoU.compute()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.IoU.update"><code class="docutils literal notranslate"><span class="pre">IoU.update()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.Metric"><code class="docutils literal notranslate"><span class="pre">Metric</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.Metric.compute"><code class="docutils literal notranslate"><span class="pre">Metric.compute()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.Metric.update"><code class="docutils literal notranslate"><span class="pre">Metric.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory"><code class="docutils literal notranslate"><span class="pre">MetricsFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.METRIC_NAMES"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.METRIC_NAMES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_accuracy"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_accuracy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_averaged_metric"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_averaged_metric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_confusion_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_f1_score"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_f1_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_fn"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_fn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_fp"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_fp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_iou"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_iou()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_metric_names"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_metric_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_metric_per_name"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_metric_per_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_precision"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_precision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_recall"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_recall()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_tn"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_tn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_tp"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.get_tp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.update"><code class="docutils literal notranslate"><span class="pre">MetricsFactory.update()</span></code></a></li>
 </ul>
 </li>
 </ul>

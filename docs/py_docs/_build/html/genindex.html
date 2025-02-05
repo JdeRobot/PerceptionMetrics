@@ -73,7 +73,6 @@
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
- | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#G"><strong>G</strong></a>
@@ -109,24 +108,6 @@
         <li><a href="detectionmetrics.datasets.html#detectionmetrics.datasets.rellis3d.build_dataset">(in module detectionmetrics.datasets.rellis3d)</a>
 </li>
       </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="C">C</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.compute">compute() (detectionmetrics.utils.metrics.ConfusionMatrix method)</a>
-
-      <ul>
-        <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.IoU.compute">(detectionmetrics.utils.metrics.IoU method)</a>
-</li>
-        <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.Metric.compute">(detectionmetrics.utils.metrics.Metric method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix">ConfusionMatrix (class in detectionmetrics.utils.metrics)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -319,7 +300,9 @@
 </li>
       <li><a href="detectionmetrics.datasets.html#detectionmetrics.datasets.gaia.GaiaLiDARSegmentationDataset">GaiaLiDARSegmentationDataset (class in detectionmetrics.datasets.gaia)</a>
 </li>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.get_accuracy">get_accuracy() (detectionmetrics.utils.metrics.ConfusionMatrix method)</a>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_accuracy">get_accuracy() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
+</li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_averaged_metric">get_averaged_metric() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
 </li>
       <li><a href="detectionmetrics.models.html#detectionmetrics.models.model.SegmentationModel.get_computational_cost">get_computational_cost() (detectionmetrics.models.model.SegmentationModel method)</a>
 
@@ -335,25 +318,43 @@
         <li><a href="detectionmetrics.models.html#detectionmetrics.models.torch.get_computational_cost">(in module detectionmetrics.models.torch)</a>
 </li>
       </ul></li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_confusion_matrix">get_confusion_matrix() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
+</li>
       <li><a href="detectionmetrics.models.html#detectionmetrics.models.torch.get_data_shape">get_data_shape() (in module detectionmetrics.models.torch)</a>
+</li>
+      <li><a href="detectionmetrics.cli.html#detectionmetrics.cli.evaluate.get_dataset">get_dataset() (in module detectionmetrics.cli.evaluate)</a>
+</li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_f1_score">get_f1_score() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
+</li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_fn">get_fn() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="detectionmetrics.cli.html#detectionmetrics.cli.evaluate.get_dataset">get_dataset() (in module detectionmetrics.cli.evaluate)</a>
-</li>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.get_f1_score">get_f1_score() (detectionmetrics.utils.metrics.ConfusionMatrix method)</a>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_fp">get_fp() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
 </li>
       <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.io.get_image_mode">get_image_mode() (in module detectionmetrics.utils.io)</a>
 </li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_iou">get_iou() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
+</li>
+      <li><a href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.SegmentationDataset.get_label_count">get_label_count() (detectionmetrics.datasets.dataset.SegmentationDataset method)</a>
+</li>
       <li><a href="detectionmetrics.models.html#detectionmetrics.models.model.SegmentationModel.get_lut_ontology">get_lut_ontology() (detectionmetrics.models.model.SegmentationModel method)</a>
+</li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_metric_names">get_metric_names() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
+</li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_metric_per_name">get_metric_per_name() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
 </li>
       <li><a href="detectionmetrics.cli.html#detectionmetrics.cli.evaluate.get_model">get_model() (in module detectionmetrics.cli.evaluate)</a>
 </li>
       <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.conversion.get_ontology_conversion_lut">get_ontology_conversion_lut() (in module detectionmetrics.utils.conversion)</a>
 </li>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.get_precision">get_precision() (detectionmetrics.utils.metrics.ConfusionMatrix method)</a>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_precision">get_precision() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
 </li>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.get_recall">get_recall() (detectionmetrics.utils.metrics.ConfusionMatrix method)</a>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_recall">get_recall() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
+</li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_tn">get_tn() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
+</li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.get_tp">get_tp() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
 </li>
       <li><a href="detectionmetrics.datasets.html#detectionmetrics.datasets.goose.GOOSEImageSegmentationDataset">GOOSEImageSegmentationDataset (class in detectionmetrics.datasets.goose)</a>
 </li>
@@ -398,10 +399,6 @@
 </li>
       </ul></li>
   </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.IoU">IoU (class in detectionmetrics.utils.metrics)</a>
-</li>
-  </ul></td>
 </tr></table>
 
 <h2 id="L">L</h2>
@@ -433,7 +430,9 @@
         <li><a href="detectionmetrics.datasets.html#detectionmetrics.datasets.dataset.SegmentationDataset.make_fname_global">(detectionmetrics.datasets.dataset.SegmentationDataset method)</a>
 </li>
       </ul></li>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.Metric">Metric (class in detectionmetrics.utils.metrics)</a>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.METRIC_NAMES">METRIC_NAMES (detectionmetrics.utils.metrics.MetricsFactory attribute)</a>
+</li>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory">MetricsFactory (class in detectionmetrics.utils.metrics)</a>
 </li>
       <li>
     module
@@ -560,16 +559,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="detectionmetrics.models.html#detectionmetrics.models.torch.unsqueeze_data">unsqueeze_data() (in module detectionmetrics.models.torch)</a>
 </li>
-      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.ConfusionMatrix.update">update() (detectionmetrics.utils.metrics.ConfusionMatrix method)</a>
-
-      <ul>
-        <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.IoU.update">(detectionmetrics.utils.metrics.IoU method)</a>
-</li>
-        <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.Metric.update">(detectionmetrics.utils.metrics.Metric method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="detectionmetrics.utils.html#detectionmetrics.utils.metrics.MetricsFactory.update">update() (detectionmetrics.utils.metrics.MetricsFactory method)</a>
+</li>
       <li><a href="detectionmetrics.models.torch_model_utils.html#detectionmetrics.models.torch_model_utils.o3d_randlanet.update_probs">update_probs() (in module detectionmetrics.models.torch_model_utils.o3d_randlanet)</a>
 </li>
   </ul></td>
