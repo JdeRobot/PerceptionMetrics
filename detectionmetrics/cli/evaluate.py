@@ -33,8 +33,9 @@ def get_dataset(
     split,
 ):
     # Check if required data is available
-    if dataset_format == "gaia" and dataset_fname is None:
-        raise ValueError("--dataset is required for 'gaia' format")
+    if dataset_format == "gaia":
+        if dataset_fname is None:
+            raise ValueError("--dataset is required for 'gaia' format")
 
     elif dataset_format == "rellis3d":
         if dataset_dir is None:
