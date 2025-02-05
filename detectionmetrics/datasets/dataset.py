@@ -28,6 +28,7 @@ class SegmentationDataset(ABC):
         self.dataset = dataset
         self.dataset_dir = os.path.abspath(dataset_dir)
         self.ontology = ontology
+        self.has_label_count = all("label_count" in v for v in self.ontology.values())
 
     def __len__(self):
         return len(self.dataset)
@@ -53,6 +54,16 @@ class SegmentationDataset(ABC):
         self.dataset = pd.concat(
             [self.dataset, new_dataset.dataset], verify_integrity=True
         )
+
+    def get_label_count(self, splits: List[str] = ["train", "val"]) -> np.ndarray:
+        """Get label count for each class in the dataset
+
+        :param splits: Dataset splits to consider, defaults to ["train", "val"]
+        :type splits: List[str], optional
+        :return: Label count for the dataset
+        :rtype: np.ndarray
+        """
+        raise NotImplementedError
 
 
 class ImageSegmentationDataset(SegmentationDataset):
@@ -94,7 +105,9 @@ class ImageSegmentationDataset(SegmentationDataset):
         outdir: str,
         new_ontology: Optional[dict] = None,
         ontology_translation: Optional[dict] = None,
-        ignored_classes: Optional[List[str]] = [],
+        ignored_classes: Optional[List[str]] = None,
+        resize: Optional[Tuple[int, int]] = None,
+        include_label_count: bool = True,
     ):
         """Export dataset dataframe and image files in SemanticKITTI format. Optionally, modify ontology before exporting.
 
@@ -106,6 +119,10 @@ class ImageSegmentationDataset(SegmentationDataset):
         :type ontology_translation: Optional[dict], optional
         :param ignored_classes: Classes to ignore from the old ontology, defaults to []
         :type ignored_classes: Optional[List[str]], optional
+        :param resize: Resize images and labels to the given dimensions, defaults to None
+        :type resize: Optional[Tuple[int, int]], optional
+        :param include_label_count: Whether to include class weights in the dataset, defaults to True
+        :type include_label_count: bool, optional
         """
         os.makedirs(outdir, exist_ok=True)
 
@@ -117,7 +134,7 @@ class ImageSegmentationDataset(SegmentationDataset):
         if ontology_translation is not None and new_ontology is None:
             raise ValueError("New ontology must be provided")
 
-        # Create ontology conversion lookup table
+        # Create ontology conversion lookup table if needed and get number of classes
         ontology_conversion_lut = None
         if new_ontology is not None:
             ontology_conversion_lut = uc.get_ontology_conversion_lut(
@@ -126,6 +143,16 @@ class ImageSegmentationDataset(SegmentationDataset):
                 ontology_translation=ontology_translation,
                 ignored_classes=ignored_classes,
             )
+            n_classes = max(c["idx"] for c in new_ontology.values()) + 1
+        else:
+            n_classes = max(c["idx"] for c in self.ontology.values()) + 1
+
+        # Check if label count is missing and create empty array if needed
+        label_count_missing = include_label_count and (
+            not self.has_label_count or new_ontology is not None
+        )
+        if label_count_missing:
+            label_count = np.zeros(n_classes, dtype=np.uint64)
 
         # Export each sample
         for sample_name, row in pbar:
@@ -149,20 +176,29 @@ class ImageSegmentationDataset(SegmentationDataset):
                     label_fname = os.path.join(self.dataset_dir, label_fname)
 
             # If image mode is not appropriate: read, convert, and rewrite image
-            if uio.get_image_mode(image_fname) != "RGB":
+            if uio.get_image_mode(image_fname) != "RGB" or resize is not None:
                 image = cv2.imread(image_fname, 1)  # convert to RGB
+
+                # Resize image if needed
+                if resize is not None:
+                    image = cv2.resize(image, resize, interpolation=cv2.INTER_CUBIC)
                 cv2.imwrite(os.path.join(outdir, rel_image_fname), image)
-            # if image mode is appropriate simply copy image to new location
+
+            # If image mode is appropriate simply copy image to new location
             else:
                 shutil.copy2(image_fname, os.path.join(outdir, rel_image_fname))
             self.dataset.at[sample_name, "image"] = rel_image_fname
 
-            # Same for labels (plus ontology conversion if needed)
+            # Same for labels (plus ontology conversion and label count if needed)
             if label_fname:
                 image_mode = uio.get_image_mode(label_fname)
-                if image_mode == "L" and ontology_conversion_lut is None:
-                    shutil.copy2(label_fname, os.path.join(outdir, rel_label_fname))
-                else:
+                if (
+                    image_mode != "L"
+                    or ontology_conversion_lut is not None
+                    or resize is not None
+                    or label_count_missing
+                ):
+                    # Read and convert label from RGB to L
                     if self.is_label_rgb:
                         label_rgb = cv2.imread(label_fname)[:, :, ::-1]
                         label = np.zeros(label_rgb.shape[:2], dtype=np.uint8)
@@ -172,9 +208,26 @@ class ImageSegmentationDataset(SegmentationDataset):
                             label[(label_rgb == rgb).all(axis=2)] = idx
                     else:
                         label = cv2.imread(label_fname, 0)  # convert to L
-                        if ontology_conversion_lut is not None:
-                            label = ontology_conversion_lut[label]
+
+                    # Convert label to new ontology if needed
+                    if ontology_conversion_lut is not None:
+                        label = ontology_conversion_lut[label]
+
+                    # Resize label if needed
+                    if resize is not None:
+                        label = cv2.resize(
+                            label, resize, interpolation=cv2.INTER_NEAREST
+                        )
+
+                    # Update label count if needed
+                    if label_count_missing:
+                        indices, counts = np.unique(label, return_counts=True)
+                        label_count[indices] += counts.astype(np.uint64)
+
                     cv2.imwrite(os.path.join(outdir, rel_label_fname), label)
+                else:
+                    shutil.copy2(label_fname, os.path.join(outdir, rel_label_fname))
+
                 self.dataset.at[sample_name, "label"] = rel_label_fname
 
         # Update dataset directory and ontology if needed
@@ -182,6 +235,10 @@ class ImageSegmentationDataset(SegmentationDataset):
         self.ontology = new_ontology if new_ontology is not None else self.ontology
 
         # Write ontology and store relative path in dataset attributes
+        if label_count_missing:
+            for class_data in self.ontology.values():
+                class_data["label_count"] = int(label_count[class_data["idx"]])
+
         ontology_fname = "ontology.json"
         self.dataset.attrs = {"ontology_fname": ontology_fname}
         uio.write_json(os.path.join(outdir, ontology_fname), self.ontology)

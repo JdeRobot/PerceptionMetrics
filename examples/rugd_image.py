@@ -32,8 +32,16 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Directory where dataset will be stored in common format",
     )
+    parser.add_argument(
+        "--resize",
+        type=str,
+        required=False,
+        help="Resize images to a specific size (e.g. 512x512)",
+    )
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    args.resize = tuple(map(int, args.resize.split("x"))) if args.resize else None
+    return args
 
 
 def main():
@@ -45,7 +53,7 @@ def main():
         labels_dir=args.labels_dir,
         ontology_fname=args.ontology,
     )
-    dataset.export(args.outdir)
+    dataset.export(args.outdir, resize=args.resize)
 
 
 if __name__ == "__main__":
