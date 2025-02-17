@@ -82,6 +82,47 @@ def get_computational_cost(
     }
 
 
+def resize_image(
+    image: tf.Tensor,
+    target_size: Tuple[int, int],
+    method: str,
+    keep_aspect: bool = False,
+) -> tf.Tensor:
+    """Resize tensorflow image to target size
+
+    :param image: Input image tensor
+    :type image: tf.Tensor
+    :param target_size: Target size for the image
+    :type target_size: Tuple[int, int]
+    :param method: Resizing method (e.g. bilinear, nearest)
+    :type method: str
+    :param keep_aspect: Whether to keep aspect ratio when resizing images. If true, resize to match smaller sides size and crop center. Defaults to False
+    :type keep_aspect: bool, optional
+    :return: Resized image tensor
+    :rtype: tf.Tensor
+    """
+    # If keep_aspect is True, resize to match smaller side
+    if keep_aspect:
+        original_size = tf.cast(tf.shape(image)[:2], tf.float32)
+        resize_size = tf.cast(tf.convert_to_tensor(target_size), tf.float32)
+        scale_factor = tf.reduce_max(resize_size / original_size)
+        resize_size = tf.cast(tf.round(original_size * scale_factor), tf.int32)
+    else:
+        resize_size = target_size
+
+    image = tf_image.resize(images=image, size=resize_size, method=method)
+
+    # If keep_aspect is True, crop center to match target size
+    if keep_aspect:
+        y0 = (resize_size[0] - target_size[0]) // 2
+        x0 = (resize_size[1] - target_size[1]) // 2
+        image = tf_image.crop_to_bounding_box(
+            image, y0, x0, target_size[1], target_size[0]
+        )
+
+    return image
+
+
 class ImageSegmentationTensorflowDataset:
     """Dataset for image segmentation Tensorflow models
 
@@ -91,12 +132,14 @@ class ImageSegmentationTensorflowDataset:
     :type image_size: Tuple[int, int]
     :param batch_size: Batch size, defaults to 1
     :type batch_size: int, optional
-    :param split: Split to be used from the dataset, defaults to "all"
-    :type split: str, optional
+    :param splits: Splits to be used from the dataset, defaults to ["test"]
+    :type splits: str, optional
     :param lut_ontology: LUT to transform label classes, defaults to None
     :type lut_ontology: dict, optional
     :param normalization: Parameters for normalizing input images, defaults to None
     :type normalization: dict, optional
+    :param keep_aspect: Whether to keep aspect ratio when resizing images. If true, resize to match smaller sides size and crop center. Defaults to False
+    :type keep_aspect: bool, optional
     """
 
     def __init__(
@@ -104,9 +147,10 @@ class ImageSegmentationTensorflowDataset:
         dataset: ImageSegmentationDataset,
         image_size: Tuple[int, int],
         batch_size: int = 1,
-        split: str = "all",
+        splits: List[str] = ["test"],
         lut_ontology: Optional[dict] = None,
         normalization: Optional[dict] = None,
+        keep_aspect: bool = False,
     ):
         self.image_size = image_size
         self.normalization = None
@@ -114,10 +158,10 @@ class ImageSegmentationTensorflowDataset:
             mean = tf.constant(normalization["mean"], dtype=tf.float32)
             std = tf.constant(normalization["std"], dtype=tf.float32)
             self.normalization = {"mean": mean, "std": std}
+        self.keep_aspect = keep_aspect
 
         # Filter split and make filenames global
-        if split != "all":
-            dataset.dataset = dataset.dataset[dataset.dataset["split"] == split]
+        dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
         dataset.make_fname_global()
 
         self.lut_ontology = None
@@ -163,7 +207,7 @@ class ImageSegmentationTensorflowDataset:
 
         # Resize (use NN to avoid interpolation when dealing with labels)
         method = "nearest" if label else "bilinear"
-        image = tf_image.resize(images=image, size=self.image_size, method=method)
+        image = resize_image(image, self.image_size, method, self.keep_aspect)
 
         # If label, round values to avoid interpolation artifacts
         if label:
@@ -232,7 +276,12 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         # Init transformation for input images
         def t_in(image):
             tensor = tf.convert_to_tensor(image)
-            tensor = tf_image.resize(images=tensor, size=self.model_cfg["image_size"])
+            tensor = resize_image(
+                tensor,
+                target_size=self.model_cfg["image_size"],
+                method="bilinear",
+                keep_aspect=self.model_cfg.get("keep_aspect", False),
+            )
             tensor = tf.expand_dims(tensor, axis=0)
             if "normalization" in self.model_cfg:
                 mean = tf.constant(self.model_cfg["normalization"]["mean"])
@@ -273,15 +322,15 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
     def eval(
         self,
         dataset: ImageSegmentationDataset,
-        split: str = "all",
+        split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
         :param dataset: Image segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
-        :param split: Split to be used from the dataset, defaults to "all"
-        :type split: str, optional
+        :param split: Split to be used from the dataset, defaults to "test"
+        :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
@@ -295,9 +344,10 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             dataset,
             image_size=self.model_cfg["image_size"],
             batch_size=self.model_cfg.get("batch_size", 1),
-            split=split,
+            splits=[split] if isinstance(split, str) else split,
             lut_ontology=lut_ontology,
             normalization=self.model_cfg.get("normalization", None),
+            keep_aspect=self.model_cfg.get("keep_aspect", False),
         )
 
         # Retrieve ignored label indices

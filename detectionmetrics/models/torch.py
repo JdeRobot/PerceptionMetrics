@@ -9,6 +9,7 @@ from PIL import Image
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2 as transforms
+from torchvision.transforms.v2 import functional as F
 from tqdm import tqdm
 
 from detectionmetrics.datasets import dataset as dm_dataset
@@ -130,6 +131,44 @@ def get_computational_cost(
     }
 
 
+class CustomResize(torch.nn.Module):
+    """Custom rescale transformation for PyTorch
+
+    :param target_size: Target size for the image
+    :type target_size: Tuple[int, int]
+    :param keep_aspect: Flag to keep aspect ratio
+    :type keep_aspect: bool, defaults to False
+    :param interpolation: Interpolation mode for resizing (e.g. NEAREST, BILINEAR)
+    :type interpolation: F.InterpolationMode, defaults to F.InterpolationMode.BILINEAR
+    """
+
+    def __init__(
+        self,
+        target_size: Tuple[int, int],
+        keep_aspect: bool = False,
+        interpolation: F.InterpolationMode = F.InterpolationMode.BILINEAR,
+    ):
+        super().__init__()
+        self.target_size = target_size
+        self.keep_aspect = keep_aspect
+        self.interpolation = interpolation
+
+    def forward(self, image: Image.Image) -> Image.Image:
+        new_size = self.target_size
+        if self.keep_aspect:
+            h, w = image.size
+            resize_factor = max((self.target_size[0] / h, self.target_size[1] / w))
+            new_size = int(h * resize_factor), int(w * resize_factor)
+
+        if new_size != image.size:
+            image = F.resize(image, new_size, self.interpolation)
+
+        if self.keep_aspect:
+            image = F.center_crop(image, self.target_size)
+
+        return image
+
+
 class ImageSegmentationTorchDataset(Dataset):
     """Dataset for image segmentation PyTorch models
 
@@ -173,6 +212,7 @@ class ImageSegmentationTorchDataset(Dataset):
         """
         image = Image.open(self.dataset.dataset.iloc[idx]["image"])
         label = Image.open(self.dataset.dataset.iloc[idx]["label"])
+
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
@@ -297,12 +337,17 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
 
         if "image_size" in self.model_cfg:
             self.transform_input += [
-                transforms.Resize(tuple(self.model_cfg["image_size"]))
+                CustomResize(
+                    tuple(self.model_cfg["image_size"]),
+                    keep_aspect=self.model_cfg.get("keep_aspect", False),
+                    interpolation=F.InterpolationMode.BILINEAR,
+                )
             ]
             self.transform_label += [
-                transforms.Resize(
+                CustomResize(
                     tuple(self.model_cfg["image_size"]),
-                    interpolation=transforms.InterpolationMode.NEAREST_EXACT,
+                    keep_aspect=self.model_cfg.get("keep_aspect", False),
+                    interpolation=F.InterpolationMode.NEAREST,
                 )
             ]
 
