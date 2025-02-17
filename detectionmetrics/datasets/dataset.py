@@ -44,7 +44,28 @@ class SegmentationDataset(ABC):
         :param new_dataset: Dataset to be appended
         :type new_dataset: Self
         """
-        assert self.ontology == new_dataset.ontology, "Ontologies don't match"
+        if not self.has_label_count:
+            assert self.ontology == new_dataset.ontology, "Ontologies don't match"
+        else:
+            # Check if classes match
+            assert (
+                self.ontology.keys() == new_dataset.ontology.keys()
+            ), "Ontologies don't match"
+            for class_name in self.ontology:
+                # Check if indices, and RGB values match
+                assert (
+                    self.ontology[class_name]["idx"]
+                    == new_dataset.ontology[class_name]["idx"]
+                ), "Ontologies don't match"
+                assert (
+                    self.ontology[class_name]["rgb"]
+                    == new_dataset.ontology[class_name]["rgb"]
+                ), "Ontologies don't match"
+
+                # Accumulate label count
+                self.ontology[class_name]["label_count"] += new_dataset.ontology[
+                    class_name
+                ]["label_count"]
 
         # Global filenames to avoid dealing with each dataset relative location
         self.make_fname_global()

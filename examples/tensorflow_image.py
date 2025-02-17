@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from PIL import Image
 
@@ -74,6 +75,8 @@ def main():
         split=args.split,
         ontology_translation=args.ontology_translation,
     )
+
+    os.makedirs(os.path.dirname(args.out_fname), exist_ok=True)
     results.to_csv(args.out_fname)
 
 
