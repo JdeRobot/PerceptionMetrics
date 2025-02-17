@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -67,15 +67,15 @@ class SegmentationModel(ABC):
     def eval(
         self,
         dataset: dm_dataset.SegmentationDataset,
-        split: str = "all",
+        split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
         :param dataset: Segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
-        :param split: Split to be used from the dataset, defaults to "all"
-        :type split: str, optional
+        :param split: Split or splits to be used from the dataset, defaults to "test"
+        :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
@@ -158,15 +158,15 @@ class ImageSegmentationModel(SegmentationModel):
     def eval(
         self,
         dataset: dm_dataset.ImageSegmentationDataset,
-        split: str = "all",
+        split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
         :param dataset: Image segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
-        :param split: Split to be used from the dataset, defaults to "all"
-        :type split: str, optional
+        :param split: Split or splits to be used from the dataset, defaults to "test"
+        :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
@@ -215,15 +215,15 @@ class LiDARSegmentationModel(SegmentationModel):
     def eval(
         self,
         dataset: dm_dataset.LiDARSegmentationDataset,
-        split: str = "all",
+        split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
     ) -> pd.DataFrame:
         """Perform evaluation for a LiDAR segmentation dataset
 
         :param dataset: LiDAR segmentation dataset for which the evaluation will be performed
         :type dataset: LiDARSegmentationDataset
-        :param split: Split to be used from the dataset, defaults to "all"
-        :type split: str, optional
+        :param split: Split or splits to be used from the dataset, defaults to "test"
+        :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results

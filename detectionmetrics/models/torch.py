@@ -1,7 +1,7 @@
 from collections import defaultdict
 import os
 import time
-from typing import Any, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -139,8 +139,8 @@ class ImageSegmentationTorchDataset(Dataset):
     :type transform: transforms.Compose
     :param target_transform: Transformation to be applied to labels
     :type target_transform: transforms.Compose
-    :param split: Split to be used from the dataset, defaults to "all"
-    :type split: str, optional
+    :param splits: Splits to be used from the dataset, defaults to ["test"]
+    :type splits: str, optional
     """
 
     def __init__(
@@ -148,11 +148,10 @@ class ImageSegmentationTorchDataset(Dataset):
         dataset: dm_dataset.ImageSegmentationDataset,
         transform: transforms.Compose,
         target_transform: transforms.Compose,
-        split: str = "all",
+        splits: List[str] = ["test"],
     ):
         # Filter split and make filenames global
-        if split != "all":
-            dataset.dataset = dataset.dataset[dataset.dataset["split"] == split]
+        dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
         self.dataset = dataset
         self.dataset.make_fname_global()
 
@@ -192,8 +191,8 @@ class LiDARSegmentationTorchDataset(Dataset):
     :type preprocess: callable
     :param n_classes: Number of classes estimated by the model
     :type n_classes: int
-    :param split: Split to be used from the dataset, defaults to "all"
-    :type split: str, optional
+    :param splits: Splits to be used from the dataset, defaults to ["test"]
+    :type splits: str, optional
     """
 
     def __init__(
@@ -202,11 +201,10 @@ class LiDARSegmentationTorchDataset(Dataset):
         model_cfg: dict,
         preprocess: callable,
         n_classes: int,
-        split: str = "all",
+        splits: str = ["test"],
     ):
         # Filter split and make filenames global
-        if split != "all":
-            dataset.dataset = dataset.dataset[dataset.dataset["split"] == split]
+        dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
         self.dataset = dataset
         self.dataset.make_fname_global()
 
@@ -366,15 +364,15 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
     def eval(
         self,
         dataset: dm_dataset.ImageSegmentationDataset,
-        split: str = "all",
+        split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
         :param dataset: Image segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
-        :param split: Split to be used from the dataset, defaults to "all"
-        :type split: str, optional
+        :param split: Split or splits to be used from the dataset, defaults to "test"
+        :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
@@ -394,7 +392,7 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
             dataset,
             transform=self.transform_input,
             target_transform=self.transform_label,
-            split=split,
+            splits=[split] if isinstance(split, str) else split,
         )
 
         dataloader = DataLoader(
@@ -605,15 +603,15 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
     def eval(
         self,
         dataset: dm_dataset.LiDARSegmentationDataset,
-        split: str = "all",
+        split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
     ) -> pd.DataFrame:
         """Perform evaluation for a LiDAR segmentation dataset
 
         :param dataset: LiDAR segmentation dataset for which the evaluation will be performed
         :type dataset: LiDARSegmentationDataset
-        :param split: Split to be used from the dataset, defaults to "all"
-        :type split: str, optional
+        :param split: Split or splits to be used from the dataset, defaults to "test"
+        :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :return: DataFrame containing evaluation results
@@ -634,7 +632,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
             model_cfg=self.model_cfg,
             preprocess=self.preprocess,
             n_classes=self.n_classes,
-            split=split,
+            splits=[split] if isinstance(split, str) else split,
         )
 
         # Init metrics

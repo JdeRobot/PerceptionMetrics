@@ -46,15 +46,15 @@ def get_dataset(
             raise ValueError("--dataset_ontology is required for 'rellis3d' format")
 
     elif dataset_format in ["goose", "generic"]:
-        if split == "train" and train_dataset_dir is None:
+        if "train" in split and train_dataset_dir is None:
             raise ValueError(
                 "--train_dataset_dir is required for 'train' split in 'goose' format"
             )
-        elif split == "val" and val_dataset_dir is None:
+        elif "val" in split and val_dataset_dir is None:
             raise ValueError(
                 "--val_dataset_dir is required for 'val' split in 'goose' format"
             )
-        elif split == "test" and test_dataset_dir is None:
+        elif "test" in split and test_dataset_dir is None:
             raise ValueError(
                 "--test_dataset_dir is required for 'test' split in 'goose' format"
             )
@@ -118,6 +118,17 @@ def get_dataset(
         )
     return datasets.REGISTRY[dataset_name](**dataset_args)
 
+def parse_split(ctx, param, value):
+    """Parse split argument"""
+    splits = value.split(",")
+    valid_splits = ["train", "val", "test"]
+    if not all(split in valid_splits for split in splits):
+        raise click.BadParameter(
+            f"Split must be one of {valid_splits} or a comma-separated list of them",
+            param_hint=value,
+        )
+
+    return splits
 
 @click.command(name="evaluate", help="Evaluate model on dataset")
 @click.argument("task", type=click.Choice(["segmentation"], case_sensitive=False))
@@ -219,10 +230,10 @@ def get_dataset(
 )
 @click.option(
     "--split",
-    type=click.Choice(["train", "val", "test"], case_sensitive=False),
     show_default=True,
     default="test",
-    help="Name of the split to be evaluated",
+    callback=parse_split,
+    help="Name of the split or splits separated by commas to be evaluated",
 )
 @click.option(
     "--ontology_translation",
@@ -260,6 +271,8 @@ def evaluate(
     out_fname,
 ):
     """Evaluate model on dataset"""
+    if isinstance(split, str):  # if evaluate has been called directly
+        split = parse_split(None, None, split)
 
     model = get_model(task, input_type, model_format, model, model_ontology, model_cfg)
     dataset = get_dataset(
