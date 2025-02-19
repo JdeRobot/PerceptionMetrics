@@ -54,6 +54,13 @@ def parse_args() -> argparse.Namespace:
         required=False,
         help="JSON file containing translation between dataset and model classes",
     )
+    parser.add_argument(
+        "--predictions_outdir",
+        type=str,
+        required=False,
+        help="Directory where the predictions will be stored. If not provided, "
+        "predictions will not be saved",
+    )
     return parser.parse_args()
 
 
@@ -74,6 +81,8 @@ def main():
         dataset,
         split=args.split,
         ontology_translation=args.ontology_translation,
+        predictions_outdir=args.predictions_outdir,
+        results_per_sample=args.predictions_outdir is not None,
     )
 
     os.makedirs(os.path.dirname(args.out_fname), exist_ok=True)
