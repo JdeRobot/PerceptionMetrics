@@ -217,7 +217,7 @@ class ImageSegmentationTorchDataset(Dataset):
             image = self.transform(image)
         if self.target_transform:
             label = self.target_transform(label)
-        return image, label
+        return self.dataset.dataset.index[idx], image, label
 
 
 class LiDARSegmentationTorchDataset(Dataset):
@@ -287,6 +287,7 @@ class LiDARSegmentationTorchDataset(Dataset):
             )
 
         return (
+            self.dataset.dataset.index[idx],
             preprocessed_points,
             projected_indices,
             (semantic_label, instance_label),
@@ -411,6 +412,8 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         dataset: dm_dataset.ImageSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
+        predictions_outdir: Optional[str] = None,
+        results_per_sample: bool = False,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
@@ -420,9 +423,23 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
+        :type predictions_outdir: Optional[str], optional
+        :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
+        :type results_per_sample: bool, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
+        # Check that predictions_outdir is provided if results_per_sample is True
+        if results_per_sample and predictions_outdir is None:
+            raise ValueError(
+                "If results_per_sample is True, predictions_outdir must be provided"
+            )
+
+        # Create predictions output directory if needed
+        if predictions_outdir is not None:
+            os.makedirs(predictions_outdir, exist_ok=True)
+
         # Build a LUT for transforming ontology if needed
         lut_ontology = self.get_lut_ontology(dataset.ontology, ontology_translation)
         lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
@@ -447,13 +464,12 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         )
 
         # Init metrics
-        results = {}
         metrics_factory = um.MetricsFactory(self.n_classes)
 
         # Evaluation loop
         with torch.no_grad():
             pbar = tqdm(dataloader, leave=True)
-            for image, label in pbar:
+            for idx, image, label in pbar:
                 # Perform inference
                 with torch.no_grad():
                     pred = self.model(image.to(self.device))
@@ -463,8 +479,8 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
                 # Get valid points masks depending on ignored label indices
                 if ignored_label_indices:
                     valid_mask = torch.ones_like(label, dtype=torch.bool)
-                    for idx in ignored_label_indices:
-                        valid_mask *= label != idx
+                    for ignored_label_idx in ignored_label_indices:
+                        valid_mask *= label != ignored_label_idx
                 else:
                     valid_mask = None
 
@@ -473,41 +489,40 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
                     label = lut_ontology[label]
 
                 # Prepare data and update metrics factory
-                label = label.squeeze(dim=1).cpu()
-                pred = torch.argmax(pred, axis=1).cpu()
+                label = label.squeeze(dim=1).cpu().numpy()
+                pred = torch.argmax(pred, axis=1).cpu().numpy()
                 if valid_mask is not None:
-                    valid_mask = valid_mask.squeeze(dim=1).cpu()
+                    valid_mask = valid_mask.squeeze(dim=1).cpu().numpy()
 
-                metrics_factory.update(
-                    pred.numpy(),
-                    label.numpy(),
-                    valid_mask.numpy() if valid_mask is not None else None,
-                )
+                metrics_factory.update(pred, label, valid_mask)
 
-        # Build results dataframe
-        results = defaultdict(dict)
+                # Store predictions and results per sample if required
+                if predictions_outdir is not None:
+                    for i, (sample_idx, sample_pred, sample_label) in enumerate(
+                        zip(idx, pred, label)
+                    ):
+                        if results_per_sample:
+                            sample_valid_mask = (
+                                valid_mask[i] if valid_mask is not None else None
+                            )
+                            sample_mf = um.MetricsFactory(n_classes=self.n_classes)
+                            sample_mf.update(
+                                sample_pred, sample_label, sample_valid_mask
+                            )
+                            sample_df = um.get_metrics_dataframe(
+                                sample_mf, self.ontology
+                            )
+                            sample_df.to_csv(
+                                os.path.join(predictions_outdir, f"{sample_idx}.csv")
+                            )
+                        sample_pred = Image.fromarray(
+                            np.squeeze(sample_pred).astype(np.uint8)
+                        )
+                        sample_pred.save(
+                            os.path.join(predictions_outdir, f"{sample_idx}.png")
+                        )
 
-        # Add per class and global metrics
-        for metric in metrics_factory.get_metric_names():
-            per_class = metrics_factory.get_metric_per_name(metric, per_class=True)
-
-            for class_name, class_data in self.ontology.items():
-                results[class_name][metric] = float(per_class[class_data["idx"]])
-
-            if metric not in ["tp", "fp", "fn", "tn"]:
-                for avg_method in ["macro", "micro"]:
-                    results[avg_method][metric] = metrics_factory.get_averaged_metric(
-                        metric, avg_method
-                    )
-
-        # Add confusion matrix
-        for class_name_a, class_data_a in self.ontology.items():
-            for class_name_b, class_data_b in self.ontology.items():
-                results[class_name_a][class_name_b] = metrics_factory.confusion_matrix[
-                    class_data_a["idx"], class_data_b["idx"]
-                ]
-
-        return pd.DataFrame(results)
+        return um.get_metrics_dataframe(metrics_factory, self.ontology)
 
     def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
         """Get different metrics related to the computational cost of the model
@@ -650,6 +665,8 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         dataset: dm_dataset.LiDARSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
+        predictions_outdir: Optional[str] = None,
+        results_per_sample: bool = False,
     ) -> pd.DataFrame:
         """Perform evaluation for a LiDAR segmentation dataset
 
@@ -659,9 +676,23 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
+        :type predictions_outdir: Optional[str], optional
+        :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
+        :type results_per_sample: bool, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
+        # Check that predictions_outdir is provided if results_per_sample is True
+        if results_per_sample and predictions_outdir is None:
+            raise ValueError(
+                "If results_per_sample is True, predictions_outdir must be provided"
+            )
+
+        # Create predictions output directory if needed
+        if predictions_outdir is not None:
+            os.makedirs(predictions_outdir, exist_ok=True)
+
         # Build a LUT for transforming ontology if needed
         lut_ontology = self.get_lut_ontology(dataset.ontology, ontology_translation)
         lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
@@ -684,11 +715,10 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         metrics_factory = um.MetricsFactory(self.n_classes)
 
         # Evaluation loop
-        results = {}
         end_th = self.model_cfg.get("end_th", 0.5)
         with torch.no_grad():
             pbar = tqdm(dataset, total=len(dataset), leave=True)
-            for points, projected_indices, (label, _), sampler in pbar:
+            for idx, points, projected_indices, (label, _), sampler in pbar:
                 # Iterate over the sampled point cloud until all points reach the end
                 # threshold. If no sampler is provided, the inference is performed in a
                 # single step.
@@ -746,41 +776,38 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
                     label = lut_ontology[label]
 
                 # Prepare data and update metrics factory
-                label = label.cpu().unsqueeze(0)
-                pred = self.transform_output(pred).cpu().unsqueeze(0).to(torch.int64)
+                label = label.cpu().unsqueeze(0).numpy()
+                pred = self.transform_output(pred)
+                pred = pred.cpu().unsqueeze(0).to(torch.int64).numpy()
                 if valid_mask is not None:
-                    valid_mask = valid_mask.cpu().unsqueeze(0)
+                    valid_mask = valid_mask.cpu().unsqueeze(0).numpy()
 
-                metrics_factory.update(
-                    pred.numpy(),
-                    label.numpy(),
-                    valid_mask.numpy() if valid_mask is not None else None,
-                )
+                metrics_factory.update(pred, label, valid_mask)
 
-        # Build results dataframe
-        results = defaultdict(dict)
+                # Store predictions and results per sample if required
+                if predictions_outdir is not None:
+                    for i, (sample_idx, sample_pred, sample_label) in enumerate(
+                        zip(idx, pred, label)
+                    ):
+                        if results_per_sample:
+                            sample_valid_mask = (
+                                valid_mask[i] if valid_mask is not None else None
+                            )
+                            sample_mf = um.MetricsFactory(n_classes=self.n_classes)
+                            sample_mf.update(
+                                sample_pred, sample_label, sample_valid_mask
+                            )
+                            sample_df = um.get_metrics_dataframe(
+                                sample_mf, self.ontology
+                            )
+                            sample_df.to_csv(
+                                os.path.join(predictions_outdir, f"{sample_idx}.csv")
+                            )
+                        pred.tofile(
+                            os.path.join(predictions_outdir, f"{sample_idx}.bin")
+                        )
 
-        # Add per class and global metrics
-        for metric in metrics_factory.get_metric_names():
-            per_class = metrics_factory.get_metric_per_name(metric, per_class=True)
-
-            for class_name, class_data in self.ontology.items():
-                results[class_name][metric] = float(per_class[class_data["idx"]])
-
-            if metric not in ["tp", "fp", "fn", "tn"]:
-                for avg_method in ["macro", "micro"]:
-                    results[avg_method][metric] = metrics_factory.get_averaged_metric(
-                        metric, avg_method
-                    )
-
-        # Add confusion matrix
-        for class_name_a, class_data_a in self.ontology.items():
-            for class_name_b, class_data_b in self.ontology.items():
-                results[class_name_a][class_name_b] = metrics_factory.confusion_matrix[
-                    class_data_a["idx"], class_data_b["idx"]
-                ]
-
-        return pd.DataFrame(results)
+        return um.get_metrics_dataframe(metrics_factory, self.ontology)
 
     def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
         """Get different metrics related to the computational cost of the model

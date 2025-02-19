@@ -1,7 +1,9 @@
+from collections import defaultdict
 import math
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 
 
 class MetricsFactory:
@@ -251,3 +253,41 @@ class MetricsFactory:
         :rtype: np.ndarray | float | int
         """
         return getattr(self, f"get_{metric_name}")(per_class=per_class)
+
+
+def get_metrics_dataframe(
+    metrics_factory: MetricsFactory, ontology: dict
+) -> pd.DataFrame:
+    """Build a DataFrame with all metrics (global and per class) plus confusion matrix
+
+    :param metrics_factory: Properly updated MetricsFactory object
+    :type metrics_factory: MetricsFactory
+    :param ontology: Ontology dictionary
+    :type ontology: dict
+    :return: DataFrame with all metrics
+    :rtype: pd.DataFrame
+    """
+    # Build results dataframe
+    results = defaultdict(dict)
+
+    # Add per class and global metrics
+    for metric in metrics_factory.get_metric_names():
+        per_class = metrics_factory.get_metric_per_name(metric, per_class=True)
+
+        for class_name, class_data in ontology.items():
+            results[class_name][metric] = float(per_class[class_data["idx"]])
+
+        if metric not in ["tp", "fp", "fn", "tn"]:
+            for avg_method in ["macro", "micro"]:
+                results[avg_method][metric] = metrics_factory.get_averaged_metric(
+                    metric, avg_method
+                )
+
+    # Add confusion matrix
+    for class_name_a, class_data_a in ontology.items():
+        for class_name_b, class_data_b in ontology.items():
+            results[class_name_a][class_name_b] = metrics_factory.confusion_matrix[
+                class_data_a["idx"], class_data_b["idx"]
+            ]
+
+    return pd.DataFrame(results)

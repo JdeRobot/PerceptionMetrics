@@ -118,6 +118,7 @@ def get_dataset(
         )
     return datasets.REGISTRY[dataset_name](**dataset_args)
 
+
 def parse_split(ctx, param, value):
     """Parse split argument"""
     splits = value.split(",")
@@ -129,6 +130,7 @@ def parse_split(ctx, param, value):
         )
 
     return splits
+
 
 @click.command(name="evaluate", help="Evaluate model on dataset")
 @click.argument("task", type=click.Choice(["segmentation"], case_sensitive=False))
@@ -244,8 +246,13 @@ def parse_split(ctx, param, value):
 @click.option(
     "--out_fname",
     type=click.Path(writable=True),
-    required=True,
     help="CSV file where the evaluation results will be stored",
+)
+@click.option(
+    "--predictions_outdir",
+    type=click.Path(writable=True),
+    help="Directory where predictions (images/points and CSV) per sample will be "
+    "stored. If not provided, predictions per sample will not be saved",
 )
 def evaluate(
     task,
@@ -269,6 +276,7 @@ def evaluate(
     split,
     ontology_translation,
     out_fname,
+    predictions_outdir,
 ):
     """Evaluate model on dataset"""
     if isinstance(split, str):  # if evaluate has been called directly
@@ -297,6 +305,8 @@ def evaluate(
         dataset,
         split=split,
         ontology_translation=ontology_translation,
+        predictions_outdir=predictions_outdir,
+        results_per_sample=predictions_outdir is not None,
     )
     results.to_csv(out_fname)
 

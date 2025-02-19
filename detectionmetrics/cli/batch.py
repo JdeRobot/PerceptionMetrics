@@ -68,8 +68,11 @@ def batch(command, jobs_cfg):
 
     # Start processing jobs
     pbar = tqdm(all_jobs.items(), total=len(all_jobs), leave=True)
+    preds_outdir = None
     for job_id, (model_cfg, dataset_cfg) in pbar:
         job_out_fname = os.path.join(jobs_cfg["outdir"], f"{job_id}.csv")
+        if jobs_cfg.get("store_results_per_sample", False):
+            preds_outdir = os.path.join(jobs_cfg["outdir"], f"preds-{job_id}")
 
         # Check if output file already exists and skip if necessary
         if os.path.isfile(job_out_fname) and not jobs_cfg.get("overwrite", False):
@@ -104,6 +107,7 @@ def batch(command, jobs_cfg):
                 split=dataset_cfg["split"],
                 ontology_translation=jobs_cfg.get("ontology_translation", None),
                 out_fname=job_out_fname,
+                predictions_outdir=preds_outdir,
             )
         except Exception as e:
             print(f"Error processing job {job_id}: {e}")

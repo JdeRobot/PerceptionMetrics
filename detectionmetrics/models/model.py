@@ -69,6 +69,8 @@ class SegmentationModel(ABC):
         dataset: dm_dataset.SegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
+        predictions_outdir: Optional[str] = None,
+        results_per_sample: bool = False,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
@@ -78,6 +80,10 @@ class SegmentationModel(ABC):
         :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
+        :type predictions_outdir: Optional[str], optional
+        :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
+        :type results_per_sample: bool, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
@@ -160,6 +166,8 @@ class ImageSegmentationModel(SegmentationModel):
         dataset: dm_dataset.ImageSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
+        predictions_outdir: Optional[str] = None,
+        results_per_sample: bool = False,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
@@ -169,6 +177,10 @@ class ImageSegmentationModel(SegmentationModel):
         :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
+        :type predictions_outdir: Optional[str], optional
+        :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
+        :type results_per_sample: bool, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
@@ -217,6 +229,8 @@ class LiDARSegmentationModel(SegmentationModel):
         dataset: dm_dataset.LiDARSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
+        predictions_outdir: Optional[str] = None,
+        results_per_sample: bool = False,
     ) -> pd.DataFrame:
         """Perform evaluation for a LiDAR segmentation dataset
 
@@ -226,6 +240,10 @@ class LiDARSegmentationModel(SegmentationModel):
         :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
+        :type predictions_outdir: Optional[str], optional
+        :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
+        :type results_per_sample: bool, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """

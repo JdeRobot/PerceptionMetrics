@@ -76,7 +76,7 @@ class SegmentationDataset(ABC):
             [self.dataset, new_dataset.dataset], verify_integrity=True
         )
 
-    def get_label_count(self, splits: List[str] = ["train", "val"]) -> np.ndarray:
+    def get_label_count(self, splits: Optional[List[str]] = None):
         """Get label count for each class in the dataset
 
         :param splits: Dataset splits to consider, defaults to ["train", "val"]
@@ -220,15 +220,7 @@ class ImageSegmentationDataset(SegmentationDataset):
                     or label_count_missing
                 ):
                     # Read and convert label from RGB to L
-                    if self.is_label_rgb:
-                        label_rgb = cv2.imread(label_fname)[:, :, ::-1]
-                        label = np.zeros(label_rgb.shape[:2], dtype=np.uint8)
-                        for class_data in self.ontology.values():
-                            idx = class_data["idx"]
-                            rgb = list(class_data["rgb"])
-                            label[(label_rgb == rgb).all(axis=2)] = idx
-                    else:
-                        label = cv2.imread(label_fname, 0)  # convert to L
+                    label = self.read_label(label_fname)
 
                     # Convert label to new ontology if needed
                     if ontology_conversion_lut is not None:
@@ -266,6 +258,47 @@ class ImageSegmentationDataset(SegmentationDataset):
 
         # Store dataset as Parquet file containing relative filenames
         self.dataset.to_parquet(os.path.join(outdir, "dataset.parquet"))
+
+    def read_label(self, fname: str) -> np.ndarray:
+        """Read label from an image file
+
+        :param fname: Image file containing labels
+        :type fname: str
+        :return: Numpy array containing labels
+        :rtype: np.ndarray
+        """
+        if self.is_label_rgb:
+            label_rgb = cv2.imread(fname)[:, :, ::-1]
+            label = np.zeros(label_rgb.shape[:2], dtype=np.uint8)
+            for class_data in self.ontology.values():
+                idx = class_data["idx"]
+                rgb = list(class_data["rgb"])
+                label[(label_rgb == rgb).all(axis=2)] = idx
+        else:
+            label = cv2.imread(fname, 0)  # convert to L
+        return label
+
+    def get_label_count(self, splits: Optional[List[str]] = None):
+        """Get label count for each class in the dataset
+
+        :param splits: Dataset splits to consider, defaults to ["train", "val"]
+        :type splits: List[str], optional
+        :return: Label count for the dataset
+        :rtype: np.ndarray
+        """
+        if splits is None:
+            splits = ["train", "val"]
+
+        df = self.dataset[self.dataset["split"].isin(splits)]
+        n_classes = max(c["idx"] for c in self.ontology.values()) + 1
+        label_count = np.zeros(n_classes, dtype=np.uint64)
+        pbar = tqdm(df["label"], total=len(df))
+        for label_fname in pbar:
+            label = self.read_label(label_fname)
+            indices, counts = np.unique(label, return_counts=True)
+            label_count[indices] += counts.astype(np.uint64)
+
+        return label_count
 
 
 class LiDARSegmentationDataset(SegmentationDataset):

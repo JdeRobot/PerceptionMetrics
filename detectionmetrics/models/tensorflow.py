@@ -1,4 +1,3 @@
-from collections import defaultdict
 import os
 import time
 from typing import List, Optional, Tuple, Union
@@ -174,8 +173,12 @@ class ImageSegmentationTensorflowDataset:
             )
 
         # Build tensorflow dataset
-        fnames = (dataset.dataset["image"], dataset.dataset["label"])
-        self.dataset = tf_data.Dataset.from_tensor_slices(fnames)
+        sample = (
+            dataset.dataset.index,
+            dataset.dataset["image"],
+            dataset.dataset["label"],
+        )
+        self.dataset = tf_data.Dataset.from_tensor_slices(sample)
         self.dataset = self.dataset.map(
             self.load_data, num_parallel_calls=tf_data.AUTOTUNE
         )
@@ -222,10 +225,12 @@ class ImageSegmentationTensorflowDataset:
         return image
 
     def load_data(
-        self, images_fnames: List[str], labels_fnames: List[str]
+        self, idx: str, images_fnames: List[str], labels_fnames: List[str]
     ) -> Tuple[tf.Tensor, tf.Tensor]:
         """Function for loading data for each dataset sample
 
+        :param idx: Sample index
+        :type idx: str
         :param images_fnames: List containing all image filenames
         :type images_fnames: List[str]
         :param labels_fnames: List containing all corresponding label filenames
@@ -235,7 +240,7 @@ class ImageSegmentationTensorflowDataset:
         """
         image = self.read_image(images_fnames)
         label = self.read_image(labels_fnames, label=True)
-        return image, label
+        return idx, image, label
 
 
 class TensorflowImageSegmentationModel(ImageSegmentationModel):
@@ -324,6 +329,8 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         dataset: ImageSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
+        predictions_outdir: Optional[str] = None,
+        results_per_sample: bool = False,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
@@ -333,11 +340,26 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         :type split: str | List[str], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
+        :type predictions_outdir: Optional[str], optional
+        :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
+        :type results_per_sample: bool, optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
+        # Check that predictions_outdir is provided if results_per_sample is True
+        if results_per_sample and predictions_outdir is None:
+            raise ValueError(
+                "If results_per_sample is True, predictions_outdir must be provided"
+            )
+
+        # Create predictions output directory if needed
+        if predictions_outdir is not None:
+            os.makedirs(predictions_outdir, exist_ok=True)
+
         # Build a LUT for transforming ontology if needed
         lut_ontology = self.get_lut_ontology(dataset.ontology, ontology_translation)
+        dataset_ontology = dataset.ontology
 
         # Get Tensorflow dataset
         dataset = ImageSegmentationTensorflowDataset(
@@ -353,15 +375,16 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         # Retrieve ignored label indices
         ignored_label_indices = []
         for ignored_class in self.model_cfg.get("ignored_classes", []):
-            ignored_label_indices.append(dataset.ontology[ignored_class]["idx"])
+            ignored_label_indices.append(dataset_ontology[ignored_class]["idx"])
 
         # Init metrics
-        results = {}
         metrics_factory = um.MetricsFactory(self.n_classes)
 
         # Evaluation loop
         pbar = tqdm(dataset.dataset)
-        for image, label in pbar:
+        for idx, image, label in pbar:
+            idx = idx.numpy()
+
             if self.model_type == "native":
                 pred = self.model(image, training=False)
             elif self.model_type == "compiled":
@@ -375,45 +398,39 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             # Get valid points masks depending on ignored label indices
             if ignored_label_indices:
                 valid_mask = tf.ones_like(label, dtype=tf.bool)
-                for idx in ignored_label_indices:
-                    valid_mask *= label != idx
+                for ignored_label_idx in ignored_label_indices:
+                    valid_mask *= label != ignored_label_idx
             else:
                 valid_mask = None
 
-            label = tf.squeeze(label, axis=3)
-            pred = tf.argmax(pred, axis=3)
+            # Update metrics
+            label = tf.squeeze(label, axis=3).numpy()
+            pred = tf.argmax(pred, axis=3).numpy()
             if valid_mask is not None:
-                valid_mask = tf.squeeze(valid_mask, axis=3)
-            metrics_factory.update(
-                pred.numpy(),
-                label.numpy(),
-                valid_mask.numpy() if valid_mask is not None else None,
-            )
+                valid_mask = tf.squeeze(valid_mask, axis=3).numpy()
 
-        # Build results dataframe
-        results = defaultdict(dict)
+            metrics_factory.update(pred, label, valid_mask)
 
-        # Add per class and global metrics
-        for metric in metrics_factory.get_metric_names():
-            per_class = metrics_factory.get_metric_per_name(metric, per_class=True)
+            # Store predictions and results per sample if required
+            if predictions_outdir is not None:
+                for i, (sample_idx, sample_pred, sample_label) in enumerate(
+                    zip(idx, pred, label)
+                ):
+                    sample_idx = sample_idx.decode("utf-8")
+                    if results_per_sample:
+                        sample_valid_mask = (
+                            valid_mask[i] if valid_mask is not None else None
+                        )
+                        sample_mf = um.MetricsFactory(n_classes=self.n_classes)
+                        sample_mf.update(sample_pred, sample_label, sample_valid_mask)
+                        sample_df = um.get_metrics_dataframe(sample_mf, self.ontology)
+                        sample_df.to_csv(
+                            os.path.join(predictions_outdir, f"{sample_idx}.csv")
+                        )
+                    pred = Image.fromarray(np.squeeze(pred).astype(np.uint8))
+                    pred.save(os.path.join(predictions_outdir, f"{sample_idx}.png"))
 
-            for class_name, class_data in self.ontology.items():
-                results[class_name][metric] = float(per_class[class_data["idx"]])
-
-            if metric not in ["tp", "fp", "fn", "tn"]:
-                for avg_method in ["macro", "micro"]:
-                    results[avg_method][metric] = metrics_factory.get_averaged_metric(
-                        metric, avg_method
-                    )
-
-        # Add confusion matrix
-        for class_name_a, class_data_a in self.ontology.items():
-            for class_name_b, class_data_b in self.ontology.items():
-                results[class_name_a][class_name_b] = metrics_factory.confusion_matrix[
-                    class_data_a["idx"], class_data_b["idx"]
-                ]
-
-        return pd.DataFrame(results)
+        return um.get_metrics_dataframe(metrics_factory, self.ontology)
 
     def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
         """Get different metrics related to the computational cost of the model
