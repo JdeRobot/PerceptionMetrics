@@ -37,26 +37,31 @@ def get_dataset(
         if dataset_fname is None:
             raise ValueError("--dataset is required for 'gaia' format")
 
-    elif dataset_format == "rellis3d":
+    elif dataset_format in ["rellis3d", "wildscenes"]:
         if dataset_dir is None:
-            raise ValueError("--dataset_dir is required for 'rellis3d' format")
+            raise ValueError(
+                "--dataset_dir is required for 'rellis3d' and 'wildscenes' formats"
+            )
         if split_dir is None:
-            raise ValueError("--split_dir is required for 'rellis3d' format")
-        if ontology is None:
+            raise ValueError(
+                "--split_dir is required for 'rellis3d' and 'wildscenes' formats"
+            )
+
+        if dataset_format == "rellis3d" and ontology is None:
             raise ValueError("--dataset_ontology is required for 'rellis3d' format")
 
     elif dataset_format in ["goose", "generic"]:
         if "train" in split and train_dataset_dir is None:
             raise ValueError(
-                "--train_dataset_dir is required for 'train' split in 'goose' format"
+                "--train_dataset_dir is required for 'train' split in 'goose' and 'generic' formats"
             )
         elif "val" in split and val_dataset_dir is None:
             raise ValueError(
-                "--val_dataset_dir is required for 'val' split in 'goose' format"
+                "--val_dataset_dir is required for 'val' split in 'goose' and 'generic' formats"
             )
         elif "test" in split and test_dataset_dir is None:
             raise ValueError(
-                "--test_dataset_dir is required for 'test' split in 'goose' format"
+                "--test_dataset_dir is required for 'test' split in 'goose' and 'generic' formats"
             )
 
         if dataset_format == "generic":
@@ -183,12 +188,12 @@ def parse_split(ctx, param, value):
 @click.option(
     "--dataset_dir",
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
-    help="Dataset directory (used for 'Rellis3D' format)",
+    help="Dataset directory (used for 'Rellis3D' and 'Wildscenes' formats)",
 )
 @click.option(
     "--split_dir",
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
-    help="Directory containing .lst split files (used for 'Rellis3D' format)",
+    help="Directory containing .lst or .csv split files (used for 'Rellis3D' and 'Wildscenes' formats, respectively)",
 )
 @click.option(
     "--train_dataset_dir",

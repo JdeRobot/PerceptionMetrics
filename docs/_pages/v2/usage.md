@@ -42,10 +42,10 @@ Options:
   --dataset_format [gaia|rellis3d|goose|generic]
                                   Dataset format  [default: gaia]
   --dataset_fname FILE            Parquet dataset file
-  --dataset_dir DIRECTORY         Dataset directory (used for 'Rellis3D'
-                                  format)
-  --split_dir DIRECTORY           Directory containing .lst split files (used
-                                  for 'Rellis3D' format)
+  --dataset_dir DIRECTORY         Dataset directory (used for 'Rellis3D' and
+                                  'Wildscenes' format)
+  --split_dir DIRECTORY           Directory containing split files (used for 'Rellis3D'
+                                  and 'Wildscenes' format)
   --train_dataset_dir DIRECTORY   Train dataset directory (used for 'GOOSE'
                                   and 'Generic' formats)
   --val_dataset_dir DIRECTORY     Validation dataset directory (used for
@@ -109,8 +109,8 @@ dataset:
   - id: "dataset_id"  # Dataset identifier
     format: gaia  # Dataset format (e.g., gaia, rellis3d, goose, generic)
     fname: "/path/to/dataset.parquet"  # (For Gaia) Path to the dataset Parquet file
-    dir: "/path/to/dataset_directory"  # (For Rellis3D) Path to the dataset directory
-    split_dir: "/path/to/split_directory"  # (For Rellis3D) Path to the directory containing .lst split files
+    dir: "/path/to/dataset_directory"  # (For Rellis3D/Wildscenes) Path to the dataset directory
+    split_dir: "/path/to/split_directory"  # (For Rellis3D/Wildscenes) Path to the directory containing split files
     train_dir: "/path/to/train_dataset_directory"  # (For Goose/Generic) Train directory
     val_dir: "/path/to/val_dataset_directory"  # (For Goose/Generic) Validation directory
     test_dir: "/path/to/test_dataset_directory"  # (For Goose/Generic) Test directory

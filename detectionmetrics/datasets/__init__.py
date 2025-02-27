@@ -15,6 +15,7 @@ from detectionmetrics.datasets.rellis3d import (
     Rellis3DLiDARSegmentationDataset,
 )
 from detectionmetrics.datasets.rugd import RUGDImageSegmentationDataset
+from detectionmetrics.datasets.wildscenes import WildscenesImageSegmentationDataset
 
 
 REGISTRY = {
@@ -27,4 +28,5 @@ REGISTRY = {
     "rellis3d_image_segmentation": Rellis3DImageSegmentationDataset,
     "rellis3d_lidar_segmentation": Rellis3DLiDARSegmentationDataset,
     "rugd_image_segmentation": RUGDImageSegmentationDataset,
+    "wildscenes_image_segmentation": WildscenesImageSegmentationDataset,
 }
