@@ -319,8 +319,13 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         if isinstance(model, str):
             assert os.path.isfile(model), "TorchScript Model file not found"
             model_fname = model
-            model = torch.jit.load(model)
-            model_type = "compiled"
+            try:
+                model = torch.jit.load(model)
+                model_type = "compiled"
+            except:
+                print("Model is not a TorchScript model. Loading as a PyTorch module.")
+                model = torch.load(model)
+                model_type = "native"
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
             model_fname = None
@@ -472,7 +477,19 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
             for idx, image, label in pbar:
                 # Perform inference
                 with torch.no_grad():
-                    pred = self.model(image.to(self.device))
+                    pred = self.model.inference(
+                        image.to(self.device),
+                        [
+                            dict(
+                                ori_shape=image.shape[2:],
+                                img_shape=image.shape[2:],
+                                pad_shape=image.shape[2:],
+                                padding_size=[0, 0, 0, 0],
+                            )
+                        ]
+                        * image.shape[0],
+                    )
+                    # pred = self.model(image.to(self.device))
                     if isinstance(pred, dict):
                         pred = pred["out"]
 
@@ -560,8 +577,13 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         if isinstance(model, str):
             assert os.path.isfile(model), "TorchScript Model file not found"
             model_fname = model
-            model = torch.jit.load(model)
-            model_type = "compiled"
+            try:
+                model = torch.jit.load(model)
+                model_type = "compiled"
+            except Exception:
+                print("Model is not a TorchScript model. Loading as a PyTorch module.")
+                model = torch.load(model)
+                model_type = "native"
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
             model_fname = None
