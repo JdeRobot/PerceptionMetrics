@@ -1,7 +1,10 @@
 from typing import List, Optional, Tuple
 
 import numpy as np
-from open3d._ml3d.datasets.utils import DataProcessing
+try:
+    from open3d._ml3d.datasets.utils import DataProcessing
+except Exception:
+    print("Open3D-ML3D not available")
 import torch
 
 import detectionmetrics.utils.lidar as ul

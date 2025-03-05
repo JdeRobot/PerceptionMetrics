@@ -1,7 +1,10 @@
 from typing import Optional, Tuple
 
 import numpy as np
-from open3d._ml3d.datasets.utils import DataProcessing
+try:
+    from open3d._ml3d.datasets.utils import DataProcessing
+except Exception:
+    print("Open3D-ML3D not available")
 from sklearn.neighbors import KDTree
 
 from detectionmetrics.models.torch_model_utils import o3d_randlanet, o3d_kpconv
