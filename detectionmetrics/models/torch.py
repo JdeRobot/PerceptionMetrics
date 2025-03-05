@@ -313,13 +313,15 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         :type ontology_fname: str
         """
         # Get device (CPU or GPU)
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else 
+                                "mps" if torch.backends.mps.is_available() else 
+                                "cpu")
 
         # If 'model' contains a string, check that it is a valid filename and load model
         if isinstance(model, str):
             assert os.path.isfile(model), "TorchScript Model file not found"
             model_fname = model
-            model = torch.jit.load(model)
+            model = torch.jit.load(model, map_location=self.device)
             model_type = "compiled"
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
