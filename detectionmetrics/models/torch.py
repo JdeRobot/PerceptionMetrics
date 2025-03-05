@@ -404,9 +404,23 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         tensor = self.transform_input(image).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
-            result = self.model(tensor)
+            # Perform inference
+            if hasattr(self.model, "inference"):  # e.g. mmsegmentation models
+                result = self.model.inference(
+                    tensor.to(self.device),
+                    [
+                        dict(
+                            ori_shape=tensor.shape[2:],
+                            img_shape=tensor.shape[2:],
+                            pad_shape=image.shape[2:],
+                            padding_size=[0, 0, 0, 0],
+                        )
+                    ]
+                    * tensor.shape[0],
+                )
+            else:
+                result = self.model(tensor.to(self.device))
 
-            # TODO: check if this is consistent across different models
             if isinstance(result, dict):
                 result = result["out"]
 
@@ -476,7 +490,7 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
             pbar = tqdm(dataloader, leave=True)
             for idx, image, label in pbar:
                 # Perform inference
-                with torch.no_grad():
+                if hasattr(self.model, "inference"):  # e.g. mmsegmentation models
                     pred = self.model.inference(
                         image.to(self.device),
                         [
@@ -489,9 +503,11 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
                         ]
                         * image.shape[0],
                     )
-                    # pred = self.model(image.to(self.device))
-                    if isinstance(pred, dict):
-                        pred = pred["out"]
+                else:
+                    pred = self.model(image.to(self.device))
+
+                if isinstance(pred, dict):
+                    pred = pred["out"]
 
                 # Get valid points masks depending on ignored label indices
                 if ignored_label_indices:
@@ -755,12 +771,11 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
                         input_data = unsqueeze_data(input_data)
 
                     # Perform inference
-                    with torch.no_grad():
-                        pred = self.model(*input_data)
+                    pred = self.model(*input_data)
 
-                        # TODO: check if this is consistent across different models
-                        if isinstance(pred, dict):
-                            pred = pred["out"]
+                    # TODO: check if this is consistent across different models
+                    if isinstance(pred, dict):
+                        pred = pred["out"]
 
                     if sampler is not None:
                         if self.model_cfg["input_format"] == "o3d_kpconv":
