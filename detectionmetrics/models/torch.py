@@ -313,18 +313,20 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         :type ontology_fname: str
         """
         # Get device (CPU or GPU)
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else 
+                                "mps" if torch.backends.mps.is_available() else 
+                                "cpu")
 
         # If 'model' contains a string, check that it is a valid filename and load model
         if isinstance(model, str):
             assert os.path.isfile(model), "TorchScript Model file not found"
             model_fname = model
             try:
-                model = torch.jit.load(model)
+                model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
             except:
                 print("Model is not a TorchScript model. Loading as a PyTorch module.")
-                model = torch.load(model)
+                model = torch.load(model, map_location=self.device)
                 model_type = "native"
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
@@ -587,18 +589,20 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         :type ontology_fname: str
         """
         # Get device (CPU or GPU)
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else 
+                                    "mps" if torch.backends.mps.is_available() else 
+                                    "cpu")
 
         # If 'model' contains a string, check that it is a valid filename and load model
         if isinstance(model, str):
             assert os.path.isfile(model), "TorchScript Model file not found"
             model_fname = model
             try:
-                model = torch.jit.load(model)
+                model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
             except Exception:
                 print("Model is not a TorchScript model. Loading as a PyTorch module.")
-                model = torch.load(model)
+                model = torch.load(model, map_location=self.device)
                 model_type = "native"
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
