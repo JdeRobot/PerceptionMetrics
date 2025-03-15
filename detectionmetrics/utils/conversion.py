@@ -17,11 +17,9 @@ def hex_to_rgb(hex: str) -> Tuple[int, ...]:
     if len(hex) != 6:
         raise ValueError("Invalid hex code: Must be exactly 6 characters long")
 
-    try:
-        rgb = tuple(int(hex[i : i + 2], 16) for i in (0, 2, 4))
-        return rgb
-    except:
+    if not tuple(int(hex[i : i + 2], 16) for i in (0, 2, 4)):
         raise ValueError("Invalid hex code: Contains non-hexadecimal characters")
+    return tuple(int(hex[i : i + 2], 16) for i in (0, 2, 4))
 
 
 def ontology_to_rgb_lut(ontology: dict) -> np.ndarray:
