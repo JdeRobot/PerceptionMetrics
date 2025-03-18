@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 
 import numpy as np
+
 try:
     from open3d._ml3d.torch.models.kpconv import batch_grid_subsampling, batch_neighbors
 except Exception:

@@ -14,6 +14,11 @@ def hex_to_rgb(hex: str) -> Tuple[int, ...]:
     :rtype: Tuple[int, ...]
     """
     hex = hex.strip("#")
+    if len(hex) != 6:
+        raise ValueError("Invalid hex code: Must be exactly 6 characters long")
+
+    if not tuple(int(hex[i : i + 2], 16) for i in (0, 2, 4)):
+        raise ValueError("Invalid hex code: Contains non-hexadecimal characters")
     return tuple(int(hex[i : i + 2], 16) for i in (0, 2, 4))
 
 
@@ -72,15 +77,27 @@ def get_ontology_conversion_lut(
     max_idx = max(class_data["idx"] for class_data in old_ontology.values())
     lut = np.zeros((max_idx + 1), dtype=np.uint8)
     if ontology_translation is not None:
-        for old_class_name, new_class_name in ontology_translation.items():
+        for (
+            class_name
+        ) in (
+            ignored_classes
+        ):  # Deleting ignored classes that exist in ontology_translation
+            if class_name in ontology_translation:
+                del ontology_translation[class_name]
+        for (
+            old_class_name,
+            new_class_name,
+        ) in (
+            ontology_translation.items()
+        ):  # Mapping old and new class names through ontology_translation
             old_class_idx = old_ontology[old_class_name]["idx"]
             new_class_idx = new_ontology[new_class_name]["idx"]
             lut[old_class_idx] = new_class_idx
     else:
         old_ontology = old_ontology.copy()
-        for class_name in ignored_classes:
+        for class_name in ignored_classes:  # Deleting ignored classes from old_ontology
             del old_ontology[class_name]
-        assert set(old_ontology.keys()) == set(
+        assert set(old_ontology.keys()) == set(  # Checking ontology compatibility
             new_ontology.keys()
         ), "Ontologies classes are not compatible"
         for class_name, class_data in old_ontology.items():
