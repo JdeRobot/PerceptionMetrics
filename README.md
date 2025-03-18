@@ -60,7 +60,6 @@ In the near future, *DetectionMetrics* is planned to be deployed in PyPI. In the
 ### Using venv
 Create your virtual environment:
 ```
-mkdir .venv
 python3 -m venv .venv
 ```
 
