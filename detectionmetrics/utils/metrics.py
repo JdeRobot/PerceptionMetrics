@@ -237,7 +237,7 @@ class MetricsFactory:
             assert (
                 weights is not None
             ), "Weights should be provided for weighted averaging"
-            return float(np.nansum(metric * weights))
+            return float(np.nansum(metric(per_class=True) * weights))
         raise ValueError(f"Unknown method {method}")
 
     def get_metric_per_name(
