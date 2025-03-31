@@ -37,7 +37,8 @@ def get_computational_cost(
     :type runs: int, optional
     :param warm_up_runs: Number of warm-up runs, defaults to 5
     :type warm_up_runs: int, optional
-    :return: Dictionary containing computational cost information
+    :return: DataFrame containing computational cost information
+    :rtype: pd.DataFrame
     """
     # Get model size (if possible) and number of parameters
     if model_fname is not None:
@@ -73,12 +74,13 @@ def get_computational_cost(
         inference_times.append(time.time() - start_time)
 
     # Retrieve computational cost information
-    return {
-        "input_shape": dummy_input.shape.as_list(),
-        "size_mb": size_mb,
-        "n_params": int(n_params),
-        "inference_time_s": np.mean(inference_times),
+    result = {
+        "input_shape": ["x".join(map(str, dummy_input.shape.as_list()))],
+        "n_params": [int(n_params)],
+        "size_mb": [size_mb],
+        "inference_time_s": [np.mean(inference_times)],
     }
+    return pd.DataFrame.from_dict(result)
 
 
 def resize_image(
@@ -432,16 +434,23 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
 
         return um.get_metrics_dataframe(metrics_factory, self.ontology)
 
-    def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
+    def get_computational_cost(
+        self,
+        image_size: Tuple[int] = None,
+        runs: int = 30,
+        warm_up_runs: int = 5,
+    ) -> dict:
         """Get different metrics related to the computational cost of the model
 
+        :param image_size: Image size used for inference
+        :type image_size: Tuple[int], optional
         :param runs: Number of runs to measure inference time, defaults to 30
         :type runs: int, optional
         :param warm_up_runs: Number of warm-up runs, defaults to 5
         :type warm_up_runs: int, optional
         :return: Dictionary containing computational cost information
         """
-        dummy_input = tf.random.normal([1, *self.model_cfg["image_size"], 3])
+        dummy_input = tf.random.normal([1, *image_size, 3])
         return get_computational_cost(
             self.model, dummy_input, self.model_fname, runs, warm_up_runs
         )

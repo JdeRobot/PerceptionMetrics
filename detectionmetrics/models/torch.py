@@ -87,7 +87,7 @@ def get_computational_cost(
     model_fname: Optional[str] = None,
     runs: int = 30,
     warm_up_runs: int = 5,
-) -> dict:
+) -> pd.DataFrame:
     """Get different metrics related to the computational cost of the model
 
     :param model: Either a TorchScript model or an arbitrary PyTorch module
@@ -100,7 +100,8 @@ def get_computational_cost(
     :type runs: int, optional
     :param warm_up_runs: Number of warm-up runs, defaults to 5
     :type warm_up_runs: int, optional
-    :return: Dictionary containing computational cost information
+    :return: DataFrame containing computational cost information
+    :rtype: pd.DataFrame
     """
     # Get model size if possible
     if model_fname is not None:
@@ -112,23 +113,53 @@ def get_computational_cost(
     dummy_tuple = dummy_input if isinstance(dummy_input, tuple) else (dummy_input,)
 
     for _ in range(warm_up_runs):
-        model(*dummy_tuple)
+        if hasattr(model, "inference"):  # e.g. mmsegmentation models
+            model.inference(
+                *dummy_tuple,
+                [
+                    dict(
+                        ori_shape=dummy_tuple[0].shape[2:],
+                        img_shape=dummy_tuple[0].shape[2:],
+                        pad_shape=dummy_tuple[0].shape[2:],
+                        padding_size=[0, 0, 0, 0],
+                    )
+                ]
+                * dummy_tuple[0].shape[0],
+            )
+        else:
+            model(*dummy_tuple)
 
     inference_times = []
     for _ in range(runs):
         torch.cuda.synchronize()
         start_time = time.time()
-        model(*dummy_tuple)
+        if hasattr(model, "inference"):  # e.g. mmsegmentation models
+            model.inference(
+                *dummy_tuple,
+                [
+                    dict(
+                        ori_shape=dummy_tuple[0].shape[2:],
+                        img_shape=dummy_tuple[0].shape[2:],
+                        pad_shape=dummy_tuple[0].shape[2:],
+                        padding_size=[0, 0, 0, 0],
+                    )
+                ]
+                * dummy_tuple[0].shape[0],
+            )
+        else:
+            model(*dummy_tuple)
         torch.cuda.synchronize()
         end_time = time.time()
         inference_times.append(end_time - start_time)
 
-    return {
-        "input_shape": get_data_shape(dummy_input),
-        "n_params": sum(p.numel() for p in model.parameters()),
-        "size_mb": size_mb,
-        "inference_time_s": np.mean(inference_times),
+    result = {
+        "input_shape": ["x".join(map(str, get_data_shape(dummy_input)))],
+        "n_params": [sum(p.numel() for p in model.parameters())],
+        "size_mb": [size_mb],
+        "inference_time_s": [np.mean(inference_times)],
     }
+
+    return pd.DataFrame.from_dict(result)
 
 
 class CustomResize(torch.nn.Module):
@@ -561,16 +592,20 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
 
         return um.get_metrics_dataframe(metrics_factory, self.ontology)
 
-    def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
+    def get_computational_cost(
+        self, image_size: Tuple[int], runs: int = 30, warm_up_runs: int = 5
+    ) -> dict:
         """Get different metrics related to the computational cost of the model
 
+        :param image_size: Image size used for inference
+        :type image_size: Tuple[int]
         :param runs: Number of runs to measure inference time, defaults to 30
         :type runs: int, optional
         :param warm_up_runs: Number of warm-up runs, defaults to 5
         :type warm_up_runs: int, optional
         :return: Dictionary containing computational cost information
         """
-        dummy_input = torch.randn(1, 3, *self.model_cfg["image_size"]).to(self.device)
+        dummy_input = torch.randn(1, 3, *image_size).to(self.device)
         return get_computational_cost(
             self.model, dummy_input, self.model_fname, runs, warm_up_runs
         )
