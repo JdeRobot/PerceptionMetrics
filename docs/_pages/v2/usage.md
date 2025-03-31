@@ -8,6 +8,8 @@ sidebar:
 ---
 
 ## Library
+🧑‍🏫️ [Image Segmentation Tutorial](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_segmentation.ipynb)
+
 You can check the [`examples` directory](https://github.com/JdeRobot/DetectionMetrics/tree/master/examples) for inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 
 #### [Full docs for the Python library](https://jderobot.github.io/DetectionMetrics/py_docs/_build/html/index.html)

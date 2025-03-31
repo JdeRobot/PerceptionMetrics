@@ -35,7 +35,7 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td rowspan="2">Segmentation</td>
     <td>Image</td>
-    <td>Rellis3D, GOOSE, custom GAIA format</td>
+    <td>Rellis3D, GOOSE, RUGD, WildScenes, custom GAIA format</td>
     <td>PyTorch, Tensorflow</td>
   </tr>
   <tr>
@@ -97,7 +97,10 @@ If you are using LiDAR, Open3D currently requires `torch==2.2*`.
 As of now, *DetectionMetrics* can either be used as a Python library or as a command-line application.
 
 ### Library
-You can check the `examples` directory for inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
+
+🧑‍🏫️ [Image Segmentation Tutorial](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_segmentation.ipynb)
+
+You can check the `examples` directory for further inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 
 ### Command-line interface
 DetectionMetrics currently provides a CLI with two commands, `dm_evaluate` and `dm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files. More details are provided in [DetectionMetrics website](https://jderobot.github.io/DetectionMetrics/v2/usage/#command-line-interface).

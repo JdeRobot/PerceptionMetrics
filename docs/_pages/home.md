@@ -43,7 +43,7 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td rowspan="2">Segmentation</td>
     <td>Image</td>
-    <td>Rellis3D, GOOSE, custom GAIA format</td>
+    <td>Rellis3D, GOOSE, RUGD, WildScenes, custom GAIA format</td>
     <td>PyTorch, Tensorflow</td>
   </tr>
   <tr>

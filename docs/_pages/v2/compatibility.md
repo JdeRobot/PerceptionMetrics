@@ -17,31 +17,36 @@ sidebar:
     - **PyTorch ([TorchScript](https://pytorch.org/docs/stable/jit.html) compiled format and native modules)**:
         - Input shape: `(batch, channels, height, width)`
         - Output shape: `(batch, classes, height, width)`
-        - JSON configuration file format:
-
-        ```json
-        {
-            "normalization": {
-                "mean": [<r>, <g>, <b>],
-                "std": [<r>, <g>, <b>]
-            },
-            "batch_size": 4
-        }
-        ```
     - **Tensorflow ([SavedModel](https://www.tensorflow.org/guide/saved_mode`) compiled format and native Tensorflow/Keras modules)**:
         - Input shape: `(batch, height, width, channels)`
         - Output shape: `(batch, height, width, classes)`
         - JSON configuration file format:
-
-        ```json
-        {
-            "image_size": [<height>, <width>],
-            "batch_size": 4
-        }
-        ```
     - **ONNX**: coming soon
+
+    Each model must be coupled with a JSON configuration file:
+
+    ```json
+    {
+        "normalization": {
+            "mean": [<r>, <g>, <b>],
+            "std": [<r>, <g>, <b>]
+        },
+        "resize": {  # optional
+            "width": <px>,
+            "height": <px>
+        },
+        "crop": {  # optional
+            "width": <px>,
+            "height": <px>
+        },
+        "batch_size": <n>
+    }
+    ```
+
 - Metrics:
     - Intersection over Union (IoU), Accuracy
+- Computational cost:
+    - Number of parameters, average inference time, model size
 
 ## LiDAR semantic segmentation
 - Datasets:
@@ -83,6 +88,8 @@ sidebar:
     - **ONNX**: coming soon
 - Metrics:
     - Intersection over Union (IoU), Accuracy
+- Computational cost:
+    - Number of parameters, average inference time, model size
 
 ## Object detection
 Coming soon.
