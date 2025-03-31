@@ -30,7 +30,7 @@ Usage: dm_evaluate [OPTIONS] {segmentation} {image|lidar}
   Evaluate model on dataset
 
 Options:
-  --model_format [torch|tensorflow]
+  --model_format [torch|tensorflow|tensorflow_explicit]
                                   Trained model format  [default: torch]
   --model PATH                    Trained model filename (TorchScript) or
                                   directory (TensorFlow SavedModel)
@@ -39,31 +39,40 @@ Options:
                                   [required]
   --model_cfg FILE                JSON file with model configuration (norm.
                                   parameters, image size, etc.)  [required]
-  --dataset_format [gaia|rellis3d|goose|generic]
+  --dataset_format [gaia|rellis3d|goose|generic|rugd]
                                   Dataset format  [default: gaia]
   --dataset_fname FILE            Parquet dataset file
   --dataset_dir DIRECTORY         Dataset directory (used for 'Rellis3D' and
-                                  'Wildscenes' format)
-  --split_dir DIRECTORY           Directory containing split files (used for 'Rellis3D'
-                                  and 'Wildscenes' format)
+                                  'Wildscenes' formats)
+  --split_dir DIRECTORY           Directory containing .lst or .csv split
+                                  files (used for 'Rellis3D' and 'Wildscenes'
+                                  formats, respectively)
   --train_dataset_dir DIRECTORY   Train dataset directory (used for 'GOOSE'
                                   and 'Generic' formats)
   --val_dataset_dir DIRECTORY     Validation dataset directory (used for
                                   'GOOSE' and 'Generic' formats)
   --test_dataset_dir DIRECTORY    Test dataset directory (used for 'GOOSE' and
                                   'Generic' formats)
+  --images_dir TEXT               Directory containing data (used for 'RUGD'
+                                  format)
+  --labels_dir TEXT               Directory containing annotations (used for
+                                  'RUGD' format)
   --data_suffix TEXT              Data suffix to be used to filter data (used
                                   for 'Generic' format)
   --label_suffix TEXT             Label suffix to be used to filter labels
                                   (used for 'Generic' format)
-  --dataset_ontology FILE         JSON file containing dataset ontology (used
-                                  for 'Generic' format)
-  --split [train|val|test]        Name of the split to be evaluated  [default:
-                                  test]
+  --dataset_ontology FILE         JSON containing dataset ontology (used for
+                                  'Generic' and 'Rellis3D' formats)
+  --split TEXT                    Name of the split or splits separated by
+                                  commas to be evaluated  [default: test]
   --ontology_translation FILE     JSON file containing translation between
                                   dataset and model classes
   --out_fname PATH                CSV file where the evaluation results will
-                                  be stored  [required]
+                                  be stored
+  --predictions_outdir PATH       Directory where predictions (images/points
+                                  and CSV) per sample will be stored. If not
+                                  provided, predictions per sample will not be
+                                  saved
   --help                          Show this message and exit.
 ```
 
@@ -77,7 +86,7 @@ dm_batch evaluate /path/to/batch_config.yaml
 
 Docs:
 ```shell
-Usage: dm_batch [OPTIONS] {evaluate} JOBS_CFG
+Usage: dm_batch [OPTIONS] {evaluate|computational_cost} JOBS_CFG
 
   Perform detection metrics jobs in batch mode
 
@@ -124,4 +133,5 @@ dataset:
 outdir: "/path/to/output_directory"  # Path to output directory
 overwrite: false  # Whether to overwrite existing output files or not
 ontology_translation: "/path/to/ontology_translation.json"  # (Optional)
+store_results_per_sample: false  # Whether to store the predictions for each sample
 ```
