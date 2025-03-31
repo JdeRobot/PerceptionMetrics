@@ -30,7 +30,16 @@ def parse_args():
         required=True,
         help="Directory to save the new dataset",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--resize",
+        type=str,
+        required=False,
+        help="Resize images to a specific size (e.g. 512x512)",
+    )
+
+    args = parser.parse_args()
+    args.resize = tuple(map(int, args.resize.split("x"))) if args.resize else None
+    return args
 
 
 def main():
@@ -44,7 +53,12 @@ def main():
     with open(args.ontology_translation, "r", encoding="utf-8") as f:
         ontology_translation = json.load(f)
 
-    dataset.export(args.outdir, new_ontology, ontology_translation)
+    dataset.export(
+        args.outdir,
+        resize=args.resize,
+        new_ontology=new_ontology,
+        ontology_translation=ontology_translation,
+    )
 
 
 if __name__ == "__main__":

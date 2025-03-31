@@ -25,6 +25,12 @@ def parse_args() -> argparse.Namespace:
         required=False,
         help="Resize images to a specific size (e.g. 512x512)",
     )
+    parser.add_argument(
+        "--split",
+        type=str,
+        required=False,
+        help="What split to export (train, val, test). Export all splits if not specified",
+    )
 
     args = parser.parse_args()
     args.resize = tuple(map(int, args.resize.split("x"))) if args.resize else None
@@ -36,6 +42,9 @@ def main():
     args = parse_args()
 
     dataset = GaiaImageSegmentationDataset(dataset_fname=args.dataset)
+    if args.split:
+        dataset.dataset = dataset.dataset[dataset.dataset["split"] == args.split]
+        dataset.has_label_count = False
     dataset.export(outdir=args.outdir, resize=args.resize)
 
 
