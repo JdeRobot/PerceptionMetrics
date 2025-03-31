@@ -57,7 +57,7 @@ def get_ontology_conversion_lut(
     old_ontology: dict,
     new_ontology: dict,
     ontology_translation: Optional[dict] = None,
-    ignored_classes: Optional[List[str]] = [],
+    ignored_classes: Optional[List[str]] = None,
 ) -> np.ndarray:
     """Build a LUT that links old ontology and new ontology indices. If class names
     don't match between the provided ontologies, user must provide an ontology
@@ -69,27 +69,23 @@ def get_ontology_conversion_lut(
     :type new_ontology: dict
     :param ontology_translation: Ontology translation dictionary, defaults to None
     :type ontology_translation: Optional[dict], optional
-    :param ignored_classes: Classes to ignore from the old ontology, defaults to []
+    :param ignored_classes: Classes to ignore from the old ontology, defaults to None
     :type ignored_classes: Optional[List[str]], optional
     :return: numpy array associating old and new ontology indices
     :rtype: np.ndarray
     """
+    ignored_classes = [] if ignored_classes is None else ignored_classes
+
     max_idx = max(class_data["idx"] for class_data in old_ontology.values())
     lut = np.zeros((max_idx + 1), dtype=np.uint8)
     if ontology_translation is not None:
-        for (
-            class_name
-        ) in (
-            ignored_classes
-        ):  # Deleting ignored classes that exist in ontology_translation
+        # Deleting ignored classes that exist in ontology_translation
+        for class_name in ignored_classes:
             if class_name in ontology_translation:
                 del ontology_translation[class_name]
-        for (
-            old_class_name,
-            new_class_name,
-        ) in (
-            ontology_translation.items()
-        ):  # Mapping old and new class names through ontology_translation
+
+        # Mapping old and new class names through ontology_translation
+        for old_class_name, new_class_name in ontology_translation.items():
             old_class_idx = old_ontology[old_class_name]["idx"]
             new_class_idx = new_ontology[new_class_name]["idx"]
             lut[old_class_idx] = new_class_idx
