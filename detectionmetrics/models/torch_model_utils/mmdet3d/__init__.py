@@ -12,7 +12,7 @@ COLLATE_FN = FUNCTIONS.get("pseudo_collate")
 def preprocess(sample):
     n_feats = sample["num_pts_feats"]
     transforms = [
-        LoadPointsFromFile(coord_type="LIDAR", load_dim=n_feats, use_dim=n_feats)
+        LoadPointsFromFile(coord_type="LIDAR", load_dim=4, use_dim=n_feats)
     ]
     if sample["pts_semantic_mask_path"] is not None:
         transforms.append(
