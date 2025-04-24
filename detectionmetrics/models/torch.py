@@ -358,6 +358,7 @@ class LiDARSegmentationMMDet3DDataset(Dataset):
             label_fname=self.dataset.dataset.iloc[idx]["label"],
             name=self.dataset.dataset.index[idx],
             idx=idx,
+            n_feats=self.model_cfg.get("n_feats", 4),
         )
         return self.preprocess(sample)
 
@@ -746,7 +747,9 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
             points_fname, projected_indices, sampler = sample
             pred = self._inference(points_fname, projected_indices, sampler, self)
         elif self.input_format == "mmdet3d":
-            sample = get_mmdet3d_sample(points_fname=points_fname)
+            sample = get_mmdet3d_sample(
+                points_fname=points_fname, n_feats=self.model_cfg.get("n_feats", 4)
+            )
             sample = self.preprocess(sample)
             pred = self._inference(sample, self.model)
             pred = pred.pred_pts_seg.pts_semantic_mask
