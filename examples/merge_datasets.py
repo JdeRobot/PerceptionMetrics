@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.datasets.gaia import GaiaImageSegmentationDataset
+from detectionmetrics.datasets.gaia import GaiaImageSegmentationDataset, GaiaLiDARSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:
@@ -23,6 +23,13 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Directory where merged dataset will be stored",
     )
+    parser.add_argument(
+        "--dataset_type",
+        type=str,
+        choices=["image", "lidar"],
+        required=True,
+        help="Type of datasets to merge",
+    )
 
     return parser.parse_args()
 
@@ -31,7 +38,14 @@ def main():
     """Main function"""
     args = parse_args()
 
-    datasets = [GaiaImageSegmentationDataset(fname) for fname in args.datasets]
+    if args.dataset_type == "image":
+        dataset_class = GaiaImageSegmentationDataset
+    elif args.dataset_type == "lidar":
+        dataset_class = GaiaLiDARSegmentationDataset
+    else:
+        raise ValueError(f"Unknown dataset type: {args.dataset_type}")
+
+    datasets = [dataset_class(fname) for fname in args.datasets]
     main_dataset = datasets[0]
     for extra_dataset in datasets[1:]:
         main_dataset.append(extra_dataset)
