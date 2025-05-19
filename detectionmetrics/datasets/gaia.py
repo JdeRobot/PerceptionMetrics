@@ -23,8 +23,15 @@ def build_dataset(dataset_fname: str) -> Tuple[pd.DataFrame, str, dict]:
     dataset_dir = os.path.dirname(dataset_fname)
 
     # Read ontology file
-    ontology_fname = dataset.attrs["ontology_fname"]
-    ontology = uio.read_json(os.path.join(dataset_dir, ontology_fname))
+    try:
+        ontology_fname = dataset.attrs["ontology_fname"]
+    except KeyError:
+        ontology_fname =  "ontology.json"
+
+    ontology_fname = os.path.join(dataset_dir, ontology_fname)
+    assert os.path.isfile(ontology_fname), "Ontology file not found"
+
+    ontology = uio.read_json(ontology_fname)
     for name, data in ontology.items():
         ontology[name]["rgb"] = tuple(data["rgb"])
 

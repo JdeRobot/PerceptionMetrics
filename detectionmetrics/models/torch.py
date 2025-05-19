@@ -1,3 +1,4 @@
+import importlib
 import os
 import time
 from typing import Any, List, Optional, Tuple, Union
@@ -603,18 +604,16 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         self.model_format = self.model_cfg["model_format"]
 
         # Init model specific functions
-        if self.model_format == "mmdet3d":
-            from detectionmetrics.models.lidar_torch_utils import mmdet3d
-
-            self._get_sample = mmdet3d.get_sample
-            self._inference = mmdet3d.inference
-        elif "o3d" in self.model_format:
-            from detectionmetrics.models.lidar_torch_utils import o3d
-
-            self._get_sample = o3d.get_sample
-            self._inference = o3d.inference
-        else:
-            raise raise_unknown_model_format_lidar(self.model_format)
+        model_format = self.model_format.split('_')[0]
+        model_utils_module_str = (
+            f"detectionmetrics.models.lidar_torch_utils.{model_format}"
+        )
+        try:
+            model_utils_module = importlib.import_module(model_utils_module_str)
+        except ImportError:
+            raise_unknown_model_format_lidar(model_format)
+        self._get_sample = model_utils_module.get_sample
+        self._inference = model_utils_module.inference
 
     def inference(self, points_fname: str) -> np.ndarray:
         """Perform inference for a single point cloud
