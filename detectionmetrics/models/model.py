@@ -68,7 +68,7 @@ class SegmentationModel(ABC):
     def eval(
         self,
         dataset: dm_dataset.SegmentationDataset,
-        split: str | List[str] = "test",
+        split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
@@ -78,7 +78,7 @@ class SegmentationModel(ABC):
         :param dataset: Segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
         :param split: Split or splits to be used from the dataset, defaults to "test"
-        :type split: str | List[str], optional
+        :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
@@ -153,7 +153,7 @@ class ImageSegmentationModel(SegmentationModel):
     def eval(
         self,
         dataset: dm_dataset.ImageSegmentationDataset,
-        split: str | List[str] = "test",
+        split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
@@ -163,7 +163,7 @@ class ImageSegmentationModel(SegmentationModel):
         :param dataset: Image segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
         :param split: Split or splits to be used from the dataset, defaults to "test"
-        :type split: str | List[str], optional
+        :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
@@ -234,7 +234,7 @@ class LiDARSegmentationModel(SegmentationModel):
     def eval(
         self,
         dataset: dm_dataset.LiDARSegmentationDataset,
-        split: str | List[str] = "test",
+        split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
@@ -244,7 +244,7 @@ class LiDARSegmentationModel(SegmentationModel):
         :param dataset: LiDAR segmentation dataset for which the evaluation will be performed
         :type dataset: LiDARSegmentationDataset
         :param split: Split or splits to be used from the dataset, defaults to "test"
-        :type split: str | List[str], optional
+        :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.

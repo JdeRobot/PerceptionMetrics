@@ -1,6 +1,6 @@
 from collections import defaultdict
 import math
-from typing import Optional
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -61,11 +61,11 @@ class MetricsFactory:
         )
         self.confusion_matrix += new_entry.reshape(self.n_classes, self.n_classes)
 
-    def get_metric_names(self) -> list[str]:
+    def get_metric_names(self) -> List[str]:
         """Get available metric names
 
         :return: List of available metric names
-        :rtype: list[str]
+        :rtype: List[str]
         """
         return self.METRIC_NAMES
 
@@ -77,58 +77,58 @@ class MetricsFactory:
         """
         return self.confusion_matrix
 
-    def get_tp(self, per_class: bool = True) -> np.ndarray | int:
+    def get_tp(self, per_class: bool = True) -> Union[np.ndarray, int]:
         """True Positives
 
         :param per_class: Return per class TP, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, int]
         """
         tp = np.diag(self.confusion_matrix)
         return tp if per_class else int(np.nansum(tp))
 
-    def get_fp(self, per_class: bool = True) -> np.ndarray | int:
+    def get_fp(self, per_class: bool = True) -> Union[np.ndarray, int]:
         """False Positives
 
         :param per_class: Return per class FP, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, int]
         """
         fp = self.confusion_matrix.sum(axis=0) - np.diag(self.confusion_matrix)
         return fp if per_class else int(np.nansum(fp))
 
-    def get_fn(self, per_class: bool = True) -> np.ndarray | int:
+    def get_fn(self, per_class: bool = True) -> Union[np.ndarray, int]:
         """False negatives
 
         :param per_class: Return per class FN, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, int]
         """
         fn = self.confusion_matrix.sum(axis=1) - np.diag(self.confusion_matrix)
         return fn if per_class else int(np.nansum(fn))
 
-    def get_tn(self, per_class: bool = True) -> np.ndarray | int:
+    def get_tn(self, per_class: bool = True) -> Union[np.ndarray, int]:
         """True negatives
 
         :param per_class: Return per class TN, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, int]
         """
         total = self.confusion_matrix.sum()
         tn = total - (self.get_tp() + self.get_fp() + self.get_fn())
         return tn if per_class else int(np.nansum(tn))
 
-    def get_precision(self, per_class: bool = True) -> np.ndarray | float:
+    def get_precision(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """Precision = TP / (TP + FP)
 
         :param per_class: Return per class precision, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, float]
         """
         tp = self.get_tp(per_class)
         fp = self.get_fp(per_class)
@@ -139,13 +139,13 @@ class MetricsFactory:
         else:
             return np.where(denominator > 0, tp / denominator, np.nan)
 
-    def get_recall(self, per_class: bool = True) -> np.ndarray | float:
+    def get_recall(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """Recall = TP / (TP + FN)
 
         :param per_class: Return per class recall, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, float]
         """
         tp = self.get_tp(per_class)
         fn = self.get_fn(per_class)
@@ -156,13 +156,13 @@ class MetricsFactory:
         else:
             return np.where(denominator > 0, tp / denominator, np.nan)
 
-    def get_accuracy(self, per_class: bool = True) -> np.ndarray | float:
+    def get_accuracy(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """Accuracy = (TP + TN) / (TP + FP + FN + TN)
 
         :param per_class: Return per class accuracy, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, float]
         """
         tp = self.get_tp(per_class)
         fp = self.get_fp(per_class)
@@ -175,13 +175,13 @@ class MetricsFactory:
         else:
             return np.where(total > 0, (tp + tn) / total, np.nan)
 
-    def get_f1_score(self, per_class: bool = True) -> np.ndarray | float:
+    def get_f1_score(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """F1-score = 2 * (Precision * Recall) / (Precision + Recall)
 
         :param per_class: Return per class F1 score, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, float]
         """
         precision = self.get_precision(per_class)
         recall = self.get_recall(per_class)
@@ -196,13 +196,13 @@ class MetricsFactory:
                 denominator > 0, 2 * (precision * recall) / denominator, np.nan
             )
 
-    def get_iou(self, per_class: bool = True) -> np.ndarray | float:
+    def get_iou(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """IoU = TP / (TP + FP + FN)
 
         :param per_class: Return per class IoU, defaults to True
         :type per_class: bool, optional
         :return: True Positives
-        :rtype: np.ndarray | int
+        :rtype: Union[np.ndarray, float]
         """
         tp = self.get_tp(per_class)
         fp = self.get_fp(per_class)
@@ -242,7 +242,7 @@ class MetricsFactory:
 
     def get_metric_per_name(
         self, metric_name: str, per_class: bool = True
-    ) -> np.ndarray | float | int:
+    ) -> Union[np.ndarray, float, int]:
         """Get metric value by name
 
         :param metric_name: Name of the metric to compute
@@ -250,7 +250,7 @@ class MetricsFactory:
         :param per_class: Return per class metric, defaults to True
         :type per_class: bool, optional
         :return: Metric value
-        :rtype: np.ndarray | float | int
+        :rtype: Union[np.ndarray, float, int]
         """
         return getattr(self, f"get_{metric_name}")(per_class=per_class)
 

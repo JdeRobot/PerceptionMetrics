@@ -386,7 +386,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
     def eval(
         self,
         dataset: ImageSegmentationDataset,
-        split: str | List[str] = "test",
+        split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
@@ -396,7 +396,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         :param dataset: Image segmentation dataset for which the evaluation will be performed
         :type dataset: ImageSegmentationDataset
         :param split: Split to be used from the dataset, defaults to "test"
-        :type split: str | List[str], optional
+        :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
