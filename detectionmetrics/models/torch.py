@@ -12,8 +12,8 @@ from torchvision.transforms import v2 as transforms
 from torchvision.transforms.v2 import functional as F
 from tqdm import tqdm
 
-from detectionmetrics.datasets import dataset as dm_dataset
-from detectionmetrics.models import model as dm_model
+from detectionmetrics.datasets import segmentation as dm_segmentation_dataset
+from detectionmetrics.models import segmentation as dm_segmentation_model
 from detectionmetrics.models import torch_model_utils as tmu
 import detectionmetrics.utils.lidar as ul
 import detectionmetrics.utils.metrics as um
@@ -225,7 +225,7 @@ class ImageSegmentationTorchDataset(Dataset):
 
     def __init__(
         self,
-        dataset: dm_dataset.ImageSegmentationDataset,
+        dataset: dm_segmentation_dataset.ImageSegmentationDataset,
         transform: transforms.Compose,
         target_transform: transforms.Compose,
         splits: List[str] = ["test"],
@@ -278,7 +278,7 @@ class LiDARSegmentationTorchDataset(Dataset):
 
     def __init__(
         self,
-        dataset: dm_dataset.LiDARSegmentationDataset,
+        dataset: dm_segmentation_dataset.LiDARSegmentationDataset,
         model_cfg: dict,
         preprocess: callable,
         n_classes: int,
@@ -336,7 +336,7 @@ class LiDARSegmentationTorchDataset(Dataset):
         )
 
 
-class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
+class TorchImageSegmentationModel(dm_segmentation_model.ImageSegmentationModel):
 
     def __init__(
         self,
@@ -481,7 +481,7 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
 
     def eval(
         self,
-        dataset: dm_dataset.ImageSegmentationDataset,
+        dataset: dm_segmentation_dataset.ImageSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
@@ -629,7 +629,7 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         )
 
 
-class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
+class TorchLiDARSegmentationModel(dm_segmentation_model.LiDARSegmentationModel):
 
     def __init__(
         self, model: Union[str, torch.nn.Module], model_cfg: str, ontology_fname: str
@@ -761,7 +761,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
 
     def eval(
         self,
-        dataset: dm_dataset.LiDARSegmentationDataset,
+        dataset: dm_segmentation_dataset.LiDARSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,

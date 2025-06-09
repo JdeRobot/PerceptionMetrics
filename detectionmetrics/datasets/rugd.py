@@ -5,7 +5,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from detectionmetrics.datasets import dataset as dm_dataset
+from detectionmetrics.datasets import segmentation as dm_segmentation_dataset
 import detectionmetrics.utils.io as uio
 
 # Default split presented in the paper
@@ -88,7 +88,7 @@ def build_dataset(
     return dataset, ontology
 
 
-class RUGDImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
+class RUGDImageSegmentationDataset(dm_segmentation_dataset.ImageSegmentationDataset):
     """Specific class for RUGD-styled image segmentation dataset.
 
     :param images_dir: Directory containing images

@@ -3,7 +3,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from detectionmetrics.datasets import dataset as dm_dataset
+from detectionmetrics.datasets import segmentation as dm_segmentation_dataset
 import detectionmetrics.utils.io as uio
 
 
@@ -34,7 +34,7 @@ def build_dataset(dataset_fname: str) -> Tuple[pd.DataFrame, str, dict]:
     return dataset, dataset_dir, ontology
 
 
-class GaiaImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
+class GaiaImageSegmentationDataset(dm_segmentation_dataset.ImageSegmentationDataset):
     """Specific class for GAIA-styled image segmentation datasets
 
     :param dataset_fname: Parquet dataset filename
@@ -46,7 +46,7 @@ class GaiaImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
         super().__init__(dataset, dataset_dir, ontology)
 
 
-class GaiaLiDARSegmentationDataset(dm_dataset.LiDARSegmentationDataset):
+class GaiaLiDARSegmentationDataset(dm_segmentation_dataset.LiDARSegmentationDataset):
     """Specific class for GAIA-styled LiDAR segmentation datasets
 
     :param dataset_fname: Parquet dataset filename

@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
-from detectionmetrics.datasets import dataset as dm_dataset
+from detectionmetrics.datasets import segmentation as dm_segmentation_dataset
 import detectionmetrics.utils.io as uio
 
 
@@ -111,7 +111,7 @@ def build_dataset(
     return dataset, ontology
 
 
-class GenericImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
+class GenericImageSegmentationDataset(dm_segmentation_dataset.ImageSegmentationDataset):
     """Generic class for image segmentation datasets.
 
     :param data_suffix: File suffix to be used to filter data
@@ -160,7 +160,7 @@ class GenericImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
         super().__init__(dataset, dataset_dir, ontology)
 
 
-class GenericLiDARSegmentationDataset(dm_dataset.LiDARSegmentationDataset):
+class GenericLiDARSegmentationDataset(dm_segmentation_dataset.LiDARSegmentationDataset):
     """Generic class for LiDAR segmentation datasets.
 
     :param data_suffix: File suffix to be used to filter data

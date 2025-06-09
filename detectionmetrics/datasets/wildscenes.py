@@ -5,7 +5,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from detectionmetrics.datasets import dataset as dm_dataset
+from detectionmetrics.datasets import segmentation as dm_segmentation_dataset
 
 
 # Ontology definition as found in the official repo (https://github.com/csiro-robotics/WildScenes/blob/main/wildscenes/tools/utils2d.py)
@@ -123,7 +123,7 @@ def build_dataset(dataset_dir: str, split_fnames: dict) -> Tuple[dict, dict]:
     return dataset, ontology
 
 
-class WildscenesImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
+class WildscenesImageSegmentationDataset(dm_segmentation_dataset.ImageSegmentationDataset):
     """Specific class for Wildscenes-styled image segmentation datasets. All data can
     be downloaded from the official repo (https://github.com/unmannedlab/RELLIS-3D):
     dataset  -> https://data.csiro.au/collection/csiro:61541

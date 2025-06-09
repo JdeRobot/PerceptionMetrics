@@ -1,4 +1,4 @@
-from detectionmetrics.models.model import ImageSegmentationModel
+from detectionmetrics.models.segmentation import ImageSegmentationModel
 
 
 class OnnxImageSegmentationModel(ImageSegmentationModel):
