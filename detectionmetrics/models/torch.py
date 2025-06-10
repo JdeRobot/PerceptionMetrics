@@ -190,15 +190,9 @@ class CustomResize(torch.nn.Module):
         self.closest_divisor = closest_divisor
 
     def forward(self, image: Image.Image) -> Image.Image:
-        w, h = image.size
-        old_size = (h, w)
-
-        if self.width is None:
-            w = int((self.height / image.size[1]) * image.size[0])
-            h = self.height
-        if self.height is None:
-            h = int((self.width / image.size[0]) * image.size[1])
-            w = self.width
+        old_size = image.size
+        w = self.width or int((self.height / old_size[1]) * old_size[0])
+        h = self.height or int((self.width / old_size[0]) * old_size[1])
 
         h = round(h / self.closest_divisor) * self.closest_divisor
         w = round(w / self.closest_divisor) * self.closest_divisor
