@@ -96,6 +96,7 @@ def get_sample(
     label_fname: Optional[str] = None,
     name: Optional[str] = None,
     idx: Optional[int] = None,
+    has_intensity: bool = True,
 ) -> Tuple[np.ndarray, np.ndarray, ul.Sampler]:
     """Get sample data for mmdetection3d models
 
@@ -109,10 +110,12 @@ def get_sample(
     :type name: Optional[str], optional
     :param idx: sample numerical index, defaults to None
     :type idx: Optional[int], optional
+    :param has_intensity: whether the point cloud has intensity values, defaults to True
+    :type has_intensity: bool, optional
     :return: Sample data tuple
     :rtype: Tuple[np.ndarray, np.ndarray, ul.Sampler, np.ndarray, str, int]
     """
-    points = ul.read_semantickitti_points(points_fname)
+    points = ul.read_semantickitti_points(points_fname, has_intensity)
     label = None
     if label_fname is not None:
         label, _ = ul.read_semantickitti_label(label_fname)

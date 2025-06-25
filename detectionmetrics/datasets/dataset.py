@@ -164,7 +164,7 @@ class ImageSegmentationDataset(SegmentationDataset):
                 new_ontology=new_ontology,
                 ontology_translation=ontology_translation,
                 classes_to_remove=classes_to_remove,
-                lut_dtype=np.uint32
+                lut_dtype=np.uint32,
             )
             n_classes = max(c["idx"] for c in new_ontology.values()) + 1
         else:
@@ -314,6 +314,8 @@ class LiDARSegmentationDataset(SegmentationDataset):
     :type ontology: dict
     :param is_kitti_format: Whether the linked files in the dataset are stored in SemanticKITTI format or not, defaults to True
     :type is_kitti_format: bool, optional
+    :param has_intensity: Whether the point cloud files contain intensity values, defaults to True
+    :type has_intensity: bool, optional
     """
 
     def __init__(
@@ -322,9 +324,11 @@ class LiDARSegmentationDataset(SegmentationDataset):
         dataset_dir: str,
         ontology: dict,
         is_kitti_format: bool = True,
+        has_intensity: bool = True,
     ):
         super().__init__(dataset, dataset_dir, ontology)
         self.is_kitti_format = is_kitti_format
+        self.has_intensity = has_intensity
 
     def make_fname_global(self):
         """Get all relative filenames in dataset and make global"""
@@ -446,8 +450,7 @@ class LiDARSegmentationDataset(SegmentationDataset):
         # Store dataset as Parquet file containing relative filenames
         self.dataset.to_parquet(os.path.join(outdir, "dataset.parquet"))
 
-    @staticmethod
-    def read_points(fname: str) -> np.ndarray:
+    def read_points(self, fname: str) -> np.ndarray:
         """Read point cloud. Defaults to SemanticKITTI format
 
         :param fname: File containing point cloud
@@ -455,10 +458,9 @@ class LiDARSegmentationDataset(SegmentationDataset):
         :return: Numpy array containing points
         :rtype: np.ndarray
         """
-        return ul.read_semantickitti_points(fname)
+        return ul.read_semantickitti_points(fname, self.has_intensity)
 
-    @staticmethod
-    def read_label(fname: str) -> Tuple[np.ndarray, np.ndarray]:
+    def read_label(self, fname: str) -> Tuple[np.ndarray, np.ndarray]:
         """Read semantic labels. Defaults to SemanticKITTI format
 
         :param fname: Binary file containing labels

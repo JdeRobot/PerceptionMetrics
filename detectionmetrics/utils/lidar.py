@@ -282,16 +282,23 @@ def render_point_cloud(
     return image
 
 
-def read_semantickitti_points(fname: str) -> np.ndarray:
+def read_semantickitti_points(fname: str, has_intensity: bool = True) -> np.ndarray:
     """Read points from a binary file in SemanticKITTI format
 
     :param fname: Binary file containing points
     :type fname: str
+    :param has_intensity: Whether the points have intensity values, defaults to True
+    :type has_intensity: bool
     :return: Numpy array containing points
     :rtype: np.ndarray
     """
     points = np.fromfile(fname, dtype=np.float32)
-    return points.reshape((-1, 4))
+    points = points.reshape((-1, 4 if has_intensity else 3))
+    if not has_intensity:
+        empty_intensity = np.zeros((points.shape[0], 1), dtype=np.float32)
+        points = np.concatenate([points, empty_intensity], axis=1)
+    return points
+
 
 def read_semantickitti_label(fname: str) -> Tuple[np.ndarray, np.ndarray]:
     """Read labels from a binary file in SemanticKITTI format
