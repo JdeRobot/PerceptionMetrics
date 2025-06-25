@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import open3d as o3d
 from PIL import Image
@@ -13,7 +13,21 @@ CAMERA_VIEWS = {
         "front": np.array([1, 0, 0.5], dtype=np.float32),  # Camera front vector
         "lookat": np.array([1, 0.0, 0.0], dtype=np.float32),  # Point camera looks at
         "up": np.array([-0.5, 0, 1], dtype=np.float32),  # Camera up direction
-    }
+    },
+    "top": {
+        "zoom": 0.025,
+        "front": np.array([0, 0, -1], dtype=np.float32),  # Looking straight down
+        "lookat": np.array([1, 0.0, 0.0], dtype=np.float32),  # Same target point
+        "up": np.array([0, 1, 0], dtype=np.float32),  # Y axis is "up" in image
+    },
+    "side": {
+        "zoom": 0.012,
+        "front": np.array(
+            [0, -1, 0], dtype=np.float32
+        ),  # Looking from positive Y toward origin
+        "lookat": np.array([1, 0.0, 0.0], dtype=np.float32),  # Same target point
+        "up": np.array([0, 0, 1], dtype=np.float32),  # Z axis is up
+    },
 }
 
 
@@ -211,11 +225,13 @@ def view_point_cloud(points: np.ndarray, colors: np.ndarray):
 def render_point_cloud(
     points: np.ndarray,
     colors: np.ndarray,
-    camera_view: str = "3rd_person",
+    camera_view: Union[str, dict] = "3rd_person",
     bg_color: Optional[List[float]] = [0.0, 0.0, 0.0, 1.0],
     color_jitter: float = 0.05,
     point_size: float = 3.0,
     resolution: Tuple[int, int] = (1920, 1080),
+    render_origin: bool = False,
+    origin_size: float = 0.5,
 ) -> Image:
     """Render a given point cloud from a specific camera view and return the image
 
@@ -223,8 +239,8 @@ def render_point_cloud(
     :type points: np.ndarray
     :param colors: Colors for the point cloud data
     :type colors: np.ndarray
-    :param camera_view: Camera view, defaults to "3rd_person"
-    :type camera_view: str, optional
+    :param camera_view: Camera view (either ID or dictionary containing camera definition), defaults to "3rd_person"
+    :type camera_view: Union[str, dict], optional
     :param bg_color: Background color, defaults to black -> [0., 0., 0., 1.]
     :type bg_color: Optional[List[float]], optional
     :param color_jitter: Jitters the colors by a random value between [-color_jitter, color_jitter], defaults to 0.05
@@ -233,11 +249,20 @@ def render_point_cloud(
     :type point_size: float, optional
     :param resolution: Render resolution, defaults to (1920, 1080)
     :type resolution: Tuple[int, int], optional
+    :param render_origin: Whether to render the origin axes, defaults to False
+    :type render_origin: bool, optional
+    :param origin_size: Size of the origin axes, defaults to 0.5
+    :type origin_size: float, optional
     :return: Rendered point cloud
     :rtype: Image
     """
-    assert camera_view in CAMERA_VIEWS, f"Camera view {camera_view} not implemented"
-    view_settings = CAMERA_VIEWS[camera_view]
+    if isinstance(camera_view, dict):
+        # If camera_view is a dictionary, use it directly
+        view_settings = camera_view
+    elif isinstance(camera_view, str):
+        # If camera_view is a string, look it up in predefined views
+        assert camera_view in CAMERA_VIEWS, f"Camera view {camera_view} not implemented"
+        view_settings = CAMERA_VIEWS[camera_view]
 
     # Add color jitter if needed
     if color_jitter > 0:
@@ -257,6 +282,15 @@ def render_point_cloud(
     material.sRGB_color = True
     material.point_size = point_size
     renderer.scene.add_geometry("point_cloud", point_cloud, material)
+
+    # Add origin axes for reference
+    if render_origin:
+        coord_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(
+            size=origin_size, origin=[0, 0, 0]
+        )
+        coord_material = o3d.visualization.rendering.MaterialRecord()
+        coord_material.shader = "defaultUnlit"  # Also unlit for visibility
+        renderer.scene.add_geometry("coordinate_frame", coord_frame, coord_material)
 
     # Set the background color
     renderer.scene.set_background(bg_color)
