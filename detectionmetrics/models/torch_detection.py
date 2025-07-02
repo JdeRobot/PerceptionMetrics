@@ -10,7 +10,7 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2 as transforms
 from torchvision.transforms.v2 import functional as F
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 from detectionmetrics.datasets import detection as dm_detection_dataset
 from detectionmetrics.models import detection as dm_detection_model
@@ -129,30 +129,27 @@ def get_computational_cost(
 
 
 class ImageDetectionTorchDataset(Dataset):
-    """
-    Dataset for image detection PyTorch models.
+    """Dataset for image detection PyTorch models
 
     :param dataset: Image detection dataset
     :type dataset: ImageDetectionDataset
-    :param transform: Transformation to be applied to the image and boxes (jointly)
-    :type transform: callable
-    :param splits: Dataset splits to use (e.g., ["train", "val", "test"])
-    :type splits: List[str]
+    :param transform: Transformation to be applied to images
+    :type transform: transforms.Compose
+    :param splits: Splits to be used from the dataset, defaults to ["test"]
+    :type splits: str, optional
     """
 
     def __init__(
         self,
         dataset: dm_detection_dataset.ImageDetectionDataset,
-        transform=transforms.Compose,
+        transform: transforms.Compose,
         splits: List[str] = ["test"]
     ):
-        # Filter split and make file paths global
+        # Filter split and make filenames global
         dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
         self.dataset = dataset
-        # Only make image paths global (absolute), not annotation IDs
-        self.dataset.dataset["image"] = self.dataset.dataset["image"].apply(
-            lambda fname: os.path.join(self.dataset.dataset_dir, fname)
-        )
+        # Use the dataset's make_fname_global method instead of manual path joining
+        self.dataset.make_fname_global()
 
         self.transform = transform
 
@@ -320,6 +317,8 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
 
         # Build LUT if ontology translation is provided
         lut_ontology = self.get_lut_ontology(dataset.ontology, ontology_translation)
+        if lut_ontology is not None:
+            lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
         # Create DataLoader
         dataset = ImageDetectionTorchDataset(
@@ -341,6 +340,11 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
         with torch.no_grad():
             pbar = tqdm(dataloader, leave=True)
             for image_ids, images, targets in pbar:
+                # Defensive check for empty images
+                if not images or any(img.numel() == 0 for img in images):
+                    print("Skipping batch: empty image tensor detected.")
+                    continue
+
                 images = [img.to(self.device) for img in images]
                 predictions = self.model(images)
 
@@ -350,10 +354,7 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
 
                     # Apply ontology translation if needed
                     if lut_ontology is not None:
-                        gt["labels"] = torch.tensor(
-                            [lut_ontology[l.item()] for l in gt["labels"]],
-                            dtype=torch.int64,
-                        )
+                        gt["labels"] = lut_ontology[gt["labels"]]
 
                     # Update metrics
                     metrics_factory.update(gt["boxes"], gt["labels"],pred["boxes"], pred["labels"], pred["scores"])
@@ -367,9 +368,15 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
                         out_data = []
 
                         for box, label, score in zip(pred_boxes, pred_labels, pred_scores):
+                            # Convert label index to class name using model ontology
+                            label_str = str(label)
+                            if label_str in self.ontology:
+                                class_name = self.ontology[label_str]["name"]
+                            else:
+                                class_name = f"class_{label_str}"
                             out_data.append({
                                 "image_id": sample_id,
-                                "label": self.ontology[label]["name"],
+                                "label": class_name,
                                 "score": float(score),
                                 "bbox": box.tolist(),
                             })
@@ -382,14 +389,14 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
                         )
 
                         if results_per_sample:
-                            sample_mf = um.DetectionMetricsFactory(n_classes=self.n_classes)
+                            sample_mf = um.DetectionMetricsFactory(num_classes=self.n_classes)
                             sample_mf.update(gt["boxes"], gt["labels"],pred["boxes"], pred["labels"], pred["scores"])
-                            sample_df = um.get_metrics_dataframe(sample_mf, self.ontology)
+                            sample_df = sample_mf.get_metrics_dataframe(self.ontology)
                             sample_df.to_csv(
                                 os.path.join(predictions_outdir, f"{sample_id}_metrics.csv")
                             )
 
-        return metrics_factory.get_metrics_dataframe(metrics_factory, self.ontology)
+        return metrics_factory.get_metrics_dataframe(self.ontology)
 
     def get_computational_cost(
         self, image_size: Tuple[int], runs: int = 30, warm_up_runs: int = 5

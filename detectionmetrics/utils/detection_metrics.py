@@ -133,25 +133,22 @@ class DetectionMetricsFactory:
         :param ontology: Mapping from class name → { "idx": int }
         """
         all_metrics = self.compute_metrics()
-        results = {}
+        # Build a dict: metric -> {class_name: value}
+        metrics_dict = {}
+        class_names = list(ontology.keys())
 
-        for class_name, class_data in ontology.items():
-            idx = class_data["idx"]
-            row = all_metrics.get(idx, {
-                "AP": np.nan,
-                "Precision": np.nan,
-                "Recall": np.nan,
-                "TP": 0,
-                "FP": 0,
-                "FN": 0,
-            })
-            results[class_name] = row
+        for metric in ["AP", "Precision", "Recall", "TP", "FP", "FN"]:
+            metrics_dict[metric] = {}
+            for class_name, class_data in ontology.items():
+                idx = class_data["idx"]
+                value = all_metrics.get(idx, {}).get(metric, np.nan)
+                metrics_dict[metric][class_name] = value
+            # Compute mean (ignore NaN for mean)
+            values = [v for v in metrics_dict[metric].values() if not pd.isna(v)]
+            metrics_dict[metric]["mean"] = np.mean(values) if values else np.nan
 
-        # Add mAP row if present (stored with key -1)
-        if -1 in all_metrics:
-            results["mAP"] = all_metrics[-1]
-
-        return pd.DataFrame(results).T  # Transpose: classes as rows
+        df = pd.DataFrame(metrics_dict)
+        return df.T  # metrics as rows, classes as columns (with mean)
 
 
 def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
@@ -183,7 +180,11 @@ def compute_ap(tps, fps, fn):
     tp_cumsum = np.cumsum(tps)
     fp_cumsum = np.cumsum(fps)
 
-    recalls = tp_cumsum / (tp_cumsum[-1] + fn) if tp_cumsum.size else []
+    if tp_cumsum.size:
+        denom = tp_cumsum[-1] + fn
+        recalls = tp_cumsum / denom
+    else:
+        recalls = []
     precisions = tp_cumsum / (tp_cumsum + fp_cumsum + 1e-6) if tp_cumsum.size else []
 
     # VOC-style 11-point interpolation

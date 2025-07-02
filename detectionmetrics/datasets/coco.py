@@ -1,9 +1,56 @@
 from pycocotools.coco import COCO
 import os
 import pandas as pd
-from typing import Tuple,List 
+from typing import Tuple, List, Optional
 
 from detectionmetrics.datasets.detection import ImageDetectionDataset
+
+
+def build_coco_dataset(annotation_file: str, image_dir: str, coco_obj: Optional[COCO] = None) -> Tuple[pd.DataFrame, dict]:
+    """Build dataset and ontology dictionaries from COCO dataset structure
+
+    :param annotation_file: Path to the COCO-format JSON annotation file
+    :type annotation_file: str
+    :param image_dir: Path to the directory containing image files
+    :type image_dir: str
+    :param coco_obj: Optional pre-loaded COCO object to reuse
+    :type coco_obj: COCO
+    :return: Dataset DataFrame and ontology dictionary
+    :rtype: Tuple[pd.DataFrame, dict]
+    """
+    # Check that provided paths exist
+    assert os.path.isfile(annotation_file), f"Annotation file not found: {annotation_file}"
+    assert os.path.isdir(image_dir), f"Image directory not found: {image_dir}"
+
+    # Load COCO annotations (reuse if provided)
+    if coco_obj is None:
+        coco = COCO(annotation_file)
+    else:
+        coco = coco_obj
+    
+    # Build ontology from COCO categories
+    ontology = {}
+    for cat in coco.loadCats(coco.getCatIds()):
+        ontology[cat["name"]] = {
+            "idx": cat["id"],
+            "name": cat["name"],
+            "rgb": [0, 0, 0]  # Placeholder; COCO doesn't define RGB colors
+        }
+
+    # Build dataset DataFrame from COCO image IDs
+    rows = []
+    for img_id in coco.getImgIds():
+        img_info = coco.loadImgs(img_id)[0]
+        rows.append({
+            "image": img_info["file_name"],
+            "annotation": str(img_id),
+            "split": "train"  # Default split - could be enhanced to read from COCO
+        })
+    
+    dataset = pd.DataFrame(rows)
+    dataset.attrs = {"ontology": ontology}
+    
+    return dataset, ontology
 
 
 class CocoDataset(ImageDetectionDataset):
@@ -16,35 +63,14 @@ class CocoDataset(ImageDetectionDataset):
     :type image_dir: str
     """
     def __init__(self, annotation_file: str, image_dir: str):
+        # Load COCO object once
         self.coco = COCO(annotation_file)
         self.image_dir = image_dir
-        self.ontology = self._build_ontology()
-        self.dataset = self._build_dataframe()
-
-        super().__init__(dataset=self.dataset, dataset_dir=image_dir, ontology=self.ontology)
-
-    def _build_ontology(self):
-        """Build ontology dict from COCO categories."""
-        ontology = {}
-        for cat in self.coco.loadCats(self.coco.getCatIds()):
-            ontology[cat["name"]] = {
-                "idx": cat["id"],
-                "name": cat["name"],
-                "rgb": [0, 0, 0]  # Placeholder; COCO doesn't define RGB colors
-            }
-        return ontology
-
-    def _build_dataframe(self):
-        """Build dataset DataFrame from COCO image IDs."""
-        rows = []
-        for img_id in self.coco.getImgIds():
-            img_info = self.coco.loadImgs(img_id)[0]
-            rows.append({
-                "image": img_info["file_name"],
-                "annotation": str(img_id),
-                "split": "train"  # Update if needed
-            })
-        return pd.DataFrame(rows)
+        
+        # Build dataset using the same COCO object
+        dataset, ontology = build_coco_dataset(annotation_file, image_dir, self.coco)
+        
+        super().__init__(dataset=dataset, dataset_dir=image_dir, ontology=ontology)
 
     def read_annotation(self, fname: str) -> Tuple[List[List[float]], List[int]]:
         """Return bounding boxes and labels for a given image ID.
