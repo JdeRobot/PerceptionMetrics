@@ -284,6 +284,16 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
         with torch.no_grad():
             result = self.model(tensor)[0]  # Return only first image's result
 
+        # Apply threshold filtering from model config
+        confidence_threshold = self.model_cfg.get("confidence_threshold", 0.5)
+        if confidence_threshold > 0:
+            keep_mask = result['scores'] >= confidence_threshold
+            result = {
+                'boxes': result['boxes'][keep_mask],
+                'labels': result['labels'][keep_mask],
+                'scores': result['scores'][keep_mask]
+            }
+
         return result
 
     def eval(
@@ -352,12 +362,22 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
                     gt = targets[i]
                     pred = predictions[i]
 
+                    # Apply confidence threshold filtering
+                    confidence_threshold = self.model_cfg.get("confidence_threshold", 0.5)
+                    if confidence_threshold > 0:
+                        keep_mask = pred['scores'] >= confidence_threshold
+                        pred = {
+                            'boxes': pred['boxes'][keep_mask],
+                            'labels': pred['labels'][keep_mask],
+                            'scores': pred['scores'][keep_mask]
+                        }
+
                     # Apply ontology translation if needed
                     if lut_ontology is not None:
                         gt["labels"] = lut_ontology[gt["labels"]]
 
                     # Update metrics
-                    metrics_factory.update(gt["boxes"], gt["labels"],pred["boxes"], pred["labels"], pred["scores"])
+                    metrics_factory.update(gt["boxes"], gt["labels"], pred["boxes"], pred["labels"], pred["scores"])
 
                     # Store predictions if needed
                     if predictions_outdir is not None:
