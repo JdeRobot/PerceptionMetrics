@@ -33,7 +33,7 @@ def build_coco_dataset(annotation_file: str, image_dir: str, coco_obj: Optional[
     for cat in coco.loadCats(coco.getCatIds()):
         ontology[cat["name"]] = {
             "idx": cat["id"],
-            "name": cat["name"],
+            # "name": cat["name"],
             "rgb": [0, 0, 0]  # Placeholder; COCO doesn't define RGB colors
         }
 
