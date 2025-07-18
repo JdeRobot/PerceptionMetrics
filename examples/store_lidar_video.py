@@ -4,7 +4,7 @@ import shutil
 import subprocess
 
 from detectionmetrics.datasets.gaia import GaiaLiDARSegmentationDataset
-from detectionmetrics.models.torch import TorchLiDARSegmentationModel
+from detectionmetrics.models.torch_segmentation import TorchLiDARSegmentationModel
 import detectionmetrics.utils.conversion as uc
 import detectionmetrics.utils.lidar as ul
 from tqdm import tqdm

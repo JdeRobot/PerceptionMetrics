@@ -11,8 +11,8 @@ from tensorflow import image as tf_image
 from tensorflow import io as tf_io
 from tqdm import tqdm
 
-from detectionmetrics.datasets.dataset import ImageSegmentationDataset
-from detectionmetrics.models.model import ImageSegmentationModel
+from detectionmetrics.datasets.segmentation import ImageSegmentationDataset
+from detectionmetrics.models.segmentation import ImageSegmentationModel
 import detectionmetrics.utils.metrics as um
 
 tf.config.optimizer.set_experimental_options({"layout_optimizer": False})

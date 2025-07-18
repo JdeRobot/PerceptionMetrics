@@ -16,7 +16,7 @@ from detectionmetrics.datasets.rellis3d import (
 )
 from detectionmetrics.datasets.rugd import RUGDImageSegmentationDataset
 from detectionmetrics.datasets.wildscenes import WildscenesImageSegmentationDataset
-
+from detectionmetrics.datasets.coco import CocoDataset
 
 REGISTRY = {
     "gaia_image_segmentation": GaiaImageSegmentationDataset,
@@ -29,4 +29,5 @@ REGISTRY = {
     "rellis3d_lidar_segmentation": Rellis3DLiDARSegmentationDataset,
     "rugd_image_segmentation": RUGDImageSegmentationDataset,
     "wildscenes_image_segmentation": WildscenesImageSegmentationDataset,
+    "coco_image_detection": CocoDataset,
 }

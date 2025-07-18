@@ -13,15 +13,17 @@ def test_update_confusion_matrix(metrics_factory):
     """Test confusion matrix updates correctly"""
     pred = np.array([0, 1, 2, 2, 1])
     gt = np.array([0, 1, 1, 2, 2])
-    
+
     metrics_factory.update(pred, gt)
     confusion_matrix = metrics_factory.get_confusion_matrix()
 
-    expected = np.array([
-        [1, 0, 0],  # True class 0
-        [0, 1, 1],  # True class 1
-        [0, 1, 1],  # True class 2
-    ])
+    expected = np.array(
+        [
+            [1, 0, 0],  # True class 0
+            [0, 1, 1],  # True class 1
+            [0, 1, 1],  # True class 2
+        ]
+    )
     assert np.array_equal(confusion_matrix, expected), "Confusion matrix mismatch"
 
 
@@ -35,17 +37,19 @@ def test_get_tp_fp_fn_tn(metrics_factory):
     assert np.array_equal(metrics_factory.get_fn(), np.array([0, 0, 0]))
     assert np.array_equal(metrics_factory.get_tn(), np.array([4, 3, 3]))
 
+
 def test_recall(metrics_factory):
     """Test recall calculation"""
     pred = np.array([0, 1, 2, 2, 1])
     gt = np.array([0, 1, 1, 2, 2])
-    
+
     metrics_factory.update(pred, gt)
 
     expected_recall = np.array([1.0, 0.5, 0.5])
     computed_recall = metrics_factory.get_recall()
-    
+
     assert np.allclose(computed_recall, expected_recall, equal_nan=True)
+
 
 def test_accuracy(metrics_factory):
     """Test global accuracy calculation (non per-class)"""
@@ -65,11 +69,12 @@ def test_accuracy(metrics_factory):
     computed_accuracy = metrics_factory.get_accuracy(per_class=False)
     assert np.isclose(computed_accuracy, expected_accuracy, equal_nan=True)
 
+
 def test_f1_score(metrics_factory):
     """Test F1-score calculation"""
     pred = np.array([0, 1, 2, 2, 1])
     gt = np.array([0, 1, 1, 2, 2])
-    
+
     metrics_factory.update(pred, gt)
 
     precision = np.array([1.0, 0.5, 0.5])
@@ -90,7 +95,7 @@ def test_edge_cases(metrics_factory):
         metrics_factory.update(pred, gt)
 
     empty_metrics_factory = MetricsFactory(n_classes=3)
-    
+
     assert np.isnan(empty_metrics_factory.get_precision(per_class=False))
     assert np.isnan(empty_metrics_factory.get_recall(per_class=False))
     assert np.isnan(empty_metrics_factory.get_f1_score(per_class=False))
@@ -101,16 +106,17 @@ def test_macro_micro_weighted(metrics_factory):
     """Test macro, micro, and weighted metric averaging"""
     pred = np.array([0, 1, 2, 2, 1])
     gt = np.array([0, 1, 1, 2, 2])
-    
+
     metrics_factory.update(pred, gt)
 
     macro_f1 = metrics_factory.get_averaged_metric("f1_score", method="macro")
     micro_f1 = metrics_factory.get_averaged_metric("f1_score", method="micro")
 
     weights = np.array([0.2, 0.5, 0.3])
-    weighted_f1 = metrics_factory.get_averaged_metric("f1_score", method="weighted", weights=weights)
+    weighted_f1 = metrics_factory.get_averaged_metric(
+        "f1_score", method="weighted", weights=weights
+    )
 
     assert 0 <= macro_f1 <= 1
     assert 0 <= micro_f1 <= 1
     assert 0 <= weighted_f1 <= 1
-

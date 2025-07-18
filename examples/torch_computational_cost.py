@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.models.torch import TorchImageSegmentationModel
+from detectionmetrics.models.torch_segmentation import TorchImageSegmentationModel
 
 
 def parse_args() -> argparse.Namespace:

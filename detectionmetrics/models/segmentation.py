@@ -7,12 +7,13 @@ import pandas as pd
 from PIL import Image
 
 
-from detectionmetrics.datasets import dataset as dm_dataset
+from detectionmetrics.datasets import segmentation as dm_segentation_dataset
+from detectionmetrics.models.perception import PerceptionModel
 import detectionmetrics.utils.conversion as uc
 import detectionmetrics.utils.io as uio
 
 
-class SegmentationModel(ABC):
+class SegmentationModel(PerceptionModel):
     """Parent segmentation model class
 
     :param model: Segmentation model object
@@ -35,20 +36,7 @@ class SegmentationModel(ABC):
         ontology_fname: str,
         model_fname: Optional[str] = None,
     ):
-        self.model = model
-        self.model_type = model_type
-        self.model_fname = model_fname
-
-        # Check that provided paths exist
-        assert os.path.isfile(ontology_fname), "Ontology file not found"
-        assert os.path.isfile(model_cfg), "Model configuration not found"
-        if self.model_fname is not None:
-            assert os.path.exists(model_fname), "Model file or directory not found"
-
-        # Read ontology and model configuration
-        self.ontology = uio.read_json(ontology_fname)
-        self.model_cfg = uio.read_json(model_cfg)
-        self.n_classes = len(self.ontology)
+        super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
 
     @abstractmethod
     def inference(
@@ -66,7 +54,7 @@ class SegmentationModel(ABC):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_dataset.SegmentationDataset,
+        dataset: dm_segentation_dataset.SegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
@@ -88,40 +76,6 @@ class SegmentationModel(ABC):
         :rtype: pd.DataFrame
         """
         raise NotImplementedError
-
-    @abstractmethod
-    def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
-        """Get different metrics related to the computational cost of the model
-
-        :param runs: Number of runs to measure inference time, defaults to 30
-        :type runs: int, optional
-        :param warm_up_runs: Number of warm-up runs, defaults to 5
-        :type warm_up_runs: int, optional
-        :return: Dictionary containing computational cost information
-        """
-        raise NotImplementedError
-
-    def get_lut_ontology(
-        self, dataset_ontology: dict, ontology_translation: Optional[str] = None
-    ):
-        """Build ontology lookup table (leave empty if ontologies match)
-
-        :param dataset_ontology: Image or LiDAR dataset ontology
-        :type dataset_ontology: dict
-        :param ontology_translation: JSON file containing translation between model and dataset ontologies, defaults to None
-        :type ontology_translation: Optional[str], optional
-        """
-        lut_ontology = None
-        if dataset_ontology != self.ontology:
-            if ontology_translation is not None:
-                ontology_translation = uio.read_json(ontology_translation)
-            lut_ontology = uc.get_ontology_conversion_lut(
-                dataset_ontology,
-                self.ontology,
-                ontology_translation,
-                self.model_cfg.get("ignored_classes", []),
-            )
-        return lut_ontology
 
 
 class ImageSegmentationModel(SegmentationModel):
@@ -163,7 +117,7 @@ class ImageSegmentationModel(SegmentationModel):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_dataset.ImageSegmentationDataset,
+        dataset: dm_segentation_dataset.ImageSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
@@ -226,7 +180,7 @@ class LiDARSegmentationModel(SegmentationModel):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_dataset.LiDARSegmentationDataset,
+        dataset: dm_segentation_dataset.LiDARSegmentationDataset,
         split: str | List[str] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,

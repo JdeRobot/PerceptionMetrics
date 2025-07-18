@@ -5,7 +5,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from detectionmetrics.datasets import dataset as dm_dataset
+from detectionmetrics.datasets import segmentation as dm_segmentation_dataset
 import detectionmetrics.utils.io as uio
 
 
@@ -73,7 +73,9 @@ def build_dataset(
     return dataset, ontology
 
 
-class Rellis3DImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
+class Rellis3DImageSegmentationDataset(
+    dm_segmentation_dataset.ImageSegmentationDataset
+):
     """Specific class for Rellis3D-styled image segmentation datasets. All data can
     be downloaded from the official repo (https://github.com/unmannedlab/RELLIS-3D):
     images   -> https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV
@@ -105,7 +107,9 @@ class Rellis3DImageSegmentationDataset(dm_dataset.ImageSegmentationDataset):
         super().__init__(dataset, dataset_dir, ontology)
 
 
-class Rellis3DLiDARSegmentationDataset(dm_dataset.LiDARSegmentationDataset):
+class Rellis3DLiDARSegmentationDataset(
+    dm_segmentation_dataset.LiDARSegmentationDataset
+):
     """Specific class for Rellis3D-styled LiDAR segmentation datasets. All data can
     be downloaded from the official repo (https://github.com/unmannedlab/RELLIS-3D):
     points   -> https://drive.google.com/file/d/1lDSVRf_kZrD0zHHMsKJ0V1GN9QATR4wH

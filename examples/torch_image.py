@@ -4,7 +4,7 @@ import os
 from PIL import Image
 
 from detectionmetrics.datasets.gaia import GaiaImageSegmentationDataset
-from detectionmetrics.models.torch import TorchImageSegmentationModel
+from detectionmetrics.models.torch_segmentation import TorchImageSegmentationModel
 import detectionmetrics.utils.conversion as uc
 
 

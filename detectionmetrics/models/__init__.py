@@ -1,7 +1,7 @@
 REGISTRY = {}
 
 try:
-    from detectionmetrics.models.torch import (
+    from detectionmetrics.models.torch_segmentation import (
         TorchImageSegmentationModel,
         TorchLiDARSegmentationModel,
     )
