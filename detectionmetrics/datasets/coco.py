@@ -89,6 +89,20 @@ class CocoDataset(ImageDetectionDataset):
 
         super().__init__(dataset=dataset, dataset_dir=image_dir, ontology=ontology)
 
+        # Build cache: image_id -> (boxes, labels, category_ids)
+        self._annotation_cache = {}
+        for idx, row in self.dataset.iterrows():
+            image_id = int(os.path.basename(row["annotation"]))
+            ann_ids = self.coco.getAnnIds(imgIds=image_id)
+            anns = self.coco.loadAnns(ann_ids)
+            boxes, labels, category_ids = [], [], []
+            for ann in anns:
+                x, y, w, h = ann["bbox"]
+                boxes.append([x, y, x + w, y + h])
+                labels.append(ann["category_id"])
+                category_ids.append(ann["category_id"])
+            self._annotation_cache[image_id] = (boxes, labels, category_ids)
+
     def read_annotation(
         self, fname: str
     ) -> Tuple[List[List[float]], List[int], List[int]]:
@@ -99,24 +113,7 @@ class CocoDataset(ImageDetectionDataset):
         """
         # Extract image ID (fname might be a path or ID string)
         try:
-            image_id = int(
-                os.path.basename(fname)
-            )  # handles both '123' and '/path/to/123'
+            image_id = int(os.path.basename(fname))
         except ValueError:
             raise ValueError(f"Invalid annotation ID: {fname}")
-
-        ann_ids = self.coco.getAnnIds(imgIds=image_id)
-        anns = self.coco.loadAnns(ann_ids)
-
-        boxes = []
-        labels = []
-        category_ids = []
-
-        for ann in anns:
-            # Convert [x, y, width, height] to [x1, y1, x2, y2]
-            x, y, w, h = ann["bbox"]
-            boxes.append([x, y, x + w, y + h])
-            labels.append(ann["category_id"])
-            category_ids.append(ann["category_id"])
-
-        return boxes, labels, category_ids
+        return self._annotation_cache.get(image_id, ([], [], []))

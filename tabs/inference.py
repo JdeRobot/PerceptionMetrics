@@ -113,24 +113,25 @@ def inference_tab():
         except Exception as e:
             st.error(f"Failed to load ontology: {e}")
 
-    # Use columns for image uploader and Run Inference button
-    img_col, btn_col = st.columns([2, 1])
-    with img_col:
-        image_file = st.file_uploader("Upload image for inference", type=["jpg", "jpeg", "png", "bmp"], key="image_file")
-    with btn_col:
-        st.markdown("<div style='height: 2.6rem;'></div>", unsafe_allow_html=True)
-        run_inference = st.button("Run Inference")
+    # --- Model Loading Section ---
+    load_col, status_col = st.columns([1, 2])
+    with load_col:
+        load_model = st.button("Load Model")
+    with status_col:
+        model_loaded = st.session_state.get('detection_model', None) is not None
+        if model_loaded:
+            st.success("Model loaded and ready for inference.")
+        else:
+            st.info("Model not loaded.")
 
-    # Run Inference logic
-    if run_inference:
+    # Handle model loading
+    if load_model:
         if model_file is None:
-            st.error("Please upload a model file.")
+            st.error("Please upload a model file before loading.")
         elif config_path is None:
-            st.error("Please provide a valid model configuration.")
+            st.error("Please provide a valid model configuration before loading.")
         elif ontology_path is None:
-            st.error("Please upload an ontology file.")
-        elif image_file is None:
-            st.error("Please upload an image file.")
+            st.error("Please upload an ontology file before loading.")
         else:
             try:
                 # Save uploaded model file to a temp file and use its path
@@ -142,6 +143,29 @@ def inference_tab():
                     model_cfg=config_path,
                     ontology_fname=ontology_path
                 )
+                st.session_state['detection_model'] = model
+                st.success("Model loaded successfully and ready for inference.")
+            except Exception as e:
+                st.session_state['detection_model'] = None
+                st.error(f"Failed to load model: {e}")
+
+    # Use columns for image uploader and Run Inference button
+    img_col, btn_col = st.columns([2, 1])
+    with img_col:
+        image_file = st.file_uploader("Upload image for inference", type=["jpg", "jpeg", "png", "bmp"], key="image_file")
+    with btn_col:
+        st.markdown("<div style='height: 2.6rem;'></div>", unsafe_allow_html=True)
+        run_inference = st.button("Run Inference")
+
+    # Run Inference logic (only if model is loaded)
+    if run_inference:
+        model = st.session_state.get('detection_model', None)
+        if model is None:
+            st.error("Please load the model before running inference.")
+        elif image_file is None:
+            st.error("Please upload an image file.")
+        else:
+            try:
                 # Read image from uploaded file
                 image = Image.open(image_file).convert("RGB")
                 predictions = model.inference(image)

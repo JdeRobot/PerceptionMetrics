@@ -123,10 +123,13 @@ def dataset_viewer_tab():
 
     # Instantiate dataset class after getting img_dir and ann_file
     dataset = None
+    dataset_key = f"{dataset_path}_{split}"
     if dataset_type.lower() == "coco":
         if os.path.isdir(img_dir) and os.path.isfile(ann_file):
             try:
-                dataset = CocoDataset(annotation_file=ann_file, image_dir=img_dir)
+                if dataset_key not in st.session_state:
+                    st.session_state[dataset_key] = CocoDataset(annotation_file=ann_file, image_dir=img_dir)
+                dataset = st.session_state[dataset_key]
             except Exception as e:
                 st.error(f"Failed to load COCO dataset: {e}")
                 return
@@ -222,6 +225,9 @@ def dataset_viewer_tab():
                 except ValueError:
                     idx_in_page = 0  # fallback to first image if not found
                 st.session_state[page_key] = new_page
+                # Force Streamlit to use the index argument by deleting the key
+                if f"img_select_all_{new_page}" in st.session_state:
+                    del st.session_state[f"img_select_all_{new_page}"]
                 st.session_state[f"img_select_all_{new_page}"] = idx_in_page
                 st.session_state["show_search_dropdown"] = False
                 st.rerun()
@@ -248,12 +254,17 @@ def dataset_viewer_tab():
             st.rerun()
 
     # Show all images in the current page in a single image_select, then display below
+    # Determine which image to highlight (default to 0)
+    img_select_index = st.session_state.get(f"img_select_all_{current_page}")
+    if img_select_index is None or not isinstance(img_select_index, int):
+        img_select_index = 0
     selected_img_path = image_select(
         label="",
         images=image_paths,
         captions=sample_images,
         use_container_width=True,
-        key=f"img_select_all_{current_page}"
+        key=f"img_select_all_{current_page}",
+        index=img_select_index
     ) if image_paths else None
 
     if selected_img_path is not None:
