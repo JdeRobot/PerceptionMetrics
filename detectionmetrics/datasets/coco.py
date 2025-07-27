@@ -77,7 +77,7 @@ class CocoDataset(ImageDetectionDataset):
     """
 
     def __init__(self, annotation_file: str, image_dir: str, split: str = "train"):
-        # Load COCO object once
+        # Load COCO object once - this loads all annotations into memory with efficient indexing
         self.coco = COCO(annotation_file)
         self.image_dir = image_dir
         self.split = split
@@ -89,24 +89,14 @@ class CocoDataset(ImageDetectionDataset):
 
         super().__init__(dataset=dataset, dataset_dir=image_dir, ontology=ontology)
 
-        # Build cache: image_id -> (boxes, labels, category_ids)
-        self._annotation_cache = {}
-        for idx, row in self.dataset.iterrows():
-            image_id = int(os.path.basename(row["annotation"]))
-            ann_ids = self.coco.getAnnIds(imgIds=image_id)
-            anns = self.coco.loadAnns(ann_ids)
-            boxes, labels, category_ids = [], [], []
-            for ann in anns:
-                x, y, w, h = ann["bbox"]
-                boxes.append([x, y, x + w, y + h])
-                labels.append(ann["category_id"])
-                category_ids.append(ann["category_id"])
-            self._annotation_cache[image_id] = (boxes, labels, category_ids)
-
     def read_annotation(
         self, fname: str
     ) -> Tuple[List[List[float]], List[int], List[int]]:
         """Return bounding boxes, labels, and category_ids for a given image ID.
+
+        This method uses COCO's efficient indexing to load annotations on-demand.
+        The COCO object maintains an internal index that allows for very fast
+        annotation retrieval without needing a separate cache.
 
         :param fname: str (image_id in string form)
         :return: Tuple of (boxes, labels, category_ids)
@@ -116,4 +106,17 @@ class CocoDataset(ImageDetectionDataset):
             image_id = int(os.path.basename(fname))
         except ValueError:
             raise ValueError(f"Invalid annotation ID: {fname}")
-        return self._annotation_cache.get(image_id, ([], [], []))
+        
+        # Use COCO's efficient indexing to get annotations for this image
+        # getAnnIds() and loadAnns() are very fast due to COCO's internal indexing
+        ann_ids = self.coco.getAnnIds(imgIds=image_id)
+        anns = self.coco.loadAnns(ann_ids)
+        
+        boxes, labels, category_ids = [], [], []
+        for ann in anns:
+            x, y, w, h = ann["bbox"]
+            boxes.append([x, y, x + w, y + h])
+            labels.append(ann["category_id"])
+            category_ids.append(ann["category_id"])
+        
+        return boxes, labels, category_ids
