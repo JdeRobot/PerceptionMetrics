@@ -166,18 +166,9 @@ def evaluator_tab():
                 # Use full dataset for evaluation
 
                 try:
-                    # Filter dataset to only first 10 images for evaluation
-                    if hasattr(dataset, "dataset"):
-                        # Create a shallow copy of the dataset object with only first 10 rows
-                        import copy
-                        dataset_subset = copy.copy(dataset)
-                        dataset_subset.dataset = dataset.dataset.iloc[:100].copy()
-                    else:
-                        st.warning("Dataset object does not have a 'dataset' attribute; using as is.")
-                        dataset_subset = dataset
-
+                    # Use the full dataset for evaluation
                     results = model.eval(
-                        dataset=dataset_subset,
+                        dataset=dataset,
                         split=split,
                         ontology_translation=ontology_translation_path,
                         predictions_outdir=predictions_outdir,
