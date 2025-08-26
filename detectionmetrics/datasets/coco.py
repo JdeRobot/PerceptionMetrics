@@ -106,17 +106,17 @@ class CocoDataset(ImageDetectionDataset):
             image_id = int(os.path.basename(fname))
         except ValueError:
             raise ValueError(f"Invalid annotation ID: {fname}")
-        
+
         # Use COCO's efficient indexing to get annotations for this image
         # getAnnIds() and loadAnns() are very fast due to COCO's internal indexing
         ann_ids = self.coco.getAnnIds(imgIds=image_id)
         anns = self.coco.loadAnns(ann_ids)
-        
+
         boxes, labels, category_ids = [], [], []
         for ann in anns:
             x, y, w, h = ann["bbox"]
             boxes.append([x, y, x + w, y + h])
             labels.append(ann["category_id"])
             category_ids.append(ann["category_id"])
-        
+
         return boxes, labels, category_ids

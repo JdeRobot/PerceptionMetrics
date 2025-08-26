@@ -6,6 +6,7 @@ from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
 
+
 def browse_folder():
     """
     Opens a native folder selection dialog and returns the selected folder path.
@@ -15,32 +16,47 @@ def browse_folder():
     try:
         if sys.platform.startswith("win"):
             script = (
-                'Add-Type -AssemblyName System.windows.forms;'
-                '$f=New-Object System.Windows.Forms.FolderBrowserDialog;'
+                "Add-Type -AssemblyName System.windows.forms;"
+                "$f=New-Object System.Windows.Forms.FolderBrowserDialog;"
                 'if($f.ShowDialog() -eq "OK"){Write-Output $f.SelectedPath}'
             )
             result = subprocess.run(
                 ["powershell", "-NoProfile", "-Command", script],
-                capture_output=True, text=True, timeout=30
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
             folder = result.stdout.strip()
             return folder if folder else None
         elif sys.platform == "darwin":
-            script = 'POSIX path of (choose folder with prompt "Select dataset folder:")'
+            script = (
+                'POSIX path of (choose folder with prompt "Select dataset folder:")'
+            )
             result = subprocess.run(
-                ["osascript", "-e", script],
-                capture_output=True, text=True, timeout=30
+                ["osascript", "-e", script], capture_output=True, text=True, timeout=30
             )
             folder = result.stdout.strip()
             return folder if folder else None
         else:
             # Linux: try zenity, then kdialog
             for cmd in [
-                ["zenity", "--file-selection", "--directory", "--title=Select dataset folder"],
-                ["kdialog", "--getexistingdirectory", "--title", "Select dataset folder"]
+                [
+                    "zenity",
+                    "--file-selection",
+                    "--directory",
+                    "--title=Select dataset folder",
+                ],
+                [
+                    "kdialog",
+                    "--getexistingdirectory",
+                    "--title",
+                    "Select dataset folder",
+                ],
             ]:
                 try:
-                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                    result = subprocess.run(
+                        cmd, capture_output=True, text=True, timeout=30
+                    )
                     folder = result.stdout.strip()
                     if folder:
                         return folder
@@ -49,6 +65,7 @@ def browse_folder():
             return None
     except Exception:
         return None
+
 
 st.set_page_config(page_title="DetectionMetrics", layout="wide")
 
@@ -91,7 +108,7 @@ with st.sidebar:
                 ["train", "val"],
                 key="split_selectbox",
             )
-        
+
         # Second row: Path and Browse button
         col1, col2 = st.columns([3, 1])
         with col1:
@@ -101,7 +118,9 @@ with st.sidebar:
                 key="dataset_path_input",
             )
         with col2:
-            st.markdown("<div style='margin-bottom: 1.75rem;'></div>", unsafe_allow_html=True)
+            st.markdown(
+                "<div style='margin-bottom: 1.75rem;'></div>", unsafe_allow_html=True
+            )
             if st.button("Browse", key="browse_button"):
                 folder = browse_folder()
                 if folder and os.path.isdir(folder):
@@ -109,7 +128,7 @@ with st.sidebar:
                     st.rerun()
                 elif folder is not None:
                     st.warning("Selected path is not a valid folder.")
-        
+
         if dataset_path_input != st.session_state.get("dataset_path", ""):
             st.session_state["dataset_path"] = dataset_path_input
 
@@ -132,7 +151,10 @@ with st.sidebar:
             key="config_option",
             horizontal=True,
         )
-        if st.session_state.get("config_option", "Manual Configuration") == "Upload Config File":
+        if (
+            st.session_state.get("config_option", "Manual Configuration")
+            == "Upload Config File"
+        ):
             st.file_uploader(
                 "Configuration File (.json)",
                 type=["json"],
@@ -190,14 +212,13 @@ with st.sidebar:
                     value=st.session_state.get("evaluation_step", 10),
                     step=1,
                     key="evaluation_step",
-                    help="Update UI with intermediate metrics every N images (0 = disable intermediate updates)"
+                    help="Update UI with intermediate metrics every N images (0 = disable intermediate updates)",
                 )
 
         # Load model action in sidebar
         from detectionmetrics.models.torch_detection import TorchImageDetectionModel
         import json, tempfile
 
-        
         load_model_btn = st.button(
             "Load Model",
             type="primary",
@@ -209,8 +230,14 @@ with st.sidebar:
         if load_model_btn:
             model_file = st.session_state.get("model_file")
             ontology_file = st.session_state.get("ontology_file")
-            config_option = st.session_state.get("config_option", "Manual Configuration")
-            config_file = st.session_state.get("config_file") if config_option == "Upload Config File" else None
+            config_option = st.session_state.get(
+                "config_option", "Manual Configuration"
+            )
+            config_file = (
+                st.session_state.get("config_file")
+                if config_option == "Upload Config File"
+                else None
+            )
 
             # Prepare configuration
             config_data = None
@@ -219,18 +246,22 @@ with st.sidebar:
                 if config_option == "Upload Config File":
                     if config_file is not None:
                         config_data = json.load(config_file)
-                        with tempfile.NamedTemporaryFile(delete=False, suffix='.json', mode='w') as tmp_cfg:
+                        with tempfile.NamedTemporaryFile(
+                            delete=False, suffix=".json", mode="w"
+                        ) as tmp_cfg:
                             json.dump(config_data, tmp_cfg)
                             config_path = tmp_cfg.name
                     else:
                         st.error("Please upload a configuration file")
                 else:
-                    confidence_threshold = float(st.session_state.get('confidence_threshold', 0.5))
-                    nms_threshold = float(st.session_state.get('nms_threshold', 0.5))
-                    max_detections = int(st.session_state.get('max_detections', 100))
-                    device = st.session_state.get('device', 'cpu')
-                    batch_size = int(st.session_state.get('batch_size', 1))
-                    evaluation_step = int(st.session_state.get('evaluation_step', 5))
+                    confidence_threshold = float(
+                        st.session_state.get("confidence_threshold", 0.5)
+                    )
+                    nms_threshold = float(st.session_state.get("nms_threshold", 0.5))
+                    max_detections = int(st.session_state.get("max_detections", 100))
+                    device = st.session_state.get("device", "cpu")
+                    batch_size = int(st.session_state.get("batch_size", 1))
+                    evaluation_step = int(st.session_state.get("evaluation_step", 5))
                     config_data = {
                         "confidence_threshold": confidence_threshold,
                         "nms_threshold": nms_threshold,
@@ -239,7 +270,9 @@ with st.sidebar:
                         "batch_size": batch_size,
                         "evaluation_step": evaluation_step,
                     }
-                    with tempfile.NamedTemporaryFile(delete=False, suffix='.json', mode='w') as tmp_cfg:
+                    with tempfile.NamedTemporaryFile(
+                        delete=False, suffix=".json", mode="w"
+                    ) as tmp_cfg:
                         json.dump(config_data, tmp_cfg)
                         config_path = tmp_cfg.name
             except Exception as e:
@@ -257,7 +290,9 @@ with st.sidebar:
                     # Persist ontology to temp file
                     try:
                         ontology_data = json.load(ontology_file)
-                        with tempfile.NamedTemporaryFile(delete=False, suffix='.json', mode='w') as tmp_ont:
+                        with tempfile.NamedTemporaryFile(
+                            delete=False, suffix=".json", mode="w"
+                        ) as tmp_ont:
                             json.dump(ontology_data, tmp_ont)
                             ontology_path = tmp_ont.name
                     except Exception as e:
@@ -266,7 +301,9 @@ with st.sidebar:
 
                     # Persist model to temp file
                     try:
-                        with tempfile.NamedTemporaryFile(delete=False, suffix='.pt', mode='wb') as tmp_model:
+                        with tempfile.NamedTemporaryFile(
+                            delete=False, suffix=".pt", mode="wb"
+                        ) as tmp_model:
                             tmp_model.write(model_file.read())
                             model_temp_path = tmp_model.name
                     except Exception as e:
@@ -279,7 +316,7 @@ with st.sidebar:
                                 model=model_temp_path,
                                 model_cfg=config_path,
                                 ontology_fname=ontology_path,
-                                device=st.session_state.get('device', 'cpu'),
+                                device=st.session_state.get("device", "cpu"),
                             )
                             st.session_state.detection_model = model
                             st.session_state.detection_model_loaded = True

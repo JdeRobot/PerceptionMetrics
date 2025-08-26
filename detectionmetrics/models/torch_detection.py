@@ -361,12 +361,14 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
             num_workers = 0
         else:
             num_workers = self.model_cfg.get("num_workers")
-        
+
         dataloader = DataLoader(
             dataset,
             batch_size=self.model_cfg.get("batch_size", 1),
             num_workers=num_workers,
-            collate_fn=lambda batch: tuple(zip(*batch)),  # handles variable-size targets
+            collate_fn=lambda batch: tuple(
+                zip(*batch)
+            ),  # handles variable-size targets
         )
 
         # Get iou_threshold from model config, default to 0.5 if not present
@@ -394,7 +396,7 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
                 iterator = pbar
             else:
                 iterator = dataloader
-            
+
             for image_ids, images, targets in iterator:
                 # Defensive check for empty images
                 if not images or any(img.numel() == 0 for img in images):
@@ -481,28 +483,32 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
                                     predictions_outdir, f"{sample_id}_metrics.csv"
                                 )
                             )
-                    
+
                     processed_samples += 1
-                    
+
                     # Call progress callback if provided
                     if progress_callback is not None:
                         progress_callback(processed_samples, total_samples)
-                    
+
                     # Call metrics callback if provided and evaluation_step is reached
-                    if (metrics_callback is not None and 
-                        evaluation_step is not None and 
-                        processed_samples % evaluation_step == 0):
+                    if (
+                        metrics_callback is not None
+                        and evaluation_step is not None
+                        and processed_samples % evaluation_step == 0
+                    ):
                         # Get intermediate metrics
-                        intermediate_metrics = metrics_factory.get_metrics_dataframe(self.ontology)
-                        metrics_callback(intermediate_metrics, processed_samples, total_samples)
+                        intermediate_metrics = metrics_factory.get_metrics_dataframe(
+                            self.ontology
+                        )
+                        metrics_callback(
+                            intermediate_metrics, processed_samples, total_samples
+                        )
 
         # Return both the DataFrame and the metrics factory for access to precision-recall curves
         return {
             "metrics_df": metrics_factory.get_metrics_dataframe(self.ontology),
-            "metrics_factory": metrics_factory
+            "metrics_factory": metrics_factory,
         }
-
-
 
     def get_computational_cost(
         self, image_size: Tuple[int], runs: int = 30, warm_up_runs: int = 5
