@@ -5,6 +5,14 @@ from typing import List, Dict, Tuple, Optional
 
 
 class DetectionMetricsFactory:
+    """Factory class for computing detection metrics including precision, recall, AP, and mAP.
+
+    :param iou_threshold: IoU threshold for matching predictions to ground truth, defaults to 0.5
+    :type iou_threshold: float, optional
+    :param num_classes: Number of classes in the dataset, defaults to None
+    :type num_classes: Optional[int], optional
+    """
+
     def __init__(self, iou_threshold: float = 0.5, num_classes: Optional[int] = None):
         self.iou_threshold = iou_threshold
         self.num_classes = num_classes
@@ -15,14 +23,18 @@ class DetectionMetricsFactory:
         )  # List of (gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores)
 
     def update(self, gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores):
-        """
-        Add a batch of predictions and ground truths.
+        """Add a batch of predictions and ground truths.
 
-        :param gt_boxes: List[ndarray], shape (num_gt, 4)
-        :param gt_labels: List[int]
-        :param pred_boxes: List[ndarray], shape (num_pred, 4)
-        :param pred_labels: List[int]
-        :param pred_scores: List[float]
+        :param gt_boxes: Ground truth bounding boxes, shape (num_gt, 4)
+        :type gt_boxes: List[ndarray]
+        :param gt_labels: Ground truth class labels
+        :type gt_labels: List[int]
+        :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)
+        :type pred_boxes: List[ndarray]
+        :param pred_labels: Predicted class labels
+        :type pred_labels: List[int]
+        :param pred_scores: Prediction confidence scores
+        :type pred_scores: List[float]
         """
 
         # Convert torch tensors to numpy
@@ -74,14 +86,22 @@ class DetectionMetricsFactory:
         pred_scores: List[float],
         iou_threshold: Optional[float] = None,
     ) -> Dict[int, List[Tuple[float, int]]]:
-        """
-        Match predictions to ground truth and return per-class TP/FP flags with scores.
+        """Match predictions to ground truth and return per-class TP/FP flags with scores.
 
-        Args:
-            iou_threshold: If provided, overrides self.iou_threshold
-
-        Returns:
-            Dict[label_id, List[(score, tp_or_fp)]]
+        :param gt_boxes: Ground truth bounding boxes, shape (num_gt, 4)
+        :type gt_boxes: np.ndarray
+        :param gt_labels: Ground truth class labels
+        :type gt_labels: List[int]
+        :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)
+        :type pred_boxes: np.ndarray
+        :param pred_labels: Predicted class labels
+        :type pred_labels: List[int]
+        :param pred_scores: Prediction confidence scores
+        :type pred_scores: List[float]
+        :param iou_threshold: IoU threshold for matching, overrides self.iou_threshold if provided, defaults to None
+        :type iou_threshold: Optional[float], optional
+        :return: Dictionary mapping class labels to list of (score, tp_or_fp) tuples
+        :rtype: Dict[int, List[Tuple[float, int]]]
         """
         if iou_threshold is None:
             iou_threshold = self.iou_threshold
@@ -119,11 +139,10 @@ class DetectionMetricsFactory:
         return results
 
     def compute_metrics(self) -> Dict[int, Dict[str, float]]:
-        """
-        Compute per-class precision, recall, AP, and mAP.
+        """Compute per-class precision, recall, AP, and mAP.
 
-        Returns:
-            Dict[class_id, Dict[str, float]], plus an entry for mAP under key -1
+        :return: Dictionary mapping class IDs to metric dictionaries, plus mAP under key -1
+        :rtype: Dict[int, Dict[str, float]]
         """
         metrics = {}
         ap_values = []
@@ -164,11 +183,10 @@ class DetectionMetricsFactory:
         return metrics
 
     def compute_coco_map(self) -> float:
-        """
-        Compute COCO-style mAP (mean AP over IoU thresholds 0.5:0.05:0.95).
+        """Compute COCO-style mAP (mean AP over IoU thresholds 0.5:0.05:0.95).
 
-        Returns:
-            float: mAP@[0.5:0.95]
+        :return: mAP@[0.5:0.95]
+        :rtype: float
         """
         iou_thresholds = np.arange(0.5, 1.0, 0.05)
         aps = []
@@ -240,11 +258,10 @@ class DetectionMetricsFactory:
         return np.mean(aps) if aps else 0.0
 
     def get_overall_precision_recall_curve(self) -> Dict[str, List[float]]:
-        """
-        Get overall precision-recall curve data (aggregated across all classes).
+        """Get overall precision-recall curve data (aggregated across all classes).
 
-        Returns:
-            Dict[str, List[float]] with keys 'precision' and 'recall'
+        :return: Dictionary with 'precision' and 'recall' keys containing curve data
+        :rtype: Dict[str, List[float]]
         """
         all_detections = []
 
@@ -274,11 +291,10 @@ class DetectionMetricsFactory:
         }
 
     def compute_auc_pr(self) -> float:
-        """
-        Compute the Area Under the Precision-Recall Curve (AUC-PR).
+        """Compute the Area Under the Precision-Recall Curve (AUC-PR).
 
-        Returns:
-            float: Area under the precision-recall curve
+        :return: Area under the precision-recall curve
+        :rtype: float
         """
         curve_data = self.get_overall_precision_recall_curve()
         precision = np.array(curve_data["precision"])
@@ -299,10 +315,12 @@ class DetectionMetricsFactory:
         return float(auc)
 
     def get_metrics_dataframe(self, ontology: dict) -> pd.DataFrame:
-        """
-        Get results as a pandas DataFrame.
+        """Get results as a pandas DataFrame.
 
         :param ontology: Mapping from class name → { "idx": int }
+        :type ontology: dict
+        :return: DataFrame with metrics as rows and classes as columns (with mean)
+        :rtype: pd.DataFrame
         """
         all_metrics = self.compute_metrics()
         # Build a dict: metric -> {class_name: value}
@@ -340,8 +358,14 @@ class DetectionMetricsFactory:
 
 
 def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
-    """
-    Compute IoU matrix between pred and gt boxes.
+    """Compute IoU matrix between pred and gt boxes.
+
+    :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)
+    :type pred_boxes: np.ndarray
+    :param gt_boxes: Ground truth bounding boxes, shape (num_gt, 4)
+    :type gt_boxes: np.ndarray
+    :return: IoU matrix with shape (num_pred, num_gt)
+    :rtype: np.ndarray
     """
     iou_matrix = np.zeros((len(pred_boxes), len(gt_boxes)))
     for i, pb in enumerate(pred_boxes):
@@ -351,6 +375,15 @@ def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarr
 
 
 def compute_iou(boxA, boxB):
+    """Compute Intersection over Union (IoU) between two bounding boxes.
+
+    :param boxA: First bounding box [x1, y1, x2, y2]
+    :type boxA: array-like
+    :param boxB: Second bounding box [x1, y1, x2, y2]
+    :type boxB: array-like
+    :return: IoU value between 0 and 1
+    :rtype: float
+    """
     xA = max(boxA[0], boxB[0])
     yA = max(boxA[1], boxB[1])
     xB = min(boxA[2], boxB[2])
@@ -364,6 +397,17 @@ def compute_iou(boxA, boxB):
 
 
 def compute_ap(tps, fps, fn):
+    """Compute Average Precision (AP) using VOC-style 11-point interpolation.
+
+    :param tps: List of true positive flags
+    :type tps: List[bool] or np.ndarray
+    :param fps: List of false positive flags
+    :type fps: List[bool] or np.ndarray
+    :param fn: Number of false negatives
+    :type fn: int
+    :return: Tuple of (AP, precision array, recall array)
+    :rtype: Tuple[float, np.ndarray, np.ndarray]
+    """
     tps = np.array(tps, dtype=np.float32)
     fps = np.array(fps, dtype=np.float32)
 

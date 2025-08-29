@@ -60,7 +60,7 @@ def browse_folder():
                     folder = result.stdout.strip()
                     if folder:
                         return folder
-                except Exception:
+                except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
                     continue
             return None
     except Exception:
@@ -128,6 +128,8 @@ with st.sidebar:
                     st.rerun()
                 elif folder is not None:
                     st.warning("Selected path is not a valid folder.")
+                else:
+                    st.warning("Could not open folder browser. Please enter the path manually")
 
         if dataset_path_input != st.session_state.get("dataset_path", ""):
             st.session_state["dataset_path"] = dataset_path_input
@@ -193,7 +195,7 @@ with st.sidebar:
             with col2:
                 st.selectbox(
                     "Device",
-                    ["cpu", "gpu"],
+                    ["cpu", "cuda", "mps"],
                     index=0 if st.session_state.get("device", "cpu") == "cpu" else 1,
                     key="device",
                 )
