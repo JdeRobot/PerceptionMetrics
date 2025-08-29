@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 
 
-class MetricsFactory:
-    """'Factory' class to accumulate results and compute metrics
+class SegmentationMetricsFactory:
+    """'Factory' class to accumulate results and compute metrics for segmentation tasks
 
     :param n_classes: Number of classes to evaluate
     :type n_classes: int
@@ -256,12 +256,12 @@ class MetricsFactory:
 
 
 def get_metrics_dataframe(
-    metrics_factory: MetricsFactory, ontology: dict
+    metrics_factory: SegmentationMetricsFactory, ontology: dict
 ) -> pd.DataFrame:
     """Build a DataFrame with all metrics (global and per class) plus confusion matrix
 
-    :param metrics_factory: Properly updated MetricsFactory object
-    :type metrics_factory: MetricsFactory
+    :param metrics_factory: Properly updated SegmentationMetricsFactory object
+    :type metrics_factory: SegmentationMetricsFactory
     :param ontology: Ontology dictionary
     :type ontology: dict
     :return: DataFrame with all metrics

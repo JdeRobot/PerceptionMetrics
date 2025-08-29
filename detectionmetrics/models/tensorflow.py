@@ -438,7 +438,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             ignored_label_indices.append(dataset_ontology[ignored_class]["idx"])
 
         # Init metrics
-        metrics_factory = um.MetricsFactory(self.n_classes)
+        metrics_factory = um.SegmentationMetricsFactory(self.n_classes)
 
         # Evaluation loop
         pbar = tqdm(dataset.dataset)
@@ -481,7 +481,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
                         sample_valid_mask = (
                             valid_mask[i] if valid_mask is not None else None
                         )
-                        sample_mf = um.MetricsFactory(n_classes=self.n_classes)
+                        sample_mf = um.SegmentationMetricsFactory(n_classes=self.n_classes)
                         sample_mf.update(sample_pred, sample_label, sample_valid_mask)
                         sample_df = um.get_metrics_dataframe(sample_mf, self.ontology)
                         sample_df.to_csv(

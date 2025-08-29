@@ -530,7 +530,7 @@ class TorchImageSegmentationModel(dm_segmentation_model.ImageSegmentationModel):
         )
 
         # Init metrics
-        metrics_factory = um.MetricsFactory(self.n_classes)
+        metrics_factory = um.SegmentationMetricsFactory(self.n_classes)
 
         # Evaluation loop
         with torch.no_grad():
@@ -585,7 +585,7 @@ class TorchImageSegmentationModel(dm_segmentation_model.ImageSegmentationModel):
                             sample_valid_mask = (
                                 valid_mask[i] if valid_mask is not None else None
                             )
-                            sample_mf = um.MetricsFactory(n_classes=self.n_classes)
+                            sample_mf = um.SegmentationMetricsFactory(n_classes=self.n_classes)
                             sample_mf.update(
                                 sample_pred, sample_label, sample_valid_mask
                             )
@@ -805,7 +805,7 @@ class TorchLiDARSegmentationModel(dm_segmentation_model.LiDARSegmentationModel):
         )
 
         # Init metrics
-        metrics_factory = um.MetricsFactory(self.n_classes)
+        metrics_factory = um.SegmentationMetricsFactory(self.n_classes)
 
         # Evaluation loop
         end_th = self.model_cfg.get("end_th", 0.5)
@@ -885,7 +885,7 @@ class TorchLiDARSegmentationModel(dm_segmentation_model.LiDARSegmentationModel):
                             sample_valid_mask = (
                                 valid_mask[i] if valid_mask is not None else None
                             )
-                            sample_mf = um.MetricsFactory(n_classes=self.n_classes)
+                            sample_mf = um.SegmentationMetricsFactory(n_classes=self.n_classes)
                             sample_mf.update(
                                 sample_pred, sample_label, sample_valid_mask
                             )

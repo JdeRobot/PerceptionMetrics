@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
-from detectionmetrics.utils.metrics import MetricsFactory
+from detectionmetrics.utils.metrics import SegmentationMetricsFactory
 
 
 @pytest.fixture
 def metrics_factory():
-    """Fixture to create a MetricsFactory instance for testing"""
-    return MetricsFactory(n_classes=3)
+    """Fixture to create a SegmentationMetricsFactory instance for testing"""
+    return SegmentationMetricsFactory(n_classes=3)
 
 
 def test_update_confusion_matrix(metrics_factory):
@@ -94,7 +94,7 @@ def test_edge_cases(metrics_factory):
     with pytest.raises(AssertionError):
         metrics_factory.update(pred, gt)
 
-    empty_metrics_factory = MetricsFactory(n_classes=3)
+    empty_metrics_factory = SegmentationMetricsFactory(n_classes=3)
 
     assert np.isnan(empty_metrics_factory.get_precision(per_class=False))
     assert np.isnan(empty_metrics_factory.get_recall(per_class=False))
