@@ -91,5 +91,41 @@ sidebar:
 - Computational cost:
     - Number of parameters, average inference time, model size
 
-## Object detection
-Coming soon.
+## Image object detection
+- Datasets:
+    - **[COCO](https://cocodataset.org/)**: Standard COCO format with JSON annotations and image directory structure
+- Models:
+    - **PyTorch ([TorchScript](https://pytorch.org/docs/stable/jit.html) compiled format and native modules)**:
+        - Input shape: `(batch, channels, height, width)`
+        - Output shape: `(batch, num_detections, 6)` where each detection contains `[x1, y1, x2, y2, confidence, class_id]`
+        - JSON configuration file format:
+
+        ```json
+        {
+            "normalization": {
+                "mean": [<r>, <g>, <b>],
+                "std": [<r>, <g>, <b>]
+            },
+            "resize": {  # optional
+                "width": <px>,
+                "height": <px>
+            },
+            "confidence_threshold": <float>,
+            "nms_threshold": <float>,
+            "max_detections_per_image": <int>,
+            "batch_size": <n>,
+            "device": "<cpu|cuda|mps>",
+            "evaluation_step": <int>  # for live progress updates during evaluation
+        }
+        ```
+- Metrics:
+    - Mean Average Precision (mAP), including COCO-style mAP@[0.5:0.95:0.05]
+    - Area Under the Precision-Recall Curve (AUC-PR)
+    - Precision, Recall, F1-Score
+    - Per-class metrics and confusion matrices
+- Computational cost:
+    - Number of parameters, average inference time, model size
+- GUI Support:
+    - Real-time inference visualization
+    - Interactive dataset browsing
+    - Progress tracking during evaluation

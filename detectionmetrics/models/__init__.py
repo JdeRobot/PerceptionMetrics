@@ -12,6 +12,13 @@ except ImportError:
     print("Torch not available")
 
 try:
+    from detectionmetrics.models.torch_detection import TorchImageDetectionModel
+
+    REGISTRY["torch_image_detection"] = TorchImageDetectionModel
+except ImportError:
+    print("Torch detection not available")
+
+try:
     from detectionmetrics.models.tensorflow import TensorflowImageSegmentationModel
 
     REGISTRY["tensorflow_image_segmentation"] = TensorflowImageSegmentationModel

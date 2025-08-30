@@ -83,6 +83,10 @@ def get_dataset(
         if labels_dir is None:
             raise ValueError("--labels_dir is required for 'rugd' format")
 
+    elif dataset_format == "coco":
+        if dataset_dir is None:
+            raise ValueError("--dataset_dir is required for 'coco' format")
+
     else:
         raise ValueError(f"Dataset format not supported: {dataset_format}")
 
@@ -115,6 +119,19 @@ def get_dataset(
             "images_dir": images_dir,
             "labels_dir": labels_dir,
             "ontology_fname": ontology,
+        }
+    elif dataset_format == "coco":
+        # For COCO, we need to construct the annotation file path and image directory
+        # Assuming standard COCO structure: dataset_dir/annotations/instances_split.json and dataset_dir/images/split/
+        if len(split) > 1:
+            raise ValueError("COCO format currently supports only one split at a time")
+        split_name = split[0]
+        annotation_file = f"{dataset_dir}/annotations/instances_{split_name}2017.json"
+        image_dir = f"{dataset_dir}/images/{split_name}2017"
+        dataset_args = {
+            "annotation_file": annotation_file,
+            "image_dir": image_dir,
+            "split": split_name,
         }
     else:
         raise ValueError(f"Dataset format not supported: {dataset_format}")

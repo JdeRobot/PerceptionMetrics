@@ -7,8 +7,38 @@ sidebar:
   nav: "main_v2"
 ---
 
+## Interactive GUI
+DetectionMetrics now includes a **Streamlit-based GUI** that provides an intuitive interface for image detection model evaluation and dataset exploration.
+
+### Launching the GUI
+```bash
+# From the project root directory
+streamlit run app.py
+```
+
+### GUI Features
+The GUI consists of three main tabs:
+
+#### Dataset Viewer
+- Browse and visualize your datasets
+- View images and annotations
+- Navigate through different splits (train/val)
+
+#### Inference
+- Run real-time inference on individual images
+- Upload custom images for testing
+- Visualize detection results with bounding boxes
+- Adjust model parameters interactively
+
+#### Evaluator
+- Perform comprehensive model evaluation
+- Real-time progress tracking by configuring evaluation step parameter
+- Download results
+
 ## Library
 🧑‍🏫️ [Image Segmentation Tutorial](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_segmentation.ipynb)
+
+🧑‍🏫️ [Image Detection Tutorial](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_detection.ipynb)
 
 You can check the [`examples` directory](https://github.com/JdeRobot/DetectionMetrics/tree/master/examples) for inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 
@@ -20,14 +50,19 @@ DetectionMetrics currently provides a CLI with two commands, `dm_evaluate` and `
 #### `dm_evaluate`
 Run a single evaluation job given a model and dataset configurations.
 
-Example:
+**Segmentation Example:**
 ```shell
 dm_evaluate segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset  --dataset_ontology /path/to/ontology.json --out_fname /path/to/results.csv
 ```
 
+**Detection Example:**
+```shell
+dm_evaluate detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --out_fname /path/to/results.csv
+```
+
 Docs:
 ```shell
-Usage: dm_evaluate [OPTIONS] {segmentation} {image|lidar}
+Usage: dm_evaluate [OPTIONS] {segmentation|detection} {image|lidar}
 
   Evaluate model on dataset
 
@@ -41,11 +76,11 @@ Options:
                                   [required]
   --model_cfg FILE                JSON file with model configuration (norm.
                                   parameters, image size, etc.)  [required]
-  --dataset_format [gaia|rellis3d|goose|generic|rugd]
+  --dataset_format [gaia|rellis3d|goose|generic|rugd|coco]
                                   Dataset format  [default: gaia]
   --dataset_fname FILE            Parquet dataset file
-  --dataset_dir DIRECTORY         Dataset directory (used for 'Rellis3D' and
-                                  'Wildscenes' formats)
+  --dataset_dir DIRECTORY         Dataset directory (used for 'Rellis3D',
+                                  'Wildscenes', and 'COCO' formats)
   --split_dir DIRECTORY           Directory containing .lst or .csv split
                                   files (used for 'Rellis3D' and 'Wildscenes'
                                   formats, respectively)
@@ -98,7 +133,7 @@ Options:
 
 YAML file example:
 ```yaml
-task: segmentation  # Task to perform (e.g., segmentation)
+task: detection  # Task to perform (e.g., segmentation, detection)
 input_type: image  # Input type (e.g., image or lidar)
 id: batch_id  # Batch identifier
 
@@ -118,9 +153,9 @@ model:
 
 dataset:
   - id: "dataset_id"  # Dataset identifier
-    format: gaia  # Dataset format (e.g., gaia, rellis3d, goose, generic)
+    format: coco  # Dataset format (e.g., gaia, rellis3d, goose, generic, coco)
+    dir: "/path/to/coco/dataset"  # (For COCO) Path to the COCO dataset directory
     fname: "/path/to/dataset.parquet"  # (For Gaia) Path to the dataset Parquet file
-    dir: "/path/to/dataset_directory"  # (For Rellis3D/Wildscenes) Path to the dataset directory
     split_dir: "/path/to/split_directory"  # (For Rellis3D/Wildscenes) Path to the directory containing split files
     train_dir: "/path/to/train_dataset_directory"  # (For Goose/Generic) Train directory
     val_dir: "/path/to/val_dataset_directory"  # (For Goose/Generic) Validation directory

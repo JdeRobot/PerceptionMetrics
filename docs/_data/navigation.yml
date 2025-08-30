@@ -67,12 +67,16 @@ main_v2:
       url: /v2/compatibility/#image-semantic-segmentation
     - title: "LiDAR semantic segmentation"
       url: /v2/compatibility/#lidar-semantic-segmentation
-    - title: "Object detection"
-      url: /v2/compatibility/#object-detection
+    - title: "Image object detection"
+      url: /v2/compatibility/#image-object-detection
   - title: Usage
     url: /v2/usage
     children:
+      - title: "Interactive GUI"
+        url: /v2/usage/#interactive-gui
       - title: "Library"
         url: /v2/usage/#library
       - title: "Command-line interface"
         url: /v2/usage/#command-line-interface
+  - title: GUI
+    url: /v2/gui

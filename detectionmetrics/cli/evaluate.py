@@ -17,7 +17,7 @@ def parse_split(ctx, param, value):
 
 
 @click.command(name="evaluate", help="Evaluate model on dataset")
-@click.argument("task", type=click.Choice(["segmentation"], case_sensitive=False))
+@click.argument("task", type=click.Choice(["segmentation", "detection"], case_sensitive=False))
 @click.argument(
     "input_type", type=click.Choice(["image", "lidar"], case_sensitive=False)
 )
@@ -53,7 +53,7 @@ def parse_split(ctx, param, value):
 @click.option(
     "--dataset_format",
     type=click.Choice(
-        ["gaia", "rellis3d", "goose", "generic", "rugd"], case_sensitive=False
+        ["gaia", "rellis3d", "goose", "generic", "rugd", "coco"], case_sensitive=False
     ),
     show_default=True,
     default="gaia",
@@ -67,7 +67,7 @@ def parse_split(ctx, param, value):
 @click.option(
     "--dataset_dir",
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
-    help="Dataset directory (used for 'Rellis3D' and 'Wildscenes' formats)",
+    help="Dataset directory (used for 'Rellis3D', 'Wildscenes', and 'COCO' formats)",
 )
 @click.option(
     "--split_dir",

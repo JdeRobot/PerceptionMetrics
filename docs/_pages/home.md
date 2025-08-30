@@ -15,14 +15,15 @@ excerpt:
 # What is DetectionMetrics?
 *DetectionMetrics* is a toolkit designed to unify and streamline the evaluation of perception models across different frameworks and datasets. Looking for our published ***DetectionMetrics v1***? Check out all the [relevant links](#v1) below.
 
-Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the flexibility of our previous release, *DetectionMetrics* has been redesigned with an expanded focus expanded focus on image and LiDAR segmentation. As we move forward, *v2* will be the actively maintained version, featuring continued updates and enhancements to keep pace with evolving AI and computer vision technologies.
+Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the flexibility of our previous release, *DetectionMetrics* has been redesigned with an expanded focus on image and LiDAR segmentation, and now includes **image object detection** capabilities with an interactive GUI. As we move forward, *v2* will be the actively maintained version, featuring continued updates and enhancements to keep pace with evolving AI and computer vision technologies.
 
 <table class='centered-table'>
     <tr>
         <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics">Code</a></th>
-        <th>&#128295; <a href="https://jderobot.github.io/DetectionMetrics/v2/installation">Installation</a></th>
-        <th>&#129513; <a href="https://jderobot.github.io/DetectionMetrics/v2/compatibility">Compatibility</a></th>
-        <th>&#128214; <a href="https://jderobot.github.io/DetectionMetrics/py_docs/_build/html/index.html">Docs</a></th>
+        <th>&#128295; <a href="/v2/installation/">Installation</a></th>
+        <th>&#129513; <a href="/v2/compatibility/">Compatibility</a></th>
+        <th>&#128214; <a href="/py_docs/_build/html/index.html">Docs</a></th>
+        <th>&#128421; <a href="/v2/gui/">GUI</a></th>
     </tr>
 </table>
 
@@ -53,8 +54,8 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td>Object detection</td>
     <td>Image</td>
-    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
-    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
+    <td>COCO</td>
+    <td>PyTorch</td>
   </tr>
 </tbody>
 </table>

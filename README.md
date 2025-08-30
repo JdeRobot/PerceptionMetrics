@@ -9,7 +9,7 @@
 
 *DetectionMetrics* is a toolkit designed to unify and streamline the evaluation of perception models across different frameworks and datasets. Looking for our published ***DetectionMetrics v1***? Check out all the [relevant links](#v1) below.
 
-Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the flexibility of our previous release, *DetectionMetrics* has been redesigned with an expanded focus on image and LiDAR segmentation. As we move forward, *v2* will be the actively maintained version, featuring continued updates and enhancements to keep pace with evolving AI and computer vision technologies.
+Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the flexibility of our previous release, *DetectionMetrics* has been redesigned with an expanded focus on image and LiDAR segmentation, and now includes **image object detection** capabilities. As we move forward, *v2* will be the actively maintained version, featuring continued updates and enhancements to keep pace with evolving AI and computer vision technologies.
 
 <table style='font-size:100%; margin: auto;'>
   <tr>
@@ -17,6 +17,7 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
     <th>&#128295; <a href="https://jderobot.github.io/DetectionMetrics/v2/installation">Installation</a></th>
     <th>&#129513; <a href="https://jderobot.github.io/DetectionMetrics/v2/compatibility">Compatibility</a></th>
     <th>&#128214; <a href="https://jderobot.github.io/DetectionMetrics/py_docs/_build/html/index.html">Docs</a></th>
+    <th>&#128187; <a href="https://jderobot.github.io/DetectionMetrics/v2/gui">GUI</a></th>
   </tr>
 </table>
 
@@ -45,8 +46,8 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td>Object detection</td>
     <td>Image</td>
-    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
-    <td>Check <a href="https://jderobot.github.io/DetectionMetrics/v1"><i>DetectionMetrics v1</i></a></td>
+    <td>COCO, custom formats</td>
+    <td>PyTorch</td>
   </tr>
 </tbody>
 </table>
@@ -94,16 +95,44 @@ Install your deep learning framework of preference in your environment. We have 
 If you are using LiDAR, Open3D currently requires `torch==2.2*`.
 
 # Usage
-As of now, *DetectionMetrics* can either be used as a Python library or as a command-line application.
+DetectionMetrics can be used in three ways: through the **interactive GUI** (detection only), as a **Python library**, or via the **command-line interface** (segmentation and detection).
 
-### Library
+## Interactive GUI
+The easiest way to get started with DetectionMetrics is through the GUI (detection tasks only):
+
+```bash
+# From the project root directory
+streamlit run app.py
+```
+
+The GUI provides:
+- **Dataset Viewer**: Browse and visualize your datasets
+- **Inference**: Run real-time inference on images
+- **Evaluator**: Perform comprehensive model evaluation
+
+For detailed GUI documentation, see our [GUI guide](https://jderobot.github.io/DetectionMetrics/v2/gui).
+
+## Library
 
 🧑‍🏫️ [Image Segmentation Tutorial](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_segmentation.ipynb)
 
+🧑‍🏫️ [Image Detection Tutorial](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_detection.ipynb)
+
 You can check the `examples` directory for further inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 
-### Command-line interface
-DetectionMetrics currently provides a CLI with two commands, `dm_evaluate` and `dm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files. More details are provided in [DetectionMetrics website](https://jderobot.github.io/DetectionMetrics/v2/usage/#command-line-interface).
+## Command-line interface
+DetectionMetrics provides a CLI with two commands, `dm_evaluate` and `dm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files. More details are provided in [DetectionMetrics website](https://jderobot.github.io/DetectionMetrics/v2/usage/#command-line-interface).
+
+### Example Usage
+**Segmentation:**
+```bash
+dm_evaluate segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset --dataset_ontology /path/to/ontology.json --out_fname /path/to/results.csv
+```
+
+**Detection:**
+```bash
+dm_evaluate detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --out_fname /path/to/results.csv
+```
 
 <h1 id="v1">DetectionMetrics v1</h1>
 
