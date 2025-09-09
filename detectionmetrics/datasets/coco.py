@@ -92,14 +92,14 @@ class CocoDataset(ImageDetectionDataset):
     def read_annotation(
         self, fname: str
     ) -> Tuple[List[List[float]], List[int], List[int]]:
-        """Return bounding boxes, labels, and category_ids for a given image ID.
+        """Return bounding boxes and category indices for a given image ID.
 
         This method uses COCO's efficient indexing to load annotations on-demand.
         The COCO object maintains an internal index that allows for very fast
         annotation retrieval without needing a separate cache.
 
         :param fname: str (image_id in string form)
-        :return: Tuple of (boxes, labels, category_ids)
+        :return: Tuple of (boxes, category_indices)
         """
         # Extract image ID (fname might be a path or ID string)
         try:
@@ -112,11 +112,10 @@ class CocoDataset(ImageDetectionDataset):
         ann_ids = self.coco.getAnnIds(imgIds=image_id)
         anns = self.coco.loadAnns(ann_ids)
 
-        boxes, labels, category_ids = [], [], []
+        boxes, category_indices = [], []
         for ann in anns:
             x, y, w, h = ann["bbox"]
             boxes.append([x, y, x + w, y + h])
-            labels.append(ann["category_id"])
-            category_ids.append(ann["category_id"])
+            category_indices.append(ann["category_id"])
 
-        return boxes, labels, category_ids
+        return boxes, category_indices

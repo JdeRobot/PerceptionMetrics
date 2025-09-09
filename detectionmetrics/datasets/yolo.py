@@ -96,13 +96,13 @@ class YOLODataset(ImageDetectionDataset):
     def read_annotation(
         self, fname: str, image_size: Optional[Tuple[int, int]] = None
     ) -> Tuple[List[List[float]], List[int], List[int]]:
-        """Return bounding boxes, labels, and category_ids for a given image ID.
+        """Return bounding boxes, and category indices for a given image ID.
 
         :param fname: Annotation path
         :type fname: str
         :param image_size: Corresponding image size in (w, h) format for converting relative bbox size to absolute. If not provided, we will assume image path
         :type image_size: Optional[Tuple[int, int]]
-        :return: Tuple of (boxes, labels, category_ids)
+        :return: Tuple of (boxes, category_indices)
         """
         label = uio.read_txt(fname)
         image_fname = fname.replace(".txt", f".{self.im_ext}")
@@ -111,12 +111,12 @@ class YOLODataset(ImageDetectionDataset):
             image_size = Image.open(image_fname).size
 
         boxes = []
-        labels = []
+        category_indices = []
 
         im_w, im_h = image_size
         for row in label:
-            label_idx, xc, yc, w, h = map(float, row.split())
-            labels.append(int(label_idx))
+            category_idx, xc, yc, w, h = map(float, row.split())
+            category_indices.append(int(category_idx))
 
             abs_xc = xc * im_w
             abs_yc = yc * im_h
@@ -132,4 +132,4 @@ class YOLODataset(ImageDetectionDataset):
                 ]
             )
 
-        return boxes, labels
+        return boxes, category_indices

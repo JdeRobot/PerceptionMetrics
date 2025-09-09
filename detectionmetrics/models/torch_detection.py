@@ -169,15 +169,15 @@ class ImageDetectionTorchDataset(Dataset):
         ann_path = row["annotation"]
 
         image = Image.open(image_path).convert("RGB")
-        boxes, labels, cat_ids = self.dataset.read_annotation(ann_path)
+        boxes, category_indices = self.dataset.read_annotation(ann_path)
 
         # Convert boxes/labels to tensors
         boxes = torch.as_tensor(boxes, dtype=torch.float32)  # [N, 4]
-        labels = torch.as_tensor(labels, dtype=torch.int64)  # [N]
+        category_indices = torch.as_tensor(category_indices, dtype=torch.int64)  # [N]
 
         target = {
             "boxes": boxes,  # shape [N, 4] in [x1, y1, x2, y2] format
-            "labels": labels,  # shape [N]
+            "labels": category_indices,  # shape [N]
         }
 
         if self.transform:

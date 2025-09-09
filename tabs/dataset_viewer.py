@@ -217,7 +217,7 @@ def dataset_viewer_tab():
             ann_row = dataset.dataset[dataset.dataset["image"] == selected_img_name]
             if not ann_row.empty:
                 annotation_id = ann_row.iloc[0]["annotation"]
-                boxes, labels, category_ids = dataset.read_annotation(annotation_id)
+                boxes, category_indices = dataset.read_annotation(annotation_id)
 
                 # Get class names from ontology
                 ontology = getattr(dataset, "ontology", None)
@@ -228,15 +228,15 @@ def dataset_viewer_tab():
                     catid_to_name = {v["idx"]: k for k, v in ontology.items()}
                     class_names = [
                         catid_to_name.get(cat_id, str(cat_id))
-                        for cat_id in category_ids
+                        for cat_id in category_indices
                     ]
                 else:
-                    class_names = [str(cat_id) for cat_id in category_ids]
+                    class_names = [str(cat_id) for cat_id in category_indices]
 
                 # Annotate image
                 palette = ColorPalette.default()
                 detections = Detections(
-                    xyxy=np.array(boxes), class_id=np.array(category_ids)
+                    xyxy=np.array(boxes), class_id=np.array(category_indices)
                 )
                 annotator = BoxAnnotator(
                     color=palette, text_scale=0.7, text_thickness=1, text_padding=2
