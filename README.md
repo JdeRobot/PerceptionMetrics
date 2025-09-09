@@ -46,8 +46,8 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td>Object detection</td>
     <td>Image</td>
-    <td>COCO, custom formats</td>
-    <td>PyTorch</td>
+    <td>COCO, YOLO</td>
+    <td>PyTorch (tested with torchvision and torchscript-exported YOLO models)</td>
   </tr>
 </tbody>
 </table>
@@ -117,6 +117,8 @@ For detailed GUI documentation, see our [GUI guide](https://jderobot.github.io/D
 🧑‍🏫️ [Image Segmentation Tutorial](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_segmentation.ipynb)
 
 🧑‍🏫️ [Image Detection Tutorial](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_detection.ipynb)
+
+🧑‍🏫️ [Image Detection Tutorial (YOLO)](https://github.com/JdeRobot/DetectionMetrics/blob/master/examples/tutorial_image_detection_yolo.ipynb)
 
 You can check the `examples` directory for further inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 

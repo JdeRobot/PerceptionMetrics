@@ -54,8 +54,8 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
   <tr>
     <td>Object detection</td>
     <td>Image</td>
-    <td>COCO</td>
-    <td>PyTorch</td>
+    <td>COCO, YOLO</td>
+    <td>PyTorch (tested with torchvision and torchscript-exported YOLO models)</td>
   </tr>
 </tbody>
 </table>

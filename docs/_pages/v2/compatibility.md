@@ -94,10 +94,12 @@ sidebar:
 ## Image object detection
 - Datasets:
     - **[COCO](https://cocodataset.org/)**: Standard COCO format with JSON annotations and image directory structure
+    - **[YOLO](https://docs.ultralytics.com/datasets/detect/)**.
 - Models:
     - **PyTorch ([TorchScript](https://pytorch.org/docs/stable/jit.html) compiled format and native modules)**:
         - Input shape: `(batch, channels, height, width)`
         - Output shape: `(batch, num_detections, 6)` where each detection contains `[x1, y1, x2, y2, confidence, class_id]`
+        - Output shape (torchscript-exported YOLO models): `(num_box_coords + num_classes, num_candidate_boxes)`
         - JSON configuration file format:
 
         ```json
@@ -116,6 +118,7 @@ sidebar:
             "batch_size": <n>,
             "device": "<cpu|cuda|mps>",
             "evaluation_step": <int>  # for live progress updates during evaluation
+            "model_format": "<coco|yolo>"
         }
         ```
 - Metrics:
