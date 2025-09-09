@@ -1,4 +1,3 @@
-from collections import defaultdict
 import os
 import time
 from typing import Any, List, Optional, Tuple, Union, Dict
@@ -9,7 +8,6 @@ from PIL import Image
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2 as transforms
-from torchvision.transforms.v2 import functional as F
 from tqdm.notebook import tqdm
 
 from detectionmetrics.datasets import detection as dm_detection_dataset
@@ -225,7 +223,7 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
                 print(
                     "Model is not a TorchScript model. Loading as native PyTorch model."
                 )
-                model = torch.load(model, map_location=self.device)
+                model = torch.load(model, map_location=self.device, weights_only=False)
                 model_type = "native"
         elif isinstance(model, torch.nn.Module):
             model_fname = None
@@ -236,6 +234,25 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
         # Init parent class
         super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
         self.model = self.model.to(self.device).eval()
+
+        # Load post-processing functions for specific model formats
+        self.model_format = self.model_cfg.get("model_format", "torchvision")
+        if self.model_format == "yolo":
+            from detectionmetrics.models.utils.yolo import postprocess_detection
+        elif self.model_format == "torchvision":
+            from detectionmetrics.models.utils.torchvision import postprocess_detection
+        else:
+            raise ValueError(f"Unsupported model_format: {self.model_format}")
+
+        self.postprocess_detection = postprocess_detection
+
+        # Load confidence and NMS thresholds from config
+        self.confidence_threshold = self.model_cfg.get("confidence_threshold", 0.5)
+        self.nms_threshold = self.model_cfg.get("nms_threshold", 0.3)
+
+        self.postprocess_args = [self.confidence_threshold]
+        if self.model_format == "yolo":
+            self.postprocess_args.append(self.nms_threshold)
 
         # --- Add reverse mapping for idx to class_name ---
         self.idx_to_class_name = {v["idx"]: k for k, v in self.ontology.items()}
@@ -296,14 +313,7 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
             result = self.model(tensor)[0]  # Return only first image's result
 
         # Apply threshold filtering from model config
-        confidence_threshold = self.model_cfg.get("confidence_threshold", 0.5)
-        if confidence_threshold > 0:
-            keep_mask = result["scores"] >= confidence_threshold
-            result = {
-                "boxes": result["boxes"][keep_mask],
-                "labels": result["labels"][keep_mask],
-                "scores": result["scores"][keep_mask],
-            }
+        result = self.postprocess_detection(result, *self.postprocess_args)
 
         return result
 
@@ -403,24 +413,15 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
                     print("Skipping batch: empty image tensor detected.")
                     continue
 
-                images = [img.to(self.device) for img in images]
+                images = torch.stack(images).to(self.device)
                 predictions = self.model(images)
 
                 for i in range(len(images)):
                     gt = targets[i]
                     pred = predictions[i]
 
-                    # Apply confidence threshold filtering
-                    confidence_threshold = self.model_cfg.get(
-                        "confidence_threshold", 0.5
-                    )
-                    if confidence_threshold > 0:
-                        keep_mask = pred["scores"] >= confidence_threshold
-                        pred = {
-                            "boxes": pred["boxes"][keep_mask],
-                            "labels": pred["labels"][keep_mask],
-                            "scores": pred["scores"][keep_mask],
-                        }
+                    # Post-process predictions
+                    pred = self.postprocess_detection(pred, *self.postprocess_args)
 
                     # Apply ontology translation if needed
                     if lut_ontology is not None:
