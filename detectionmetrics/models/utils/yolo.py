@@ -2,6 +2,9 @@ import torch
 from torchvision.ops import nms
 
 
+CLASS_NMS_OFFSET = 7680  # offset to apply to boxes for class-wise NMS
+
+
 def postprocess_detection(
     output: torch.Tensor,
     confidence_threshold: float = 0.25,
@@ -21,7 +24,12 @@ def postprocess_detection(
     # Split boxes and class logits
     boxes_xywh = output[:4, :].T  # [8400, 4] (cx, cy, w, h) in pixels
     cls_logits = output[4:, :].T  # [8400, 28]
-    conf, cls_id = cls_logits.max(dim=1)  # best class per candidate
+
+    # Get boxes above confidence threshold
+    i, j = torch.where(cls_logits > confidence_threshold)
+    boxes_xywh = boxes_xywh[i]
+    scores = cls_logits[i, j]
+    labels = j
 
     # Convert (cx,cy,w,h) -> (x1,y1,x2,y2)
     cx, cy, w, h = boxes_xywh.unbind(1)
@@ -31,16 +39,11 @@ def postprocess_detection(
     y2 = cy + h / 2
     boxes_xyxy = torch.stack([x1, y1, x2, y2], dim=1)
 
-    # Filter + NMS (tune thresholds as you like)
-    keep = conf > confidence_threshold
-    boxes_xyxy = boxes_xyxy[keep]
-    conf = conf[keep]
-    cls_id = cls_id[keep]
-
-    # class-agnostic NMS (or do per-class if you prefer)
-    keep_idx = nms(boxes_xyxy, conf, nms_threshold)
+    # Apply class-wise NMS
+    offset = labels * CLASS_NMS_OFFSET
+    keep_idx = nms(boxes_xyxy + offset[:, None], scores, nms_threshold)
     boxes_xyxy = boxes_xyxy[keep_idx]
-    conf = conf[keep_idx]
-    cls_id = cls_id[keep_idx]
+    scores = scores[keep_idx]
+    labels = labels[keep_idx]
 
-    return {"boxes": boxes_xyxy, "labels": cls_id, "scores": conf}
+    return {"boxes": boxes_xyxy, "labels": labels, "scores": scores}
