@@ -193,6 +193,7 @@ class DetectionMetricsFactory:
 
         for iou_thresh in iou_thresholds:
             # Reset results for this threshold
+            gt_counts = defaultdict(int)
             threshold_results = defaultdict(list)
 
             # Process all raw data with current threshold
@@ -203,6 +204,10 @@ class DetectionMetricsFactory:
                 pred_labels,
                 pred_scores,
             ) in self.raw_data:
+                # Count ground truth instances
+                for g in gt_labels:
+                    gt_counts[int(g)] += 1
+
                 # Handle empty inputs
                 if len(gt_boxes) == 0 and len(pred_boxes) == 0:
                     continue
@@ -238,6 +243,10 @@ class DetectionMetricsFactory:
             # Compute AP for this threshold
             threshold_ap_values = []
             for label, detections in threshold_results.items():
+                # Skip classes with no ground truth instances
+                if gt_counts.get(int(label), 0) == 0:
+                    continue
+
                 detections = sorted(
                     [d for d in detections if d[0] is not None], key=lambda x: -x[0]
                 )
