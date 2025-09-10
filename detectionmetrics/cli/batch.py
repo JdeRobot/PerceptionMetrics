@@ -102,7 +102,7 @@ def batch(command, jobs_cfg):
                     "model": model_cfg["path"],
                     "model_ontology": model_cfg["ontology"],
                     "model_cfg": model_cfg["cfg"],
-                    # "image_size": model_cfg.get("image_size", None),
+                    "image_size": model_cfg.get("image_size", None),
                 }
             )
             if has_dataset:
