@@ -1,4 +1,5 @@
-from typing import Optional, Tuple
+import time
+from typing import Optional, Tuple, Union, Dict
 
 import numpy as np
 import torch
@@ -18,7 +19,11 @@ def inference(
     sample: Tuple[np.ndarray, np.ndarray, ul.Sampler],
     model: torch.nn.Module,
     model_cfg: dict,
-) -> torch.Tensor:
+    measure_processing_time: bool = False,
+) -> Union[
+    Tuple[torch.Tensor, Optional[torch.Tensor], Optional[str]],
+    Tuple[torch.Tensor, Optional[torch.Tensor], Optional[str], Dict[str, float]],
+]:
     """Perform inference on a sample using an Open3D-ML model
 
     :param sample: sample data dictionary
@@ -27,13 +32,17 @@ def inference(
     :type model: torch.nn.Module
     :param model_cfg: model configuration
     :type model_cfg: dict
-    :return: predictions, labels, and sample names
-    :rtype: Tuple[torch.Tensor, Optional[torch.Tensor], Optional[List[str]]]
+    :param measure_processing_time: whether to measure processing time, defaults to False
+    :type measure_processing_time: bool, optional
+    :return: predicted labels, ground truth labels, sample name and optionally processing time
+    :rtype: Union[ Tuple[torch.Tensor, Optional[torch.Tensor], Optional[str]], Tuple[torch.Tensor, Optional[torch.Tensor], Optional[str], Dict[str, float]] ]
     """
     infer_complete = False
     points, projected_indices, sampler, label, name, _ = sample
     model_format = model_cfg["model_format"]
     end_th = model_cfg.get("end_th", 0.5)
+
+    processing_time = {"preprocessing": 0, "inference": 0}
 
     if "kpconv" in model_format:
         transform_input = kpconv.transform_input
@@ -48,20 +57,35 @@ def inference(
 
     while not infer_complete:
         # Get model input data
+        if measure_processing_time:
+            start = time.perf_counter()
         input_data, selected_indices = transform_input(points, model_cfg, sampler)
+        if measure_processing_time:
+            end = time.perf_counter()
+            processing_time["preprocessing"] += end - start
+
         input_data = ut.data_to_device(input_data, model.device)
         if "randlanet" in model_format:
             input_data = ut.unsqueeze_data(input_data)
 
         # Perform inference
         with torch.no_grad():
+            if measure_processing_time:
+                torch.cuda.synchronize()
+                start = time.perf_counter()
             pred = model(*input_data)
+            if measure_processing_time:
+                torch.cuda.synchronize()
+                end = time.perf_counter()
+                processing_time["inference"] += end - start
 
             # TODO: check if this is consistent across different models
             if isinstance(pred, dict):
                 pred = pred["out"]
 
         # Update probabilities if sampler is used
+        if measure_processing_time:
+            start = time.perf_counter()
         if sampler is not None:
             if "kpconv" in model_format:
                 sampler.test_probs = update_probs(
@@ -83,11 +107,20 @@ def inference(
         else:
             pred = pred.squeeze().cpu()[projected_indices].cuda()
             infer_complete = True
+        if measure_processing_time:
+            end = time.perf_counter()
+            processing_time["postprocessing"] += end - start
 
     if label is not None:
         label = torch.from_numpy(label.astype(np.int64)).long().cuda()
 
-    return torch.argmax(pred.squeeze(), axis=-1), label, name
+    result = torch.argmax(pred.squeeze(), axis=-1), label, name
+
+    # Return processing time if needed
+    if measure_processing_time:
+        return result, processing_time
+
+    return result
 
 
 def get_sample(
@@ -97,7 +130,14 @@ def get_sample(
     name: Optional[str] = None,
     idx: Optional[int] = None,
     has_intensity: bool = True,
-) -> Tuple[np.ndarray, np.ndarray, ul.Sampler]:
+    measure_processing_time: bool = False,
+) -> Tuple[
+    Union[
+        Tuple[np.ndarray, np.ndarray, ul.Sampler, np.ndarray, str, int],
+        Tuple[np.ndarray, np.ndarray, ul.Sampler, np.ndarray, str, int],
+        Dict[str, float],
+    ]
+]:
     """Get sample data for mmdetection3d models
 
     :param points_fname: filename of the point cloud
@@ -112,13 +152,18 @@ def get_sample(
     :type idx: Optional[int], optional
     :param has_intensity: whether the point cloud has intensity values, defaults to True
     :type has_intensity: bool, optional
-    :return: Sample data tuple
-    :rtype: Tuple[np.ndarray, np.ndarray, ul.Sampler, np.ndarray, str, int]
+    :param measure_processing_time: whether to measure processing time, defaults to False
+    :type measure_processing_time: bool, optional
+    :return: sample data and optionally processing time
+    :rtype: Union[ Tuple[np.ndarray, np.ndarray, ul.Sampler, np.ndarray, str, int], Tuple[np.ndarray, np.ndarray, ul.Sampler, np.ndarray, str, int], Dict[str, float] ]
     """
     points = ul.read_semantickitti_points(points_fname, has_intensity)
     label = None
     if label_fname is not None:
         label, _ = ul.read_semantickitti_label(label_fname)
+
+    if measure_processing_time:
+        start = time.perf_counter()
 
     # Keep only XYZ coordinates
     points = np.array(points[:, 0:3], dtype=np.float32)
@@ -142,4 +187,30 @@ def get_sample(
             model_cfg["n_classes"],
         )
 
-    return sub_points, projected_indices, sampler, label, name, idx
+    if measure_processing_time:
+        end = time.perf_counter()
+
+    sample = sub_points, projected_indices, sampler, label, name, idx
+
+    # Return processing time if needed
+    if measure_processing_time:
+        processing_time = {"preprocessing": end - start}
+        return sample, processing_time
+
+    return sample
+
+
+def reset_sampler(sampler: ul.Sampler, num_points: int, num_classes: int):
+    """Reset sampler object probabilities
+
+    :param sampler: Sampler object
+    :type sampler: ul.Sampler
+    :param num_points: Number of points in the point cloud
+    :type num_points: int
+    :param num_classes: Number of semantic classes
+    :type num_classes: int
+    """
+    sampler.p = np.random.rand(num_points) * 1e-3
+    sampler.min_p = float(np.min(sampler.p[-1]))
+    sampler.test_probs = np.zeros((num_points, num_classes), dtype=np.float32)
+    return sampler

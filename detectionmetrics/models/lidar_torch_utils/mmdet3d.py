@@ -1,3 +1,4 @@
+import time
 from typing import List, Optional, Tuple
 
 from mmdet3d.datasets.transforms import (
@@ -19,7 +20,8 @@ def get_sample(
     name: Optional[str] = None,
     idx: Optional[int] = None,
     has_intensity: bool = True,
-) -> dict:
+    measure_processing_time: bool = False,
+) -> Tuple[dict, Optional[dict]]:
     """Get sample data for mmdetection3d models
 
     :param points_fname: filename of the point cloud
@@ -34,8 +36,10 @@ def get_sample(
     :type idx: Optional[int], optional
     :param has_intensity: whether the point cloud has intensity values, defaults to True
     :type has_intensity: bool, optional
-    :return: Sample data dictionary
-    :rtype: dict
+    :param measure_processing_time: whether to measure processing time, defaults to False
+    :type measure_processing_time: bool, optional
+    :return: sample data and optionally processing time
+    :rtype: Tuple[ dict, Optional[dict] ]
     """
     sample = {
         "lidar_points": {
@@ -71,14 +75,26 @@ def get_sample(
             meta_keys=["sample_idx", "lidar_path", "num_pts_feats", "sample_id"],
         )
     )
-    transforms = Compose(transforms)
 
-    return transforms(sample)
+    if measure_processing_time:
+        start = time.perf_counter()
+    transforms = Compose(transforms)
+    sample = transforms(sample)
+    if measure_processing_time:
+        end = time.perf_counter()
+        return sample, {"preprocessing": end - start}
+
+    return sample
 
 
 def inference(
-    sample: dict, model: torch.nn.Module, model_cfg: dict
-) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[List[str]]]:
+    sample: dict,
+    model: torch.nn.Module,
+    model_cfg: dict,
+    measure_processing_time: bool = False,
+) -> Tuple[
+    Tuple[torch.Tensor, Optional[torch.Tensor], Optional[List[str]]], Optional[dict]
+]:
     """Perform inference on a sample using an mmdetection3D model
 
     :param sample: sample data dictionary
@@ -87,18 +103,33 @@ def inference(
     :type model: torch.nn.Module
     :param model_cfg: model configuration
     :type model_cfg: dict
-    :return: predictions, labels, and sample names
-    :rtype: Tuple[torch.Tensor, Optional[torch.Tensor], Optional[List[str]]]
+    :param measure_processing_time: whether to measure processing time, defaults to False
+    :type measure_processing_time: bool, optional
+    :return: predictions, labels (if available), sample names and optionally processing time
+    :rtype: Tuple[ Tuple[torch.Tensor, Optional[torch.Tensor], Optional[List[str
     """
     single_sample = not isinstance(sample["data_samples"], list)
     if single_sample:
         sample = COLLATE_FN([sample])
 
+    if measure_processing_time:
+        start = time.perf_counter()
     sample = model.data_preprocessor(sample, training=False)
+    if measure_processing_time:
+        end = time.perf_counter()
+        processing_time = {"voxelization": end - start}
+
     inputs, data_samples = sample["inputs"], sample["data_samples"]
     has_labels = hasattr(data_samples[0].gt_pts_seg, "pts_semantic_mask")
 
+    if measure_processing_time:
+        torch.cuda.synchronize()
+        start = time.perf_counter()
     outputs = model(inputs, data_samples, mode="predict")
+    if measure_processing_time:
+        torch.cuda.synchronize()
+        end = time.perf_counter()
+        processing_time["inference"] = end - start
 
     preds, labels, names = ([], [], []) if has_labels else ([], None, None)
     for output in outputs:
@@ -110,4 +141,7 @@ def inference(
     if has_labels:
         labels = torch.stack(labels, dim=0).squeeze()
 
-    return preds, labels, names
+    if measure_processing_time:
+        return (preds, labels, names), processing_time
+    else:
+        return preds, labels, names

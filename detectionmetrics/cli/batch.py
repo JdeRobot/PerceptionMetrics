@@ -1,4 +1,4 @@
-from itertools import product
+from itertools import product, chain
 from glob import glob
 import os
 
@@ -30,9 +30,19 @@ def batch(command, jobs_cfg):
     for model_cfg in jobs_cfg["model"]:
 
         model_path = model_cfg["path"]
-        model_paths = glob(model_path) if model_cfg["path_is_pattern"] else [model_path]
-        assert model_paths, f"No files found for pattern {model_cfg['path']}"
+        is_pattern = model_cfg.get("path_is_pattern", False)
+        if isinstance(model_path, list):
+            if is_pattern:
+                model_paths = list(chain.from_iterable(glob(p) for p in model_path))
+            else:
+                model_paths = model_path
+        else:
+            model_paths = glob(model_path) if is_pattern else [model_path]
 
+        if not model_paths:
+            raise FileNotFoundError(f"No files found for path/pattern: {model_path}")
+
+        print(f"Found {len(model_paths)} model(s) for pattern: {model_path}")
         for new_path in model_paths:
             assert os.path.exists(new_path), f"File or directory {new_path} not found"
 
@@ -41,7 +51,8 @@ def batch(command, jobs_cfg):
             if os.path.isfile(new_path):
                 new_model_id, _ = os.path.splitext(new_model_id)
 
-            new_model_cfg = model_cfg | {
+            new_model_cfg = {
+                **model_cfg,
                 "path": new_path,
                 "id": f"{model_cfg['id']}-{new_model_id.replace('-', '_')}",
             }
@@ -102,9 +113,20 @@ def batch(command, jobs_cfg):
                     "model": model_cfg["path"],
                     "model_ontology": model_cfg["ontology"],
                     "model_cfg": model_cfg["cfg"],
-                    "image_size": model_cfg.get("image_size", None),
                 }
             )
+
+            if command == "computational_cost":
+                if jobs_cfg["input_type"] == "image":
+                    params["image_size"] = model_cfg.get("image_size", [512, 512])
+                elif jobs_cfg["input_type"] == "lidar":
+                    params["point_cloud_range"] = model_cfg.get(
+                        "point_cloud_range", [-50, -50, -5, 50, 50, 5]
+                    )
+                    params["num_points"] = model_cfg.get("num_points", 100000)
+                else:
+                    raise ValueError(f"Unknown input type: {jobs_cfg['input_type']}")
+
             if has_dataset:
                 dataset_cfg = job_components[1]
                 params.update(

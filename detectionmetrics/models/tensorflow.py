@@ -18,71 +18,6 @@ import detectionmetrics.utils.metrics as um
 tf.config.optimizer.set_experimental_options({"layout_optimizer": False})
 
 
-def get_computational_cost(
-    model: tf.Module,
-    dummy_input: tf.Tensor,
-    model_fname: Optional[str] = None,
-    runs: int = 30,
-    warm_up_runs: int = 5,
-) -> dict:
-    """Get different metrics related to the computational cost of the model
-
-    :param model: Loaded TensorFlow SavedModel
-    :type model: tf.Module
-    :param dummy_input: Dummy input data for the model
-    :type dummy_input: tf.Tensor
-    :param model_fname: Model filename used to measure model size, defaults to None
-    :type model_fname: Optional[str], optional
-    :param runs: Number of runs to measure inference time, defaults to 30
-    :type runs: int, optional
-    :param warm_up_runs: Number of warm-up runs, defaults to 5
-    :type warm_up_runs: int, optional
-    :return: DataFrame containing computational cost information
-    :rtype: pd.DataFrame
-    """
-    # Get model size (if possible) and number of parameters
-    if model_fname is not None:
-        size_mb = sum(
-            os.path.getsize(os.path.join(dirpath, f))
-            for dirpath, _, files in os.walk(model_fname)
-            for f in files
-        )
-        size_mb /= 1024**2
-    else:
-        size_mb = None
-
-    n_params = sum(np.prod(var.shape) for var in model.variables.variables)
-
-    # Measure inference time with GPU synchronization
-    infer = model.signatures["serving_default"]
-    for _ in range(warm_up_runs):
-        _ = infer(dummy_input)
-
-    has_gpu = bool(tf.config.list_physical_devices("GPU"))
-    inference_times = []
-
-    for _ in range(runs):
-        if has_gpu:
-            tf.config.experimental.set_synchronous_execution(True)
-
-        start_time = time.time()
-        _ = infer(dummy_input)
-
-        if has_gpu:
-            tf.config.experimental.set_synchronous_execution(True)
-
-        inference_times.append(time.time() - start_time)
-
-    # Retrieve computational cost information
-    result = {
-        "input_shape": ["x".join(map(str, dummy_input.shape.as_list()))],
-        "n_params": [int(n_params)],
-        "size_mb": [size_mb],
-        "inference_time_s": [np.mean(inference_times)],
-    }
-    return pd.DataFrame.from_dict(result)
-
-
 def resize_image(
     image: tf.Tensor,
     method: str,
@@ -510,7 +445,46 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         :type warm_up_runs: int, optional
         :return: Dictionary containing computational cost information
         """
+        # Generate dummy input
         dummy_input = tf.random.normal([1, *image_size, 3])
-        return get_computational_cost(
-            self.model, dummy_input, self.model_fname, runs, warm_up_runs
-        )
+
+        # Get model size (if possible) and number of parameters
+        if self.model_fname is not None:
+            size_mb = sum(
+                os.path.getsize(os.path.join(dirpath, f))
+                for dirpath, _, files in os.walk(self.model_fname)
+                for f in files
+            )
+            size_mb /= 1024**2
+        else:
+            size_mb = None
+
+        n_params = sum(np.prod(var.shape) for var in self.model.variables.variables)
+
+        # Measure inference time with GPU synchronization
+        for _ in range(warm_up_runs):
+            self.predict(dummy_input)
+
+        has_gpu = bool(tf.config.list_physical_devices("GPU"))
+        inference_times = []
+
+        for _ in range(runs):
+            if has_gpu:
+                tf.config.experimental.set_synchronous_execution(True)
+
+            start_time = time.time()
+            self.predict(dummy_input)
+
+            if has_gpu:
+                tf.config.experimental.set_synchronous_execution(True)
+
+            inference_times.append(time.time() - start_time)
+
+        # Retrieve computational cost information
+        result = {
+            "input_shape": ["x".join(map(str, dummy_input.shape.as_list()))],
+            "n_params": [int(n_params)],
+            "size_mb": [size_mb],
+            "inference_time_s": [np.mean(inference_times)],
+        }
+        return pd.DataFrame.from_dict(result)

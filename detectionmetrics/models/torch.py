@@ -1,6 +1,7 @@
 import importlib
 import os
 import time
+import tempfile
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
@@ -59,63 +60,6 @@ def get_computational_cost(
     :return: DataFrame containing computational cost information
     :rtype: pd.DataFrame
     """
-    # Get model size if possible
-    if model_fname is not None:
-        size_mb = os.path.getsize(model_fname) / 1024**2
-    else:
-        size_mb = None
-
-    # Measure inference time with GPU synchronization
-    dummy_tuple = dummy_input if isinstance(dummy_input, tuple) else (dummy_input,)
-
-    for _ in range(warm_up_runs):
-        if hasattr(model, "inference"):  # e.g. mmsegmentation models
-            model.inference(
-                *dummy_tuple,
-                [
-                    dict(
-                        ori_shape=dummy_tuple[0].shape[2:],
-                        img_shape=dummy_tuple[0].shape[2:],
-                        pad_shape=dummy_tuple[0].shape[2:],
-                        padding_size=[0, 0, 0, 0],
-                    )
-                ]
-                * dummy_tuple[0].shape[0],
-            )
-        else:
-            model(*dummy_tuple)
-
-    inference_times = []
-    for _ in range(runs):
-        torch.cuda.synchronize()
-        start_time = time.time()
-        if hasattr(model, "inference"):  # e.g. mmsegmentation models
-            model.inference(
-                *dummy_tuple,
-                [
-                    dict(
-                        ori_shape=dummy_tuple[0].shape[2:],
-                        img_shape=dummy_tuple[0].shape[2:],
-                        pad_shape=dummy_tuple[0].shape[2:],
-                        padding_size=[0, 0, 0, 0],
-                    )
-                ]
-                * dummy_tuple[0].shape[0],
-            )
-        else:
-            model(*dummy_tuple)
-        torch.cuda.synchronize()
-        end_time = time.time()
-        inference_times.append(end_time - start_time)
-
-    result = {
-        "input_shape": ["x".join(map(str, ut.get_data_shape(dummy_input)))],
-        "n_params": [sum(p.numel() for p in model.parameters())],
-        "size_mb": [size_mb],
-        "inference_time_s": [np.mean(inference_times)],
-    }
-
-    return pd.DataFrame.from_dict(result)
 
 
 class CustomResize(torch.nn.Module):
@@ -544,10 +488,38 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
         :type warm_up_runs: int, optional
         :return: Dictionary containing computational cost information
         """
+        # Create dummy input
         dummy_input = torch.randn(1, 3, *image_size).to(self.device)
-        return get_computational_cost(
-            self.model, dummy_input, self.model_fname, runs, warm_up_runs
-        )
+
+        # Get model size if possible
+        if self.model_fname is not None:
+            size_mb = os.path.getsize(self.model_fname) / 1024**2
+        else:
+            size_mb = None
+
+        # Measure inference time with GPU synchronization
+        dummy_tuple = dummy_input if isinstance(dummy_input, tuple) else (dummy_input,)
+
+        for _ in range(warm_up_runs):
+            self.predict(dummy_tuple[0])
+
+        inference_times = []
+        for _ in range(runs):
+            torch.cuda.synchronize()
+            start_time = time.time()
+            self.predict(dummy_tuple[0])
+            torch.cuda.synchronize()
+            end_time = time.time()
+            inference_times.append(end_time - start_time)
+
+        result = {
+            "input_shape": ["x".join(map(str, ut.get_data_shape(dummy_input)))],
+            "n_params": [sum(p.numel() for p in self.model.parameters())],
+            "size_mb": [size_mb],
+            "inference_time_s": [np.mean(inference_times)],
+        }
+
+        return pd.DataFrame.from_dict(result)
 
 
 class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
@@ -607,7 +579,11 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         except ImportError:
             raise_unknown_model_format_lidar(model_format)
         self._get_sample = model_utils_module.get_sample
-        self._inference = model_utils_module.inference
+        self.inference = model_utils_module.inference
+        if hasattr(model_utils_module, "reset_sampler"):
+            self._reset_sampler = model_utils_module.reset_sampler
+        else:
+            self._reset_sampler = None
 
     def predict(
         self,
@@ -736,25 +712,80 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
 
         return um.get_metrics_dataframe(metrics_factory, self.ontology)
 
-    def get_computational_cost(self, runs: int = 30, warm_up_runs: int = 5) -> dict:
+    def get_computational_cost(
+        self,
+        point_cloud_range: Tuple[int, int, int, int, int, int] = (
+            -50,
+            -50,
+            -5,
+            50,
+            50,
+            5,
+        ),
+        num_points: int = 100000,
+        has_intensity: bool = False,
+        runs: int = 30,
+        warm_up_runs: int = 5,
+    ) -> dict:
         """Get different metrics related to the computational cost of the model
 
+        :param point_cloud_range: Point cloud range (meters), defaults to (-50, -50, -5, 50, 50, 5)
+        :type point_cloud_range: Tuple[int, int, int, int, int, int], optional
+        :param num_points: Number of points in the point cloud, defaults to 100000
+        :type num_points: int, optional
+        :param has_intensity: Whether the point cloud has intensity values, defaults to False
+        :type has_intensity: bool, optional
         :param runs: Number of runs to measure inference time, defaults to 30
         :type runs: int, optional
         :param warm_up_runs: Number of warm-up runs, defaults to 5
         :type warm_up_runs: int, optional
         :return: Dictionary containing computational cost information
         """
-        # Build dummy input data (process is a bit complex for LiDAR models)
-        dummy_points = np.random.rand(1000000, 4)
-        dummy_points, _, sampler = self.preprocess(dummy_points, self.model_cfg)
+        # Build dummy point cloud using uniform distribution
+        dummy_points = np.random.uniform(
+            low=point_cloud_range[0:3],
+            high=point_cloud_range[3:6],
+            size=(num_points, 3 + int(has_intensity)),
+        ).astype(np.float32)
 
-        dummy_input, _ = self.transform_input(dummy_points, self.model_cfg, sampler)
-        dummy_input = ut.data_to_device(dummy_input, self.device)
-        if self.model_format != "o3d_kpconv":
-            dummy_input = ut.unsqueeze_data(dummy_input)
+        # Store in a secure temporary .bin file
+        with tempfile.NamedTemporaryFile(suffix=".bin") as tmp_file:
+            dummy_points.tofile(tmp_file.name)
+            sample = self._get_sample(
+                tmp_file.name, self.model_cfg, has_intensity=has_intensity
+            )
 
-        # Get computational cost
-        return get_computational_cost(
-            self.model, dummy_input, self.model_fname, runs, warm_up_runs
-        )
+        # Get model size if possible
+        if self.model_fname is not None:
+            size_mb = os.path.getsize(self.model_fname) / 1024**2
+        else:
+            size_mb = None
+
+        # Measure inference time with GPU synchronization
+        for _ in range(warm_up_runs):
+            if "o3d" in self.model_format:  # reset random sampling for Open3D-ML models
+                subsampled_points, _, sampler, _, _, _ = sample
+                self._reset_sampler(sampler, subsampled_points.shape[0], self.n_classes)
+
+            self.inference(sample, self.model, self.model_cfg)
+
+        inference_times = []
+        for _ in range(runs):
+            if "o3d" in self.model_format:  # reset random sampling for Open3D-ML models
+                subsampled_points, _, sampler, _, _, _ = sample
+                self._reset_sampler(sampler, subsampled_points.shape[0], self.n_classes)
+            torch.cuda.synchronize()
+            start_time = time.time()
+            self.inference(sample, self.model, self.model_cfg)
+            torch.cuda.synchronize()
+            end_time = time.time()
+            inference_times.append(end_time - start_time)
+
+        result = {
+            "input_shape": ["x".join(map(str, ut.get_data_shape(dummy_points)))],
+            "n_params": [sum(p.numel() for p in self.model.parameters())],
+            "size_mb": [size_mb],
+            "inference_time_s": [np.mean(inference_times)],
+        }
+
+        return pd.DataFrame.from_dict(result)
