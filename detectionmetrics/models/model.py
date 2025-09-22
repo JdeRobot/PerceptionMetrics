@@ -52,15 +52,24 @@ class SegmentationModel(ABC):
         self.model_cfg["n_classes"] = self.n_classes
 
     @abstractmethod
-    def inference(
-        self, points: Union[np.ndarray, Image.Image]
-    ) -> Union[np.ndarray, Image.Image]:
-        """Perform inference for a single image or point cloud
+    def predict(self, data: Union[np.ndarray, Image.Image]) -> Union[np.ndarray, Image.Image]:
+        """Perform prediction for a single data sample
 
-        :param image: Either a numpy array (LiDAR point cloud) or a PIL image
-        :type image: Union[np.ndarray, Image.Image]
-        :return: Segmenation result as a point cloud or image with label indices
+        :param data: Input data sample (image or point cloud)
+        :type data: Union[np.ndarray, Image.Image]
+        :return: Prediction result
         :rtype: Union[np.ndarray, Image.Image]
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def predict(self, tensor_in):
+        """Perform inference for a tensor
+
+        :param tensor_in: Input tensor (image or point cloud)
+        :type tensor_in: Either tf.Tensor or torch.Tensor
+        :return: Segmenation result as a tensor
+        :rtype: Either tf.Tensor or torch.Tensor
         """
         raise NotImplementedError
 
@@ -139,7 +148,7 @@ class ImageSegmentationModel(SegmentationModel):
         super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
 
     @abstractmethod
-    def inference(self, image: Image.Image) -> Image.Image:
+    def predict(self, image: Image.Image) -> Image.Image:
         """Perform inference for a single image
 
         :param image: PIL image.
@@ -194,6 +203,7 @@ class ImageSegmentationModel(SegmentationModel):
         """
         raise NotImplementedError
 
+
 class LiDARSegmentationModel(SegmentationModel):
     """Parent LiDAR segmentation model class
 
@@ -220,7 +230,7 @@ class LiDARSegmentationModel(SegmentationModel):
         super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
 
     @abstractmethod
-    def inference(self, points_fname: np.ndarray) -> np.ndarray:
+    def predict(self, points_fname: np.ndarray) -> np.ndarray:
         """Perform inference for a single point cloud
 
         :param points_fname: Point cloud in SemanticKITTI .bin format

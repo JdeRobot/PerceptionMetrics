@@ -104,7 +104,7 @@ def main():
 
         if model is not None:
             image = Image.open(sample_data["image"])
-            label = model.inference(image)
+            label = model.predict(image)
             lut = uc.ontology_to_rgb_lut(model.ontology)
         else:
             label = Image.open(sample_data["label"])

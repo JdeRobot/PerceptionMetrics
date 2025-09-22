@@ -361,27 +361,37 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             tf.argmax(tf.squeeze(x), axis=2).numpy().astype(np.uint8)
         )
 
-    def inference(self, image: Image.Image) -> Image.Image:
-        """Perform inference for a single image
+    def predict(self, image: Image.Image) -> Image.Image:
+        """Perform prediction for a single image
 
         :param image: PIL image
         :type image: Image.Image
-        :return: segmenation result as PIL image
+        :return: Segmentation result as PIL image
         :rtype: Image.Image
         """
         tensor = self.t_in(image)
+        result = self.predict(tensor)
+        return self.t_out(result)
 
+    def predict(self, tensor_in: tf.Tensor) -> tf.Tensor:
+        """Perform inference for a tensor
+
+        :param tensor_in: Input point cloud tensor
+        :type tensor_in: tf.Tensor
+        :return: Segmentation result as tensor
+        :rtype: tf.Tensor
+        """
         if self.model_type == "native":
-            result = self.model(tensor)
+            tensor_out = self.model(tensor_in, training=False)
         elif self.model_type == "compiled":
-            result = self.model.signatures["serving_default"](tensor)
+            tensor_out = self.model.signatures["serving_default"](tensor_in)
         else:
             raise ValueError("Model type not recognized")
 
-        if isinstance(result, dict):
-            result = list(result.values())[0]
+        if isinstance(tensor_out, dict):
+            tensor_out = list(tensor_out.values())[0]
 
-        return self.t_out(result)
+        return tensor_out
 
     def eval(
         self,
@@ -445,15 +455,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         for idx, image, label in pbar:
             idx = idx.numpy()
 
-            if self.model_type == "native":
-                pred = self.model(image, training=False)
-            elif self.model_type == "compiled":
-                pred = self.model.signatures["serving_default"](image)
-            else:
-                raise ValueError("Model type not recognized")
-
-            if isinstance(pred, dict):
-                pred = list(pred.values())[0]
+            pred = self.predict(image)
 
             # Get valid points masks depending on ignored label indices
             if ignored_label_indices:

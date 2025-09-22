@@ -374,38 +374,48 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
             ]
         )
 
-    def inference(self, image: Image.Image) -> Image.Image:
-        """Perform inference for a single image
+    def predict(self, image: Image.Image) -> Image.Image:
+        """Perform prediction for a single image
 
         :param image: PIL image
         :type image: Image.Image
-        :return: segmenation result as PIL image
+        :return: Segmentation result as a PIL image
         :rtype: Image.Image
         """
         tensor = self.transform_input(image).unsqueeze(0).to(self.device)
+        result = self.predict(tensor)
+        return self.transform_output(result)
 
+    def predict(self, tensor_in: torch.Tensor) -> torch.Tensor:
+        """Perform inference for a tensor
+
+        :param tensor_in: Input point cloud tensor
+        :type tensor_in: torch.Tensor
+        :return: Segmentation result as tensor
+        :rtype: torch.Tensor
+        """
         with torch.no_grad():
             # Perform inference
             if hasattr(self.model, "inference"):  # e.g. mmsegmentation models
-                result = self.model.inference(
-                    tensor.to(self.device),
+                tensor_out = self.model.inference(
+                    tensor_in.to(self.device),
                     [
                         dict(
-                            ori_shape=tensor.shape[2:],
-                            img_shape=tensor.shape[2:],
-                            pad_shape=tensor.shape[2:],
+                            ori_shape=tensor_in.shape[2:],
+                            img_shape=tensor_in.shape[2:],
+                            pad_shape=tensor_in.shape[2:],
                             padding_size=[0, 0, 0, 0],
                         )
                     ]
-                    * tensor.shape[0],
+                    * tensor_in.shape[0],
                 )
             else:
-                result = self.model(tensor.to(self.device))
+                tensor_out = self.model(tensor_in.to(self.device))
 
-            if isinstance(result, dict):
-                result = result["out"]
+            if isinstance(tensor_out, dict):
+                tensor_out = tensor_out["out"]
 
-        return self.transform_output(result)
+        return tensor_out
 
     def eval(
         self,
@@ -471,24 +481,7 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
             pbar = tqdm(dataloader, leave=True)
             for idx, image, label in pbar:
                 # Perform inference
-                if hasattr(self.model, "inference"):  # e.g. mmsegmentation models
-                    pred = self.model.inference(
-                        image.to(self.device),
-                        [
-                            dict(
-                                ori_shape=image.shape[2:],
-                                img_shape=image.shape[2:],
-                                pad_shape=image.shape[2:],
-                                padding_size=[0, 0, 0, 0],
-                            )
-                        ]
-                        * image.shape[0],
-                    )
-                else:
-                    pred = self.model(image.to(self.device))
-
-                if isinstance(pred, dict):
-                    pred = pred["out"]
+                pred = self.predict(image)
 
                 # Get valid points masks depending on ignored label indices
                 if ignored_label_indices:
@@ -616,12 +609,12 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         self._get_sample = model_utils_module.get_sample
         self._inference = model_utils_module.inference
 
-    def inference(
+    def predict(
         self,
         points_fname: str,
         has_intensity: bool = True,
     ) -> np.ndarray:
-        """Perform inference for a single point cloud
+        """Perform prediction for a single point cloud
 
         :param points_fname: Point cloud in SemanticKITTI .bin format
         :type points_fname: str
@@ -634,7 +627,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         sample = self._get_sample(
             points_fname, self.model_cfg, has_intensity=has_intensity
         )
-        pred, _, _ = self._inference(sample, self.model, self.model_cfg)
+        pred, _, _ = self.inference(sample, self.model, self.model_cfg)
 
         return pred.squeeze().cpu().numpy()
 
@@ -696,7 +689,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
             pbar = tqdm(dataset, total=len(dataset), leave=True)
             for sample in pbar:
                 # Perform inference
-                pred, label, name = self._inference(sample, self.model, self.model_cfg)
+                pred, label, name = self.inference(sample, self.model, self.model_cfg)
 
                 # Get valid points masks depending on ignored label indices
                 if ignored_label_indices:
