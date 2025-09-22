@@ -32,7 +32,7 @@ Usage: dm_evaluate [OPTIONS] {segmentation} {image|lidar}
   Evaluate model on dataset
 
 Options:
-  --model_format [torch|tensorflow|tensorflow_explicit]
+  --model_format [torch|tensorflow]
                                   Trained model format  [default: torch]
   --model PATH                    Trained model filename (TorchScript) or
                                   directory (TensorFlow SavedModel)

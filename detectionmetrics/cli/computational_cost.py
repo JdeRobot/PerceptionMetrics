@@ -12,8 +12,7 @@ from detectionmetrics.utils.io import read_json
 # model
 @click.option(
     "--model_format",
-    type=click.Choice(
-        ["torch", "tensorflow", "tensorflow_explicit"], case_sensitive=False
+    type=click.Choice(["torch", "tensorflow"], case_sensitive=False
     ),
     show_default=True,
     default="torch",
