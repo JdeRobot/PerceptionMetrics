@@ -25,7 +25,7 @@ def parse_split(ctx, param, value):
 @click.option(
     "--model_format",
     type=click.Choice(
-        ["torch", "tensorflow", "tensorflow_explicit"], case_sensitive=False
+        ["torch", "tensorflow"], case_sensitive=False
     ),
     show_default=True,
     default="torch",
@@ -197,3 +197,7 @@ def evaluate(
     results.to_csv(out_fname)
 
     return results
+
+
+if __name__ == "__main__":
+    evaluate()
