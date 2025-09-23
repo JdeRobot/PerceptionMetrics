@@ -27,18 +27,17 @@ def dataset_viewer_tab():
         return
 
     # Setup paths and pagination
-        img_dir = os.path.join(
-            dataset_path, f"images/{split}2017" if dataset_type == "coco" else split
-        )
+           # Setup paths and pagination
+    if dataset_type == "coco":
+        img_dir = os.path.join(dataset_path, f"images/{split}2017")
         ann_file = os.path.join(
             dataset_path,
             "annotations",
-            (
-                f"instances_{split}2017.json"
-                if dataset_type.lower() == "coco"
-                else f"{split}.json"
-            ),
+            f"instances_{split}2017.json",
         )
+        if not os.path.isdir(img_dir) or not os.path.isfile(ann_file):
+            st.warning("Dataset files not found. Check path and split.")
+            return
 
         if not os.path.isdir(img_dir) or not os.path.isfile(ann_file):
             st.warning("Dataset files not found. Check path and split.")
