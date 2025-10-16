@@ -21,6 +21,7 @@ class DetectionMetricsFactory:
         self.raw_data = (
             []
         )  # List of (gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores)
+        self.gt_counts = defaultdict(int)  # Count of GT instances per class
 
     def update(self, gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores):
         """Add a batch of predictions and ground truths.
@@ -76,6 +77,10 @@ class DetectionMetricsFactory:
 
         for label in matches:
             self.results[label].extend(matches[label])
+
+        # Update ground truth counts
+        for g_label in gt_labels:
+            self.gt_counts[int(g_label)] += 1
 
     def _match_predictions(
         self,
@@ -148,6 +153,10 @@ class DetectionMetricsFactory:
         ap_values = []
 
         for label, detections in self.results.items():
+            # Skip classes with no ground truth instances
+            if self.gt_counts.get(int(label), 0) == 0:
+                continue
+
             detections = sorted(
                 [d for d in detections if d[0] is not None], key=lambda x: -x[0]
             )
@@ -238,6 +247,10 @@ class DetectionMetricsFactory:
             # Compute AP for this threshold
             threshold_ap_values = []
             for label, detections in threshold_results.items():
+                # Skip classes with no ground truth instances
+                if self.gt_counts.get(int(label), 0) == 0:
+                    continue
+
                 detections = sorted(
                     [d for d in detections if d[0] is not None], key=lambda x: -x[0]
                 )

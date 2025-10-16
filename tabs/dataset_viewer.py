@@ -4,7 +4,9 @@ from streamlit_image_select import image_select
 
 
 def dataset_viewer_tab():
+    import tempfile
     from detectionmetrics.datasets.coco import CocoDataset
+    from detectionmetrics.datasets.yolo import YOLODataset
     import supervision as sv
     import numpy as np
     from PIL import Image
@@ -14,7 +16,7 @@ def dataset_viewer_tab():
 
     # Get inputs from session state
     dataset_path = st.session_state.get("dataset_path", "")
-    dataset_type = st.session_state.get("dataset_type_selectbox", "Coco")
+    dataset_type = st.session_state.get("dataset_type_selectbox", "COCO").lower()
     split = st.session_state.get("split_selectbox", "val")
 
     # Header row only
@@ -25,21 +27,32 @@ def dataset_viewer_tab():
         return
 
     # Setup paths and pagination
-    img_dir = os.path.join(
-        dataset_path, f"images/{split}2017" if dataset_type.lower() == "coco" else split
-    )
-    ann_file = os.path.join(
-        dataset_path,
-        "annotations",
-        (
-            f"instances_{split}2017.json"
-            if dataset_type.lower() == "coco"
-            else f"{split}.json"
-        ),
-    )
+           # Setup paths and pagination
+    if dataset_type == "coco":
+        img_dir = os.path.join(dataset_path, f"images/{split}2017")
+        ann_file = os.path.join(
+            dataset_path,
+            "annotations",
+            f"instances_{split}2017.json",
+        )
+        if not os.path.isdir(img_dir) or not os.path.isfile(ann_file):
+            st.warning("Dataset files not found. Check path and split.")
+            return
 
-    if not os.path.isdir(img_dir) or not os.path.isfile(ann_file):
-        st.warning("Dataset files not found. Check path and split.")
+        if not os.path.isdir(img_dir) or not os.path.isfile(ann_file):
+            st.warning("Dataset files not found. Check path and split.")
+            return
+    elif dataset_type == "yolo":
+        dataset_config_file = st.session_state.get("dataset_config_file", None)
+        img_dir = os.path.join(dataset_path, f"images/{split}")
+        if not os.path.isdir(img_dir):
+            st.warning("Image directory not found.")
+            return
+        if dataset_config_file is None:
+            st.warning("Dataset configuration file not found. Please upload it.")
+            return
+    else:
+        st.error("Unsupported dataset type.")
         return
 
     # Pagination and search row
@@ -76,11 +89,41 @@ def dataset_viewer_tab():
     dataset_key = f"{dataset_path}_{split}"
     if dataset_key not in st.session_state:
         try:
-            st.session_state[dataset_key] = CocoDataset(
-                annotation_file=ann_file,
-                image_dir=img_dir,
-                split=split,
-            )
+            if dataset_type == "coco":
+                st.session_state[dataset_key] = CocoDataset(
+                    annotation_file=ann_file,
+                    image_dir=img_dir,
+                    split=split,
+                )
+            elif dataset_type == "yolo":
+                if dataset_config_file is not None:
+                    # Save uploaded config file to a temporary location
+                    with tempfile.NamedTemporaryFile(
+                        delete=False, suffix=".yaml"
+                    ) as tmp:
+                        tmp.write(dataset_config_file.read())
+                        tmp_path = tmp.name
+
+                    # Load YOLO dataset
+                    yolo_dataset = YOLODataset(tmp_path, dataset_path)
+                    st.session_state["full_dataset_df"] = yolo_dataset.dataset
+
+                    # Filter dataset for the selected split
+                    yolo_dataset.dataset = yolo_dataset.dataset[
+                        yolo_dataset.dataset["split"] == split
+                    ].reset_index(drop=True)
+                    st.session_state[dataset_key] = yolo_dataset
+
+                    os.unlink(tmp_path)  # Clean up temp file
+                else:
+                    st.warning(
+                        "Dataset configuration file not found. Please upload it."
+                    )
+                    return
+            else:
+                st.error("Unsupported dataset type.")
+                return
+
         except Exception as e:
             st.error(f"Failed to load dataset: {e}")
             return
@@ -90,11 +133,21 @@ def dataset_viewer_tab():
             cached_ds = st.session_state[dataset_key]
             cached_split = getattr(cached_ds, "split", None)
             if cached_split != split:
-                st.session_state[dataset_key] = CocoDataset(
-                    annotation_file=ann_file,
-                    image_dir=img_dir,
-                    split=split,
-                )
+                if dataset_type == "coco":
+                    st.session_state[dataset_key] = CocoDataset(
+                        annotation_file=ann_file,
+                        image_dir=img_dir,
+                        split=split,
+                    )
+                elif dataset_type == "yolo":
+                    yolo_dataset = st.session_state[dataset_key]
+                    yolo_dataset.dataset = st.session_state["full_dataset_df"][
+                        yolo_dataset.dataset["split"] == split
+                    ]
+                    st.session_state[dataset_key] = yolo_dataset
+                else:
+                    st.error("Unsupported dataset type.")
+                    return
         except Exception:
             pass
     dataset = st.session_state[dataset_key]
@@ -214,10 +267,19 @@ def dataset_viewer_tab():
             img = Image.open(selected_img_path).convert("RGB")
             img_np = np.array(img)
 
-            ann_row = dataset.dataset[dataset.dataset["image"] == selected_img_name]
+            if dataset_type == "yolo":
+                ann_row = dataset.dataset[
+                    dataset.dataset["image"].str.endswith(selected_img_name)
+                ]
+            else:
+                ann_row = dataset.dataset[dataset.dataset["image"] == selected_img_name]
+
             if not ann_row.empty:
                 annotation_id = ann_row.iloc[0]["annotation"]
-                boxes, labels, category_ids = dataset.read_annotation(annotation_id)
+                if dataset_type == "yolo":
+                    annotation_id = os.path.join(dataset.dataset_dir, annotation_id)
+
+                boxes, category_indices = dataset.read_annotation(annotation_id)
 
                 # Get class names from ontology
                 ontology = getattr(dataset, "ontology", None)
@@ -228,15 +290,15 @@ def dataset_viewer_tab():
                     catid_to_name = {v["idx"]: k for k, v in ontology.items()}
                     class_names = [
                         catid_to_name.get(cat_id, str(cat_id))
-                        for cat_id in category_ids
+                        for cat_id in category_indices
                     ]
                 else:
-                    class_names = [str(cat_id) for cat_id in category_ids]
+                    class_names = [str(cat_id) for cat_id in category_indices]
 
                 # Annotate image
                 palette = ColorPalette.default()
                 detections = Detections(
-                    xyxy=np.array(boxes), class_id=np.array(category_ids)
+                    xyxy=np.array(boxes), class_id=np.array(category_indices)
                 )
                 annotator = BoxAnnotator(
                     color=palette, text_scale=0.7, text_thickness=1, text_padding=2

@@ -79,7 +79,7 @@ PAGES = {
 
 # Initialize commonly used session state keys
 st.session_state.setdefault("dataset_path", "")
-st.session_state.setdefault("dataset_type_selectbox", "Coco")
+st.session_state.setdefault("dataset_type_selectbox", "COCO")
 st.session_state.setdefault("split_selectbox", "val")
 st.session_state.setdefault("config_option", "Manual Configuration")
 st.session_state.setdefault("confidence_threshold", 0.5)
@@ -97,15 +97,15 @@ with st.sidebar:
         # First row: Type and Split
         col1, col2 = st.columns(2)
         with col1:
-            st.selectbox(
+            dataset_type_selectbox = st.selectbox(
                 "Type",
-                ["Coco", "Custom"],
+                ["COCO", "YOLO"],
                 key="dataset_type_selectbox",
             )
         with col2:
             st.selectbox(
                 "Split",
-                ["train", "val"],
+                ["train", "val", "test"],
                 key="split_selectbox",
             )
 
@@ -113,7 +113,7 @@ with st.sidebar:
         col1, col2 = st.columns([3, 1])
         with col1:
             dataset_path_input = st.text_input(
-                "Dataset Folder Path",
+                "Dataset Folder",
                 value=st.session_state.get("dataset_path", ""),
                 key="dataset_path_input",
             )
@@ -129,15 +129,32 @@ with st.sidebar:
                 elif folder is not None:
                     st.warning("Selected path is not a valid folder.")
                 else:
-                    st.warning("Could not open folder browser. Please enter the path manually")
+                    st.warning(
+                        "Could not open folder browser. Please enter the path manually"
+                    )
 
         if dataset_path_input != st.session_state.get("dataset_path", ""):
             st.session_state["dataset_path"] = dataset_path_input
+        if dataset_type_selectbox != st.session_state.get("dataset_type", ""):
+            st.session_state["dataset_type"] = dataset_type_selectbox
+
+        # Additional input for YOLO config file
+        if dataset_type_selectbox == "YOLO":
+            dataset_config_file_uploader = st.file_uploader(
+                "Dataset Configuration (.yaml)",
+                type=["yaml"],
+                key="dataset_config_file",
+                help="Upload a YAML dataset configuration file.",
+            )
+            if dataset_config_file_uploader != st.session_state.get(
+                "dataset_config_file", None
+            ):
+                st.session_state["dataset_config_file"] = dataset_config_file_uploader
 
     with st.expander("Model Inputs", expanded=False):
         st.file_uploader(
-            "Model File (.pt, .onnx, .h5, .pb, .pth)",
-            type=["pt", "onnx", "h5", "pb", "pth"],
+            "Model File (.pt, .onnx, .h5, .pb, .pth, .torchscript)",
+            type=["pt", "onnx", "h5", "pb", "pth", "torchscript"],
             key="model_file",
             help="Upload your trained model file.",
         )
@@ -198,6 +215,17 @@ with st.sidebar:
                     ["cpu", "cuda", "mps"],
                     index=0 if st.session_state.get("device", "cpu") == "cpu" else 1,
                     key="device",
+                )
+                st.selectbox(
+                    "Model Format",
+                    ["torchvision", "YOLO"],
+                    index=(
+                        0
+                        if st.session_state.get("model_format", "torchvision")
+                        == "torchvision"
+                        else 1
+                    ),
+                    key="model_format",
                 )
                 st.number_input(
                     "Batch Size",
@@ -264,6 +292,7 @@ with st.sidebar:
                     device = st.session_state.get("device", "cpu")
                     batch_size = int(st.session_state.get("batch_size", 1))
                     evaluation_step = int(st.session_state.get("evaluation_step", 5))
+                    model_format = st.session_state.get("model_format", "torchvision")
                     config_data = {
                         "confidence_threshold": confidence_threshold,
                         "nms_threshold": nms_threshold,
@@ -271,6 +300,7 @@ with st.sidebar:
                         "device": device,
                         "batch_size": batch_size,
                         "evaluation_step": evaluation_step,
+                        "model_format": model_format.lower(),
                     }
                     with tempfile.NamedTemporaryFile(
                         delete=False, suffix=".json", mode="w"
