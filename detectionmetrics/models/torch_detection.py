@@ -428,7 +428,7 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
                             ).squeeze(0)
                 
                 # Stack images for batch processing
-                images = torch.stack(images)
+                images = torch.stack(images).to(self.device)
                 predictions = self.model(images)
 
                 for i in range(len(images)):
