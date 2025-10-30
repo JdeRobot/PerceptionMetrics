@@ -40,7 +40,8 @@ The Dataset Viewer allows you to explore and visualize your datasets before runn
 - **Dataset Information**: Display dataset statistics and metadata
 
 #### Supported Formats:
-- **COCO**: Standard COCO format for object detection 
+- **COCO**: Standard COCO format for object detection
+- **YOLO**: Ultralytics YOLO dataset format
 
 #### Usage:
 1. Configure dataset path and type in the sidebar
@@ -128,7 +129,8 @@ The sidebar provides centralized configuration for all GUI components:
     "max_detections_per_image": 100,
     "batch_size": 1,
     "device": "cpu",
-    "evaluation_step": 10
+    "evaluation_step": 10,
+    "model_format": "coco"
 }
 ```
 
@@ -165,4 +167,3 @@ The sidebar provides centralized configuration for all GUI components:
 - **Dataset Loading Issues**: Verify dataset structure and file paths
 - **Memory Issues**: Reduce batch size or use CPU inference
 - **GUI Performance**: Adjust evaluation_step or use smaller datasets
-
