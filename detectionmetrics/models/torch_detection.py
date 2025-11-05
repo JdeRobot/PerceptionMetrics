@@ -260,16 +260,21 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
         # Build input transforms (resize, normalize, etc.)
         self.transform_input = []
 
+        # Default resize to 640x640 if not specified
         if "resize" in self.model_cfg:
-            self.transform_input += [
-                transforms.Resize(
-                    size=(
-                        self.model_cfg["resize"].get("height", None),
-                        self.model_cfg["resize"].get("width", None),
-                    ),
-                    interpolation=transforms.InterpolationMode.BILINEAR,
-                )
-            ]
+            resize_height = self.model_cfg["resize"].get("height", 640)
+            resize_width = self.model_cfg["resize"].get("width", 640)
+        else:
+            # Default to 640x640 when no resize is specified
+            resize_height = 640
+            resize_width = 640
+            
+        self.transform_input += [
+            transforms.Resize(
+                size=(resize_height, resize_width),
+                interpolation=transforms.InterpolationMode.BILINEAR,
+            )
+        ]
 
         if "crop" in self.model_cfg:
             crop_size = (

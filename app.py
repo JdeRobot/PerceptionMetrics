@@ -187,7 +187,6 @@ with st.sidebar:
                     "Confidence Threshold",
                     min_value=0.0,
                     max_value=1.0,
-                    value=st.session_state.get("confidence_threshold", 0.5),
                     step=0.01,
                     key="confidence_threshold",
                     help="Minimum confidence score for detections",
@@ -196,7 +195,6 @@ with st.sidebar:
                     "NMS Threshold",
                     min_value=0.0,
                     max_value=1.0,
-                    value=st.session_state.get("nms_threshold", 0.5),
                     step=0.01,
                     key="nms_threshold",
                     help="Non-maximum suppression threshold",
@@ -205,15 +203,22 @@ with st.sidebar:
                     "Max Detections/Image",
                     min_value=1,
                     max_value=1000,
-                    value=st.session_state.get("max_detections", 100),
                     step=1,
                     key="max_detections",
+                )
+                st.number_input(
+                    "Image Resize Height",
+                    min_value=1,
+                    max_value=4096,
+                    value=640,
+                    step=1,
+                    key="resize_height",
+                    help="Height to resize images for inference",
                 )
             with col2:
                 st.selectbox(
                     "Device",
                     ["cpu", "cuda", "mps"],
-                    index=0 if st.session_state.get("device", "cpu") == "cpu" else 1,
                     key="device",
                 )
                 st.selectbox(
@@ -231,7 +236,6 @@ with st.sidebar:
                     "Batch Size",
                     min_value=1,
                     max_value=256,
-                    value=st.session_state.get("batch_size", 1),
                     step=1,
                     key="batch_size",
                 )
@@ -239,12 +243,19 @@ with st.sidebar:
                     "Evaluation Step",
                     min_value=0,
                     max_value=1000,
-                    value=st.session_state.get("evaluation_step", 10),
                     step=1,
                     key="evaluation_step",
                     help="Update UI with intermediate metrics every N images (0 = disable intermediate updates)",
                 )
-
+                st.number_input(
+                    "Image Resize Width",
+                    min_value=1,
+                    max_value=4096,
+                    value=640,
+                    step=1,
+                    key="resize_width",
+                    help="Width to resize images for inference",
+                )
         # Load model action in sidebar
         from detectionmetrics.models.torch_detection import TorchImageDetectionModel
         import json, tempfile
@@ -292,6 +303,8 @@ with st.sidebar:
                     device = st.session_state.get("device", "cpu")
                     batch_size = int(st.session_state.get("batch_size", 1))
                     evaluation_step = int(st.session_state.get("evaluation_step", 5))
+                    resize_height = int(st.session_state.get("resize_height", 640))
+                    resize_width = int(st.session_state.get("resize_width", 640))
                     model_format = st.session_state.get("model_format", "torchvision")
                     config_data = {
                         "confidence_threshold": confidence_threshold,
@@ -300,6 +313,8 @@ with st.sidebar:
                         "device": device,
                         "batch_size": batch_size,
                         "evaluation_step": evaluation_step,
+                        "resize_height": resize_height,
+                        "resize_width": resize_width,
                         "model_format": model_format.lower(),
                     }
                     with tempfile.NamedTemporaryFile(
