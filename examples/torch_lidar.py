@@ -58,6 +58,13 @@ def parse_args() -> argparse.Namespace:
         help="JSON file containing translation between dataset and model classes",
     )
     parser.add_argument(
+        "--translation_direction",
+        type=str,
+        choices=["dataset_to_model", "model_to_dataset"],
+        default="dataset_to_model",
+        help="Direction of the ontology translation",
+    )
+    parser.add_argument(
         "--predictions_outdir",
         type=str,
         required=False,
@@ -85,6 +92,7 @@ def main():
         dataset,
         split=args.split,
         ontology_translation=args.ontology_translation,
+        translation_direction=args.translation_direction,
         predictions_outdir=args.predictions_outdir,
         results_per_sample=args.predictions_outdir is not None,
     )

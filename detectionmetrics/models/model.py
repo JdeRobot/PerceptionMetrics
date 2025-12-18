@@ -81,6 +81,7 @@ class SegmentationModel(ABC):
         dataset: dm_dataset.SegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
+        translations_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
     ) -> pd.DataFrame:
@@ -92,6 +93,8 @@ class SegmentationModel(ABC):
         :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param translations_direction: Direction of the ontology translation. Either "dataset_to_model" or "model_to_dataset", defaults to "dataset_to_model"
+        :type translations_direction: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
         :type predictions_outdir: Optional[str], optional
         :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
@@ -170,6 +173,7 @@ class ImageSegmentationModel(SegmentationModel):
         dataset: dm_dataset.ImageSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
+        translations_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
     ) -> pd.DataFrame:
@@ -181,6 +185,8 @@ class ImageSegmentationModel(SegmentationModel):
         :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param translations_direction: Direction of the ontology translation. Either "dataset_to_model" or "model_to_dataset", defaults to "dataset_to_model"
+        :type translations_direction: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
         :type predictions_outdir: Optional[str], optional
         :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
@@ -261,6 +267,7 @@ class LiDARSegmentationModel(SegmentationModel):
         dataset: dm_dataset.LiDARSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
+        translations_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
     ) -> pd.DataFrame:
@@ -272,6 +279,8 @@ class LiDARSegmentationModel(SegmentationModel):
         :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param translations_direction: Direction of the ontology translation. Either "dataset_to_model" or "model_to_dataset", defaults to "dataset_to_model"
+        :type translations_direction: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
         :type predictions_outdir: Optional[str], optional
         :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.

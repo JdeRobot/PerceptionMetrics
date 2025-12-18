@@ -13,6 +13,8 @@ from tqdm import tqdm
 
 from detectionmetrics.datasets.dataset import ImageSegmentationDataset
 from detectionmetrics.models.model import ImageSegmentationModel
+import detectionmetrics.utils.conversion as uc
+import detectionmetrics.utils.io as uio
 import detectionmetrics.utils.metrics as um
 
 tf.config.optimizer.set_experimental_options({"layout_optimizer": False})
@@ -342,6 +344,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         dataset: ImageSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
+        translations_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
     ) -> pd.DataFrame:
@@ -353,6 +356,8 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
         :type ontology_translation: str, optional
+        :param translations_direction: Direction of the ontology translation. Either "dataset_to_model" or "model_to_dataset", defaults to "dataset_to_model"
+        :type translations_direction: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
         :type predictions_outdir: Optional[str], optional
         :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
@@ -371,8 +376,23 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             os.makedirs(predictions_outdir, exist_ok=True)
 
         # Build a LUT for transforming ontology if needed
-        lut_ontology = self.get_lut_ontology(dataset.ontology, ontology_translation)
-        dataset_ontology = dataset.ontology
+        eval_ontology = self.ontology
+
+        if ontology_translation is not None:
+            ontology_translation = uio.read_json(ontology_translation)
+            if translations_direction == "dataset_to_model":
+                lut_ontology = uc.get_ontology_conversion_lut(
+                    dataset.ontology, self.ontology, ontology_translation
+                )
+            else:
+                eval_ontology = dataset.ontology
+                lut_ontology = uc.get_ontology_conversion_lut(
+                    self.ontology, dataset.ontology, ontology_translation
+                )
+        else:
+            lut_ontology = None
+
+        n_classes = len(eval_ontology)
 
         # Get Tensorflow dataset
         dataset = ImageSegmentationTensorflowDataset(
@@ -381,7 +401,9 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             crop=self.model_cfg.get("crop", None),
             batch_size=self.model_cfg.get("batch_size", 1),
             splits=[split] if isinstance(split, str) else split,
-            lut_ontology=lut_ontology,
+            lut_ontology=(
+                lut_ontology if translations_direction == "dataset_to_model" else None
+            ),
             normalization=self.model_cfg.get("normalization", None),
             keep_aspect=self.model_cfg.get("keep_aspect", False),
         )
@@ -389,10 +411,10 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
         # Retrieve ignored label indices
         ignored_label_indices = []
         for ignored_class in self.model_cfg.get("ignored_classes", []):
-            ignored_label_indices.append(dataset_ontology[ignored_class]["idx"])
+            ignored_label_indices.append(eval_ontology[ignored_class]["idx"])
 
         # Init metrics
-        metrics_factory = um.MetricsFactory(self.n_classes)
+        metrics_factory = um.MetricsFactory(n_classes)
 
         # Evaluation loop
         pbar = tqdm(dataset.dataset)
@@ -415,6 +437,13 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             if valid_mask is not None:
                 valid_mask = tf.squeeze(valid_mask, axis=3).numpy()
 
+            # Convert predictions to dataset ontology if needed
+            if (
+                lut_ontology is not None
+                and translations_direction == "model_to_dataset"
+            ):
+                pred = lut_ontology[pred]
+
             metrics_factory.update(pred, label, valid_mask)
 
             # Store predictions and results per sample if required
@@ -427,16 +456,16 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
                         sample_valid_mask = (
                             valid_mask[i] if valid_mask is not None else None
                         )
-                        sample_mf = um.MetricsFactory(n_classes=self.n_classes)
+                        sample_mf = um.MetricsFactory(n_classes)
                         sample_mf.update(sample_pred, sample_label, sample_valid_mask)
-                        sample_df = um.get_metrics_dataframe(sample_mf, self.ontology)
+                        sample_df = um.get_metrics_dataframe(sample_mf, eval_ontology)
                         sample_df.to_csv(
                             os.path.join(predictions_outdir, f"{sample_idx}.csv")
                         )
                     pred = Image.fromarray(np.squeeze(pred).astype(np.uint8))
                     pred.save(os.path.join(predictions_outdir, f"{sample_idx}.png"))
 
-        return um.get_metrics_dataframe(metrics_factory, self.ontology)
+        return um.get_metrics_dataframe(metrics_factory, eval_ontology)
 
     def get_computational_cost(
         self,

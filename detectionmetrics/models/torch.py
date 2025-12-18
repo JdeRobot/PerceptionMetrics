@@ -20,6 +20,8 @@ from tqdm import tqdm
 
 from detectionmetrics.datasets import dataset as dm_dataset
 from detectionmetrics.models import model as dm_model
+import detectionmetrics.utils.conversion as uc
+import detectionmetrics.utils.io as uio
 import detectionmetrics.utils.metrics as um
 import detectionmetrics.utils.torch as ut
 
@@ -404,7 +406,9 @@ class TorchImageSegmentationModel(dm_model.ImageSegmentationModel):
             os.makedirs(predictions_outdir, exist_ok=True)
 
         # Build a LUT for transforming ontology if needed
-        lut_ontology = self.get_lut_ontology(dataset.ontology, ontology_translation)
+        lut_ontology = uc.get_ontology_conversion_lut(
+            self.ontology, dataset.ontology, ontology_translation
+        )
         lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
         # Retrieve ignored label indices
@@ -599,6 +603,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         points_fname: str,
         has_intensity: bool = True,
         return_sample: bool = False,
+        ignore_index: Optional[List[int]] = None,
     ) -> Union[np.ndarray, Tuple[np.ndarray, Any]]:
         """Perform prediction for a single point cloud
 
@@ -608,6 +613,8 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         :type has_intensity: bool, optional
         :param return_sample: Whether to return the sample data along with predictions, defaults to False
         :type return_sample: bool, optional
+        :param ignore_index: List of class indices to ignore during prediction, defaults to None
+        :type ignore_index: Optional[List[int]], optional
         :return: Segmentation result as a numpy array or a tuple with the segmentation result and the input sample data
         :rtype: Union[np.ndarray, Tuple[np.ndarray, Any]]
         """
@@ -615,7 +622,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         sample = self._get_sample(
             points_fname, self.model_cfg, has_intensity=has_intensity
         )
-        result, _, _ = self.inference(sample, self.model, self.model_cfg)
+        result, _, _ = self.inference(sample, self.model, self.model_cfg, ignore_index)
         result = result.squeeze().cpu().numpy()
 
         if return_sample:
@@ -628,6 +635,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         dataset: dm_dataset.LiDARSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
+        translation_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
     ) -> pd.DataFrame:
@@ -638,7 +646,9 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         :param split: Split or splits to be used from the dataset, defaults to "test"
         :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
-        :type ontology_translation: str, optional
+        :type ontology_translation: Optional[str], optional
+        :param translation_direction: Direction of the ontology translation, either 'dataset_to_model' or 'model_to_dataset', defaults to "dataset_to_model"
+        :type translation_direction: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
         :type predictions_outdir: Optional[str], optional
         :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
@@ -657,8 +667,25 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
             os.makedirs(predictions_outdir, exist_ok=True)
 
         # Build a LUT for transforming ontology if needed
-        lut_ontology = self.get_lut_ontology(dataset.ontology, ontology_translation)
-        lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
+        eval_ontology = self.ontology
+
+        if ontology_translation is not None:
+            ontology_translation = uio.read_json(ontology_translation)
+            if translation_direction == "dataset_to_model":
+                lut_ontology = uc.get_ontology_conversion_lut(
+                    dataset.ontology, self.ontology, ontology_translation
+                )
+            else:
+                eval_ontology = dataset.ontology
+                lut_ontology = uc.get_ontology_conversion_lut(
+                    self.ontology, dataset.ontology, ontology_translation
+                )
+
+            lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
+        else:
+            lut_ontology = None
+
+        n_classes = len(eval_ontology)
 
         # Retrieve ignored label indices
         ignored_label_indices = []
@@ -674,7 +701,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
         )
 
         # Init metrics
-        metrics_factory = um.MetricsFactory(self.n_classes)
+        metrics_factory = um.MetricsFactory(n_classes)
 
         # Evaluation loop
         with torch.no_grad():
@@ -693,7 +720,10 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
 
                 # Convert labels if needed
                 if lut_ontology is not None:
-                    label = lut_ontology[label]
+                    if translation_direction == "dataset_to_model":
+                        label = lut_ontology[label]
+                    else:
+                        pred = lut_ontology[pred]
 
                 # Prepare data and update metrics factory
                 label = label.cpu().numpy()
@@ -712,12 +742,12 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
                             sample_valid_mask = (
                                 valid_mask[i] if valid_mask is not None else None
                             )
-                            sample_mf = um.MetricsFactory(n_classes=self.n_classes)
+                            sample_mf = um.MetricsFactory(n_classes)
                             sample_mf.update(
                                 sample_pred, sample_label, sample_valid_mask
                             )
                             sample_df = um.get_metrics_dataframe(
-                                sample_mf, self.ontology
+                                sample_mf, eval_ontology
                             )
                             sample_df.to_csv(
                                 os.path.join(predictions_outdir, f"{sample_name}.csv")
@@ -726,7 +756,7 @@ class TorchLiDARSegmentationModel(dm_model.LiDARSegmentationModel):
                             os.path.join(predictions_outdir, f"{sample_name}.bin")
                         )
 
-        return um.get_metrics_dataframe(metrics_factory, self.ontology)
+        return um.get_metrics_dataframe(metrics_factory, eval_ontology)
 
     def get_computational_cost(
         self,
