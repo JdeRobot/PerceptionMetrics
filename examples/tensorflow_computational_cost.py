@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.models.tensorflow import TensorflowImageSegmentationModel
+from detectionmetrics.models.tf_segmentation import TensorflowImageSegmentationModel
 
 
 def parse_args() -> argparse.Namespace:

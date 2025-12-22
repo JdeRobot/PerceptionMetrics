@@ -4,7 +4,7 @@ import os
 from PIL import Image
 
 from detectionmetrics.datasets.gaia import GaiaImageSegmentationDataset
-from detectionmetrics.models.tensorflow import TensorflowImageSegmentationModel
+from detectionmetrics.models.tf_segmentation import TensorflowImageSegmentationModel
 import detectionmetrics.utils.conversion as uc
 
 
