@@ -104,7 +104,7 @@ plyfile==0.8.1
 portalocker==2.6.0
 prometheus-client==0.15.0
 prompt-toolkit==3.0.36
-protobuf==3.20.1
+protobuf==4.25.8
 psutil==5.9.4
 ptyprocess==0.7.0
 pyasn1==0.4.8
