@@ -74,76 +74,11 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="module-detectionmetrics.models.torch_model_utils.o3d_randlanet">
-<span id="detectionmetrics-models-torch-model-utils-o3d-randlanet-module"></span><h2>detectionmetrics.models.torch_model_utils.o3d_randlanet module<a class="headerlink" href="#module-detectionmetrics.models.torch_model_utils.o3d_randlanet" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="detectionmetrics.models.torch_model_utils.o3d_randlanet.transform_input">
-<span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch_model_utils.o3d_randlanet.</span></span><span class="sig-name descname"><span class="pre">transform_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sampler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#detectionmetrics.models.torch_model_utils.o3d_randlanet.transform_input" title="Link to this definition"></a></dt>
-<dd><p>Transform point cloud data into input data for the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – Point cloud data</p></li>
-<li><p><strong>cfg</strong> (<em>dict</em>) – Dictionary containing model configuration file</p></li>
-<li><p><strong>sampler</strong> (<em>Optional</em><em>[</em><em>ul.Sampler</em><em>]</em><em>, </em><em>optional</em>) – Object for sampling point cloud, defaults to None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Model input data and selected indices</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[ Tuple[ torch.Tensor, List[torch.Tensor], List[torch.Tensor], List[torch.Tensor], List[torch.Tensor], ], np.ndarray, ]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="detectionmetrics.models.torch_model_utils.o3d_randlanet.update_probs">
-<span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch_model_utils.o3d_randlanet.</span></span><span class="sig-name descname"><span class="pre">update_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_probs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_probs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#detectionmetrics.models.torch_model_utils.o3d_randlanet.update_probs" title="Link to this definition"></a></dt>
-<dd><p>Update test probabilities with new model output using weighted average for a
-smooth transition between predictions</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>new_probs</strong> (<em>torch.Tensor</em>) – New probabilities to be added to the test probabilities</p></li>
-<li><p><strong>indices</strong> (<em>torch.Tensor</em>) – Corresponding indices of the new probabilities</p></li>
-<li><p><strong>test_probs</strong> (<em>torch.Tensor</em>) – Test probabilities to be updated</p></li>
-<li><p><strong>n_classes</strong> (<em>int</em>) – Number of classes</p></li>
-<li><p><strong>weight</strong> (<em>float</em><em>, </em><em>optional</em>) – Weight used in the weighted average, defaults to 0.95</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Updated test probabilities</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="detectionmetrics-models-torch-model-utils-o3d-randlanet-module">
+<h2>detectionmetrics.models.torch_model_utils.o3d_randlanet module<a class="headerlink" href="#detectionmetrics-models-torch-model-utils-o3d-randlanet-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-detectionmetrics.models.torch_model_utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-detectionmetrics.models.torch_model_utils" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="detectionmetrics.models.torch_model_utils.preprocess">
-<span class="sig-prename descclassname"><span class="pre">detectionmetrics.models.torch_model_utils.</span></span><span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">KDTree</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#detectionmetrics.models.torch_model_utils.preprocess" title="Link to this definition"></a></dt>
-<dd><p>Preprocess point cloud data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – Point cloud data</p></li>
-<li><p><strong>cfg</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em><em>, </em><em>optional</em>) – Dictionary containing model configuration, defaults to {}</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Subsampled points, search tree, and projected indices</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[np.ndarray, KDTree, np.ndarray]</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 </section>
 </section>
 
