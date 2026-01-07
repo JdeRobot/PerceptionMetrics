@@ -7,9 +7,9 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 
-from detectionmetrics.datasets import GaiaImageSegmentationDataset
-from detectionmetrics.models import TorchImageSegmentationModel
-import detectionmetrics.utils.conversion as uc
+from perceptionmetrics.datasets import GaiaImageSegmentationDataset
+from perceptionmetrics.models import TorchImageSegmentationModel
+import perceptionmetrics.utils.conversion as uc
 
 
 def parse_args() -> argparse.Namespace:

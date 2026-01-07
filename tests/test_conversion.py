@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from PIL import Image
 
-from detectionmetrics.utils import conversion as uc
+from perceptionmetrics.utils import conversion as uc
 
 
 # To verify hex to rgb conversion

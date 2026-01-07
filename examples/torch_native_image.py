@@ -2,9 +2,9 @@ import argparse
 
 from PIL import Image
 
-from detectionmetrics.datasets import Rellis3DImageSegmentationDataset
-from detectionmetrics.models import TorchImageSegmentationModel
-import detectionmetrics.utils.conversion as uc
+from perceptionmetrics.datasets import Rellis3DImageSegmentationDataset
+from perceptionmetrics.models import TorchImageSegmentationModel
+import perceptionmetrics.utils.conversion as uc
 from torchvision.models.segmentation import deeplabv3_resnet50
 
 
@@ -77,8 +77,10 @@ def main():
         torch_model, args.model_cfg, args.model_ontology
     )
 
+    image_size = (500, 500)
     if args.image is not None:
         image = Image.open(args.image).convert("RGB")
+        image_size = (image.width, image.height)
         result = model.predict(image)
         result = uc.label_to_rgb(result, model.ontology)
         result.show()
@@ -86,7 +88,9 @@ def main():
     results = model.eval(dataset)
     results.to_csv(args.out_fname)
 
-    computational_cost = model.get_computational_cost()
+    computational_cost = model.get_computational_cost(image_size)
+    if hasattr(computational_cost, "iloc"):
+        computational_cost = computational_cost.iloc[0].to_dict()
 
     print("--- Computational cost ---")
     print(f"Input shape: {computational_cost['input_shape']}")

@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from detectionmetrics.datasets.gaia import GaiaImageSegmentationDataset
+from perceptionmetrics.datasets.gaia import GaiaImageSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:

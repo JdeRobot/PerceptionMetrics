@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.models.tf_segmentation import TensorflowImageSegmentationModel
+from perceptionmetrics.models.tf_segmentation import TensorflowImageSegmentationModel
 
 
 def parse_args() -> argparse.Namespace:
@@ -25,6 +25,13 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="JSON file withm model configuration (norm. parameters, image size, etc.)",
     )
+    parser.add_argument(
+        "--image_size",
+        type=int,
+        nargs=2,
+        default=(500, 500),
+        help="Dummy image size. Should be provided as two integers: width height",
+    )
     return parser.parse_args()
 
 
@@ -33,7 +40,9 @@ def main():
     args = parse_args()
 
     model = TensorflowImageSegmentationModel(args.model, args.model_cfg, args.ontology)
-    computational_cost = model.get_computational_cost()
+    computational_cost = model.get_computational_cost(args.image_size)
+    if hasattr(computational_cost, "iloc"):
+        computational_cost = computational_cost.iloc[0].to_dict()
 
     print("--- Computational cost ---")
     print(f"Input shape: {computational_cost['input_shape']}")

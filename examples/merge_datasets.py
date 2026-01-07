@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.datasets.gaia import GaiaImageSegmentationDataset, GaiaLiDARSegmentationDataset
+from perceptionmetrics.datasets.gaia import GaiaImageSegmentationDataset, GaiaLiDARSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:

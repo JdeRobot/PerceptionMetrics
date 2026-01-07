@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from detectionmetrics.datasets import GaiaImageSegmentationDataset
+from perceptionmetrics.datasets import GaiaImageSegmentationDataset
 
 
 def parse_args():

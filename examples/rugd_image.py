@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.datasets import RUGDImageSegmentationDataset
+from perceptionmetrics.datasets import RUGDImageSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:

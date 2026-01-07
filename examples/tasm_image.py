@@ -1,11 +1,13 @@
 import argparse
-import os
 
 from PIL import Image
 
 from perceptionmetrics.datasets.gaia import GaiaImageSegmentationDataset
-from perceptionmetrics.models.tf_segmentation import TensorflowImageSegmentationModel
+from perceptionmetrics.models.tensorflow import TensorflowImageSegmentationModel
 import perceptionmetrics.utils.conversion as uc
+import tensorflow as tf
+
+from local import tensorflow_advanced_segmentation_models as tasm
 
 
 def parse_args() -> argparse.Namespace:
@@ -16,7 +18,10 @@ def parse_args() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--model", type=str, required=True, help="Tensorflow model in SavedModel format"
+        "--model_weights", type=str, required=True, help="Tensorflow model weights in HDF5 format"
+    )
+    parser.add_argument(
+        "--model_name", type=str, required=True, help="TASM model name"
     )
     parser.add_argument(
         "--ontology",
@@ -54,13 +59,6 @@ def parse_args() -> argparse.Namespace:
         required=False,
         help="JSON file containing translation between dataset and model classes",
     )
-    parser.add_argument(
-        "--predictions_outdir",
-        type=str,
-        required=False,
-        help="Directory where the predictions will be stored. If not provided, "
-        "predictions will not be saved",
-    )
     return parser.parse_args()
 
 
@@ -68,12 +66,38 @@ def main():
     """Main function"""
     args = parse_args()
 
-    model = TensorflowImageSegmentationModel(args.model, args.model_cfg, args.ontology)
+    base_model, layers, _ = tasm.create_base_model(
+        name="resnet50",
+        weights="imagenet",
+        height=320,
+        width=320,
+        include_top=False,
+        pooling=None,
+    )
+
+    model_init_args = {
+        "n_classes": 20,
+        "base_model": base_model,
+        "output_layers": layers,
+        "backbone_trainable": False,
+    }
+    tasm_model = getattr(tasm, args.model_name)(**model_init_args)
+
+    # Compile model (is it necessary to configure optimizer?)
+    opt = tf.keras.optimizers.Adam(learning_rate=0.001, epsilon=1e-7)
+    tasm_model.compile(
+        optimizer=opt, loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+    )
+
+    tasm_model.predict(tf.zeros((1, 320, 320, 3)))
+    tasm_model.load_weights(args.model_weights)
+
+    model = TensorflowImageSegmentationModel(tasm_model, args.model_cfg, args.ontology)
     dataset = GaiaImageSegmentationDataset(args.dataset)
 
     if args.image is not None:
         image = Image.open(args.image).convert("RGB")
-        result = model.predict(image)
+        result = model.inference(image)
         result = uc.label_to_rgb(result, model.ontology)
         result.show()
 
@@ -81,11 +105,9 @@ def main():
         dataset,
         split=args.split,
         ontology_translation=args.ontology_translation,
-        predictions_outdir=args.predictions_outdir,
-        results_per_sample=args.predictions_outdir is not None,
+        predictions_outdir="local/data/tf_predictions",
+        results_per_sample=True,
     )
-
-    os.makedirs(os.path.dirname(args.out_fname), exist_ok=True)
     results.to_csv(args.out_fname)
 
 

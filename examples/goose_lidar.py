@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from detectionmetrics.datasets.goose import GOOSELiDARSegmentationDataset
+from perceptionmetrics.datasets.goose import GOOSELiDARSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:

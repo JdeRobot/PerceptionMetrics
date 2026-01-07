@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from detectionmetrics.datasets.wildscenes import WildscenesImageSegmentationDataset
+from perceptionmetrics.datasets.wildscenes import WildscenesImageSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:

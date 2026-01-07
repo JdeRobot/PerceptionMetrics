@@ -1,7 +1,7 @@
 import json
 from PIL import Image
 from unittest.mock import mock_open, patch
-from detectionmetrics.utils.io import (
+from perceptionmetrics.utils.io import (
     read_txt,
     read_yaml,
     read_json,
@@ -63,7 +63,7 @@ def test_extract_wildcard_matches(tmp_path):
     (tmp_path / "file1.txt").touch()
     (tmp_path / "file2.txt").touch()
     with patch(
-        "detectionmetrics.utils.io.glob",
+        "perceptionmetrics.utils.io.glob",
         return_value=[str(tmp_path / "file1.txt"), str(tmp_path / "file2.txt")],
     ):
         matches = extract_wildcard_matches(str(tmp_path / "*.txt"))

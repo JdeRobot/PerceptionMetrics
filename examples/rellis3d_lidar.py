@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from detectionmetrics.datasets.rellis3d import Rellis3DLiDARSegmentationDataset
+from perceptionmetrics.datasets.rellis3d import Rellis3DLiDARSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:

@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock
 from sklearn.neighbors import KDTree
 import open3d as o3d
 from PIL import Image
-from detectionmetrics.utils.lidar import (
+from perceptionmetrics.utils.lidar import (
     Sampler,
     recenter,
     build_point_cloud,

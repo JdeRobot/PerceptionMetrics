@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.models.torch_segmentation import TorchLiDARSegmentationModel
+from perceptionmetrics.models.torch_segmentation import TorchLiDARSegmentationModel
 
 
 def parse_args() -> argparse.Namespace:
@@ -34,6 +34,8 @@ def main():
 
     model = TorchLiDARSegmentationModel(args.model, args.model_cfg, args.ontology)
     computational_cost = model.get_computational_cost()
+    if hasattr(computational_cost, "iloc"):
+        computational_cost = computational_cost.iloc[0].to_dict()
 
     print("--- Computational cost ---")
     print(f"Input shape: {computational_cost['input_shape']}")

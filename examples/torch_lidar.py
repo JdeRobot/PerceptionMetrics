@@ -2,10 +2,10 @@ import argparse
 import os
 
 
-from detectionmetrics.datasets.gaia import GaiaLiDARSegmentationDataset
-from detectionmetrics.models.torch_segmentation import TorchLiDARSegmentationModel
-import detectionmetrics.utils.conversion as uc
-import detectionmetrics.utils.lidar as ul
+from perceptionmetrics.datasets.gaia import GaiaLiDARSegmentationDataset
+from perceptionmetrics.models.torch_segmentation import TorchLiDARSegmentationModel
+import perceptionmetrics.utils.conversion as uc
+import perceptionmetrics.utils.lidar as ul
 
 
 def parse_args() -> argparse.Namespace:

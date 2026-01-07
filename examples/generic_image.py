@@ -1,6 +1,6 @@
 import argparse
 
-from detectionmetrics.datasets.generic import GenericImageSegmentationDataset
+from perceptionmetrics.datasets.generic import GenericImageSegmentationDataset
 
 
 def parse_args() -> argparse.Namespace:
