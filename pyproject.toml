@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "detectionmetrics"
+name = "perceptionmetrics"
 version = "2.4.0"
 description = "Tools for evaluating segmentation and object detection models"
 authors = ["JdeRobot", "d.pascualhe <d.pascualhe@gmail.com>"]
@@ -40,8 +40,8 @@ sphinx-rtd-theme = "^3.0.2"
 pytest = "^8.0.0"
 
 [tool.poetry.scripts]
-dm_evaluate = "detectionmetrics.cli.evaluate:evaluate"
-dm_batch = "detectionmetrics.cli.batch:batch"
+dm_evaluate = "perceptionmetrics.cli.evaluate:evaluate"
+dm_batch = "perceptionmetrics.cli.batch:batch"
 
 [build-system]
 requires = ["poetry-core"]

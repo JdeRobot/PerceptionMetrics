@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "detectionmetrics-lsk3dnet"
+name = "perceptionmetrics-lsk3dnet"
 version = "0.0.0"
-description = "LSK3DNet-compatible version of DetectionMetrics"
+description = "LSK3DNet-compatible version of PerceptionMetrics"
 authors = ["JdeRobot", "d.pascualhe <d.pascualhe@gmail.com>"]
 readme = "README.md"
 license = "LICENSE"
 packages = [
-    { include = "detectionmetrics" }
+    { include = "perceptionmetrics" }
 ]
 
 [tool.poetry.dependencies]
@@ -38,8 +38,8 @@ sphinx-rtd-theme = "^3.0.2"
 pytest = "^8.0.0"
 
 [tool.poetry.scripts]
-dm_evaluate = "detectionmetrics.cli.evaluate:evaluate"
-dm_batch = "detectionmetrics.cli.batch:batch"
+dm_evaluate = "perceptionmetrics.cli.evaluate:evaluate"
+dm_batch = "perceptionmetrics.cli.batch:batch"
 
 [build-system]
 requires = ["poetry-core"]

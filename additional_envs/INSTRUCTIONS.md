@@ -114,7 +114,7 @@ cd SphereFormer/third_party/SparseTransformer
 python setup.py install
 ```
 
-### Switch to the SphereFormer-specific pyproject.toml and install DetectionMetrics
+### Switch to the SphereFormer-specific pyproject.toml and install PerceptionMetrics
 Run the following from the repository root:
 ```bash
 cd ../../..
@@ -173,7 +173,7 @@ cmake -DPYTHON_EXECUTABLE="$(which python)" \
 make
 ```
 
-### Switch to the LSK3DNet-specific pyproject.toml and install DetectionMetrics
+### Switch to the LSK3DNet-specific pyproject.toml and install PerceptionMetrics
 Run the following from the repository root:
 ```bash
 cd ../../../..
