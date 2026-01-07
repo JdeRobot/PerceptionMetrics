@@ -20,10 +20,10 @@ Now, we're excited to introduce ***DetectionMetrics v2***! While retaining the f
 <table class='centered-table'>
     <tr>
         <th>&#128187; <a href="https://github.com/JdeRobot/DetectionMetrics">Code</a></th>
-        <th>&#128295; <a href="/v2/installation/">Installation</a></th>
-        <th>&#129513; <a href="/v2/compatibility/">Compatibility</a></th>
-        <th>&#128214; <a href="/py_docs/_build/html/index.html">Docs</a></th>
-        <th>&#128421; <a href="/v2/gui/">GUI</a></th>
+        <th>&#128295; <a href="/DetectionMetrics/v2/installation/">Installation</a></th>
+        <th>&#129513; <a href="/DetectionMetrics/v2/compatibility/">Compatibility</a></th>
+        <th>&#128214; <a href="/DetectionMetrics/py_docs/_build/html/index.html">Docs</a></th>
+        <th>&#128421; <a href="/DetectionMetrics/v2/gui/">GUI</a></th>
     </tr>
 </table>
 
