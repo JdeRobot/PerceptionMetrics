@@ -2,6 +2,7 @@
 
 .mypy_cache
 __pycache__
+.ipynb_checkpoints
 
 .venv
 dist
