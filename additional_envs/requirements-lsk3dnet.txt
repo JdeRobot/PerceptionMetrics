@@ -161,7 +161,7 @@ urllib3==1.26.15
 wcwidth==0.2.5
 webencodings==0.5.1
 websocket-client==1.4.2
-Werkzeug==2.2.3
+Werkzeug==3.1.5
 widgetsnbextension==4.0.5
 yacs==0.1.8
 yarl==1.8.2
