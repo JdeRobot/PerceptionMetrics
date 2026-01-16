@@ -1,6 +1,5 @@
 from typing import List, Optional, Tuple
 
-
 import numpy as np
 from PIL import Image
 

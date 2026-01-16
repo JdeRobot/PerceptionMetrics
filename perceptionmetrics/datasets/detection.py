@@ -1,17 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 import os
-import shutil
-from typing import List, Optional, Tuple
-from typing_extensions import Self
+from typing import List, Optional
 
-import cv2
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
 from perceptionmetrics.datasets.perception import PerceptionDataset
-import perceptionmetrics.utils.io as uio
-import perceptionmetrics.utils.conversion as uc
 
 
 class DetectionDataset(PerceptionDataset):

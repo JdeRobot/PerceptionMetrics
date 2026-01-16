@@ -10,8 +10,8 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2 as transforms
 from tqdm.notebook import tqdm
 
-from perceptionmetrics.datasets import detection as dm_detection_dataset
-from perceptionmetrics.models import detection as dm_detection_model
+from perceptionmetrics.datasets import detection as detection_dataset
+from perceptionmetrics.models import detection as detection_model
 from perceptionmetrics.utils import detection_metrics as um
 
 
@@ -138,7 +138,7 @@ class ImageDetectionTorchDataset(Dataset):
 
     def __init__(
         self,
-        dataset: dm_detection_dataset.ImageDetectionDataset,
+        dataset: detection_dataset.ImageDetectionDataset,
         transform: transforms.Compose,
         splits: List[str] = ["test"],
     ):
@@ -184,7 +184,7 @@ class ImageDetectionTorchDataset(Dataset):
         return self.dataset.dataset.index[idx], image, target
 
 
-class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
+class TorchImageDetectionModel(detection_model.ImageDetectionModel):
     def __init__(
         self,
         model: Union[str, torch.nn.Module],
@@ -324,7 +324,7 @@ class TorchImageDetectionModel(dm_detection_model.ImageDetectionModel):
 
     def eval(
         self,
-        dataset: dm_detection_dataset.ImageDetectionDataset,
+        dataset: detection_dataset.ImageDetectionDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,

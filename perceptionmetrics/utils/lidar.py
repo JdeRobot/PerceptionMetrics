@@ -6,6 +6,7 @@ import open3d as o3d
 from PIL import Image
 from sklearn.neighbors import KDTree
 
+
 REFERENCE_SIZE = 100
 CAMERA_VIEWS = {
     "3rd_person": {

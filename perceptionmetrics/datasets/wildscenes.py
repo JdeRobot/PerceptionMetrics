@@ -5,7 +5,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from perceptionmetrics.datasets import segmentation as dm_segmentation_dataset
+from perceptionmetrics.datasets import segmentation as segmentation_dataset
 
 
 def build_dataset(
@@ -83,7 +83,7 @@ def build_dataset(
 
 
 class WildscenesImageSegmentationDataset(
-    dm_segmentation_dataset.ImageSegmentationDataset
+    segmentation_dataset.ImageSegmentationDataset
 ):
     """Specific class for Wildscenes-styled image segmentation datasets. All data can
     be downloaded from the official repo:
@@ -160,7 +160,7 @@ class WildscenesImageSegmentationDataset(
 
 
 class WildscenesLiDARSegmentationDataset(
-    dm_segmentation_dataset.LiDARSegmentationDataset
+    segmentation_dataset.LiDARSegmentationDataset
 ):
     """Specific class for Wildscenes-styled LiDAR segmentation datasets. All data can
     be downloaded from the official repo:

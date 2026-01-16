@@ -1,16 +1,12 @@
-from abc import ABC, abstractmethod
-import os
+from abc import abstractmethod
 from typing import Any, List, Optional, Union
 
 import numpy as np
 import pandas as pd
 from PIL import Image
 
-
-from perceptionmetrics.datasets import detection as dm_detection_dataset
+from perceptionmetrics.datasets import detection as detection_dataset
 from perceptionmetrics.models.perception import PerceptionModel
-import perceptionmetrics.utils.conversion as uc
-import perceptionmetrics.utils.io as uio
 
 
 class DetectionModel(PerceptionModel):
@@ -52,7 +48,7 @@ class DetectionModel(PerceptionModel):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_detection_dataset.DetectionDataset,
+        dataset: detection_dataset.DetectionDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
@@ -115,7 +111,7 @@ class ImageDetectionModel(DetectionModel):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_detection_dataset.ImageDetectionDataset,
+        dataset: detection_dataset.ImageDetectionDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
@@ -178,7 +174,7 @@ class LiDARDetectionModel(DetectionModel):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_detection_dataset.LiDARDetectionDataset,
+        dataset: detection_dataset.LiDARDetectionDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,

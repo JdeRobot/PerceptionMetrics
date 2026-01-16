@@ -1,9 +1,9 @@
 from glob import glob
 import json
-from PIL import Image
 import re
 from typing import List
 
+from PIL import Image
 import yaml
 
 

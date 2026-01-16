@@ -18,8 +18,8 @@ except ImportError:
     from torchvision.transforms import functional as F
 from tqdm import tqdm
 
-from perceptionmetrics.datasets import segmentation as dm_segmentation_dataset
-from perceptionmetrics.models import segmentation as dm_segmentation_model
+from perceptionmetrics.datasets import segmentation as segmentation_dataset
+from perceptionmetrics.models import segmentation as segmentation_model
 import perceptionmetrics.utils.conversion as uc
 import perceptionmetrics.utils.io as uio
 import perceptionmetrics.utils.segmentation_metrics as um
@@ -127,7 +127,7 @@ class ImageSegmentationTorchDataset(Dataset):
 
     def __init__(
         self,
-        dataset: dm_segmentation_dataset.ImageSegmentationDataset,
+        dataset: segmentation_dataset.ImageSegmentationDataset,
         transform: transforms.Compose,
         target_transform: transforms.Compose,
         splits: List[str] = ["test"],
@@ -178,7 +178,7 @@ class LiDARSegmentationTorchDataset(Dataset):
 
     def __init__(
         self,
-        dataset: dm_segmentation_dataset.LiDARSegmentationDataset,
+        dataset: segmentation_dataset.LiDARSegmentationDataset,
         model_cfg: dict,
         get_sample: callable,
         splits: str = ["test"],
@@ -210,7 +210,7 @@ class LiDARSegmentationTorchDataset(Dataset):
         )
 
 
-class TorchImageSegmentationModel(dm_segmentation_model.ImageSegmentationModel):
+class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
     def __init__(
         self,
@@ -374,7 +374,7 @@ class TorchImageSegmentationModel(dm_segmentation_model.ImageSegmentationModel):
 
     def eval(
         self,
-        dataset: dm_segmentation_dataset.ImageSegmentationDataset,
+        dataset: segmentation_dataset.ImageSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
@@ -537,7 +537,7 @@ class TorchImageSegmentationModel(dm_segmentation_model.ImageSegmentationModel):
         return pd.DataFrame.from_dict(result)
 
 
-class TorchLiDARSegmentationModel(dm_segmentation_model.LiDARSegmentationModel):
+class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
 
     def __init__(
         self, model: Union[str, torch.nn.Module], model_cfg: str, ontology_fname: str
@@ -586,7 +586,7 @@ class TorchLiDARSegmentationModel(dm_segmentation_model.LiDARSegmentationModel):
 
         # Init model specific functions
         model_format = self.model_format.split("_")[0]
-        model_utils_module_str = f"detectionmetrics.models.utils.{model_format}"
+        model_utils_module_str = f"perceptionmetrics.models.utils.{model_format}"
         try:
             model_utils_module = importlib.import_module(model_utils_module_str)
         except ImportError:
@@ -654,7 +654,7 @@ class TorchLiDARSegmentationModel(dm_segmentation_model.LiDARSegmentationModel):
 
     def eval(
         self,
-        dataset: dm_segmentation_dataset.LiDARSegmentationDataset,
+        dataset: segmentation_dataset.LiDARSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         translation_direction: str = "dataset_to_model",

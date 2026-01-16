@@ -5,7 +5,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from perceptionmetrics.datasets import segmentation as dm_segmentation_dataset
+from perceptionmetrics.datasets import segmentation as segmentation_dataset
 import perceptionmetrics.utils.io as uio
 
 
@@ -74,7 +74,7 @@ def build_dataset(
 
 
 class Rellis3DImageSegmentationDataset(
-    dm_segmentation_dataset.ImageSegmentationDataset
+    segmentation_dataset.ImageSegmentationDataset
 ):
     """Specific class for Rellis3D-styled image segmentation datasets. All data can
     be downloaded from the official repo (https://github.com/unmannedlab/RELLIS-3D):
@@ -108,7 +108,7 @@ class Rellis3DImageSegmentationDataset(
 
 
 class Rellis3DLiDARSegmentationDataset(
-    dm_segmentation_dataset.LiDARSegmentationDataset
+    segmentation_dataset.LiDARSegmentationDataset
 ):
     """Specific class for Rellis3D-styled LiDAR segmentation datasets. All data can
     be downloaded from the official repo (https://github.com/unmannedlab/RELLIS-3D):

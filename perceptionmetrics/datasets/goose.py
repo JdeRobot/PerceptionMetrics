@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
-from perceptionmetrics.datasets import segmentation as dm_segmentation_dataset
+from perceptionmetrics.datasets import segmentation as segmentation_dataset
 import perceptionmetrics.utils.conversion as uc
 
 
@@ -97,7 +97,7 @@ def build_dataset(
     return dataset, ontology
 
 
-class GOOSEImageSegmentationDataset(dm_segmentation_dataset.ImageSegmentationDataset):
+class GOOSEImageSegmentationDataset(segmentation_dataset.ImageSegmentationDataset):
     """Specific class for GOOSE-styled image segmentation datasets. All data can be
     downloaded from the official webpage (https://goose-dataset.de):
     train -> https://goose-dataset.de/storage/goose_2d_train.zip
@@ -141,7 +141,7 @@ class GOOSEImageSegmentationDataset(dm_segmentation_dataset.ImageSegmentationDat
         super().__init__(dataset, dataset_dir, ontology)
 
 
-class GOOSELiDARSegmentationDataset(dm_segmentation_dataset.LiDARSegmentationDataset):
+class GOOSELiDARSegmentationDataset(segmentation_dataset.LiDARSegmentationDataset):
     """Specific class for GOOSE-styled LiDAR segmentation datasets. All data can be
     downloaded from the official webpage (https://goose-dataset.de):
     train -> https://goose-dataset.de/storage/gooseEx_3d_train.zip

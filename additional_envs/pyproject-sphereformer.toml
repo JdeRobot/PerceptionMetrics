@@ -38,8 +38,8 @@ sphinx-rtd-theme = "^1.0.0"
 pytest = "^6.2.5"
 
 [tool.poetry.scripts]
-dm_evaluate = "perceptionmetrics.cli.evaluate:evaluate"
-dm_batch = "perceptionmetrics.cli.batch:batch"
+pm_evaluate = "perceptionmetrics.cli.evaluate:evaluate"
+pm_batch = "perceptionmetrics.cli.batch:batch"
 
 [build-system]
 requires = ["poetry-core"]

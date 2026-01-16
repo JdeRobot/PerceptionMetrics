@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 import os
 import shutil
 from typing import List, Optional, Tuple
-from typing_extensions import Self
 
 import cv2
 import numpy as np

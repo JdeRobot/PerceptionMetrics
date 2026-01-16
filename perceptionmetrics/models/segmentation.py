@@ -1,16 +1,12 @@
-from abc import ABC, abstractmethod
-import os
+from abc import abstractmethod
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from PIL import Image
 
-
-from perceptionmetrics.datasets import segmentation as dm_segentation_dataset
+from perceptionmetrics.datasets import segmentation as segmentation_dataset
 from perceptionmetrics.models.perception import PerceptionModel
-import perceptionmetrics.utils.conversion as uc
-import perceptionmetrics.utils.io as uio
 
 
 class SegmentationModel(PerceptionModel):
@@ -65,7 +61,7 @@ class SegmentationModel(PerceptionModel):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_segentation_dataset.SegmentationDataset,
+        dataset: segmentation_dataset.SegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         translations_direction: str = "dataset_to_model",
@@ -135,7 +131,7 @@ class ImageSegmentationModel(SegmentationModel):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_segentation_dataset.ImageSegmentationDataset,
+        dataset: segmentation_dataset.ImageSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         translations_direction: str = "dataset_to_model",
@@ -229,7 +225,7 @@ class LiDARSegmentationModel(SegmentationModel):
     @abstractmethod
     def eval(
         self,
-        dataset: dm_segentation_dataset.LiDARSegmentationDataset,
+        dataset: segmentation_dataset.LiDARSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
         translations_direction: str = "dataset_to_model",
