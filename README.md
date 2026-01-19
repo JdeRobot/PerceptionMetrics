@@ -34,12 +34,12 @@
   <tr>
     <td rowspan="2">Segmentation</td>
     <td>Image</td>
-    <td>Rellis3D, GOOSE, RUGD, WildScenes, custom GAIA format</td>
+    <td>RELLIS-3D, GOOSE, RUGD, WildScenes, custom GAIA format</td>
     <td>PyTorch, Tensorflow</td>
   </tr>
   <tr>
     <td>LiDAR</td>
-    <td>Rellis3D, GOOSE, WildScenes, custom GAIA format</td>
+    <td>RELLIS-3D, GOOSE, WildScenes, custom GAIA format</td>
     <td>PyTorch (tested with <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>, <a href="https://github.com/open-mmlab/mmdetection3d">mmdetection3d</a>, <a href="https://github.com/dvlab-research/SphereFormer">SphereFormer</a>, and <a href="https://github.com/FengZicai/LSK3DNet">LSK3DNet</a> models)</td>  </tr>
   <tr>
     <td>Object detection</td>
