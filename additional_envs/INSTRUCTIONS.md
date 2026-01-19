@@ -146,13 +146,19 @@ source .venv-lsk3dnet/bin/activate
 python -m pip install -U pip setuptools wheel
 ```
 
+### Clone LSK3DNet
+```bash
+mkdir -p third_party && cd third_party
+git clone https://github.com/FengZicai/LSK3DNet.git
+```
+
 ### Install dependencies (CUDA 11.3)
 ```bash
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 \
   --extra-index-url https://download.pytorch.org/whl/cu113
 
 pip install numpy==1.23.5
-pip install -r additional_envs/requirements-lsk3dnet.txt
+pip install -r LSK3DNet/requirements.txt
 
 pip install SharedArray==3.2.4
 pip install pybind11
@@ -160,9 +166,6 @@ pip install pybind11
 
 ### Build LSK3DNet c_utils
 ```bash
-mkdir -p third_party && cd third_party
-git clone https://github.com/FengZicai/LSK3DNet.git
-
 cd LSK3DNet/c_utils
 mkdir -p build && cd build
 
