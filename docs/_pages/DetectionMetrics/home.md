@@ -1,5 +1,6 @@
 ---
 layout: home
+title: DetectionMetrics
 permalink: /DetectionMetrics/
 header:
   overlay_color: "#5e616c"
