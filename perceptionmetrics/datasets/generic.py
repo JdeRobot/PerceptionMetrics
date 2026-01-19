@@ -38,8 +38,7 @@ def build_dataset(
     :type data_suffix: str
     :param label_suffix: File suffix to be used to filter labels
     :type label_suffix: str
-    :param ontology_fname: JSON file containing either a list of classes or a dictionary
-    with class names as keys and class indexes + rgb as values
+    :param ontology_fname: JSON file containing either a list of classes or a dictionary with class names as keys and class indexes + rgb as values
     :type ontology_fname: str
     :param val_dataset_dir: Directory containing validation data, defaults to None
     :type val_dataset_dir: str, optional
@@ -118,8 +117,7 @@ class GenericImageSegmentationDataset(segmentation_dataset.ImageSegmentationData
     :type data_suffix: str
     :param label_suffix: File suffix to be used to filter labels
     :type label_suffix: str
-    :param ontology_fname: JSON file containing either a list of classes or a dictionary
-    with class names as keys and class indexes + rgb as values
+    :param ontology_fname: JSON file containing either a list of classes or a dictionary with class names as keys and class indexes + rgb as values
     :param train_dataset_dir: Directory containing training data
     :type train_dataset_dir: str
     :param val_dataset_dir: Directory containing validation data, defaults to None
@@ -167,8 +165,7 @@ class GenericLiDARSegmentationDataset(segmentation_dataset.LiDARSegmentationData
     :type data_suffix: str
     :param label_suffix: File suffix to be used to filter labels
     :type label_suffix: str
-    :param ontology_fname: JSON file containing either a list of classes or a dictionary
-    with class names as keys and class indexes + rgb as values
+    :param ontology_fname: JSON file containing either a list of classes or a dictionary with class names as keys and class indexes + rgb as values
     :param train_dataset_dir: Directory containing training data
     :type train_dataset_dir: str
     :param val_dataset_dir: Directory containing validation data, defaults to None

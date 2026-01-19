@@ -14,7 +14,7 @@
     <th>&#128187; <a href="https://github.com/JdeRobot/PerceptionMetrics">Code</a></th>
     <th>&#128295; <a href="https://jderobot.github.io/PerceptionMetrics/installation">Installation</a></th>
     <th>&#129513; <a href="https://jderobot.github.io/PerceptionMetrics/compatibility">Compatibility</a></th>
-    <th>&#128214; <a href="https://jderobot.github.io/PerceptionMetrics/py_docs/_build/html/index.html">Docs</a></th>
+    <th>&#128214; <a href="https://jderobot.github.io/PerceptionMetrics/py_docs/build/html/index.html">Docs</a></th>
     <th>&#128187; <a href="https://jderobot.github.io/PerceptionMetrics/gui">GUI</a></th>
   </tr>
 </table>
@@ -79,7 +79,7 @@ pipx install poetry
 Install dependencies and activate poetry environment (you can get out of the Poetry shell by running `exit`):
 ```
 poetry install
-poetry shell
+eval $(poetry env activate)
 ```
 
 ### Common

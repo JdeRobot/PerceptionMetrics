@@ -19,7 +19,7 @@ excerpt:
     <th>&#128187; <a href="https://github.com/JdeRobot/PerceptionMetrics">Code</a></th>
     <th>&#128295; <a href="https://jderobot.github.io/PerceptionMetrics/installation">Installation</a></th>
     <th>&#129513; <a href="https://jderobot.github.io/PerceptionMetrics/compatibility">Compatibility</a></th>
-    <th>&#128214; <a href="https://jderobot.github.io/PerceptionMetrics/py_docs/_build/html/index.html">Docs</a></th>
+    <th>&#128214; <a href="https://jderobot.github.io/PerceptionMetrics/py_docs/build/html/index.html">Docs</a></th>
     <th>&#128187; <a href="https://jderobot.github.io/PerceptionMetrics/gui">GUI</a></th>
   </tr>
 </table>

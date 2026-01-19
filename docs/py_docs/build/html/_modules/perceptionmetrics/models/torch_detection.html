@@ -1,0 +1,839 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
+        <title>perceptionmetrics.models.torch_detection - PerceptionMetrics 3.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">PerceptionMetrics 3.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <span class="sidebar-brand-text">PerceptionMetrics 3.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">perceptionmetrics</a><input aria-label="Toggle navigation of perceptionmetrics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/perceptionmetrics.html">perceptionmetrics package</a><input aria-label="Toggle navigation of perceptionmetrics package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/perceptionmetrics.cli.html">perceptionmetrics.cli package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/perceptionmetrics.datasets.html">perceptionmetrics.datasets package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/perceptionmetrics.models.html">perceptionmetrics.models package</a><input aria-label="Toggle navigation of perceptionmetrics.models package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/perceptionmetrics.models.utils.html">perceptionmetrics.models.utils package</a><input aria-label="Toggle navigation of perceptionmetrics.models.utils package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/perceptionmetrics.models.utils.o3d.html">perceptionmetrics.models.utils.o3d package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/perceptionmetrics.utils.html">perceptionmetrics.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for perceptionmetrics.models.torch_detection</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">v2</span> <span class="k">as</span> <span class="n">transforms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.notebook</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">detection</span> <span class="k">as</span> <span class="n">detection_dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">detection</span> <span class="k">as</span> <span class="n">detection_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">detection_metrics</span> <span class="k">as</span> <span class="n">um</span>
+
+
+<div class="viewcode-block" id="data_to_device">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.data_to_device">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">data_to_device</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]],</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Move detection input or target data (dict or list of dicts) to the specified device.</span>
+
+<span class="sd">    :param data: Detection data (a single dict or list of dicts with tensor values)</span>
+<span class="sd">    :type data: Union[Dict[str, torch.Tensor], List[Dict[str, torch.Tensor]]]</span>
+<span class="sd">    :param device: Device to move data to</span>
+<span class="sd">    :type device: torch.device</span>
+<span class="sd">    :return: Data with all tensors moved to the target device</span>
+<span class="sd">    :rtype: Union[Dict[str, torch.Tensor], List[Dict[str, torch.Tensor]]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span>
+        <span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected a dict or list of dicts, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_data_shape">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.get_data_shape">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_data_shape</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the shape of the provided data</span>
+
+<span class="sd">    :param data: Data provided (it can be a single or multiple tensors)</span>
+<span class="sd">    :type data: Union[tuple, list]</span>
+<span class="sd">    :return: Data shape</span>
+<span class="sd">    :rtype: Union[tuple, list]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span></div>
+
+
+
+<div class="viewcode-block" id="get_computational_cost">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.get_computational_cost">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_computational_cost</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">dummy_input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+    <span class="n">model_fname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">runs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="n">warm_up_runs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get different metrics related to the computational cost of a model.</span>
+
+<span class="sd">    :param model: TorchScript or PyTorch model (segmentation, detection, etc.)</span>
+<span class="sd">    :type model: Any</span>
+<span class="sd">    :param dummy_input: Dummy input data (Tensor, Tuple, or List of Dicts for detection)</span>
+<span class="sd">    :type dummy_input: Union[torch.Tensor, tuple, list]</span>
+<span class="sd">    :param model_fname: Optional path to model file for size estimation</span>
+<span class="sd">    :type model_fname: Optional[str]</span>
+<span class="sd">    :param runs: Number of timed runs</span>
+<span class="sd">    :type runs: int</span>
+<span class="sd">    :param warm_up_runs: Warm-up iterations before timing</span>
+<span class="sd">    :type warm_up_runs: int</span>
+<span class="sd">    :return: DataFrame with size, inference time, parameter count, etc.</span>
+<span class="sd">    :rtype: pd.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Compute model size if applicable</span>
+    <span class="n">size_mb</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">model_fname</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span> <span class="k">if</span> <span class="n">model_fname</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="c1"># Format input consistently</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">dummy_tuple</span> <span class="o">=</span> <span class="n">dummy_input</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">dummy_input</span><span class="p">,)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dummy_tuple</span> <span class="o">=</span> <span class="n">dummy_input</span>  <span class="c1"># e.g., list of dicts for detection</span>
+
+    <span class="c1"># Warm-up</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">warm_up_runs</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;inference&quot;</span><span class="p">):</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="o">*</span><span class="n">dummy_tuple</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="n">dummy_tuple</span><span class="p">)</span>
+
+    <span class="c1"># Measure inference time</span>
+    <span class="n">inference_times</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">runs</span><span class="p">):</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;inference&quot;</span><span class="p">):</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="o">*</span><span class="n">dummy_tuple</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="n">dummy_tuple</span><span class="p">)</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+        <span class="n">inference_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+
+    <span class="c1"># Get number of parameters</span>
+    <span class="n">n_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+    <span class="c1"># Get input shape</span>
+    <span class="n">input_shape</span> <span class="o">=</span> <span class="n">get_data_shape</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span>
+    <span class="n">input_shape_str</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;input_shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">input_shape_str</span><span class="p">],</span>
+        <span class="s2">&quot;n_params&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">n_params</span><span class="p">],</span>
+        <span class="s2">&quot;size_mb&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">size_mb</span><span class="p">],</span>
+        <span class="s2">&quot;inference_time_s&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">inference_times</span><span class="p">)],</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ImageDetectionTorchDataset">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.ImageDetectionTorchDataset">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageDetectionTorchDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataset for image detection PyTorch models</span>
+
+<span class="sd">    :param dataset: Image detection dataset</span>
+<span class="sd">    :type dataset: ImageDetectionDataset</span>
+<span class="sd">    :param transform: Transformation to be applied to images</span>
+<span class="sd">    :type transform: transforms.Compose</span>
+<span class="sd">    :param splits: Splits to be used from the dataset, defaults to [&quot;test&quot;]</span>
+<span class="sd">    :type splits: str, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="n">detection_dataset</span><span class="o">.</span><span class="n">ImageDetectionDataset</span><span class="p">,</span>
+        <span class="n">transform</span><span class="p">:</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">,</span>
+        <span class="n">splits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="c1"># Filter split and make filenames global</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;split&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">splits</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="c1"># Use the dataset&#39;s make_fname_global method instead of manual path joining</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">make_fname_global</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load image and annotations, apply transforms.</span>
+
+<span class="sd">        :param idx: Sample index</span>
+<span class="sd">        :return: Tuple of (sample_id, image_tensor, target_dict)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">image_path</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span>
+        <span class="n">ann_path</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;annotation&quot;</span><span class="p">]</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+        <span class="n">boxes</span><span class="p">,</span> <span class="n">category_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">read_annotation</span><span class="p">(</span><span class="n">ann_path</span><span class="p">)</span>
+
+        <span class="c1"># Convert boxes/labels to tensors</span>
+        <span class="n">boxes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">boxes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>  <span class="c1"># [N, 4]</span>
+        <span class="n">category_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">category_indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>  <span class="c1"># [N]</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;boxes&quot;</span><span class="p">:</span> <span class="n">boxes</span><span class="p">,</span>  <span class="c1"># shape [N, 4] in [x1, y1, x2, y2] format</span>
+            <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">category_indices</span><span class="p">,</span>  <span class="c1"># shape [N]</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">:</span>
+            <span class="n">image</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">image</span><span class="p">,</span> <span class="n">target</span></div>
+
+
+
+<div class="viewcode-block" id="TorchImageDetectionModel">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TorchImageDetectionModel</span><span class="p">(</span><span class="n">detection_model</span><span class="o">.</span><span class="n">ImageDetectionModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">],</span>
+        <span class="n">model_cfg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ontology_fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Image detection model for PyTorch framework</span>
+
+<span class="sd">        :param model: Either the filename of a TorchScript model or the model already loaded into a PyTorch module.</span>
+<span class="sd">        :type model: Union[str, torch.nn.Module]</span>
+<span class="sd">        :param model_cfg: JSON file containing model configuration</span>
+<span class="sd">        :type model_cfg: str</span>
+<span class="sd">        :param ontology_fname: JSON file containing model output ontology</span>
+<span class="sd">        :type ontology_fname: str</span>
+<span class="sd">        :param device: torch.device to use (optional). If not provided, will auto-select cuda, mps, or cpu.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get device (GPU, MPS, or CPU) if not provided</span>
+        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span>
+                <span class="s2">&quot;cuda&quot;</span>
+                <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>
+                <span class="k">else</span> <span class="s2">&quot;mps&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">mps</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+
+        <span class="c1"># Load model from file or use passed instance</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="s2">&quot;Torch model file not found&quot;</span>
+            <span class="n">model_fname</span> <span class="o">=</span> <span class="n">model</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;compiled&quot;</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Model is not a TorchScript model. Loading as native PyTorch model.&quot;</span>
+                <span class="p">)</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;native&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+            <span class="n">model_fname</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;native&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model must be a filename or a torch.nn.Module&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Init parent class</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_cfg</span><span class="p">,</span> <span class="n">ontology_fname</span><span class="p">,</span> <span class="n">model_fname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="c1"># Load post-processing functions for specific model formats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_format&quot;</span><span class="p">,</span> <span class="s2">&quot;torchvision&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_format</span> <span class="o">==</span> <span class="s2">&quot;yolo&quot;</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models.utils.yolo</span><span class="w"> </span><span class="kn">import</span> <span class="n">postprocess_detection</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_format</span> <span class="o">==</span> <span class="s2">&quot;torchvision&quot;</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models.utils.torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">postprocess_detection</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported model_format: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">postprocess_detection</span> <span class="o">=</span> <span class="n">postprocess_detection</span>
+
+        <span class="c1"># Load confidence and NMS thresholds from config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">confidence_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;confidence_threshold&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nms_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nms_threshold&quot;</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">postprocess_args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">confidence_threshold</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_format</span> <span class="o">==</span> <span class="s2">&quot;yolo&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">postprocess_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nms_threshold</span><span class="p">)</span>
+
+        <span class="c1"># --- Add reverse mapping for idx to class_name ---</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_to_class_name</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;idx&quot;</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># Build input transforms (resize, normalize, etc.)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Default resize to 640x640 if not specified</span>
+        <span class="k">if</span> <span class="s2">&quot;resize&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">:</span>
+            <span class="n">resize_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">[</span><span class="s2">&quot;resize&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="mi">640</span><span class="p">)</span>
+            <span class="n">resize_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">[</span><span class="s2">&quot;resize&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="mi">640</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Default to 640x640 when no resize is specified</span>
+            <span class="n">resize_height</span> <span class="o">=</span> <span class="mi">640</span>
+            <span class="n">resize_width</span> <span class="o">=</span> <span class="mi">640</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span>
+                <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">resize_height</span><span class="p">,</span> <span class="n">resize_width</span><span class="p">),</span>
+                <span class="n">interpolation</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">InterpolationMode</span><span class="o">.</span><span class="n">BILINEAR</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;crop&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">:</span>
+            <span class="n">crop_size</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">[</span><span class="s2">&quot;crop&quot;</span><span class="p">][</span><span class="s2">&quot;height&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">[</span><span class="s2">&quot;crop&quot;</span><span class="p">][</span><span class="s2">&quot;width&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span> <span class="o">+=</span> <span class="p">[</span><span class="n">transforms</span><span class="o">.</span><span class="n">CenterCrop</span><span class="p">(</span><span class="n">crop_size</span><span class="p">)]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="n">transforms</span><span class="o">.</span><span class="n">ToImage</span><span class="p">(),</span>
+                <span class="n">transforms</span><span class="o">.</span><span class="n">ToDtype</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="n">transforms</span><span class="o">.</span><span class="n">ToImageTensor</span><span class="p">(),</span>
+                <span class="n">transforms</span><span class="o">.</span><span class="n">ConvertDtype</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;normalization&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span>
+                    <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">[</span><span class="s2">&quot;normalization&quot;</span><span class="p">][</span><span class="s2">&quot;mean&quot;</span><span class="p">],</span>
+                    <span class="n">std</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">[</span><span class="s2">&quot;normalization&quot;</span><span class="p">][</span><span class="s2">&quot;std&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TorchImageDetectionModel.inference">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.inference">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform object detection inference for a single image</span>
+
+<span class="sd">        :param image: PIL image</span>
+<span class="sd">        :type image: Image.Image</span>
+<span class="sd">        :return: Dictionary with keys &#39;boxes&#39;, &#39;labels&#39;, &#39;scores&#39;</span>
+<span class="sd">        :rtype: Dict[str, torch.Tensor]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">tensor</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return only first image&#39;s result</span>
+
+        <span class="c1"># Apply threshold filtering from model config</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocess_detection</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">postprocess_args</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="TorchImageDetectionModel.eval">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.eval">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="n">detection_dataset</span><span class="o">.</span><span class="n">ImageDetectionDataset</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+        <span class="n">ontology_translation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">predictions_outdir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">results_per_sample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">progress_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metrics_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate model over a detection dataset and compute metrics</span>
+
+<span class="sd">        :param dataset: Image detection dataset</span>
+<span class="sd">        :type dataset: ImageDetectionDataset</span>
+<span class="sd">        :param split: Dataset split(s) to evaluate</span>
+<span class="sd">        :type split: Union[str, List[str]]</span>
+<span class="sd">        :param ontology_translation: Optional translation for class mapping</span>
+<span class="sd">        :type ontology_translation: Optional[str]</span>
+<span class="sd">        :param predictions_outdir: Directory to save predictions, if desired</span>
+<span class="sd">        :type predictions_outdir: Optional[str]</span>
+<span class="sd">        :param results_per_sample: Store per-sample metrics</span>
+<span class="sd">        :type results_per_sample: bool</span>
+<span class="sd">        :param progress_callback: Optional callback function for progress updates in Streamlit UI</span>
+<span class="sd">        :type progress_callback: Optional[Callable[[int, int], None]]</span>
+<span class="sd">        :param metrics_callback: Optional callback function for intermediate metrics updates in Streamlit UI</span>
+<span class="sd">        :type metrics_callback: Optional[Callable[[pd.DataFrame, int, int], None]]</span>
+<span class="sd">        :return: DataFrame containing evaluation results</span>
+<span class="sd">        :rtype: pd.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">results_per_sample</span> <span class="ow">and</span> <span class="n">predictions_outdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;predictions_outdir required if results_per_sample is True&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">predictions_outdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Build LUT if ontology translation is provided</span>
+        <span class="n">lut_ontology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lut_ontology</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lut_ontology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">lut_ontology</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Create DataLoader</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">ImageDetectionTorchDataset</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_input</span><span class="p">,</span>
+            <span class="n">splits</span><span class="o">=</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">split</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># This ensures compatibility with Streamlit and callback functions</span>
+        <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">metrics_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">num_workers</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num_workers&quot;</span><span class="p">)</span>
+
+        <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;batch_size&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
+            <span class="n">collate_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">batch</span><span class="p">)</span>
+            <span class="p">),</span>  <span class="c1"># handles variable-size targets</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Get iou_threshold from model config, default to 0.5 if not present</span>
+        <span class="n">iou_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;iou_threshold&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1"># Get evaluation_step from model config, default to None (no intermediate updates)</span>
+        <span class="n">evaluation_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;evaluation_step&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># If evaluation_step is 0, treat as None (disabled)</span>
+        <span class="k">if</span> <span class="n">evaluation_step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">evaluation_step</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Init metrics</span>
+        <span class="n">metrics_factory</span> <span class="o">=</span> <span class="n">um</span><span class="o">.</span><span class="n">DetectionMetricsFactory</span><span class="p">(</span>
+            <span class="n">iou_threshold</span><span class="o">=</span><span class="n">iou_threshold</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Calculate total samples for progress tracking</span>
+        <span class="n">total_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">processed_samples</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="c1"># Use tqdm if no progress callback provided, otherwise use regular iteration</span>
+            <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataloader</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">iterator</span> <span class="o">=</span> <span class="n">pbar</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">iterator</span> <span class="o">=</span> <span class="n">dataloader</span>
+
+            <span class="k">for</span> <span class="n">image_ids</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">targets</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
+                <span class="c1"># Defensive check for empty images</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">images</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">images</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipping batch: empty image tensor detected.&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="n">images</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">images</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">)):</span>
+                    <span class="n">gt</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">pred</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="c1"># Post-process predictions</span>
+                    <span class="n">pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocess_detection</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">postprocess_args</span><span class="p">)</span>
+
+                    <span class="c1"># Apply ontology translation if needed</span>
+                    <span class="k">if</span> <span class="n">lut_ontology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">gt</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lut_ontology</span><span class="p">[</span><span class="n">gt</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]]</span>
+
+                    <span class="c1"># Update metrics</span>
+                    <span class="n">metrics_factory</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="n">gt</span><span class="p">[</span><span class="s2">&quot;boxes&quot;</span><span class="p">],</span>
+                        <span class="n">gt</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">],</span>
+                        <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;boxes&quot;</span><span class="p">],</span>
+                        <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">],</span>
+                        <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">],</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># Store predictions if needed</span>
+                    <span class="k">if</span> <span class="n">predictions_outdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">sample_id</span> <span class="o">=</span> <span class="n">image_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">pred_boxes</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;boxes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                        <span class="n">pred_labels</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                        <span class="n">pred_scores</span> <span class="o">=</span> <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                        <span class="n">out_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+                        <span class="k">for</span> <span class="n">box</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                            <span class="n">pred_boxes</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">,</span> <span class="n">pred_scores</span>
+                        <span class="p">):</span>
+                            <span class="c1"># Convert label index to class name using model ontology</span>
+                            <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_to_class_name</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;class_</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                            <span class="n">out_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="p">{</span>
+                                    <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">,</span>
+                                    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">class_name</span><span class="p">,</span>
+                                    <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">score</span><span class="p">),</span>
+                                    <span class="s2">&quot;bbox&quot;</span><span class="p">:</span> <span class="n">box</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                                <span class="p">}</span>
+                            <span class="p">)</span>
+
+                        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">out_data</span><span class="p">)</span>
+                        <span class="n">df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">),</span>
+                            <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">,</span>
+                            <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">results_per_sample</span><span class="p">:</span>
+                            <span class="n">sample_mf</span> <span class="o">=</span> <span class="n">um</span><span class="o">.</span><span class="n">DetectionMetricsFactory</span><span class="p">(</span>
+                                <span class="n">iou_threshold</span><span class="o">=</span><span class="n">iou_threshold</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span>
+                            <span class="p">)</span>
+                            <span class="n">sample_mf</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                                <span class="n">gt</span><span class="p">[</span><span class="s2">&quot;boxes&quot;</span><span class="p">],</span>
+                                <span class="n">gt</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">],</span>
+                                <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;boxes&quot;</span><span class="p">],</span>
+                                <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">],</span>
+                                <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">],</span>
+                            <span class="p">)</span>
+                            <span class="n">sample_df</span> <span class="o">=</span> <span class="n">sample_mf</span><span class="o">.</span><span class="n">get_metrics_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">)</span>
+                            <span class="n">sample_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                    <span class="n">predictions_outdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s2">_metrics.csv&quot;</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+
+                    <span class="n">processed_samples</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="c1"># Call progress callback if provided</span>
+                    <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">progress_callback</span><span class="p">(</span><span class="n">processed_samples</span><span class="p">,</span> <span class="n">total_samples</span><span class="p">)</span>
+
+                    <span class="c1"># Call metrics callback if provided and evaluation_step is reached</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">metrics_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="ow">and</span> <span class="n">evaluation_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="ow">and</span> <span class="n">processed_samples</span> <span class="o">%</span> <span class="n">evaluation_step</span> <span class="o">==</span> <span class="mi">0</span>
+                    <span class="p">):</span>
+                        <span class="c1"># Get intermediate metrics</span>
+                        <span class="n">intermediate_metrics</span> <span class="o">=</span> <span class="n">metrics_factory</span><span class="o">.</span><span class="n">get_metrics_dataframe</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span>
+                        <span class="p">)</span>
+                        <span class="n">metrics_callback</span><span class="p">(</span>
+                            <span class="n">intermediate_metrics</span><span class="p">,</span> <span class="n">processed_samples</span><span class="p">,</span> <span class="n">total_samples</span>
+                        <span class="p">)</span>
+
+        <span class="c1"># Return both the DataFrame and the metrics factory for access to precision-recall curves</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;metrics_df&quot;</span><span class="p">:</span> <span class="n">metrics_factory</span><span class="o">.</span><span class="n">get_metrics_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">),</span>
+            <span class="s2">&quot;metrics_factory&quot;</span><span class="p">:</span> <span class="n">metrics_factory</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="TorchImageDetectionModel.get_computational_cost">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.get_computational_cost">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_computational_cost</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">image_size</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">runs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span> <span class="n">warm_up_runs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get computational cost metrics like inference time</span>
+
+<span class="sd">        :param image_size: Size of input image (H, W)</span>
+<span class="sd">        :type image_size: Tuple[int]</span>
+<span class="sd">        :param runs: Number of repeated runs to average over</span>
+<span class="sd">        :type runs: int</span>
+<span class="sd">        :param warm_up_runs: Warm-up runs before timing</span>
+<span class="sd">        :type warm_up_runs: int</span>
+<span class="sd">        :return: Dictionary with computational cost details</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">*</span><span class="n">image_size</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">get_computational_cost</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">dummy_input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_fname</span><span class="p">,</span> <span class="n">runs</span><span class="p">,</span> <span class="n">warm_up_runs</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, JdeRobot
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=acc74ff5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
