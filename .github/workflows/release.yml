@@ -17,6 +17,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+      
+      - name: Check version change
+        id: version_check
+        run: |
+          git fetch origin main --depth=2
+
+          PREV_VERSION=$(git show origin/main~1:pyproject.toml | grep '^version' | cut -d '"' -f2)
+          CURR_VERSION=$(grep '^version' pyproject.toml | cut -d '"' -f2)
+
+          echo "Previous version: $PREV_VERSION"
+          echo "Current version: $CURR_VERSION"
+
+          if [ "$PREV_VERSION" = "$CURR_VERSION" ]; then
+            echo "Version unchanged. Skipping release."
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Install Poetry
         run: |
@@ -27,5 +45,6 @@ jobs:
           poetry install --no-interaction --no-root
 
       - name: Build package
+        if: steps.version_check.outputs.changed == 'true'
         run: |
           poetry build
