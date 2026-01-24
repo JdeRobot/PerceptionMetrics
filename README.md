@@ -173,6 +173,3 @@ _To make your first contribution, follow this [Guide](https://github.com/JdeRobo
 
 # Acknowledgements
 LiDAR segmentation support is built upon open-source work from [Open3D-ML](https://github.com/isl-org/Open3D-ML), [mmdetection3d](https://github.com/open-mmlab/mmdetection3d), [SphereFormer](https://github.com/dvlab-research/SphereFormer), and [LSK3DNet](https://github.com/FengZicai/LSK3DNet).
-
-
-changing readme to check
