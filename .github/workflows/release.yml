@@ -43,7 +43,17 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --no-interaction --no-root
+          
+      - name: Build package
+        if: steps.version_check.outputs.changed == 'true'
+        run: |
+          poetry build
       
+      - name: List build artifacts
+        if: steps.version_check.outputs.changed == 'true'
+        run: |
+          ls -lh dist/
+
       - name: Publish to PyPI
         if: steps.version_check.outputs.changed == 'true'
         env:
@@ -51,7 +61,3 @@ jobs:
         run: |
           poetry publish --repository testpypi --no-interaction
 
-      - name: Build package
-        if: steps.version_check.outputs.changed == 'true'
-        run: |
-          poetry build

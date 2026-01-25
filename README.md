@@ -1,6 +1,6 @@
 <a href="https://mmg-ai.com/en/"><img src="https://jderobot.github.io/assets/images/logo.png" width="50" align="right" /></a>
 
-# PerceptionMetrics
+# Perception Metrics
 ### _Unified evaluation for perception models_
 
 #### Project webpage [here](https://jderobot.github.io/PerceptionMetrics)
