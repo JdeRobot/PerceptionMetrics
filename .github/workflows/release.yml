@@ -29,13 +29,14 @@ jobs:
           echo "Previous version: $PREV_VERSION"
           echo "Current version: $CURR_VERSION"
           echo "version=$CURR_VERSION" >> $GITHUB_OUTPUT
-          
+
           if [ "$PREV_VERSION" = "$CURR_VERSION" ]; then
             echo "Version unchanged. Skipping release."
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
+          
       - name: Install Poetry
         run: |
           pip install poetry
@@ -53,18 +54,13 @@ jobs:
         if: steps.version_check.outputs.changed == 'true'
         run: |
           ls -lh dist/
-      
-      - name: Configure TestPyPI repository
-        if: steps.version_check.outputs.changed == 'true'
-        run: |
-          poetry config repositories.testpypi https://test.pypi.org/legacy/
-
+  
       - name: Publish to PyPI
         if: steps.version_check.outputs.changed == 'true'
         env:
-          POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.POETRY_TESTPYPI_TOKEN_PYPI }}
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.POETRY_PYPI_TOKEN_PYPI }}
         run: |
-          poetry publish --repository testpypi --no-interaction
+          poetry publish  --no-interaction
 
       - name: Create git tag
         if: steps.version_check.outputs.changed == 'true'
