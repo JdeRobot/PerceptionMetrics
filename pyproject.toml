@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "perceptionmetrics"
-version = "3.0.1"
+version = "3.0.2"
 description = "Tools for evaluating segmentation and object detection models"
 authors = ["JdeRobot", "d.pascualhe <d.pascualhe@gmail.com>"]
 readme = "README.md"
