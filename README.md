@@ -19,7 +19,7 @@
   </tr>
 </table>
 
-![diagram](docs/assets/images/perceptionmetrics_diagram.png)
+![diagram](https://jderobot.github.io/PerceptionMetrics/assets/images/perceptionmetrics_diagram.png)
 
 # What's supported in PerceptionMetrics
 
@@ -93,7 +93,7 @@ Install your deep learning framework of preference in your environment. We have 
 If you are using LiDAR, Open3D currently requires `torch==2.2*`.
 
 ### Additional environments
-Some LiDAR segmentation models, such as SphereFormer and LSK3DNet, require a dedicated installation workflow. Refer to [additional_envs/INSTRUCTIONS.md](additional_envs/INSTRUCTIONS.md) for detailed setup instructions.
+Some LiDAR segmentation models, such as SphereFormer and LSK3DNet, require a dedicated installation workflow. Refer to [additional_envs/INSTRUCTIONS.md](https://github.com/JdeRobot/PerceptionMetrics/blob/master/additional_envs/INSTRUCTIONS.md) for detailed setup instructions.
 
 # Usage
 PerceptionMetrics can be used in three ways: through the **interactive GUI** (detection only), as a **Python library**, or via the **command-line interface** (segmentation and detection).
