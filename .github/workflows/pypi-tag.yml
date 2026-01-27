@@ -3,7 +3,7 @@ name: Release workflow
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - pyproject.toml
 
@@ -21,9 +21,9 @@ jobs:
       - name: Check version change
         id: version_check
         run: |
-          git fetch origin main --depth=2
+          git fetch origin master --depth=2
 
-          PREV_VERSION=$(git show origin/main~1:pyproject.toml | grep '^version' | cut -d '"' -f2)
+          PREV_VERSION=$(git show origin/master~1:pyproject.toml | grep '^version' | cut -d '"' -f2)
           CURR_VERSION=$(grep '^version' pyproject.toml | cut -d '"' -f2)
 
           echo "Previous version: $PREV_VERSION"
