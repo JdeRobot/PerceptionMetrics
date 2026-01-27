@@ -25,7 +25,7 @@ excerpt:
   </tr>
 </table>
 
-![diagram](../assets/images/perceptionmetrics_diagram.png)
+![diagram](assets/images/perceptionmetrics_diagram.png)
 
 # What's supported in PerceptionMetrics
 
