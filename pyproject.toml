@@ -4,7 +4,8 @@ version = "3.0.1"
 description = "Tools for evaluating segmentation and object detection models"
 authors = ["JdeRobot", "d.pascualhe <d.pascualhe@gmail.com>"]
 readme = "README.md"
-license = "LICENSE"
+license = "GPL-3.0-only"
+license-files = ["LICENSE", "THIRD-PARTY-NOTICES.md"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
