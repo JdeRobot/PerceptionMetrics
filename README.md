@@ -52,6 +52,13 @@
 
 More details about the specific metrics and input/output formats required fow each framework are provided in the [Compatibility](https://jderobot.github.io/PerceptionMetrics/compatibility/) section in our webpage.
 
+> **Note on Object Detection Evaluation**: PerceptionMetrics follows industry-standard evaluation practices aligned with [Ultralytics YOLO](https://docs.ultralytics.com/guides/yolo-performance-metrics/). Key features include:
+> - **mAP and PR curves** computed without confidence filtering (all predictions kept)
+> - **Precision/Recall/Confusion Matrix** computed at user-defined or F1-maximizing threshold
+> - **Confusion matrices with background class** for complete error analysis
+> 
+> See our [Detection Evaluation Methodology](https://jderobot.github.io/PerceptionMetrics/detection_evaluation/) guide for details.
+
 
 # Installation
 

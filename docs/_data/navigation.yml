@@ -6,6 +6,8 @@ main:
     url: /compatibility
   - title: Usage
     url: /usage/
+  - title: Detection Evaluation
+    url: /detection_evaluation/
   - title: DetectionMetrics
     url: /DetectionMetrics/
   - title: About

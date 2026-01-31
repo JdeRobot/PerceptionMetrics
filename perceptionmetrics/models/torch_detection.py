@@ -247,10 +247,14 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         self.postprocess_detection = postprocess_detection
 
         # Load confidence and NMS thresholds from config
+        # NOTE: For mAP and PR curves, we keep all predictions (conf_threshold=0)
+        # For precision/recall/confusion matrix, the threshold is applied in metrics computation
         self.confidence_threshold = self.model_cfg.get("confidence_threshold", 0.5)
         self.nms_threshold = self.model_cfg.get("nms_threshold", 0.3)
 
-        self.postprocess_args = [self.confidence_threshold]
+        # During evaluation, set confidence_threshold=0 to keep all predictions
+        # This aligns with Ultralytics: mAP/PR curves computed without conf filtering
+        self.postprocess_args = [0.0]  # No confidence filtering during inference
         if self.model_format == "yolo":
             self.postprocess_args.append(self.nms_threshold)
 
@@ -389,6 +393,10 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         # Get iou_threshold from model config, default to 0.5 if not present
         iou_threshold = self.model_cfg.get("iou_threshold", 0.5)
 
+        # Get confidence threshold for precision/recall/confusion matrix
+        # If not specified, metrics factory will auto-select optimal threshold
+        conf_threshold_for_metrics = self.model_cfg.get("confidence_threshold", None)
+
         # Get evaluation_step from model config, default to None (no intermediate updates)
         evaluation_step = self.model_cfg.get("evaluation_step", None)
         # If evaluation_step is 0, treat as None (disabled)
@@ -396,8 +404,12 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             evaluation_step = None
 
         # Init metrics
+        # NOTE: conf_threshold here is for precision/recall/confusion matrix only
+        # mAP and PR curves are computed on ALL predictions (no conf filtering)
         metrics_factory = um.DetectionMetricsFactory(
-            iou_threshold=iou_threshold, num_classes=self.n_classes
+            iou_threshold=iou_threshold,
+            num_classes=self.n_classes,
+            conf_threshold=conf_threshold_for_metrics,
         )
 
         # Calculate total samples for progress tracking
