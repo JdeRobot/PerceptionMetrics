@@ -54,45 +54,71 @@ More details about the specific metrics and input/output formats required fow ea
 
 
 # Installation
-In the near future, *PerceptionMetrics* is planned to be deployed in PyPI. In the meantime, you can clone our repo and build the package locally using either *venv* or *Poetry*.
 
-### Using venv
-Create your virtual environment:
-```
-python3 -m venv .venv
-```
+*PerceptionMetrics* offers two installation tracks depending on your use case:
 
-Activate your environment and install as pip package:
-```
-source .venv/bin/activate
-pip install -e .
+## For Regular Users (Recommended)
+
+In the near future, *PerceptionMetrics* will be available on PyPI. In the meantime, install directly from the repository using pip:
+
+```bash
+pip install git+https://github.com/JdeRobot/PerceptionMetrics.git
 ```
 
-### Using Poetry
-
-Install Poetry (if not done before):
+Or clone and install locally:
+```bash
+git clone https://github.com/JdeRobot/PerceptionMetrics.git
+cd PerceptionMetrics
+pip install .
 ```
+
+**Deep Learning Framework:** Install your preferred framework:
+```bash
+# For PyTorch (choose one based on your needs)
+pip install torch==2.4.1 torchvision==0.19.1
+# or
+pip install torch==2.2.2 torchvision==0.17.2
+
+# For TensorFlow
+pip install tensorflow==2.17.1
+```
+
+**Note:** If you are using LiDAR, Open3D currently requires `torch==2.2*`.
+
+## For Developers
+
+If you plan to contribute to the project or need an editable installation, use Poetry:
+
+**1. Install Poetry** (if not already installed):
+```bash
 python3 -m pip install --user pipx
 pipx install poetry
 ```
 
-Install dependencies and activate poetry environment (you can get out of the Poetry shell by running `exit`):
-```
+**2. Clone and install dependencies:**
+```bash
+git clone https://github.com/JdeRobot/PerceptionMetrics.git
+cd PerceptionMetrics
 poetry install
-eval $(poetry env activate)
 ```
 
-### Common
-Install your deep learning framework of preference in your environment. We have tested:
+**3. Activate the Poetry environment:**
+```bash
+poetry shell
+```
+
+**4. Install your deep learning framework** of preference in the Poetry environment. We have tested:
 - CUDA Version: `12.6`
-- `torch==2.4.1` and `torchvision==0.19.1`.
-- `torch==2.2.2` and `torchvision==0.17.2`.
+- `torch==2.4.1` and `torchvision==0.19.1`
+- `torch==2.2.2` and `torchvision==0.17.2`
 - `tensorflow==2.17.1`
 - `tensorflow==2.16.1`
 
 If you are using LiDAR, Open3D currently requires `torch==2.2*`.
 
-### Additional environments
+You can exit the Poetry shell by running `exit`.
+
+## Additional Environments
 Some LiDAR segmentation models, such as SphereFormer and LSK3DNet, require a dedicated installation workflow. Refer to [additional_envs/INSTRUCTIONS.md](https://github.com/JdeRobot/PerceptionMetrics/blob/master/additional_envs/INSTRUCTIONS.md) for detailed setup instructions.
 
 # Usage
