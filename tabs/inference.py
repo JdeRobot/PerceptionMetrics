@@ -81,9 +81,7 @@ def inference_tab():
                 result_img = draw_detections(image.copy(), predictions, label_map)
 
                 st.markdown("#### Detection Results")
-                st.image(
-                    result_img, caption="Detection Results", use_container_width=True
-                )
+                st.image(result_img, caption="Detection Results", width="stretch")
 
                 # Display detection statistics
                 if (

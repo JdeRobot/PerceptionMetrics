@@ -7,7 +7,6 @@ def dataset_viewer_tab():
     import tempfile
     from perceptionmetrics.datasets.coco import CocoDataset
     from perceptionmetrics.datasets.yolo import YOLODataset
-    import supervision as sv
     import numpy as np
     from PIL import Image
     from supervision.draw.color import ColorPalette
@@ -16,8 +15,8 @@ def dataset_viewer_tab():
 
     # Get inputs from session state
     dataset_path = st.session_state.get("dataset_path", "")
-    dataset_type = st.session_state.get("dataset_type_selectbox", "COCO").lower()
-    split = st.session_state.get("split_selectbox", "val")
+    dataset_type = st.session_state.get("dataset_type", "COCO").lower()
+    split = st.session_state.get("split", "val")
 
     # Header row only
     st.header("Dataset Viewer")
@@ -27,7 +26,6 @@ def dataset_viewer_tab():
         return
 
     # Setup paths and pagination
-           # Setup paths and pagination
     if dataset_type == "coco":
         img_dir = os.path.join(dataset_path, f"images/{split}2017")
         ann_file = os.path.join(
@@ -162,7 +160,7 @@ def dataset_viewer_tab():
 
     # Pagination
     IMAGES_PER_PAGE = 12
-    total_images, total_pages = (
+    _, total_pages = (
         len(image_files),
         (len(image_files) + IMAGES_PER_PAGE - 1) // IMAGES_PER_PAGE,
     )
@@ -197,7 +195,7 @@ def dataset_viewer_tab():
             st.rerun()
     with col2:
         st.markdown(
-            f"<div style='text-align:center;font-weight:bold;'>Page {current_page+1} of {total_pages}</div>",
+            f"<div style='text-align:center;font-weight:bold;'>Page {current_page + 1} of {total_pages}</div>",
             unsafe_allow_html=True,
         )
     with col3:
@@ -220,7 +218,7 @@ def dataset_viewer_tab():
         col1, col2, col3 = st.columns([4, 1, 1])
         with col1:
             selected_img = st.selectbox(
-                "Search image:", options=image_files, key="search_image_selectbox"
+                "Search image:", options=image_files, key="search_image"
             )
         with col2:
             st.markdown(
@@ -231,7 +229,7 @@ def dataset_viewer_tab():
                 st.session_state[page_key] = new_page
                 st.session_state[
                     f"img_select_all_{dataset_path}_{split}_{new_page}"
-                ] = (image_files.index(selected_img) % IMAGES_PER_PAGE)
+                ] = image_files.index(selected_img) % IMAGES_PER_PAGE
                 st.session_state["show_search_dropdown"] = False
                 st.rerun()
         with col3:
@@ -252,7 +250,7 @@ def dataset_viewer_tab():
             label="",
             images=image_paths,
             captions=sample_images,
-            use_container_width=True,
+            use_container_width=False,
             key=img_select_key,
             index=img_select_index,
         )
@@ -314,7 +312,7 @@ def dataset_viewer_tab():
                 except AttributeError:
                     resample = Image.LANCZOS
                 annotated_pil.thumbnail((500, 500), resample)
-                st.image(annotated_pil, use_container_width=False)
+                st.image(annotated_pil, width="content")
             else:
                 st.warning("No annotation found for this image.")
         except Exception as e:
