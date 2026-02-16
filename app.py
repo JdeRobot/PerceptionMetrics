@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 import sys
 import subprocess
 from tabs.dataset_viewer import dataset_viewer_tab
@@ -67,6 +66,10 @@ def browse_folder():
         return None
 
 
+def browse_dataset_path():
+    st.session_state.dataset_path = browse_folder()
+
+
 st.set_page_config(page_title="PerceptionMetrics", layout="wide")
 
 PAGES = {
@@ -77,8 +80,8 @@ PAGES = {
 
 # Initialize commonly used session state keys
 st.session_state.setdefault("dataset_path", "")
-st.session_state.setdefault("dataset_type_selectbox", "COCO")
-st.session_state.setdefault("split_selectbox", "val")
+st.session_state.setdefault("dataset_type", "COCO")
+st.session_state.setdefault("split", "val")
 st.session_state.setdefault("config_option", "Manual Configuration")
 st.session_state.setdefault("confidence_threshold", 0.5)
 st.session_state.setdefault("nms_threshold", 0.5)
@@ -95,59 +98,36 @@ with st.sidebar:
         # First row: Type and Split
         col1, col2 = st.columns(2)
         with col1:
-            dataset_type_selectbox = st.selectbox(
+            st.selectbox(
                 "Type",
                 ["COCO", "YOLO"],
-                key="dataset_type_selectbox",
+                key="dataset_type",
             )
         with col2:
             st.selectbox(
                 "Split",
                 ["train", "val", "test"],
-                key="split_selectbox",
+                key="split",
             )
 
         # Second row: Path and Browse button
         col1, col2 = st.columns([3, 1])
         with col1:
-            dataset_path_input = st.text_input(
-                "Dataset Folder",
-                value=st.session_state.get("dataset_path", ""),
-                key="dataset_path_input",
-            )
+            st.text_input("Dataset Folder", key="dataset_path")
         with col2:
             st.markdown(
                 "<div style='margin-bottom: 1.75rem;'></div>", unsafe_allow_html=True
             )
-            if st.button("Browse", key="browse_button"):
-                folder = browse_folder()
-                if folder and os.path.isdir(folder):
-                    st.session_state["dataset_path"] = folder
-                    st.rerun()
-                elif folder is not None:
-                    st.warning("Selected path is not a valid folder.")
-                else:
-                    st.warning(
-                        "Could not open folder browser. Please enter the path manually"
-                    )
-
-        if dataset_path_input != st.session_state.get("dataset_path", ""):
-            st.session_state["dataset_path"] = dataset_path_input
-        if dataset_type_selectbox != st.session_state.get("dataset_type", ""):
-            st.session_state["dataset_type"] = dataset_type_selectbox
+            st.button("Browse", on_click=browse_dataset_path)
 
         # Additional input for YOLO config file
-        if dataset_type_selectbox == "YOLO":
-            dataset_config_file_uploader = st.file_uploader(
+        if st.session_state.get("dataset_type", "COCO") == "YOLO":
+            st.file_uploader(
                 "Dataset Configuration (.yaml)",
                 type=["yaml"],
                 key="dataset_config_file",
                 help="Upload a YAML dataset configuration file.",
             )
-            if dataset_config_file_uploader != st.session_state.get(
-                "dataset_config_file", None
-            ):
-                st.session_state["dataset_config_file"] = dataset_config_file_uploader
 
     with st.expander("Model Inputs", expanded=False):
         st.file_uploader(
@@ -254,6 +234,7 @@ with st.sidebar:
                     key="resize_width",
                     help="Width to resize images for inference",
                 )
+
         # Load model action in sidebar
         from perceptionmetrics.models.torch_detection import TorchImageDetectionModel
         import json, tempfile
@@ -261,7 +242,7 @@ with st.sidebar:
         load_model_btn = st.button(
             "Load Model",
             type="primary",
-            use_container_width=True,
+            width="stretch",
             help="Load and save the model for use in the Inference tab",
             key="sidebar_load_model_btn",
         )
