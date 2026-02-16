@@ -135,6 +135,7 @@ with st.sidebar:
             type=["pt", "onnx", "h5", "pb", "pth", "torchscript"],
             key="model_file",
             help="Upload your trained model file.",
+            max_upload_size=1024,  # MB
         )
         st.file_uploader(
             "Ontology File (.json)",
