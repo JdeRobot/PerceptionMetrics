@@ -2,8 +2,6 @@ import streamlit as st
 import os
 import tempfile
 import json
-import pandas as pd
-from perceptionmetrics.models.torch_detection import TorchImageDetectionModel
 from perceptionmetrics.datasets.coco import CocoDataset
 
 
@@ -19,8 +17,8 @@ def evaluator_tab():
 
     # Check for dataset from sidebar inputs
     dataset_path = st.session_state.get("dataset_path", "")
-    dataset_type = st.session_state.get("dataset_type_selectbox", "Coco")
-    split = st.session_state.get("split_selectbox", "val")
+    dataset_type = st.session_state.get("dataset_type", "Coco")
+    split = st.session_state.get("split", "val")
 
     # Try to get existing dataset from session state first
     dataset_key = f"{dataset_path}_{split}"
@@ -134,11 +132,6 @@ def evaluator_tab():
                 if save_predictions:
                     predictions_outdir = tempfile.mkdtemp(prefix="eval_predictions_")
 
-                # Use model config as is (no confidence threshold override)
-                eval_config = model.model_cfg.copy()
-
-                # Ready to evaluate
-
                 # Create progress bar for evaluation
                 progress_bar = st.progress(0)
                 status_text = st.empty()
@@ -205,7 +198,7 @@ def evaluator_tab():
 
                         with intermediate_table_placeholder.container():
                             st.markdown("#### Per-Class Metrics (Intermediate)")
-                            st.dataframe(display_df, use_container_width=True)
+                            st.dataframe(display_df, width="stretch")
 
                     except Exception as e:
                         st.error(f"Metrics callback error: {e}")
@@ -321,7 +314,7 @@ def display_evaluation_results(results):
         if col in display_df.columns:
             display_df[col] = display_df[col].round(3)
 
-    st.dataframe(display_df, use_container_width=True)
+    st.dataframe(display_df, width="stretch")
 
     # Now display Precision-Recall Curve
     if metrics_factory is not None:
@@ -334,7 +327,6 @@ def display_evaluation_results(results):
 
             # Create the plot using streamlit's plotly integration
             import plotly.graph_objects as go
-            from plotly.subplots import make_subplots
 
             # Create the precision-recall curve
             fig = go.Figure()
@@ -379,7 +371,7 @@ def display_evaluation_results(results):
             fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor="lightgray")
             fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor="lightgray")
 
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
         except Exception as e:
             st.error(f"Error plotting precision-recall curve: {e}")
@@ -403,7 +395,6 @@ def display_evaluation_results(results):
             else None
         )
         if curve_data is not None:
-            import io
             import pandas as pd
 
             pr_points_df = pd.DataFrame(
@@ -439,7 +430,7 @@ def display_evaluation_results(results):
         st.write("Columns:", metrics_df.columns.tolist())
 
         st.markdown("**Sample Data:**")
-        st.dataframe(metrics_df.head(), use_container_width=True)
+        st.dataframe(metrics_df.head(), width="stretch")
 
         if "evaluation_config" in st.session_state:
             st.markdown("**Evaluation Configuration:**")

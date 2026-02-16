@@ -24,7 +24,7 @@ click = "^8.1.8"
 tensorboard = "^2.18.0"
 pycocotools = { version = "^2.0.7", markers = "sys_platform != 'win32'" }
 pycocotools-windows = { version = "^2.0.0.2", markers = "sys_platform == 'win32'" }
-Streamlit = "1.46.0"
+Streamlit = "1.54.0"
 streamlit-image-select = "^0.6.0"
 supervision = "^0.18.0"
 
