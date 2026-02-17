@@ -27,6 +27,8 @@ excerpt:
 
 ![diagram](assets/images/perceptionmetrics_diagram.png)
 
+{% include video id="r0hG5Wm6u7c" provider="youtube" %}
+
 # What's supported in PerceptionMetrics
 
 <table><thead>
