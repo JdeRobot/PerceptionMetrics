@@ -206,7 +206,17 @@ sidebar:
     - Mean Average Precision (mAP), including COCO-style mAP@[0.5:0.95:0.05]
     - Area Under the Precision-Recall Curve (AUC-PR)
     - Precision, Recall, F1-Score
-    - Per-class metrics and confusion matrices
+    - Per-class metrics and confusion matrices with background class support
+- **Evaluation Methodology (aligned with [Ultralytics](https://docs.ultralytics.com/guides/yolo-performance-metrics/)):**
+    - **mAP and Precision-Recall Curves**: Computed without confidence threshold filtering. All predicted boxes are kept to evaluate performance across the full confidence range (0 to 1). This allows proper ranking-based evaluation.
+    - **Precision, Recall, and Confusion Matrix**: Computed at a specific confidence threshold:
+        - If `confidence_threshold` is specified in the model config, that value is used
+        - If not specified, the threshold that maximizes F1 score is automatically selected
+        - The optimal threshold and corresponding F1 score are reported when auto-selection is used
+    - **Confusion Matrix with Background Class**: Following Ultralytics convention, includes an implicit "background" class:
+        - Unmatched predictions (FP) → counted as `predicted_class` vs `background`
+        - Unmatched ground truth (FN) → counted as `background` vs `true_class`
+        - This provides a complete view of model errors including missed detections
 - Computational cost:
     - Number of parameters, average inference time, model size
 - GUI Support:

@@ -3,7 +3,7 @@ def postprocess_detection(output: dict, confidence_threshold: float = 0.5):
 
     :param output: Dictionary with keys 'boxes', 'labels', and 'scores'.
     :type output: dict
-    :param confidence_threshold: Confidence threshold to filter boxes.
+    :param confidence_threshold: Confidence threshold to filter boxes. Set to 0 to keep all predictions (e.g., for mAP/PR curves).
     :type confidence_threshold: float
     :return: Dictionary with keys 'boxes', 'labels', and 'scores'.
     :rtype: dict
