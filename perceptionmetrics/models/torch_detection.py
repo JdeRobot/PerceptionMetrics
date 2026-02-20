@@ -304,18 +304,36 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
 
         self.transform_input = transforms.Compose(self.transform_input)
 
-    def inference(self, image: Image.Image) -> Dict[str, torch.Tensor]:
-        """Perform object detection inference for a single image
+    def predict(
+        self, image: Image.Image, return_sample: bool = False
+    ) -> Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]:
+        """Perform prediction for a single image
 
         :param image: PIL image
         :type image: Image.Image
+        :param return_sample: Whether to return the sample data along with predictions, defaults to False
+        :type return_sample: bool, optional
+        :return: Detection result or a tuple with the detection result and the input sample tensor
+        :rtype: Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]
+        """
+        sample = self.transform_input(image).unsqueeze(0).to(self.device)
+        result = self.inference(sample)
+
+        if return_sample:
+            return result, sample
+        else:
+            return result
+
+    def inference(self, tensor_in: torch.Tensor) -> Dict[str, torch.Tensor]:
+        """Perform inference for a tensor
+
+        :param tensor_in: Input tensor
+        :type tensor_in: torch.Tensor
         :return: Dictionary with keys 'boxes', 'labels', 'scores'
         :rtype: Dict[str, torch.Tensor]
         """
-        tensor = self.transform_input(image).unsqueeze(0).to(self.device)
-
         with torch.no_grad():
-            result = self.model(tensor)[0]  # Return only first image's result
+            result = self.model(tensor_in.to(self.device))[0]  # only first image
 
         # Apply threshold filtering from model config
         result = self.postprocess_detection(result, *self.postprocess_args)

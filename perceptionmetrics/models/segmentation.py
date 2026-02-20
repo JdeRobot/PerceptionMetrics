@@ -36,14 +36,16 @@ class SegmentationModel(PerceptionModel):
 
     @abstractmethod
     def predict(
-        self, data: Union[np.ndarray, Image.Image]
-    ) -> Union[np.ndarray, Image.Image]:
+        self, data: Union[np.ndarray, Image.Image], return_sample: bool = False
+    ) -> Union[np.ndarray, Image.Image, Tuple[np.ndarray, Image.Image]]:
         """Perform prediction for a single data sample
 
-        :param data: Input data sample (image or point cloud)
+        :param data: Input data sample
         :type data: Union[np.ndarray, Image.Image]
-        :return: Prediction result
-        :rtype: Union[np.ndarray, Image.Image]
+        :param return_sample: Whether to return the sample data along with predictions, defaults to False
+        :type return_sample: bool, optional
+        :return: Prediction result or a tuple with the detection result and the input sample tensor
+        :rtype: Union[np.ndarray, Image.Image, Tuple[np.ndarray, Image.Image]]
         """
         raise NotImplementedError
 

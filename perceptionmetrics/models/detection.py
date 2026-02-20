@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -105,6 +105,21 @@ class ImageDetectionModel(DetectionModel):
         :type image: Image.Image
         :return: List of detection results
         :rtype: List[dict]
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def predict(
+        self, image: Image.Image, return_sample: bool = False
+    ) -> Union[List[dict], Tuple[List[dict], Any]]:
+        """Perform prediction for a single image
+
+        :param image: PIL image
+        :type image: Image.Image
+        :param return_sample: Whether to return the sample data along with predictions, defaults to False
+        :type return_sample: bool, optional
+        :return: Detection result or a tuple with the detection result and the input sample tensor
+        :rtype: Union[List[dict], Tuple[List[dict], Any]]
         """
         raise NotImplementedError
 
