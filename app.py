@@ -19,13 +19,13 @@ PAGES = {
 
 # Initialize commonly used session state keys
 st.session_state.setdefault("dataset_path", "")
-st.session_state.setdefault("dataset_type", "COCO")
-st.session_state.setdefault("split", "val")
+st.session_state.setdefault("dataset_type", "YOLO")
+st.session_state.setdefault("split", "test")
 st.session_state.setdefault("config_option", "Manual Configuration")
 st.session_state.setdefault("confidence_threshold", 0.5)
 st.session_state.setdefault("nms_threshold", 0.5)
 st.session_state.setdefault("max_detections", 100)
-st.session_state.setdefault("device", "cpu")
+st.session_state.setdefault("device", "cuda")
 st.session_state.setdefault("batch_size", 1)
 st.session_state.setdefault("evaluation_step", 5)
 st.session_state.setdefault("detection_model", None)
