@@ -1,69 +1,8 @@
 import streamlit as st
-import sys
-import subprocess
 from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
-
-
-def browse_folder():
-    """
-    Opens a native folder selection dialog and returns the selected folder path.
-    Works on Windows, macOS, and Linux (with zenity or kdialog).
-    Returns None if cancelled or error.
-    """
-    try:
-        if sys.platform.startswith("win"):
-            script = (
-                "Add-Type -AssemblyName System.windows.forms;"
-                "$f=New-Object System.Windows.Forms.FolderBrowserDialog;"
-                'if($f.ShowDialog() -eq "OK"){Write-Output $f.SelectedPath}'
-            )
-            result = subprocess.run(
-                ["powershell", "-NoProfile", "-Command", script],
-                capture_output=True,
-                text=True,
-                timeout=30,
-            )
-            folder = result.stdout.strip()
-            return folder if folder else None
-        elif sys.platform == "darwin":
-            script = (
-                'POSIX path of (choose folder with prompt "Select dataset folder:")'
-            )
-            result = subprocess.run(
-                ["osascript", "-e", script], capture_output=True, text=True, timeout=30
-            )
-            folder = result.stdout.strip()
-            return folder if folder else None
-        else:
-            # Linux: try zenity, then kdialog
-            for cmd in [
-                [
-                    "zenity",
-                    "--file-selection",
-                    "--directory",
-                    "--title=Select dataset folder",
-                ],
-                [
-                    "kdialog",
-                    "--getexistingdirectory",
-                    "--title",
-                    "Select dataset folder",
-                ],
-            ]:
-                try:
-                    result = subprocess.run(
-                        cmd, capture_output=True, text=True, timeout=30
-                    )
-                    folder = result.stdout.strip()
-                    if folder:
-                        return folder
-                except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
-                    continue
-            return None
-    except Exception:
-        return None
+from perceptionmetrics.utils.gui import browse_folder
 
 
 def browse_dataset_path():

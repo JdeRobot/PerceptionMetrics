@@ -5,6 +5,15 @@ import json
 from perceptionmetrics.datasets.coco import CocoDataset
 
 
+from perceptionmetrics.utils.gui import browse_folder
+
+
+def browse_predictions_outdir():
+    folder = browse_folder()
+    if folder:
+        st.session_state.predictions_outdir = folder
+
+
 def evaluator_tab():
     st.header("Evaluator")
     st.markdown("Evaluate your model on the loaded dataset using PerceptionMetrics.")
