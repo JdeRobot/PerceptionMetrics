@@ -140,8 +140,8 @@ def dataset_viewer_tab():
                 elif dataset_type == "yolo":
                     yolo_dataset = st.session_state[dataset_key]
                     yolo_dataset.dataset = st.session_state["full_dataset_df"][
-                        yolo_dataset.dataset["split"] == split
-                    ]
+                        st.session_state["full_dataset_df"]["split"] == split
+                    ].reset_index(drop=True)
                     st.session_state[dataset_key] = yolo_dataset
                 else:
                     st.error("Unsupported dataset type.")
