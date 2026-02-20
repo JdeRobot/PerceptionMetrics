@@ -1,3 +1,4 @@
+from copy import copy
 import os
 import time
 from typing import Any, List, Optional, Tuple, Union, Dict
@@ -8,11 +9,49 @@ from PIL import Image
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2 as transforms
-from tqdm.notebook import tqdm
+from torchvision import tv_tensors
+from tqdm.auto import tqdm
 
 from perceptionmetrics.datasets import detection as detection_dataset
 from perceptionmetrics.models import detection as detection_model
 from perceptionmetrics.utils import detection_metrics as um
+from perceptionmetrics.utils import image as ui
+
+
+def get_resize_args(resize_cfg: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Get the resize arguments for torchvision.transforms.Resize from the configuration.
+
+    :param resize_cfg: Resize configuration dictionary
+    :return: Dictionary with arguments for transforms.Resize
+    """
+    resize_args = {"interpolation": transforms.InterpolationMode.BILINEAR}
+    fixed_h = resize_cfg.get("height")
+    fixed_w = resize_cfg.get("width")
+    min_side = resize_cfg.get("min_side")
+    max_side = resize_cfg.get("max_side")
+
+    if fixed_h is not None and fixed_w is not None:
+        if min_side is not None:
+            raise ValueError(
+                "Resize config cannot satisfy both fixed dimensions (width/height) and min_side. They are mutually exclusive."
+            )
+        resize_args["size"] = (fixed_h, fixed_w)
+    elif min_side is not None:
+        resize_args["size"] = min_side
+        if fixed_h is not None or fixed_w is not None:
+            raise ValueError(
+                "Resize config cannot satisfy both fixed dimensions (width/height) and min_side. They are mutually exclusive."
+            )
+    else:
+        raise ValueError(
+            "Resize config must contain either 'height' and 'width' or 'min_side' and 'max_side'."
+        )
+
+    if max_side is not None:
+        resize_args["max_size"] = max_side
+
+    return resize_args
 
 
 def data_to_device(
@@ -142,9 +181,13 @@ class ImageDetectionTorchDataset(Dataset):
         transform: transforms.Compose,
         splits: List[str] = ["test"],
     ):
+        self.dataset = copy(dataset)
+
         # Filter split and make filenames global
-        dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
-        self.dataset = dataset
+        self.dataset.dataset = self.dataset.dataset[
+            self.dataset.dataset["split"].isin(splits)
+        ]
+
         # Use the dataset's make_fname_global method instead of manual path joining
         self.dataset.make_fname_global()
 
@@ -170,12 +213,14 @@ class ImageDetectionTorchDataset(Dataset):
         boxes, category_indices = self.dataset.read_annotation(ann_path)
 
         # Convert boxes/labels to tensors
-        boxes = torch.as_tensor(boxes, dtype=torch.float32)  # [N, 4]
-        category_indices = torch.as_tensor(category_indices, dtype=torch.int64)  # [N]
+        boxes = tv_tensors.BoundingBoxes(
+            boxes, format="XYXY", canvas_size=(image.height, image.width)
+        )
+        category_indices = torch.as_tensor(category_indices, dtype=torch.int64)
 
         target = {
-            "boxes": boxes,  # shape [N, 4] in [x1, y1, x2, y2] format
-            "labels": category_indices,  # shape [N]
+            "boxes": boxes,  # [N, 4]
+            "labels": category_indices,  # [N]
         }
 
         if self.transform:
@@ -254,27 +299,18 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         if self.model_format == "yolo":
             self.postprocess_args.append(self.nms_threshold)
 
-        # --- Add reverse mapping for idx to class_name ---
+        # Add reverse mapping for idx to class_name
         self.idx_to_class_name = {v["idx"]: k for k, v in self.ontology.items()}
 
         # Build input transforms (resize, normalize, etc.)
         self.transform_input = []
 
-        # Default resize to 640x640 if not specified
-        if "resize" in self.model_cfg:
-            resize_height = self.model_cfg["resize"].get("height", 640)
-            resize_width = self.model_cfg["resize"].get("width", 640)
+        resize_cfg = self.model_cfg.get("resize")
+        if resize_cfg is not None:
+            resize_args = get_resize_args(resize_cfg)
+            self.transform_input.append(transforms.Resize(**resize_args))
         else:
-            # Default to 640x640 when no resize is specified
-            resize_height = 640
-            resize_width = 640
-
-        self.transform_input += [
-            transforms.Resize(
-                size=(resize_height, resize_width),
-                interpolation=transforms.InterpolationMode.BILINEAR,
-            )
-        ]
+            print("'resize_cfg' missing in model config. No resizing will be applied.")
 
         if "crop" in self.model_cfg:
             crop_size = (

@@ -185,15 +185,6 @@ with st.sidebar:
                     step=1,
                     key="max_detections",
                 )
-                st.number_input(
-                    "Image Resize Height",
-                    min_value=1,
-                    max_value=4096,
-                    value=640,
-                    step=1,
-                    key="resize_height",
-                    help="Height to resize images for inference",
-                )
             with col2:
                 st.selectbox(
                     "Device",
@@ -226,15 +217,82 @@ with st.sidebar:
                     key="evaluation_step",
                     help="Update UI with intermediate metrics every N images (0 = disable intermediate updates)",
                 )
-                st.number_input(
-                    "Image Resize Width",
-                    min_value=1,
-                    max_value=4096,
-                    value=640,
-                    step=1,
-                    key="resize_width",
-                    help="Width to resize images for inference",
+
+            st.write("---")
+            st.write("**Image Size Configuration**")
+
+            # Resize Logic
+            enable_resize = st.checkbox(
+                "Enable Resize", value=True, key="enable_resize"
+            )
+
+            if enable_resize:
+                resize_strategy = st.radio(
+                    "Resize Strategy",
+                    ["Fixed Dimensions", "Min Side"],
+                    key="resize_strategy",
+                    horizontal=True,
+                    label_visibility="collapsed",
                 )
+
+                if resize_strategy == "Fixed Dimensions":
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        st.number_input(
+                            "Image Resize Height",
+                            min_value=1,
+                            max_value=4096,
+                            value=640,
+                            step=1,
+                            key="resize_height",
+                            help="Height to resize images for inference",
+                        )
+                    with c2:
+                        st.number_input(
+                            "Image Resize Width",
+                            min_value=1,
+                            max_value=4096,
+                            value=640,
+                            step=1,
+                            key="resize_width",
+                            help="Width to resize images for inference",
+                        )
+                else:
+                    st.number_input(
+                        "Min Side",
+                        min_value=1,
+                        max_value=4096,
+                        value=640,
+                        step=1,
+                        key="min_side",
+                        help="Minimum size of the shorter side of the image",
+                    )
+
+            # Crop Logic
+            enable_crop = st.checkbox("Enable Center Crop", key="enable_crop")
+
+            if enable_crop:
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.number_input(
+                        "Crop Height",
+                        min_value=1,
+                        max_value=4096,
+                        value=640,
+                        step=1,
+                        key="crop_height",
+                        help="Center crop height",
+                    )
+                with c2:
+                    st.number_input(
+                        "Crop Width",
+                        min_value=1,
+                        max_value=4096,
+                        value=640,
+                        step=1,
+                        key="crop_width",
+                        help="Center crop width",
+                    )
 
         # Load model action in sidebar
         from perceptionmetrics.models.torch_detection import TorchImageDetectionModel
@@ -283,9 +341,30 @@ with st.sidebar:
                     device = st.session_state.get("device", "cpu")
                     batch_size = int(st.session_state.get("batch_size", 1))
                     evaluation_step = int(st.session_state.get("evaluation_step", 5))
-                    resize_height = int(st.session_state.get("resize_height", 640))
-                    resize_width = int(st.session_state.get("resize_width", 640))
                     model_format = st.session_state.get("model_format", "torchvision")
+
+                    # Resize Logic extraction
+                    enable_resize = st.session_state.get("enable_resize", True)
+                    resize_cfg = None
+                    if enable_resize:
+                        resize_strategy = st.session_state.get(
+                            "resize_strategy", "Fixed Dimensions"
+                        )
+                        if resize_strategy == "Fixed Dimensions":
+                            resize_height = int(
+                                st.session_state.get("resize_height", 640)
+                            )
+                            resize_width = int(
+                                st.session_state.get("resize_width", 640)
+                            )
+                            resize_cfg = {
+                                "height": resize_height,
+                                "width": resize_width,
+                            }
+                        else:
+                            min_side = int(st.session_state.get("min_side", 640))
+                            resize_cfg = {"min_side": min_side}
+
                     config_data = {
                         "confidence_threshold": confidence_threshold,
                         "nms_threshold": nms_threshold,
@@ -293,10 +372,17 @@ with st.sidebar:
                         "device": device,
                         "batch_size": batch_size,
                         "evaluation_step": evaluation_step,
-                        "resize_height": resize_height,
-                        "resize_width": resize_width,
                         "model_format": model_format.lower(),
                     }
+                    if resize_cfg is not None:
+                        config_data["resize"] = resize_cfg
+
+                    if enable_crop:
+                        crop_height = int(st.session_state.get("crop_height", 640))
+                        crop_width = int(st.session_state.get("crop_width", 640))
+                        crop_cfg = {"height": crop_height, "width": crop_width}
+                        config_data["crop"] = crop_cfg
+
                     with tempfile.NamedTemporaryFile(
                         delete=False, suffix=".json", mode="w"
                     ) as tmp_cfg:
