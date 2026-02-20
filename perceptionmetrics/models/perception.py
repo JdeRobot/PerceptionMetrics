@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -54,6 +54,21 @@ class PerceptionModel(ABC):
         self, data: Union[np.ndarray, Image.Image]
     ) -> Union[np.ndarray, Image.Image, dict]:
         """Perform inference for a single image or point cloud."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def predict(
+        self, data: Union[np.ndarray, Image.Image], return_sample: bool = False
+    ) -> Union[np.ndarray, Image.Image, Tuple[np.ndarray, Image.Image]]:
+        """Perform prediction for a single data sample
+
+        :param data: Input data sample
+        :type data: Union[np.ndarray, Image.Image]
+        :param return_sample: Whether to return the sample data along with predictions, defaults to False
+        :type return_sample: bool, optional
+        :return: Prediction result or a tuple with the detection result and the input sample tensor
+        :rtype: Union[np.ndarray, Image.Image]
+        """
         raise NotImplementedError
 
     @abstractmethod
