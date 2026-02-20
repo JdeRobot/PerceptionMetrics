@@ -385,6 +385,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
+        save_visualizations: bool = False,
         progress_callback=None,
         metrics_callback=None,
     ) -> pd.DataFrame:
@@ -400,6 +401,8 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         :type predictions_outdir: Optional[str]
         :param results_per_sample: Store per-sample metrics
         :type results_per_sample: bool
+        :param save_visualizations: Save visualized results (GT vs Pred)
+        :type save_visualizations: bool
         :param progress_callback: Optional callback function for progress updates in Streamlit UI
         :type progress_callback: Optional[Callable[[int, int], None]]
         :param metrics_callback: Optional callback function for intermediate metrics updates in Streamlit UI
@@ -407,9 +410,9 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
-        if results_per_sample and predictions_outdir is None:
+        if (results_per_sample or save_visualizations) and predictions_outdir is None:
             raise ValueError(
-                "predictions_outdir required if results_per_sample is True"
+                "predictions_outdir required if results_per_sample or save_visualizations is True"
             )
 
         if predictions_outdir is not None:
@@ -421,7 +424,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
         # Create DataLoader
-        dataset = ImageDetectionTorchDataset(
+        torch_dataset = ImageDetectionTorchDataset(
             dataset,
             transform=self.transform_input,
             splits=[split] if isinstance(split, str) else split,
@@ -431,10 +434,10 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         if progress_callback is not None and metrics_callback is not None:
             num_workers = 0
         else:
-            num_workers = self.model_cfg.get("num_workers")
+            num_workers = self.model_cfg.get("num_workers", 0)
 
         dataloader = DataLoader(
-            dataset,
+            torch_dataset,
             batch_size=self.model_cfg.get("batch_size", 1),
             num_workers=num_workers,
             collate_fn=lambda batch: tuple(
@@ -470,7 +473,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
 
             for image_ids, images, targets in iterator:
                 # Defensive check for empty images
-                if not images or any(img.numel() == 0 for img in images):
+                if not images or any(image.numel() == 0 for image in images):
                     print("Skipping batch: empty image tensor detected.")
                     continue
 
@@ -480,6 +483,8 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                 for i in range(len(images)):
                     gt = targets[i]
                     pred = predictions[i]
+                    image_tensor = images[i]
+                    sample_id = image_ids[i]
 
                     # Post-process predictions
                     pred = self.postprocess_detection(pred, *self.postprocess_args)
@@ -497,38 +502,38 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                         pred["scores"],
                     )
 
-                    # Store predictions if needed
+                    # Store predictions or visualizations if needed
                     if predictions_outdir is not None:
-                        sample_id = image_ids[i]
                         pred_boxes = pred["boxes"].cpu().numpy()
                         pred_labels = pred["labels"].cpu().numpy()
                         pred_scores = pred["scores"].cpu().numpy()
-                        out_data = []
 
-                        for box, label, score in zip(
-                            pred_boxes, pred_labels, pred_scores
-                        ):
-                            # Convert label index to class name using model ontology
-                            class_name = self.idx_to_class_name.get(
-                                int(label), f"class_{label}"
-                            )
-                            out_data.append(
-                                {
-                                    "image_id": sample_id,
-                                    "label": class_name,
-                                    "score": float(score),
-                                    "bbox": box.tolist(),
-                                }
-                            )
-
-                        df = pd.DataFrame(out_data)
-                        df.to_json(
-                            os.path.join(predictions_outdir, f"{sample_id}.json"),
-                            orient="records",
-                            indent=2,
-                        )
-
+                        # Save JSON with predictions and csv with metrics per sample
                         if results_per_sample:
+                            out_data = []
+                            for box, label, score in zip(
+                                pred_boxes, pred_labels, pred_scores
+                            ):
+                                # Convert label index to class name using model ontology
+                                class_name = self.idx_to_class_name.get(
+                                    int(label), f"class_{label}"
+                                )
+                                out_data.append(
+                                    {
+                                        "image_id": sample_id,
+                                        "label": class_name,
+                                        "score": float(score),
+                                        "bbox": box.tolist(),
+                                    }
+                                )
+
+                            df = pd.DataFrame(out_data)
+                            df.to_json(
+                                os.path.join(predictions_outdir, f"{sample_id}.json"),
+                                orient="records",
+                                indent=2,
+                            )
+
                             sample_mf = um.DetectionMetricsFactory(
                                 iou_threshold=iou_threshold, num_classes=self.n_classes
                             )
@@ -545,6 +550,54 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                                     predictions_outdir, f"{sample_id}_metrics.csv"
                                 )
                             )
+
+                        # Save visualizations per sample
+                        if save_visualizations:
+                            pil_image = transforms.ToPILImage()(image_tensor.cpu())
+
+                            gt_boxes = gt["boxes"].cpu().numpy()
+                            gt_labels = gt["labels"].cpu().numpy()
+                            gt_class_names = [
+                                self.idx_to_class_name.get(int(label), str(label))
+                                for label in gt_labels
+                            ]
+
+                            pred_class_names = [
+                                self.idx_to_class_name.get(int(label), str(label))
+                                for label in pred_labels
+                            ]
+
+                            image_gt = ui.draw_detections(
+                                pil_image.copy(),
+                                gt_boxes,
+                                gt_labels,
+                                gt_class_names,
+                                scores=None,
+                            )
+                            image_pred = ui.draw_detections(
+                                pil_image.copy(),
+                                pred_boxes,
+                                pred_labels,
+                                pred_class_names,
+                                scores=pred_scores,
+                            )
+
+                            pil_gt = Image.fromarray(image_gt)
+                            pil_pred = Image.fromarray(image_pred)
+
+                            combined_width = pil_gt.width + pil_pred.width
+                            combined_height = max(pil_gt.height, pil_pred.height)
+
+                            combined_image = Image.new(
+                                "RGB", (combined_width, combined_height)
+                            )
+                            combined_image.paste(pil_gt, (0, 0))
+                            combined_image.paste(pil_pred, (pil_gt.width, 0))
+
+                            out_file = os.path.join(
+                                predictions_outdir, f"{sample_id}.jpg"
+                            )
+                            combined_image.save(out_file)
 
                     processed_samples += 1
 
