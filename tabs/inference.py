@@ -1,51 +1,46 @@
+from typing import Optional
+
 import streamlit as st
-import os
 import json
-from PIL import Image, ImageDraw, ImageFont
-import numpy as np
+from PIL import Image
 import torch
-import supervision as sv
 
 
-def draw_detections(image, predictions, label_map=None):
+def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
+    """Draw color-coded bounding boxes and labels on the image using supervision.
+
+    :param image: PIL Image
+    :type image: Image.Image
+    :param predictions: dict with 'boxes', 'labels', 'scores' (torch tensors)
+    :type predictions: dict
+    :param label_map: dict mapping label indices to class names (optional)
+    :type label_map: dict
+    :return: np.ndarray with detections drawn (for st.image)
+    :rtype: np.ndarray
     """
-    Draw color-coded bounding boxes and labels on the image using supervision.
-    Args:
-        image: PIL Image
-        predictions: dict with 'boxes', 'labels', 'scores' (torch tensors)
-        label_map: dict mapping label indices to class names (optional)
-    Returns:
-        np.ndarray with detections drawn (for st.image)
-    """
-    import numpy as np
-    from supervision.draw.color import ColorPalette
-    from supervision.detection.annotate import BoxAnnotator
-    from supervision.detection.core import Detections
+    from perceptionmetrics.utils import image as ui
 
-    img_np = np.array(image)
     boxes = predictions.get("boxes", torch.empty(0)).cpu().numpy()
-    labels = predictions.get("labels", torch.empty(0)).cpu().numpy()
-    scores = predictions.get("scores", torch.empty(0)).cpu().numpy()
-    if label_map:
-        class_names = [label_map.get(label, str(label)) for label in labels]
+    class_ids = predictions.get("labels", torch.empty(0)).cpu().numpy().astype(int)
+
+    scores_tensor = predictions.get("scores")
+    if scores_tensor is not None and len(scores_tensor) > 0:
+        scores = scores_tensor.cpu().numpy()
     else:
-        class_names = [str(label) for label in labels]
-    unique_class_names = list({name for name in class_names})
-    palette = ColorPalette.default()
-    class_name_to_color = {
-        name: palette.by_idx(i) for i, name in enumerate(unique_class_names)
-    }
-    box_colors = [class_name_to_color[name] for name in class_names]
-    detections = Detections(xyxy=boxes, class_id=labels.astype(int))
-    annotator = BoxAnnotator(
-        color=palette, text_scale=0.7, text_thickness=1, text_padding=2
+        scores = None
+
+    if label_map:
+        class_names = [label_map.get(int(label), str(label)) for label in class_ids]
+    else:
+        class_names = [str(label) for label in class_ids]
+
+    return ui.draw_detections(
+        image=image,
+        boxes=boxes,
+        class_ids=class_ids,
+        class_names=class_names,
+        scores=scores,
     )
-    annotated_img = annotator.annotate(
-        scene=img_np,
-        detections=detections,
-        labels=[f"{name}: {score:.2f}" for name, score in zip(class_names, scores)],
-    )
-    return annotated_img
 
 
 def inference_tab():
@@ -74,11 +69,16 @@ def inference_tab():
         with st.spinner("Running inference..."):
             try:
                 image = Image.open(image_file).convert("RGB")
-                predictions = st.session_state.detection_model.inference(image)
+                predictions, sample_tensor = st.session_state.detection_model.predict(
+                    image, return_sample=True
+                )
+                from torchvision.transforms import v2 as transforms
+
+                img_to_draw = transforms.ToPILImage()(sample_tensor[0])
                 label_map = getattr(
                     st.session_state.detection_model, "idx_to_class_name", None
                 )
-                result_img = draw_detections(image.copy(), predictions, label_map)
+                result_img = draw_detections(img_to_draw, predictions, label_map)
 
                 st.markdown("#### Detection Results")
                 st.image(result_img, caption="Detection Results", width="stretch")
