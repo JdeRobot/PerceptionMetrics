@@ -129,4 +129,6 @@ Emails:
 
 <josemaria.plaza@gmail.com>
 
+<sakhinetipraveena@gmail.com>
+
 We appreciate your time and effort in contributing to PerceptionMetrics! :rocket:
