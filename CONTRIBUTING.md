@@ -1,55 +1,125 @@
 # Contributing to PerceptionMetrics
 
-Thanks for your interest on contributing!
+Thanks for your interest in contributing to **PerceptionMetrics**!
+We welcome contributions of all sizes — bug fixes, features, documentation, and improvements.
 
-This file contains a set of rules to contributing to the project and the
-rest of the projects developed by JdeRobot.
-If you have any doubt about how to contribute contact one of the maintainers
-of the project. They will be pleased to tell you how you can contribute with your
-knowledge to the project and organization!
+Please read this guide carefully before getting started.
 
-* [Code of conduct](#code-of-conduct)
-* [Prerequisites before contributing](#prerequisites-before-contributing)
-* [How can I contribute?](#how-can-i-contribute)
-* [I have a question, who can I contact](#i-have-a-question)
+* [Code of Conduct](#code-of-conduct)
+* [Before You Start](#before-you-start)
+* [How to Contribute](#how-to-contribute)
+* [Review & Merge Process](#review--merge-process)
+* [Contact](#contact)
 
 <a name="#code-of-conduct"></a>
-## Code of conduct
-Please report any unacceptable behavior to any of [the maintainers](#i-have-a-question).
+## Code of Conduct
 
-<a name="#prerequisites"></a>
-## Prerequisites before contributing
-In order to contribute to JdeRobot projects, please read carefully the project README.md/webpage (if available) before
-starting contributing to understand the purpose of the project and where you can contribute.
+Be respectful, constructive, and kind.
+Report any unacceptable behavior to one of the [maintainers](#contact).
+
+<a name="#before-you-start"></a>
+## Before You Start
+
+- Read the `README.md` and project documentation carefully.
+- **Run the notebook tutorials first** to:
+  - Verify your environment setup
+  - Understand what the tool does
+  - Get familiar with workflows and expected outputs
+
+This helps avoid duplicated work and misunderstandings.
 
 <a name="#how-to-contribute"></a>
-## How can I contribute?
-Any JdeRobot project follows the same workflow when contributing.
+## How to Contribute
 
-* **Find a problem or possible improvement for the project:** First of all, check that the feature/bug is not listed in the current open issues.
+All contributions follow this workflow:
 
-* **Create an issue:** Create an issue in the project with the problem/improvement you will address. In this issue, explain carefully what you will be changing and how this changes will impact the project. Provide any complementary information to explain it (code samples, screenshots ...)
+### 1. Find or Propose an Issue
 
-The two following points are different depending on the permissions you have to the repo.
-* **[If you have write permission] Work in a separate branch always:** Create a new branch with a describable name (you can use the issue number as branch name "issue_xxx"). Create your commits in that branch making the apropiate changes. Please, use describable names as commit messages, so everyone can understand easily the changes you made.
+- Check if the bug/feature is already listed in **open issues**.
+- If not, **create a new issue** describing:
+  - The problem or improvement
+  - Proposed approach (if any)
+  - Expected impact
+  - Relevant examples (code, screenshots, references)
 
-* **[If you only have read permission] Fork the project:** Fork the project. Work on that copy of the repo, making the desirable changes. Please, use describable names as commit messages, so everyone can understand easily the changes you made.
+**No Pull Requests without an associated issue.**
 
-* **Review and format your code:** Before submitting your PR, make sure that all the changes are properly formatted. All functions must have their docstring in [Sphinx format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html). In that way, the corresponding documentation will be generated automatically. Regarding code formatting, we use [Black](https://github.com/psf/black).
+### 2. Express Interest Before Starting Work
 
-* **Open a pull request:** A pull request is compulsory any time a new change wants to be added to the core or the project. After solving the issue, create a pull request with your branch. In this pull request include all the commits made, write a good description of the changes made and refer to the issue solved to make things easier to the maintainers. Include any additional resource that would be interesting (references, screenshots...). Link the PR with the issue.
+Before starting work — especially for **non-trivial issues**:
 
-* **Testing and merging pull requests**
-One of PerceptionMetric's developers will review your code. Reviewer could ask you to modify your pull request. Please provide timely response for reviewers (within weeks, not months), otherwise you submission could be postponed or even rejected.
+- Comment on the issue expressing your interest.
+- Briefly describe your proposed approach.
+- Align on expectations, requirements, and scope.
 
-* **[If you have write permission] Don't accept your own pull requests:** Wait for a project maintainer to accept the changes you made. They will probably comment the pull request with some feedback and will consider if it can be merge to the master branch.
- Be proactive and kind!
+This avoids duplicated efforts and ensures clarity.
+
+### 3. Development Workflow
+
+The following points depend on your repository permissions.
+
+* **[If you have write permission] Work in a separate branch always:**
+  - Always work on a **separate branch**
+  - Use descriptive branch names (e.g., `issue_123_feature_name`)
+  - Write clear and meaningful commit messages
+  - Do not merge your own PRs
+
+* **[If you have read-only permission] Fork the repository:**
+  - Fork the repository
+  - Work on your fork
+  - Submit a Pull Request from your branch
+
+### 4. Code Quality Requirements
+
+Before opening a PR:
+
+- Code must be formatted with **Black**
+- All functions must include **Sphinx-style docstrings**
+- Code must be properly tested
+- Ensure notebooks and examples still run correctly
+
+### 5. AI-Assisted Code Policy
+
+We are **OK with AI-assisted code**, with the following expectations:
+
+- AI-generated code must be **thoroughly tested**
+- You must fully understand the code you submit
+- The PR description should clearly explain:
+  - What the code does
+  - Why it solves the issue
+  - Any design decisions made
+- Conversations in issues and PRs are encouraged to be **human-to-human**
+- Code must be relevant and scoped to the issue it addresses
+
+Submissions that are unclear, untested, or poorly explained may be rejected.
+
+### 6. Opening a Pull Request
+
+When submitting a PR:
+
+- Reference the related issue
+- Clearly describe:
+  - What was changed
+  - Why it was changed
+  - How it was tested
+- Add relevant screenshots or examples if helpful
+- Respond to reviewer feedback in a timely manner (within weeks, not months)
+
+A maintainer will review your PR and may request modifications.
+
+<a name="#review--merge-process"></a>
+## Review & Merge Process
+
+- All changes require review
+- Maintainers will provide feedback
+- Do not merge your own PR (if you have write access)
+- Be proactive and kind during discussions
 
 <a name="#contact"></a>
-## I have a question
-If you have any question related to how to contribute to the project or anything related to the organization,
-you can contact the main project maintainers sending them an email. Indicate the project you are talking about in the
-subject of the email, please.
+## Contact
+
+If you have any questions, contact the maintainers via email.
+Please indicate the project name in the subject.
 
 Emails:
 
@@ -58,3 +128,7 @@ Emails:
 <sergiopaniegoblanco@gmail.com>
 
 <josemaria.plaza@gmail.com>
+
+<sakhinetipraveena@gmail.com>
+
+We appreciate your time and effort in contributing to PerceptionMetrics! :rocket:
