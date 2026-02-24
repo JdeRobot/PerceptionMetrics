@@ -1,6 +1,10 @@
 import numpy as np
 import pytest
 from perceptionmetrics.utils.segmentation_metrics import SegmentationMetricsFactory
+from perceptionmetrics.utils.detection_metrics import (
+    compute_iou,
+    compute_iou_matrix,
+)
 
 
 @pytest.fixture
@@ -120,3 +124,80 @@ def test_macro_micro_weighted(metrics_factory):
     assert 0 <= macro_f1 <= 1
     assert 0 <= micro_f1 <= 1
     assert 0 <= weighted_f1 <= 1
+
+
+# ---------------------------------------------------------------------------
+# Tests for compute_iou_matrix (vectorized)
+# ---------------------------------------------------------------------------
+
+
+def _iou_matrix_reference(pred_boxes, gt_boxes):
+    """Scalar reference implementation using compute_iou in a double loop."""
+    matrix = np.zeros((len(pred_boxes), len(gt_boxes)))
+    for i, pb in enumerate(pred_boxes):
+        for j, gb in enumerate(gt_boxes):
+            matrix[i, j] = compute_iou(pb, gb)
+    return matrix
+
+
+class TestComputeIoUMatrix:
+    def test_matches_scalar_reference(self):
+        """Vectorized result must be identical to the scalar double-loop."""
+        pred = np.array(
+            [[10, 10, 50, 50], [30, 30, 70, 70], [100, 100, 200, 200]]
+        )
+        gt = np.array([[10, 10, 50, 50], [40, 40, 80, 80]])
+        expected = _iou_matrix_reference(pred, gt)
+        result = compute_iou_matrix(pred, gt)
+        np.testing.assert_allclose(result, expected, atol=1e-10)
+
+    def test_perfect_overlap(self):
+        """Identical boxes should yield IoU = 1.0."""
+        boxes = np.array([[0, 0, 10, 10], [5, 5, 15, 15]])
+        result = compute_iou_matrix(boxes, boxes)
+        np.testing.assert_allclose(np.diag(result), 1.0)
+
+    def test_no_overlap(self):
+        """Non-overlapping boxes should yield IoU = 0.0."""
+        pred = np.array([[0, 0, 10, 10]])
+        gt = np.array([[20, 20, 30, 30]])
+        result = compute_iou_matrix(pred, gt)
+        assert result[0, 0] == 0.0
+
+    def test_empty_predictions(self):
+        """Empty pred_boxes should return an empty matrix."""
+        pred = np.empty((0, 4))
+        gt = np.array([[0, 0, 10, 10]])
+        result = compute_iou_matrix(pred, gt)
+        assert result.shape == (0, 1)
+
+    def test_empty_ground_truth(self):
+        """Empty gt_boxes should return an empty matrix."""
+        pred = np.array([[0, 0, 10, 10]])
+        gt = np.empty((0, 4))
+        result = compute_iou_matrix(pred, gt)
+        assert result.shape == (1, 0)
+
+    def test_single_box_each(self):
+        """Single pred vs single gt must match compute_iou."""
+        pred = np.array([[0, 0, 20, 20]])
+        gt = np.array([[10, 10, 30, 30]])
+        expected = compute_iou(pred[0], gt[0])
+        result = compute_iou_matrix(pred, gt)
+        assert result.shape == (1, 1)
+        np.testing.assert_allclose(result[0, 0], expected, atol=1e-10)
+
+    def test_large_random_batch(self):
+        """Stress test: 200 preds x 150 gts must match the scalar loop."""
+        rng = np.random.default_rng(42)
+        xy = rng.uniform(0, 500, size=(200, 2))
+        wh = rng.uniform(10, 100, size=(200, 2))
+        pred = np.column_stack([xy, xy + wh])
+
+        xy = rng.uniform(0, 500, size=(150, 2))
+        wh = rng.uniform(10, 100, size=(150, 2))
+        gt = np.column_stack([xy, xy + wh])
+
+        expected = _iou_matrix_reference(pred, gt)
+        result = compute_iou_matrix(pred, gt)
+        np.testing.assert_allclose(result, expected, atol=1e-10)
