@@ -24,6 +24,16 @@ class DetectionMetricsFactory:
         )  # List of (gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores)
         self.gt_counts = defaultdict(int)  # Count of GT instances per class
 
+    def reset(self):
+        """Reset all accumulated results to initial state.
+
+        This allows reusing the same factory instance for multiple
+        independent evaluations without creating a new object.
+        """
+        self.results = defaultdict(list)
+        self.raw_data = []
+        self.gt_counts = defaultdict(int)
+
     def update(self, gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores):
         """Add a batch of predictions and ground truths.
 
