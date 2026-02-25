@@ -89,7 +89,7 @@ class SegmentationMetricsFactory:
 
         :param per_class: Return per class FP, defaults to True
         :type per_class: bool, optional
-        :return: True Positives
+        :return: False Positives
         :rtype: Union[np.ndarray, int]
         """
         fp = self.confusion_matrix.sum(axis=0) - np.diag(self.confusion_matrix)
@@ -100,7 +100,7 @@ class SegmentationMetricsFactory:
 
         :param per_class: Return per class FN, defaults to True
         :type per_class: bool, optional
-        :return: True Positives
+        :return: False Negatives
         :rtype: Union[np.ndarray, int]
         """
         fn = self.confusion_matrix.sum(axis=1) - np.diag(self.confusion_matrix)
@@ -111,7 +111,7 @@ class SegmentationMetricsFactory:
 
         :param per_class: Return per class TN, defaults to True
         :type per_class: bool, optional
-        :return: True Positives
+        :return: True Negatives
         :rtype: Union[np.ndarray, int]
         """
         total = self.confusion_matrix.sum()
@@ -123,7 +123,7 @@ class SegmentationMetricsFactory:
 
         :param per_class: Return per class precision, defaults to True
         :type per_class: bool, optional
-        :return: True Positives
+        :return: Precision value (per class if per_class=True, otherwise global)
         :rtype: Union[np.ndarray, float]
         """
         tp = self.get_tp(per_class)
@@ -140,7 +140,7 @@ class SegmentationMetricsFactory:
 
         :param per_class: Return per class recall, defaults to True
         :type per_class: bool, optional
-        :return: True Positives
+        :return: Recall value (per class if per_class=True, otherwise global)
         :rtype: Union[np.ndarray, float]
         """
         tp = self.get_tp(per_class)
@@ -157,7 +157,7 @@ class SegmentationMetricsFactory:
 
         :param per_class: Return per class accuracy, defaults to True
         :type per_class: bool, optional
-        :return: True Positives
+        :return: Accuracy value (per class if per_class=True, otherwise global)
         :rtype: Union[np.ndarray, float]
         """
         tp = self.get_tp(per_class)
@@ -176,7 +176,7 @@ class SegmentationMetricsFactory:
 
         :param per_class: Return per class F1 score, defaults to True
         :type per_class: bool, optional
-        :return: True Positives
+        :return: F1-score value (per class if per_class=True, otherwise global)
         :rtype: Union[np.ndarray, float]
         """
         precision = self.get_precision(per_class)
@@ -197,7 +197,7 @@ class SegmentationMetricsFactory:
 
         :param per_class: Return per class IoU, defaults to True
         :type per_class: bool, optional
-        :return: True Positives
+        :return: IoU value (per class if per_class=True, otherwise global)
         :rtype: Union[np.ndarray, float]
         """
         tp = self.get_tp(per_class)
