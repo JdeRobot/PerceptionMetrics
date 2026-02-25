@@ -812,7 +812,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class accuracy, defaults to True</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True Positives</p>
+<dd class="field-even"><p>Accuracy value (per class if per_class=True, otherwise global)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[np.ndarray, float]</p>
@@ -865,7 +865,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class F1 score, defaults to True</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True Positives</p>
+<dd class="field-even"><p>F1-score value (per class if per_class=True, otherwise global)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[np.ndarray, float]</p>
@@ -882,7 +882,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class FN, defaults to True</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True Positives</p>
+<dd class="field-even"><p>False Negatives</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[np.ndarray, int]</p>
@@ -899,7 +899,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class FP, defaults to True</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True Positives</p>
+<dd class="field-even"><p>False Positives</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[np.ndarray, int]</p>
@@ -916,7 +916,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class IoU, defaults to True</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True Positives</p>
+<dd class="field-even"><p>IoU value (per class if per_class=True, otherwise global)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[np.ndarray, float]</p>
@@ -967,7 +967,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class precision, defaults to True</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True Positives</p>
+<dd class="field-even"><p>Precision value (per class if per_class=True, otherwise global)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[np.ndarray, float]</p>
@@ -984,7 +984,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class recall, defaults to True</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True Positives</p>
+<dd class="field-even"><p>Recall value (per class if per_class=True, otherwise global)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[np.ndarray, float]</p>
@@ -1001,7 +1001,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class TN, defaults to True</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True Positives</p>
+<dd class="field-even"><p>True Negatives</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[np.ndarray, int]</p>

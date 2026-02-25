@@ -346,7 +346,7 @@
 
 <span class="sd">        :param per_class: Return per class FP, defaults to True</span>
 <span class="sd">        :type per_class: bool, optional</span>
-<span class="sd">        :return: True Positives</span>
+<span class="sd">        :return: False Positives</span>
 <span class="sd">        :rtype: Union[np.ndarray, int]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">)</span>
@@ -360,7 +360,7 @@
 
 <span class="sd">        :param per_class: Return per class FN, defaults to True</span>
 <span class="sd">        :type per_class: bool, optional</span>
-<span class="sd">        :return: True Positives</span>
+<span class="sd">        :return: False Negatives</span>
 <span class="sd">        :rtype: Union[np.ndarray, int]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">)</span>
@@ -374,7 +374,7 @@
 
 <span class="sd">        :param per_class: Return per class TN, defaults to True</span>
 <span class="sd">        :type per_class: bool, optional</span>
-<span class="sd">        :return: True Positives</span>
+<span class="sd">        :return: True Negatives</span>
 <span class="sd">        :rtype: Union[np.ndarray, int]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -389,7 +389,7 @@
 
 <span class="sd">        :param per_class: Return per class precision, defaults to True</span>
 <span class="sd">        :type per_class: bool, optional</span>
-<span class="sd">        :return: True Positives</span>
+<span class="sd">        :return: Precision value (per class if per_class=True, otherwise global)</span>
 <span class="sd">        :rtype: Union[np.ndarray, float]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tp</span><span class="p">(</span><span class="n">per_class</span><span class="p">)</span>
@@ -409,7 +409,7 @@
 
 <span class="sd">        :param per_class: Return per class recall, defaults to True</span>
 <span class="sd">        :type per_class: bool, optional</span>
-<span class="sd">        :return: True Positives</span>
+<span class="sd">        :return: Recall value (per class if per_class=True, otherwise global)</span>
 <span class="sd">        :rtype: Union[np.ndarray, float]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tp</span><span class="p">(</span><span class="n">per_class</span><span class="p">)</span>
@@ -429,7 +429,7 @@
 
 <span class="sd">        :param per_class: Return per class accuracy, defaults to True</span>
 <span class="sd">        :type per_class: bool, optional</span>
-<span class="sd">        :return: True Positives</span>
+<span class="sd">        :return: Accuracy value (per class if per_class=True, otherwise global)</span>
 <span class="sd">        :rtype: Union[np.ndarray, float]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tp</span><span class="p">(</span><span class="n">per_class</span><span class="p">)</span>
@@ -451,7 +451,7 @@
 
 <span class="sd">        :param per_class: Return per class F1 score, defaults to True</span>
 <span class="sd">        :type per_class: bool, optional</span>
-<span class="sd">        :return: True Positives</span>
+<span class="sd">        :return: F1-score value (per class if per_class=True, otherwise global)</span>
 <span class="sd">        :rtype: Union[np.ndarray, float]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">precision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_precision</span><span class="p">(</span><span class="n">per_class</span><span class="p">)</span>
@@ -475,7 +475,7 @@
 
 <span class="sd">        :param per_class: Return per class IoU, defaults to True</span>
 <span class="sd">        :type per_class: bool, optional</span>
-<span class="sd">        :return: True Positives</span>
+<span class="sd">        :return: IoU value (per class if per_class=True, otherwise global)</span>
 <span class="sd">        :rtype: Union[np.ndarray, float]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tp</span><span class="p">(</span><span class="n">per_class</span><span class="p">)</span>
