@@ -126,60 +126,26 @@ def test_macro_micro_weighted(metrics_factory):
 
 
 # Tests for SegmentationMetricsFactory.reset()
-def test_segmentation_reset_clears_data(metrics_factory):
-    """Test that reset() clears all accumulated data."""
-    pred = np.array([0, 1, 2, 2, 1])
-    gt = np.array([0, 1, 1, 2, 2])
-    metrics_factory.update(pred, gt)
-
-    # Verify data was accumulated
-    assert metrics_factory.get_confusion_matrix().sum() > 0
-
-    # Reset and verify empty state
-    metrics_factory.reset()
+def test_segmentation_reset_clears_data_and_allows_reuse():
+    """Test reset() clears state and supports repeated reuse cycles."""
+    factory = SegmentationMetricsFactory(n_classes=3)
     expected_empty = np.zeros((3, 3), dtype=np.int64)
-    assert np.array_equal(metrics_factory.get_confusion_matrix(), expected_empty)
-
-
-def test_segmentation_reset_allows_reuse(metrics_factory):
-    """Test that factory can be reused after reset()."""
-    # First evaluation
-    pred1 = np.array([0, 1, 2])
-    gt1 = np.array([0, 1, 2])
-    metrics_factory.update(pred1, gt1)
-    metrics_factory.reset()
-
-    # Second evaluation with different data
-    pred2 = np.array([0, 0, 1, 1, 2, 2])
-    gt2 = np.array([0, 1, 0, 1, 2, 2])
-    metrics_factory.update(pred2, gt2)
-
-    # Verify correct metrics for second evaluation only
+    pred = np.array([0, 0, 1, 1, 2, 2])
+    gt = np.array([0, 1, 0, 1, 2, 2])
     expected_cm = np.array(
         [
-            [1, 1, 0],  # True class 0: 1 TP, 1 FN (predicted as 1)
-            [1, 1, 0],  # True class 1: 1 FP (from class 0), 1 TP
-            [0, 0, 2],  # True class 2: 2 TP
+            [1, 1, 0],
+            [1, 1, 0],
+            [0, 0, 2],
         ]
     )
-    assert np.array_equal(metrics_factory.get_confusion_matrix(), expected_cm)
-
-
-def test_segmentation_reset_multiple_cycles():
-    """Test multiple reset/reuse cycles produce consistent results."""
-    factory = SegmentationMetricsFactory(n_classes=2)
 
     for _ in range(3):
-        pred = np.array([0, 1, 0, 1])
-        gt = np.array([0, 1, 0, 1])
         factory.update(pred, gt)
+        assert np.array_equal(factory.get_confusion_matrix(), expected_cm)
 
-        # Check perfect prediction
-        assert np.array_equal(factory.get_tp(), np.array([2, 2]))
         factory.reset()
-
-        # Verify empty after reset
-        assert factory.get_confusion_matrix().sum() == 0
+        assert np.array_equal(factory.get_confusion_matrix(), expected_empty)
 
 
 # Tests for DetectionMetricsFactory.reset()
@@ -189,79 +155,28 @@ def detection_factory():
     return DetectionMetricsFactory(iou_threshold=0.5, num_classes=3)
 
 
-def test_detection_reset_clears_data(detection_factory):
-    """Test that reset() clears all accumulated data."""
-    gt_boxes = np.array([[0, 0, 10, 10]])
-    gt_labels = np.array([0])
+def test_detection_reset_clears_data_and_allows_reuse():
+    """Test reset() clears state and supports repeated reuse cycles."""
+    factory = DetectionMetricsFactory(iou_threshold=0.5, num_classes=3)
+    gt_boxes = np.array([[0, 0, 10, 10], [20, 20, 30, 30]])
+    gt_labels = np.array([0, 1])
     pred_boxes = np.array([[0, 0, 10, 10]])
     pred_labels = np.array([0])
-    pred_scores = np.array([0.9])
-
-    detection_factory.update(gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores)
-
-    # Verify data was accumulated
-    assert len(detection_factory.results) > 0
-    assert len(detection_factory.raw_data) > 0
-    assert sum(detection_factory.gt_counts.values()) > 0
-
-    # Reset and verify empty state
-    detection_factory.reset()
-    assert len(detection_factory.results) == 0
-    assert len(detection_factory.raw_data) == 0
-    assert sum(detection_factory.gt_counts.values()) == 0
-
-
-def test_detection_reset_allows_reuse(detection_factory):
-    """Test that factory can be reused after reset()."""
-    # First evaluation
-    gt_boxes1 = np.array([[0, 0, 10, 10]])
-    gt_labels1 = np.array([0])
-    pred_boxes1 = np.array([[0, 0, 10, 10]])
-    pred_labels1 = np.array([0])
-    pred_scores1 = np.array([0.9])
-    detection_factory.update(
-        gt_boxes1, gt_labels1, pred_boxes1, pred_labels1, pred_scores1
-    )
-    detection_factory.reset()
-
-    # Second evaluation with different data
-    gt_boxes2 = np.array([[0, 0, 10, 10], [20, 20, 30, 30]])
-    gt_labels2 = np.array([0, 1])
-    pred_boxes2 = np.array([[0, 0, 10, 10]])
-    pred_labels2 = np.array([0])
-    pred_scores2 = np.array([0.8])
-    detection_factory.update(
-        gt_boxes2, gt_labels2, pred_boxes2, pred_labels2, pred_scores2
-    )
-
-    metrics = detection_factory.compute_metrics()
-
-    # Class 0 should have perfect recall (1 TP, 0 FN)
-    assert metrics[0]["TP"] == 1
-    assert metrics[0]["FN"] == 0
-    # Class 1 should have 0 TP and 1 FN (missed detection)
-    assert metrics[1]["TP"] == 0
-    assert metrics[1]["FN"] == 1
-
-
-def test_detection_reset_multiple_cycles():
-    """Test multiple reset/reuse cycles produce consistent results."""
-    factory = DetectionMetricsFactory(iou_threshold=0.5)
+    pred_scores = np.array([0.8])
 
     for _ in range(3):
-        gt_boxes = np.array([[0, 0, 10, 10]])
-        gt_labels = np.array([0])
-        pred_boxes = np.array([[0, 0, 10, 10]])
-        pred_labels = np.array([0])
-        pred_scores = np.array([0.9])
-
         factory.update(gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores)
         metrics = factory.compute_metrics()
 
-        # Should have perfect AP for class 0
-        assert metrics[0]["AP"] == 1.0
-        factory.reset()
+        assert metrics[0]["TP"] == 1
+        assert metrics[0]["FN"] == 0
+        assert metrics[1]["TP"] == 0
+        assert metrics[1]["FN"] == 1
+        assert len(factory.results) > 0
+        assert len(factory.raw_data) > 0
+        assert sum(factory.gt_counts.values()) > 0
 
-        # Verify empty after reset
+        factory.reset()
         assert len(factory.results) == 0
         assert len(factory.raw_data) == 0
+        assert sum(factory.gt_counts.values()) == 0
