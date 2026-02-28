@@ -8,15 +8,31 @@ import pandas as pd
 class DetectionMetricsFactory:
     """Factory class for computing detection metrics including precision, recall, AP, and mAP.
 
+    Evaluation Strategy (aligned with Ultralytics):
+    - mAP and PR curves: computed without confidence threshold filtering (all predictions kept)
+    - Precision, Recall, Confusion Matrix: computed at a specific confidence threshold
+      (either user-defined or automatically selected to maximize F1 score)
+    - Confusion Matrix includes implicit background class for unmatched predictions/GT
+
     :param iou_threshold: IoU threshold for matching predictions to ground truth, defaults to 0.5
     :type iou_threshold: float, optional
     :param num_classes: Number of classes in the dataset, defaults to None
     :type num_classes: Optional[int], optional
+    :param conf_threshold: Confidence threshold for precision/recall/confusion matrix.
+        Set to None to auto-select threshold that maximizes F1 score, defaults to None
+    :type conf_threshold: Optional[float], optional
     """
 
-    def __init__(self, iou_threshold: float = 0.5, num_classes: Optional[int] = None):
+    def __init__(
+        self,
+        iou_threshold: float = 0.5,
+        num_classes: Optional[int] = None,
+        conf_threshold: Optional[float] = None,
+    ):
         self.iou_threshold = iou_threshold
         self.num_classes = num_classes
+        self.conf_threshold = conf_threshold
+        self.optimal_conf_threshold = None  # Will be computed if conf_threshold is None
         self.results = defaultdict(list)  # stores detection results per class
         # Store raw data for multi-threshold evaluation
         self.raw_data = (
@@ -327,6 +343,182 @@ class DetectionMetricsFactory:
         auc = np.trapz(precision_sorted, recall_sorted)
 
         return float(auc)
+
+    def _find_optimal_confidence_threshold(self) -> Tuple[float, float]:
+        """Find the confidence threshold that maximizes F1 score.
+
+        :return: Tuple of (optimal_threshold, max_f1_score)
+        :rtype: Tuple[float, float]
+        """
+        all_detections = []
+
+        # Collect all detections from all classes with scores
+        for label, detections in self.results.items():
+            for score, tp_fp_fn in detections:
+                if score is not None:  # Exclude FN entries (they have no score)
+                    all_detections.append((score, tp_fp_fn, label))
+
+        if len(all_detections) == 0:
+            return 0.0, 0.0
+
+        # Sort by score descending
+        all_detections.sort(key=lambda x: -x[0])
+
+        # Get all unique scores as candidate thresholds
+        unique_scores = sorted(set(d[0] for d in all_detections), reverse=True)
+
+        best_threshold = 0.0
+        best_f1 = 0.0
+
+        # Total FN count (all FN entries across all classes)
+        total_fn = sum(
+            1 for detections in self.results.values() for d in detections if d[1] == -1
+        )
+
+        for threshold in unique_scores:
+            tp_count = sum(1 for d in all_detections if d[0] >= threshold and d[1] == 1)
+            fp_count = sum(1 for d in all_detections if d[0] >= threshold and d[1] == 0)
+            fn_count = total_fn + sum(
+                1 for d in all_detections if d[0] < threshold and d[1] == 1
+            )
+
+            precision = tp_count / (tp_count + fp_count) if (tp_count + fp_count) > 0 else 0
+            recall = tp_count / (tp_count + fn_count) if (tp_count + fn_count) > 0 else 0
+
+            if precision + recall > 0:
+                f1 = 2 * (precision * recall) / (precision + recall)
+                if f1 > best_f1:
+                    best_f1 = f1
+                    best_threshold = threshold
+
+        return best_threshold, best_f1
+
+    def get_confusion_matrix(
+        self, conf_threshold: Optional[float] = None, include_background: bool = True
+    ) -> np.ndarray:
+        """Compute confusion matrix at specified confidence threshold.
+
+        Following Ultralytics convention: includes implicit background class for unmatched boxes.
+        - Unmatched predictions → counted as predicted_class vs background
+        - Unmatched ground truth → counted as background vs true_class
+
+        :param conf_threshold: Confidence threshold. If None, uses self.conf_threshold or finds optimal.
+        :type conf_threshold: Optional[float]
+        :param include_background: Whether to include background class (index -1), defaults to True
+        :type include_background: bool
+        :return: Confusion matrix of shape (n_classes + 1, n_classes + 1) if include_background else (n_classes, n_classes)
+        :rtype: np.ndarray
+        """
+        if conf_threshold is None:
+            if self.conf_threshold is not None:
+                conf_threshold = self.conf_threshold
+            else:
+                # Auto-select optimal threshold
+                if self.optimal_conf_threshold is None:
+                    self.optimal_conf_threshold, _ = (
+                        self._find_optimal_confidence_threshold()
+                    )
+                conf_threshold = self.optimal_conf_threshold
+
+        if self.num_classes is None:
+            # Infer num_classes from data
+            all_labels = set()
+            for _, gt_labels, _, pred_labels, _ in self.raw_data:
+                all_labels.update(gt_labels)
+                all_labels.update(pred_labels)
+            self.num_classes = max(all_labels) + 1 if all_labels else 0
+
+        # Initialize confusion matrix
+        # Background class will be at index num_classes
+        matrix_size = self.num_classes + 1 if include_background else self.num_classes
+        confusion_matrix = np.zeros((matrix_size, matrix_size), dtype=np.int64)
+
+        # Process raw data
+        for gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores in self.raw_data:
+            if len(gt_boxes) == 0 and len(pred_boxes) == 0:
+                continue
+
+            # Filter predictions by confidence threshold
+            if len(pred_boxes) > 0:
+                conf_mask = pred_scores >= conf_threshold
+                pred_boxes_filtered = pred_boxes[conf_mask]
+                pred_labels_filtered = pred_labels[conf_mask]
+                pred_scores_filtered = pred_scores[conf_mask]
+            else:
+                pred_boxes_filtered = pred_boxes
+                pred_labels_filtered = pred_labels
+                pred_scores_filtered = pred_scores
+
+            # Handle case: no GT, but have predictions
+            if len(gt_boxes) == 0 and len(pred_boxes_filtered) > 0:
+                if include_background:
+                    for p_label in pred_labels_filtered:
+                        # Predicted as p_label, but actually background
+                        confusion_matrix[self.num_classes, int(p_label)] += 1
+                continue
+
+            # Handle case: have GT, but no predictions above threshold
+            if len(pred_boxes_filtered) == 0 and len(gt_boxes) > 0:
+                if include_background:
+                    for g_label in gt_labels:
+                        # Predicted as background, but actually g_label
+                        confusion_matrix[int(g_label), self.num_classes] += 1
+                continue
+
+            # Match predictions to ground truth
+            if len(pred_boxes_filtered) > 0 and len(gt_boxes) > 0:
+                ious = compute_iou_matrix(pred_boxes_filtered, gt_boxes)
+                used_gt = set()
+                matched_preds = set()
+
+                # Match each prediction to best GT
+                for i, (p_label, score) in enumerate(
+                    zip(pred_labels_filtered, pred_scores_filtered)
+                ):
+                    max_iou = 0
+                    max_j = -1
+
+                    for j, g_label in enumerate(gt_labels):
+                        if j in used_gt or p_label != g_label:
+                            continue
+                        iou = ious[i, j]
+                        if iou > max_iou:
+                            max_iou = iou
+                            max_j = j
+
+                    if max_iou >= self.iou_threshold:
+                        # True positive: correct match
+                        confusion_matrix[int(gt_labels[max_j]), int(p_label)] += 1
+                        used_gt.add(max_j)
+                        matched_preds.add(i)
+                    else:
+                        # False positive: predicted p_label but no matching GT
+                        if include_background:
+                            confusion_matrix[self.num_classes, int(p_label)] += 1
+
+                # Handle unmatched GTs (false negatives)
+                if include_background:
+                    for j, g_label in enumerate(gt_labels):
+                        if j not in used_gt:
+                            # Missed GT: should be g_label but predicted as background
+                            confusion_matrix[int(g_label), self.num_classes] += 1
+
+        return confusion_matrix
+
+    def get_optimal_conf_threshold(self) -> Dict[str, float]:
+        """Get the optimal confidence threshold that maximizes F1 score.
+
+        :return: Dictionary with 'threshold' and 'f1_score' keys
+        :rtype: Dict[str, float]
+        """
+        if self.optimal_conf_threshold is None:
+            threshold, f1 = self._find_optimal_confidence_threshold()
+            self.optimal_conf_threshold = threshold
+        else:
+            # Recompute F1 at stored threshold
+            _, f1 = self._find_optimal_confidence_threshold()
+
+        return {"threshold": self.optimal_conf_threshold, "f1_score": f1}
 
     def get_metrics_dataframe(self, ontology: dict) -> pd.DataFrame:
         """Get results as a pandas DataFrame.

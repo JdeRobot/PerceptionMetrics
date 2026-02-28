@@ -1,0 +1,17 @@
+{
+  "model_format": "yolo",
+  "normalization": {
+    "mean": [0.0, 0.0, 0.0],
+    "std": [255.0, 255.0, 255.0]
+  },
+  "resize": {
+    "width": 640,
+    "height": 640
+  },
+  "confidence_threshold": 0.25,
+  "nms_threshold": 0.45,
+  "iou_threshold": 0.5,
+  "batch_size": 8,
+  "num_workers": 4,
+  "device": "cuda"
+}

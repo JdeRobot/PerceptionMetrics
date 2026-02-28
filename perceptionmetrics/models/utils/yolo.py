@@ -14,7 +14,7 @@ def postprocess_detection(
 
     :param output: Tensor of shape [num_classes + 4, num_anchors] containing bounding box predictions and class logits.
     :type output: torch.Tensor
-    :param confidence_threshold: Confidence threshold to filter boxes.
+    :param confidence_threshold: Confidence threshold to filter boxes. Set to 0 to keep all predictions (e.g., for mAP/PR curves).
     :type confidence_threshold: float
     :param nms_threshold: IoU threshold for Non-Maximum Suppression (NMS).
     :type nms_threshold: float
@@ -25,8 +25,13 @@ def postprocess_detection(
     boxes_xywh = output[:4, :].T  # [8400, 4] (cx, cy, w, h) in pixels
     cls_logits = output[4:, :].T  # [8400, 28]
 
-    # Get boxes above confidence threshold
-    i, j = torch.where(cls_logits > confidence_threshold)
+    # Get boxes above confidence threshold (or all boxes if threshold is 0)
+    if confidence_threshold > 0:
+        i, j = torch.where(cls_logits > confidence_threshold)
+    else:
+        # Keep all predictions - get max score per anchor
+        scores, j = torch.max(cls_logits, dim=1)
+        i = torch.arange(len(scores))
     boxes_xywh = boxes_xywh[i]
     scores = cls_logits[i, j]
     labels = j
