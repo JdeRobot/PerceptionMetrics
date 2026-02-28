@@ -37,9 +37,6 @@ def dataset_viewer_tab():
             st.warning("Dataset files not found. Check path and split.")
             return
 
-        if not os.path.isdir(img_dir) or not os.path.isfile(ann_file):
-            st.warning("Dataset files not found. Check path and split.")
-            return
     elif dataset_type == "yolo":
         dataset_config_file = st.session_state.get("dataset_config_file", None)
         img_dir = os.path.join(dataset_path, f"images/{split}")
