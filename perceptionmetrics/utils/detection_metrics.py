@@ -374,6 +374,9 @@ class DetectionMetricsFactory:
 def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
     """Compute IoU matrix between pred and gt boxes.
 
+    Uses vectorized NumPy broadcasting to compute all pairwise IoUs at once
+    instead of a Python double for-loop.
+
     :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)
     :type pred_boxes: np.ndarray
     :param gt_boxes: Ground truth bounding boxes, shape (num_gt, 4)
@@ -381,11 +384,27 @@ def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarr
     :return: IoU matrix with shape (num_pred, num_gt)
     :rtype: np.ndarray
     """
-    iou_matrix = np.zeros((len(pred_boxes), len(gt_boxes)))
-    for i, pb in enumerate(pred_boxes):
-        for j, gb in enumerate(gt_boxes):
-            iou_matrix[i, j] = compute_iou(pb, gb)
-    return iou_matrix
+    if len(pred_boxes) == 0 or len(gt_boxes) == 0:
+        return np.zeros((len(pred_boxes), len(gt_boxes)))
+
+    pred = np.asarray(pred_boxes, dtype=np.float64)
+    gt = np.asarray(gt_boxes, dtype=np.float64)
+
+    # (N, 1, 4) vs (1, M, 4) for broadcasting
+    inter_x1 = np.maximum(pred[:, None, 0], gt[None, :, 0])
+    inter_y1 = np.maximum(pred[:, None, 1], gt[None, :, 1])
+    inter_x2 = np.minimum(pred[:, None, 2], gt[None, :, 2])
+    inter_y2 = np.minimum(pred[:, None, 3], gt[None, :, 3])
+
+    inter_area = np.clip(inter_x2 - inter_x1, 0, None) * np.clip(
+        inter_y2 - inter_y1, 0, None
+    )
+
+    pred_area = (pred[:, 2] - pred[:, 0]) * (pred[:, 3] - pred[:, 1])
+    gt_area = (gt[:, 2] - gt[:, 0]) * (gt[:, 3] - gt[:, 1])
+
+    union_area = pred_area[:, None] + gt_area[None, :] - inter_area
+    return inter_area / union_area
 
 
 def compute_iou(boxA, boxB):
