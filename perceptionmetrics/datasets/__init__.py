@@ -16,6 +16,8 @@ from perceptionmetrics.datasets.rellis3d import (
 )
 from perceptionmetrics.datasets.rugd import RUGDImageSegmentationDataset
 from perceptionmetrics.datasets.wildscenes import WildscenesImageSegmentationDataset
+from perceptionmetrics.datasets.nuscenes_detection import NuScenesDetectionDataset
+
 try:
     from perceptionmetrics.datasets.coco import CocoDataset
 except ImportError:
@@ -33,6 +35,9 @@ REGISTRY = {
     "rellis3d_lidar_segmentation": Rellis3DLiDARSegmentationDataset,
     "rugd_image_segmentation": RUGDImageSegmentationDataset,
     "wildscenes_image_segmentation": WildscenesImageSegmentationDataset,
+    "nuscenes_detection": NuScenesDetectionDataset,
+
+    
 }
 
 if CocoDataset is not None:
