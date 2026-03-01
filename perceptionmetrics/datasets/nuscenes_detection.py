@@ -10,6 +10,7 @@ from perceptionmetrics.datasets.detection import ImageDetectionDataset
 
 # =========================
 # Classes to drop
+
 # =========================
 DROP = {
     "animal",
@@ -149,15 +150,15 @@ class NuScenesDetectionDataset(ImageDetectionDataset):
 # =========================
 # Example usage
 # =========================
-if __name__ == "__main__":
-    nus = NuScenesDetectionDataset(version="v1.0-mini", dataset_dir="/home/tejass/Downloads/JDE_Robotics/v1.0-mini")
-    image_path = nus.dataset.iloc[0]['image']
-    annotation_token = nus.dataset.iloc[0]['annotation']
+# if __name__ == "__main__":
+#     nus = NuScenesDetectionDataset(version="v1.0-mini", dataset_dir="/home/tejass/Downloads/JDE_Robotics/v1.0-mini")
+#     image_path = nus.dataset.iloc[0]['image']
+#     annotation_token = nus.dataset.iloc[0]['annotation']
 
-    # Example debug: draw boxes
-    import cv2
-    img = cv2.imread(image_path)
-    boxes, labels = nus.read_annotation(annotation_token)
-    for box in boxes:
-        img = cv2.rectangle(img, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
-    cv2.imwrite("debug_nuscenes.jpg", img)
+#     # Example debug: draw boxes
+#     import cv2
+#     img = cv2.imread(image_path)
+#     boxes, labels = nus.read_annotation(annotation_token)
+#     for box in boxes:
+#         img = cv2.rectangle(img, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
+#     cv2.imwrite("debug_nuscenes.jpg", img)
