@@ -1,5 +1,8 @@
+import math
+
 import numpy as np
 import pytest
+from perceptionmetrics.utils.detection_metrics import DetectionMetricsFactory
 from perceptionmetrics.utils.segmentation_metrics import SegmentationMetricsFactory
 
 
@@ -120,3 +123,60 @@ def test_macro_micro_weighted(metrics_factory):
     assert 0 <= macro_f1 <= 1
     assert 0 <= micro_f1 <= 1
     assert 0 <= weighted_f1 <= 1
+
+
+# Tests for SegmentationMetricsFactory.reset()
+def test_segmentation_reset_clears_data_and_allows_reuse():
+    """Test reset() clears state and supports repeated reuse cycles."""
+    factory = SegmentationMetricsFactory(n_classes=3)
+    expected_empty = np.zeros((3, 3), dtype=np.int64)
+    pred = np.array([0, 0, 1, 1, 2, 2])
+    gt = np.array([0, 1, 0, 1, 2, 2])
+    expected_cm = np.array(
+        [
+            [1, 1, 0],
+            [1, 1, 0],
+            [0, 0, 2],
+        ]
+    )
+
+    for _ in range(3):
+        factory.update(pred, gt)
+        assert np.array_equal(factory.get_confusion_matrix(), expected_cm)
+
+        factory.reset()
+        assert np.array_equal(factory.get_confusion_matrix(), expected_empty)
+
+
+# Tests for DetectionMetricsFactory.reset()
+@pytest.fixture
+def detection_factory():
+    """Fixture to create a DetectionMetricsFactory instance for testing."""
+    return DetectionMetricsFactory(iou_threshold=0.5, num_classes=3)
+
+
+def test_detection_reset_clears_data_and_allows_reuse():
+    """Test reset() clears state and supports repeated reuse cycles."""
+    factory = DetectionMetricsFactory(iou_threshold=0.5, num_classes=3)
+    gt_boxes = np.array([[0, 0, 10, 10], [20, 20, 30, 30]])
+    gt_labels = np.array([0, 1])
+    pred_boxes = np.array([[0, 0, 10, 10]])
+    pred_labels = np.array([0])
+    pred_scores = np.array([0.8])
+
+    for _ in range(3):
+        factory.update(gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores)
+        metrics = factory.compute_metrics()
+
+        assert metrics[0]["TP"] == 1
+        assert metrics[0]["FN"] == 0
+        assert metrics[1]["TP"] == 0
+        assert metrics[1]["FN"] == 1
+        assert len(factory.results) > 0
+        assert len(factory.raw_data) > 0
+        assert sum(factory.gt_counts.values()) > 0
+
+        factory.reset()
+        assert len(factory.results) == 0
+        assert len(factory.raw_data) == 0
+        assert sum(factory.gt_counts.values()) == 0
