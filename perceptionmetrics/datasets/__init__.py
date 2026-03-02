@@ -36,8 +36,6 @@ REGISTRY = {
     "rugd_image_segmentation": RUGDImageSegmentationDataset,
     "wildscenes_image_segmentation": WildscenesImageSegmentationDataset,
     "nuscenes_detection": NuScenesDetectionDataset,
-
-    
 }
 
 if CocoDataset is not None:
