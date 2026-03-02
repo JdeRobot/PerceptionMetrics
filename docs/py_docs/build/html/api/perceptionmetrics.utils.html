@@ -421,6 +421,14 @@ translation dictionary with old and new class names as keys and values, respecti
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/detection_metrics.html#DetectionMetricsFactory.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Reset all accumulated results to initial state.</p>
+<p>This allows reusing the same factory instance for multiple
+independent evaluations without creating a new object.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_boxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_boxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_scores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/detection_metrics.html#DetectionMetricsFactory.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.update" title="Link to this definition">¶</a></dt>
 <dd><p>Add a batch of predictions and ground truths.</p>
@@ -1027,6 +1035,14 @@ translation dictionary with old and new class names as keys and values, respecti
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/segmentation_metrics.html#SegmentationMetricsFactory.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Reset all accumulated results to initial state.</p>
+<p>This allows reusing the same factory instance for multiple
+independent evaluations without creating a new object.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/segmentation_metrics.html#SegmentationMetricsFactory.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.update" title="Link to this definition">¶</a></dt>
 <dd><p>Accumulate results for a new batch</p>
@@ -1192,6 +1208,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.compute_metrics"><code class="docutils literal notranslate"><span class="pre">DetectionMetricsFactory.compute_metrics()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.get_metrics_dataframe"><code class="docutils literal notranslate"><span class="pre">DetectionMetricsFactory.get_metrics_dataframe()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.get_overall_precision_recall_curve"><code class="docutils literal notranslate"><span class="pre">DetectionMetricsFactory.get_overall_precision_recall_curve()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.reset"><code class="docutils literal notranslate"><span class="pre">DetectionMetricsFactory.reset()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.update"><code class="docutils literal notranslate"><span class="pre">DetectionMetricsFactory.update()</span></code></a></li>
 </ul>
 </li>
@@ -1239,6 +1256,7 @@ translation dictionary with old and new class names as keys and values, respecti
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_recall"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_recall()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_tn"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_tn()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_tp"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_tp()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.reset"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.reset()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.update"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.update()</span></code></a></li>
 </ul>
 </li>
