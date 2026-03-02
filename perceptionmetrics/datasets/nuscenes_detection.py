@@ -8,10 +8,7 @@ from nuscenes.nuscenes import NuScenes
 from nuscenes.utils.geometry_utils import view_points
 from perceptionmetrics.datasets.detection import ImageDetectionDataset
 
-# =========================
-# Classes to drop
-
-# =========================
+# Classes to drop, keep it empty if you want to keep all classes
 DROP = {
     "animal",
     "movable_object.pushable_pullable",
@@ -25,9 +22,7 @@ DROP = {
     "movable_object.trafficcone",
 }
 
-# =========================
-# Build nuScenes dataset
-# =========================
+
 def build_nuscenes_detection_dataset(
     dataset_dir: str,
     version: str = "v1.0-mini",
@@ -39,14 +34,20 @@ def build_nuscenes_detection_dataset(
     dataset_dir = os.path.abspath(dataset_dir)
     assert os.path.isdir(dataset_dir), f"Dataset directory not found: {dataset_dir}"
 
-    nusc = nusc_obj if nusc_obj else NuScenes(version=version, dataroot=dataset_dir, verbose=False)
+    nusc = (
+        nusc_obj
+        if nusc_obj
+        else NuScenes(version=version, dataroot=dataset_dir, verbose=False)
+    )
 
     # Get all nuScenes categories except the DROP list
     all_categories = [cat["name"] for cat in nusc.category]
     categories = [c for c in all_categories if c not in DROP]
 
     # Build ontology
-    ontology = {name: {"idx": i + 1, "rgb": [0, 0, 0]} for i, name in enumerate(categories)}
+    ontology = {
+        name: {"idx": i + 1, "rgb": [0, 0, 0]} for i, name in enumerate(categories)
+    }
     cat_to_idx = {name: ontology[name]["idx"] for name in ontology}
 
     # Train/val split
@@ -75,25 +76,50 @@ def build_nuscenes_detection_dataset(
                 continue
 
             sd = nusc.get("sample_data", cam_token)
-            rows.append({
-                "image": os.path.join(dataset_dir, sd["filename"]),
-                "annotation": sample["token"],
-                "split": split,
-            })
+            rows.append(
+                {
+                    "image": os.path.join(dataset_dir, sd["filename"]),
+                    "annotation": sample["token"],
+                    "split": split,
+                }
+            )
 
             token = sample["next"]
 
     dataset = pd.DataFrame(rows)
     dataset.attrs = {"ontology": ontology, "cat_to_idx": cat_to_idx}
 
-    print(f"Built nuScenes detection dataset with {len(dataset)} samples for split '{split}'")
+    print(
+        f"Built nuScenes detection dataset with {len(dataset)} samples for split '{split}'"
+    )
     return dataset, ontology
+
 
 # =========================
 # Dataset class
 # =========================
 class NuScenesDetectionDataset(ImageDetectionDataset):
-    def __init__(self, dataset_dir: str, version: str = "v1.0-mini", camera: str = "CAM_FRONT", split: str = "train"):
+    """
+    Dataset class for nuScenes 2D object detection.
+
+    Inherits from ImageDetectionDataset and parses 3D bounding boxes
+    from nuScenes into 2D camera view, dropping unwanted classes.
+
+    Attributes:
+        dataset_dir (str): Path to the nuScenes dataset root.
+        camera (str): Camera channel to use (e.g., "CAM_FRONT").
+        split (str): Dataset split ("train" or "val").
+        nusc (NuScenes): Initialized NuScenes object.
+        cat_to_idx (dict): Mapping from category names to integer indices.
+    """
+
+    def __init__(
+        self,
+        dataset_dir: str,
+        version: str = "v1.0-mini",
+        camera: str = "CAM_FRONT",
+        split: str = "train",
+    ):
         self.dataset_dir = dataset_dir
         self.camera = camera
         self.split = split
@@ -108,6 +134,18 @@ class NuScenesDetectionDataset(ImageDetectionDataset):
         super().__init__(dataset=dataset, dataset_dir=dataset_dir, ontology=ontology)
 
     def read_annotation(self, fname: str) -> Tuple[List[List[float]], List[int]]:
+        """
+        Read annotations for a single sample.
+
+        Args:
+            fname (str): Sample token or filename.
+
+        Returns:
+            Tuple[List[List[float]], List[int]]:
+                - List of bounding boxes [[x1, y1, x2, y2], ...]
+                - Corresponding class indices.
+        """
+
         # clean token
         if isinstance(fname, str) and ("/" in fname or "\\" in fname):
             fname = os.path.basename(fname)
@@ -146,6 +184,7 @@ class NuScenesDetectionDataset(ImageDetectionDataset):
             labels_out.append(self.cat_to_idx[class_name])
 
         return boxes_out, labels_out
+
 
 # =========================
 # Example usage
