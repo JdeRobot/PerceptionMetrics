@@ -29,6 +29,16 @@ class SegmentationMetricsFactory:
         self.n_classes = n_classes
         self.confusion_matrix = np.zeros((n_classes, n_classes), dtype=np.int64)
 
+    def reset(self):
+        """Reset all accumulated results to initial state.
+
+        This allows reusing the same factory instance for multiple
+        independent evaluations without creating a new object.
+        """
+        self.confusion_matrix = np.zeros(
+            (self.n_classes, self.n_classes), dtype=np.int64
+        )
+
     def update(
         self, pred: np.ndarray, gt: np.ndarray, valid_mask: Optional[np.ndarray] = None
     ):

@@ -267,6 +267,19 @@
         <span class="p">)</span>  <span class="c1"># List of (gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gt_counts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>  <span class="c1"># Count of GT instances per class</span>
 
+<div class="viewcode-block" id="DetectionMetricsFactory.reset">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.utils.html#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset all accumulated results to initial state.</span>
+
+<span class="sd">        This allows reusing the same factory instance for multiple</span>
+<span class="sd">        independent evaluations without creating a new object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gt_counts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="DetectionMetricsFactory.update">
 <a class="viewcode-back" href="../../../api/perceptionmetrics.utils.html#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.update">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gt_boxes</span><span class="p">,</span> <span class="n">gt_labels</span><span class="p">,</span> <span class="n">pred_boxes</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">,</span> <span class="n">pred_scores</span><span class="p">):</span>
