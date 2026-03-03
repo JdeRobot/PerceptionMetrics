@@ -314,6 +314,10 @@
             <span class="p">(</span><span class="n">gt_boxes</span><span class="p">,</span> <span class="n">gt_labels</span><span class="p">,</span> <span class="n">pred_boxes</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">,</span> <span class="n">pred_scores</span><span class="p">)</span>
         <span class="p">)</span>
 
+        <span class="c1"># Update ground truth counts</span>
+        <span class="k">for</span> <span class="n">g_label</span> <span class="ow">in</span> <span class="n">gt_labels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gt_counts</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">g_label</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+
         <span class="c1"># Handle empty inputs</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gt_boxes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>  <span class="c1"># Nothing to process</span>
@@ -335,11 +339,8 @@
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">matches</span><span class="p">[</span><span class="n">label</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">matches</span><span class="p">[</span><span class="n">label</span><span class="p">])</span></div>
 
-        <span class="c1"># Update ground truth counts</span>
-        <span class="k">for</span> <span class="n">g_label</span> <span class="ow">in</span> <span class="n">gt_labels</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">gt_counts</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">g_label</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_match_predictions</span><span class="p">(</span>
