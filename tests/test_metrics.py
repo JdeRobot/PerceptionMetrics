@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 from perceptionmetrics.utils.detection_metrics import DetectionMetricsFactory
 from perceptionmetrics.utils.segmentation_metrics import SegmentationMetricsFactory
+from perceptionmetrics.utils.detection_metrics import compute_iou_matrix
 
 
 @pytest.fixture
@@ -180,3 +181,58 @@ def test_detection_reset_clears_data_and_allows_reuse():
         assert len(factory.results) == 0
         assert len(factory.raw_data) == 0
         assert sum(factory.gt_counts.values()) == 0
+
+
+def compute_iou_matrix_reference(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
+    """Compute IoU matrix between pred and gt boxes.
+
+    :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)
+    :type pred_boxes: np.ndarray
+    :param gt_boxes: Ground truth bounding boxes, shape (num_gt, 4)
+    :type gt_boxes: np.ndarray
+    :return: IoU matrix with shape (num_pred, num_gt)
+    :rtype: np.ndarray
+    """
+    iou_matrix = np.zeros((len(pred_boxes), len(gt_boxes)))
+    for i, pb in enumerate(pred_boxes):
+        for j, gb in enumerate(gt_boxes):
+            iou_matrix[i, j] = compute_iou(pb, gb)
+    return iou_matrix
+
+
+def compute_iou(boxA, boxB):
+    """Compute Intersection over Union (IoU) between two bounding boxes.
+
+    :param boxA: First bounding box [x1, y1, x2, y2]
+    :type boxA: array-like
+    :param boxB: Second bounding box [x1, y1, x2, y2]
+    :type boxB: array-like
+    :return: IoU value between 0 and 1
+    :rtype: float
+    """
+    xA = max(boxA[0], boxB[0])
+    yA = max(boxA[1], boxB[1])
+    xB = min(boxA[2], boxB[2])
+    yB = min(boxA[3], boxB[3])
+
+    interArea = max(0, xB - xA) * max(0, yB - yA)
+    boxAArea = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
+    boxBArea = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
+    iou = interArea / float(boxAArea + boxBArea - interArea)
+    return iou
+
+
+def test_vectorized_iou_matches_reference():
+    np.random.seed(0)
+
+    pred_boxes = np.random.randint(0, 100, (20, 4))
+    gt_boxes = np.random.randint(0, 100, (15, 4))
+
+    # Ensure x1 < x2 and y1 < y2
+    pred_boxes[:, 2:] += pred_boxes[:, :2]
+    gt_boxes[:, 2:] += gt_boxes[:, :2]
+
+    reference = compute_iou_matrix_reference(pred_boxes, gt_boxes)
+    vectorized = compute_iou_matrix(pred_boxes, gt_boxes)
+
+    assert np.allclose(reference, vectorized, atol=1e-12)
