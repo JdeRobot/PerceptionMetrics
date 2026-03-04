@@ -89,53 +89,42 @@ def _make_patched_build_dataset(yaml_content, label_files_by_split):
 # ---------------------------------------------------------------------------
 
 
-def test_build_dataset_no_test_split_no_error():
-    """build_dataset must not raise TypeError when 'test' key is absent.
+def test_build_dataset(caplog):
+    """Regression tests for build_dataset covering missing/null splits and happy paths.
 
-    Regression test for the bug where os.path.join was called with None
-    when the YAML had no test split defined.
+    Verifies that:
+    - No TypeError is raised when 'test' key is absent from the YAML.
+    - No TypeError is raised when 'test' key is present but null (e.g. COCO8).
+    - A logging.WARNING is emitted for each missing or null split.
+    - All three splits are loaded correctly when all paths are defined.
+    - The ontology is built correctly from the YAML 'names' dict.
 
-    :raises AssertionError: If a TypeError is raised or unexpected splits appear
+    :param caplog: pytest log capture fixture
+    :type caplog: pytest.LogCaptureFixture
     """
-    dataset, ontology, dataset_dir = _make_patched_build_dataset(
+    # --- missing 'test' key: must not raise TypeError, must skip 'test' rows ---
+    dataset, ontology, _ = _make_patched_build_dataset(
         _FAKE_YAML_TRAIN_VAL_ONLY,
         {
             "train": ["/fake/dataset/labels/train/img1.txt"],
             "val": ["/fake/dataset/labels/val/img2.txt"],
         },
     )
-
     assert isinstance(dataset, pd.DataFrame)
     assert "test" not in dataset["split"].values
     assert set(dataset["split"].unique()) <= {"train", "val"}
 
-
-def test_build_dataset_null_test_split_no_error():
-    """build_dataset must not raise TypeError when 'test' key is present but null.
-
-    This mirrors the exact COCO8 YAML structure that triggered the original bug.
-
-    :raises AssertionError: If a TypeError is raised or unexpected splits appear
-    """
-    dataset, ontology, dataset_dir = _make_patched_build_dataset(
+    # --- 'test: null' (exact COCO8 structure): must not raise TypeError ---
+    dataset, _, _ = _make_patched_build_dataset(
         _FAKE_YAML_TEST_NULL,
         {
             "train": ["/fake/dataset/labels/train/img1.txt"],
             "val": ["/fake/dataset/labels/val/img2.txt"],
         },
     )
-
-    assert isinstance(dataset, pd.DataFrame)
     assert "test" not in dataset["split"].values
 
-
-def test_build_dataset_missing_split_emits_warning(caplog):
-    """build_dataset must log a warning for each split that is missing or null.
-
-    :param caplog: pytest log capture fixture
-    :type caplog: pytest.LogCaptureFixture
-    :raises AssertionError: If no warning is logged for the missing split
-    """
+    # --- warning must be emitted for the null 'test' split ---
     with caplog.at_level(logging.WARNING, logger="root"):
         _make_patched_build_dataset(
             _FAKE_YAML_TEST_NULL,
@@ -144,7 +133,6 @@ def test_build_dataset_missing_split_emits_warning(caplog):
                 "val": ["/fake/dataset/labels/val/img2.txt"],
             },
         )
-
     warning_messages = [
         r.message for r in caplog.records if r.levelno == logging.WARNING
     ]
@@ -152,13 +140,8 @@ def test_build_dataset_missing_split_emits_warning(caplog):
         "Expected a warning about the missing 'test' split, got: %s" % warning_messages
     )
 
-
-def test_build_dataset_all_splits_present():
-    """build_dataset processes all three splits when they are all defined.
-
-    :raises AssertionError: If rows for any split are absent
-    """
-    dataset, ontology, dataset_dir = _make_patched_build_dataset(
+    # --- all splits defined: all three must appear in the DataFrame ---
+    dataset, _, _ = _make_patched_build_dataset(
         _FAKE_YAML_ALL_SPLITS,
         {
             "train": ["/fake/dataset/labels/train/img1.txt"],
@@ -166,24 +149,13 @@ def test_build_dataset_all_splits_present():
             "test": ["/fake/dataset/labels/test/img3.txt"],
         },
     )
-
-    assert isinstance(dataset, pd.DataFrame)
     assert set(dataset["split"].unique()) == {"train", "val", "test"}
 
-
-def test_build_dataset_ontology_built_correctly():
-    """build_dataset must build ontology from YAML 'names' dict.
-
-    :raises AssertionError: If ontology keys or indices are incorrect
-    """
-    dataset, ontology, dataset_dir = _make_patched_build_dataset(
+    # --- ontology must be built correctly from the YAML 'names' dict ---
+    _, ontology, _ = _make_patched_build_dataset(
         _FAKE_YAML_TRAIN_VAL_ONLY,
-        {
-            "train": ["/fake/dataset/labels/train/img1.txt"],
-        },
+        {"train": ["/fake/dataset/labels/train/img1.txt"]},
     )
-
-    assert "cat" in ontology
-    assert "dog" in ontology
+    assert "cat" in ontology and "dog" in ontology
     assert ontology["cat"]["idx"] == 0
     assert ontology["dog"]["idx"] == 1
