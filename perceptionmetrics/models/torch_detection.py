@@ -213,6 +213,8 @@ class ImageDetectionTorchDataset(Dataset):
         boxes, category_indices = self.dataset.read_annotation(ann_path)
 
         # Convert boxes/labels to tensors
+        if len(boxes) == 0:
+            boxes = torch.zeros((0, 4), dtype=torch.float32)
         boxes = tv_tensors.BoundingBoxes(
             boxes, format="XYXY", canvas_size=(image.height, image.width)
         )
