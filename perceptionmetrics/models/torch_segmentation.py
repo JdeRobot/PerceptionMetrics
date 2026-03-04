@@ -405,9 +405,14 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         if predictions_outdir is not None:
             os.makedirs(predictions_outdir, exist_ok=True)
 
-        # Build a LUT for transforming ontology if needed
+        # Load ontology translation from file if path provided
+        if isinstance(ontology_translation, str):
+            ontology_translation = uio.read_json(ontology_translation)
+
+        # Build a LUT for transforming dataset labels to model labels.
+        # LUT must be indexed by dataset label values, so old_ontology=dataset, new_ontology=model.
         lut_ontology = uc.get_ontology_conversion_lut(
-            self.ontology, dataset.ontology, ontology_translation
+            dataset.ontology, self.ontology, ontology_translation
         )
         lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
