@@ -243,7 +243,13 @@ class SegmentationMetricsFactory:
             assert (
                 weights is not None
             ), "Weights should be provided for weighted averaging"
-            return float(np.nansum(metric(per_class=True) * weights))
+            
+            weight_sum = np.nansum(weights)
+            # Prevent division by zero if the sum of weights is zero
+            if weight_sum == 0:
+                return math.nan
+            
+            return float(np.nansum(metric(per_class=True) * weights) / weight_sum)
         raise ValueError(f"Unknown method {method}")
 
     def get_metric_per_name(
