@@ -226,7 +226,7 @@ def dataset_viewer_tab():
                 st.session_state[page_key] = new_page
                 st.session_state[
                     f"img_select_all_{dataset_path}_{split}_{new_page}"
-                ] = image_files.index(selected_img) % IMAGES_PER_PAGE
+                ] = (image_files.index(selected_img) % IMAGES_PER_PAGE)
                 st.session_state["show_search_dropdown"] = False
                 st.rerun()
         with col3:
@@ -237,6 +237,16 @@ def dataset_viewer_tab():
                 st.session_state["show_search_dropdown"] = False
                 st.rerun()
 
+    caption_len_limit = 17
+    captions = [
+        (
+            (name[:caption_len_limit] + "..." + name[-3:])
+            if len(name) > caption_len_limit
+            else name
+        )
+        for name in sample_images
+    ]
+
     # Image grid
     img_select_key = f"img_select_all_{dataset_path}_{split}_{current_page}"
     img_select_index = st.session_state.get(img_select_key)
@@ -246,7 +256,7 @@ def dataset_viewer_tab():
         image_select(
             label="",
             images=image_paths,
-            captions=sample_images,
+            captions=captions,
             use_container_width=False,
             key=img_select_key,
             index=img_select_index,
