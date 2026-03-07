@@ -102,7 +102,7 @@ def build_dataset(
             label_fname = "".join(a + (b or "") for a, b in label_fname)
 
             assert os.path.isfile(data_fname), f"Data file not found: {data_fname}"
-            assert os.path.isfile(label_fname), f"Label file not found: {data_fname}"
+            assert os.path.isfile(label_fname), f"Label file not found: {label_fname}"
 
             sample_name = "_".join(sample_matches)
             dataset[sample_name] = (data_fname, label_fname, split)
