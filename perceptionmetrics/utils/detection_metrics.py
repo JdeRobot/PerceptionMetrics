@@ -392,6 +392,9 @@ def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarr
     :return: IoU matrix with shape (N, M)
     :rtype: np.ndarray
     """
+    assert pred_boxes.ndim == 2 and pred_boxes.shape[1] == 4, f"Expected pred_boxes of shape (N, 4), got {pred_boxes.shape}"
+    assert gt_boxes.ndim == 2 and gt_boxes.shape[1] == 4, f"Expected gt_boxes of shape (M, 4), got {gt_boxes.shape}"
+
     pred_boxes = pred_boxes[:, np.newaxis, :]  # [N, 1, 4]
     gt_boxes = gt_boxes[np.newaxis, :, :]      # [1, M, 4]
 

@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+from numpy.testing import assert_allclose
 import pytest
 from perceptionmetrics.utils.detection_metrics import DetectionMetricsFactory
 from perceptionmetrics.utils.segmentation_metrics import SegmentationMetricsFactory
@@ -221,18 +222,74 @@ def compute_iou(boxA, boxB):
     iou = interArea / float(boxAArea + boxBArea - interArea)
     return iou
 
+# tests for vectorized iou calculation test
+class TestComputeIoUMatrix:
+    
+    def test_matches_scalar_reference(self):
+        # Check if the vectorized version matches the slow loop
+        pred = np.array([
+            [10, 10, 50, 50], 
+            [30, 30, 70, 70], 
+            [100, 100, 200, 200]
+        ])
+        gt = np.array([
+            [10, 10, 50, 50], 
+            [40, 40, 80, 80]
+        ])
+        
+        expected = compute_iou_matrix_reference(pred, gt)
+        result = compute_iou_matrix(pred, gt)
+        
+        assert_allclose(result, expected, atol=1e-10)
 
-def test_vectorized_iou_matches_reference():
-    np.random.seed(0)
+    def test_perfect_overlap(self):
+        # The diagonal should be 1.0 when comparing boxes to themselves
+        boxes = np.array([[0, 0, 10, 10], [5, 5, 15, 15]])
+        result = compute_iou_matrix(boxes, boxes)
+        assert_allclose(np.diag(result), 1.0)
 
-    pred_boxes = np.random.randint(0, 100, (20, 4))
-    gt_boxes = np.random.randint(0, 100, (15, 4))
+    def test_no_overlap(self):
+        # Disjoint boxes should have an IoU of exactly 0
+        pred = np.array([[0, 0, 10, 10]])
+        gt = np.array([[20, 20, 30, 30]])
+        assert compute_iou_matrix(pred, gt)[0, 0] == 0.0
 
-    # Ensure x1 < x2 and y1 < y2
-    pred_boxes[:, 2:] += pred_boxes[:, :2]
-    gt_boxes[:, 2:] += gt_boxes[:, :2]
+    def test_empty_arrays(self):
+        # Grouping the empty edge cases together to save space
+        dummy = np.array([[0, 0, 10, 10]])
+        empty = np.empty((0, 4))
+        
+        # Empty predictions
+        assert compute_iou_matrix(empty, dummy).shape == (0, 1)
+        # Empty ground truth
+        assert compute_iou_matrix(dummy, empty).shape == (1, 0)
 
-    reference = compute_iou_matrix_reference(pred_boxes, gt_boxes)
-    vectorized = compute_iou_matrix(pred_boxes, gt_boxes)
+    def test_single_box_each(self):
+        # A 1x1 matrix should just match the standard scalar compute_iou
+        pred = np.array([[0, 0, 20, 20]])
+        gt = np.array([[10, 10, 30, 30]])
+        
+        expected = compute_iou(pred[0], gt[0])
+        result = compute_iou_matrix(pred, gt)
+        
+        assert result.shape == (1, 1)
+        assert_allclose(result[0, 0], expected, atol=1e-10)
 
-    assert np.allclose(reference, vectorized, atol=1e-12)
+    def test_large_random_batch(self):
+        # Let's throw a bunch of random boxes at it to make sure it scales
+        rng = np.random.default_rng(42)
+        
+        # Generate 200 predictions
+        p_xy = rng.uniform(0, 500, size=(200, 2))
+        p_wh = rng.uniform(10, 100, size=(200, 2))
+        pred = np.column_stack([p_xy, p_xy + p_wh])
+        
+        # Generate 150 ground truths
+        g_xy = rng.uniform(0, 500, size=(150, 2))
+        g_wh = rng.uniform(10, 100, size=(150, 2))
+        gt = np.column_stack([g_xy, g_xy + g_wh])
+        
+        expected = compute_iou_matrix_reference(pred, gt)
+        result = compute_iou_matrix(pred, gt)
+        
+        assert_allclose(result, expected, atol=1e-10)
