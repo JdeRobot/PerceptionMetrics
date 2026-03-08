@@ -256,6 +256,8 @@
   <h2>B</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.gui.browse_folder">browse_folder() (in module perceptionmetrics.utils.gui)</a>
+</li>
         <li><a href="api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.coco.build_coco_dataset">build_coco_dataset() (in module perceptionmetrics.datasets.coco)</a>
 </li>
         <li><a href="api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.gaia.build_dataset">build_dataset() (in module perceptionmetrics.datasets.gaia)</a>
@@ -328,13 +330,15 @@
           <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.torch.data_to_device">(in module perceptionmetrics.utils.torch)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.detection.DetectionDataset">DetectionDataset (class in perceptionmetrics.datasets.detection)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory">DetectionMetricsFactory (class in perceptionmetrics.utils.detection_metrics)</a>
 </li>
         <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.detection.DetectionModel">DetectionModel (class in perceptionmetrics.models.detection)</a>
+</li>
+        <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.image.draw_detections">draw_detections() (in module perceptionmetrics.utils.image)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -481,6 +485,8 @@
         <li><a href="api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.generic.get_random_rgb">get_random_rgb() (in module perceptionmetrics.datasets.generic)</a>
 </li>
         <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_recall">get_recall() (perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory method)</a>
+</li>
+        <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.get_resize_args">get_resize_args() (in module perceptionmetrics.models.torch_detection)</a>
 </li>
         <li><a href="api/perceptionmetrics.models.utils.html#perceptionmetrics.models.utils.lsk3dnet.get_sample">get_sample() (in module perceptionmetrics.models.utils.lsk3dnet)</a>
 
@@ -684,6 +690,10 @@
 </li>
           <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.detection_metrics">perceptionmetrics.utils.detection_metrics</a>
 </li>
+          <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.gui">perceptionmetrics.utils.gui</a>
+</li>
+          <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.image">perceptionmetrics.utils.image</a>
+</li>
           <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.io">perceptionmetrics.utils.io</a>
 </li>
           <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.lidar">perceptionmetrics.utils.lidar</a>
@@ -873,8 +883,6 @@
           <li><a href="api/perceptionmetrics.models.html#module-perceptionmetrics.models.segmentation">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     perceptionmetrics.models.tf_segmentation
 
@@ -889,6 +897,8 @@
           <li><a href="api/perceptionmetrics.models.html#module-perceptionmetrics.models.torch_detection">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     perceptionmetrics.models.torch_segmentation
 
@@ -981,6 +991,20 @@
 </li>
         </ul></li>
         <li>
+    perceptionmetrics.utils.gui
+
+        <ul>
+          <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.gui">module</a>
+</li>
+        </ul></li>
+        <li>
+    perceptionmetrics.utils.image
+
+        <ul>
+          <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.image">module</a>
+</li>
+        </ul></li>
+        <li>
     perceptionmetrics.utils.io
 
         <ul>
@@ -1016,14 +1040,20 @@
           <li><a href="api/perceptionmetrics.models.utils.html#perceptionmetrics.models.utils.yolo.postprocess_detection">(in module perceptionmetrics.models.utils.yolo)</a>
 </li>
         </ul></li>
-        <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.segmentation.ImageSegmentationModel.predict">predict() (perceptionmetrics.models.segmentation.ImageSegmentationModel method)</a>
+        <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.detection.ImageDetectionModel.predict">predict() (perceptionmetrics.models.detection.ImageDetectionModel method)</a>
 
         <ul>
+          <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.perception.PerceptionModel.predict">(perceptionmetrics.models.perception.PerceptionModel method)</a>
+</li>
+          <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.segmentation.ImageSegmentationModel.predict">(perceptionmetrics.models.segmentation.ImageSegmentationModel method)</a>
+</li>
           <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.segmentation.LiDARSegmentationModel.predict">(perceptionmetrics.models.segmentation.LiDARSegmentationModel method)</a>
 </li>
           <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.segmentation.SegmentationModel.predict">(perceptionmetrics.models.segmentation.SegmentationModel method)</a>
 </li>
           <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.tf_segmentation.TensorflowImageSegmentationModel.predict">(perceptionmetrics.models.tf_segmentation.TensorflowImageSegmentationModel method)</a>
+</li>
+          <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.predict">(perceptionmetrics.models.torch_detection.TorchImageDetectionModel method)</a>
 </li>
           <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.torch_segmentation.TorchImageSegmentationModel.predict">(perceptionmetrics.models.torch_segmentation.TorchImageSegmentationModel method)</a>
 </li>

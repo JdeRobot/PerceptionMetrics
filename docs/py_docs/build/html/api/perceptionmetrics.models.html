@@ -415,6 +415,26 @@
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptionmetrics.models.detection.ImageDetectionModel.predict">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/detection.html#ImageDetectionModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.detection.ImageDetectionModel.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Perform prediction for a single image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>Image.Image</em>) – PIL image</p></li>
+<li><p><strong>return_sample</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the sample data along with predictions, defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Detection result or a tuple with the detection result and the input sample tensor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[List[dict], Tuple[List[dict], Any]]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -558,6 +578,26 @@
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>data</strong> (<em>ndarray</em><em> | </em><em>Image</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptionmetrics.models.perception.PerceptionModel.predict">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/perception.html#PerceptionModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.perception.PerceptionModel.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Perform prediction for a single data sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>Image.Image</em><em>]</em>) – Input data sample</p></li>
+<li><p><strong>return_sample</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the sample data along with predictions, defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Prediction result or a tuple with the detection result and the input sample tensor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, Image.Image]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -792,17 +832,20 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="perceptionmetrics.models.segmentation.SegmentationModel.predict">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/segmentation.html#SegmentationModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.segmentation.SegmentationModel.predict" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/segmentation.html#SegmentationModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.segmentation.SegmentationModel.predict" title="Link to this definition">¶</a></dt>
 <dd><p>Perform prediction for a single data sample</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>Image.Image</em><em>]</em>) – Input data sample (image or point cloud)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>Image.Image</em><em>]</em>) – Input data sample</p></li>
+<li><p><strong>return_sample</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the sample data along with predictions, defaults to False</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Prediction result</p>
+<dd class="field-even"><p>Prediction result or a tuple with the detection result and the input sample tensor</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[np.ndarray, Image.Image]</p>
+<dd class="field-odd"><p>Union[np.ndarray, Image.Image, Tuple[np.ndarray, Image.Image]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1052,7 +1095,7 @@ aspect ratio is preserved.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="perceptionmetrics.models.torch_detection.TorchImageDetectionModel.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'test'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predictions_outdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_per_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/torch_detection.html#TorchImageDetectionModel.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.eval" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'test'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predictions_outdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_per_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_visualizations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/torch_detection.html#TorchImageDetectionModel.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.eval" title="Link to this definition">¶</a></dt>
 <dd><p>Evaluate model over a detection dataset and compute metrics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1062,6 +1105,7 @@ aspect ratio is preserved.</p>
 <li><p><strong>ontology_translation</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Optional translation for class mapping</p></li>
 <li><p><strong>predictions_outdir</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Directory to save predictions, if desired</p></li>
 <li><p><strong>results_per_sample</strong> (<em>bool</em>) – Store per-sample metrics</p></li>
+<li><p><strong>save_visualizations</strong> (<em>bool</em>) – Save visualized results (GT vs Pred)</p></li>
 <li><p><strong>progress_callback</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>[</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em><em>]</em>) – Optional callback function for progress updates in Streamlit UI</p></li>
 <li><p><strong>metrics_callback</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>[</em><em>[</em><em>pd.DataFrame</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em><em>]</em>) – Optional callback function for intermediate metrics updates in Streamlit UI</p></li>
 </ul>
@@ -1098,17 +1142,37 @@ aspect ratio is preserved.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="perceptionmetrics.models.torch_detection.TorchImageDetectionModel.inference">
-<span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/torch_detection.html#TorchImageDetectionModel.inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.inference" title="Link to this definition">¶</a></dt>
-<dd><p>Perform object detection inference for a single image</p>
+<span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor_in</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/torch_detection.html#TorchImageDetectionModel.inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.inference" title="Link to this definition">¶</a></dt>
+<dd><p>Perform inference for a tensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>image</strong> (<em>Image.Image</em>) – PIL image</p>
+<dd class="field-odd"><p><strong>tensor_in</strong> (<em>torch.Tensor</em>) – Input tensor</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary with keys ‘boxes’, ‘labels’, ‘scores’</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[str, torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptionmetrics.models.torch_detection.TorchImageDetectionModel.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/torch_detection.html#TorchImageDetectionModel.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Perform prediction for a single image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>Image.Image</em>) – PIL image</p></li>
+<li><p><strong>return_sample</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the sample data along with predictions, defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Detection result or a tuple with the detection result and the input sample tensor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1171,6 +1235,23 @@ aspect ratio is preserved.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[tuple, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="perceptionmetrics.models.torch_detection.get_resize_args">
+<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.torch_detection.</span></span><span class="sig-name descname"><span class="pre">get_resize_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resize_cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/torch_detection.html#get_resize_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.torch_detection.get_resize_args" title="Link to this definition">¶</a></dt>
+<dd><p>Get the resize arguments for torchvision.transforms.Resize from the configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>resize_cfg</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – Resize configuration dictionary</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary with arguments for transforms.Resize</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1558,6 +1639,7 @@ the aspect ratio is preserved.</p>
 <li><a class="reference internal" href="#perceptionmetrics.models.detection.ImageDetectionModel"><code class="docutils literal notranslate"><span class="pre">ImageDetectionModel</span></code></a><ul>
 <li><a class="reference internal" href="#perceptionmetrics.models.detection.ImageDetectionModel.eval"><code class="docutils literal notranslate"><span class="pre">ImageDetectionModel.eval()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.detection.ImageDetectionModel.inference"><code class="docutils literal notranslate"><span class="pre">ImageDetectionModel.inference()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.models.detection.ImageDetectionModel.predict"><code class="docutils literal notranslate"><span class="pre">ImageDetectionModel.predict()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#perceptionmetrics.models.detection.LiDARDetectionModel"><code class="docutils literal notranslate"><span class="pre">LiDARDetectionModel</span></code></a><ul>
@@ -1577,6 +1659,7 @@ the aspect ratio is preserved.</p>
 <li><a class="reference internal" href="#perceptionmetrics.models.perception.PerceptionModel.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">PerceptionModel.get_computational_cost()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.perception.PerceptionModel.get_lut_ontology"><code class="docutils literal notranslate"><span class="pre">PerceptionModel.get_lut_ontology()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.perception.PerceptionModel.inference"><code class="docutils literal notranslate"><span class="pre">PerceptionModel.inference()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.models.perception.PerceptionModel.predict"><code class="docutils literal notranslate"><span class="pre">PerceptionModel.predict()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1625,11 +1708,13 @@ the aspect ratio is preserved.</p>
 <li><a class="reference internal" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.eval"><code class="docutils literal notranslate"><span class="pre">TorchImageDetectionModel.eval()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">TorchImageDetectionModel.get_computational_cost()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.inference"><code class="docutils literal notranslate"><span class="pre">TorchImageDetectionModel.inference()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.predict"><code class="docutils literal notranslate"><span class="pre">TorchImageDetectionModel.predict()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#perceptionmetrics.models.torch_detection.data_to_device"><code class="docutils literal notranslate"><span class="pre">data_to_device()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.torch_detection.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">get_computational_cost()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.torch_detection.get_data_shape"><code class="docutils literal notranslate"><span class="pre">get_data_shape()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.models.torch_detection.get_resize_args"><code class="docutils literal notranslate"><span class="pre">get_resize_args()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-perceptionmetrics.models.torch_segmentation">perceptionmetrics.models.torch_segmentation module</a><ul>
