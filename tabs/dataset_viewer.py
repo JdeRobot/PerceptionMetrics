@@ -172,17 +172,6 @@ def dataset_viewer_tab():
     sample_images = image_files[start_idx : start_idx + IMAGES_PER_PAGE]
     image_paths = [os.path.join(img_dir, img_name) for img_name in sample_images]
 
-    # CSS for compact image grid
-    st.markdown(
-        """
-        <style>
-        .image-selector__image, .image-selector__image img {
-            max-width: 120px; max-height: 120px; width: 120px; height: 120px; object-fit: contain;
-        }
-        </style>
-    """,
-        unsafe_allow_html=True,
-    )
 
     # Navigation
     col1, col2, col3, col4 = st.columns([0.5, 9.5, 0.5, 0.5])
