@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import random
 from typing import List, Optional, Tuple, Union
@@ -354,3 +356,34 @@ def read_semantickitti_label(fname: str) -> Tuple[np.ndarray, np.ndarray]:
     semantic_label = label & 0xFFFF
     instance_label = label >> 16
     return semantic_label, instance_label
+
+
+def export_semantickitti_points(fname: str, points: np.ndarray) -> None:
+    """Export points to a binary file in SemanticKITTI format
+
+    :param fname: Output binary file
+    :type fname: str
+    :param points: Numpy array containing points
+    :type points: np.ndarray
+    """
+    os.makedirs(os.path.dirname(fname), exist_ok=True)
+    points.astype(np.float32).tofile(fname)
+
+
+def export_semantickitti_label(
+    fname: str, semantic_label: np.ndarray, instance_label: Optional[np.ndarray] = None
+) -> None:
+    """Export labels to a binary file in SemanticKITTI format
+
+    :param fname: Output binary file
+    :type fname: str
+    :param semantic_label: Numpy array containing semantic labels
+    :type semantic_label: np.ndarray
+    :param instance_label: Numpy array containing instance labels, defaults to None
+    :type instance_label: Optional[np.ndarray], optional
+    """
+    os.makedirs(os.path.dirname(fname), exist_ok=True)
+    if instance_label is None:
+        instance_label = np.zeros_like(semantic_label, dtype=np.uint32)
+    label = (instance_label.astype(np.uint32) << 16) | semantic_label.astype(np.uint32)
+    label.astype(np.uint32).tofile(fname)
