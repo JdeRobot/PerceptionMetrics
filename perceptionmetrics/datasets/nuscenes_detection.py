@@ -8,7 +8,7 @@ from nuscenes.nuscenes import NuScenes
 from nuscenes.utils.geometry_utils import view_points
 from perceptionmetrics.datasets.detection import ImageDetectionDataset
 
-# Classes to drop, keep it empty if you want to keep all classes
+# Classes to drop, keep it empty keep all classes
 DROP = {
     "animal",
     "movable_object.pushable_pullable",
@@ -30,6 +30,27 @@ def build_nuscenes_detection_dataset(
     split: str = "train",
     nusc_obj: Optional[NuScenes] = None,
 ) -> Tuple[pd.DataFrame, dict]:
+    
+    """
+    Build a nuScenes 2D detection dataset index.
+    
+    Iterates through the nuScenes scenes and samples, collects image paths for a given camera, and constructs a dataset index along with a category ontology mapping class names to integer indices.
+    
+    :param dataset_dir: Path to the nuScenes dataset root directory.
+    :type dataset_dir: str
+    :param version: nuScenes dataset version to load, defaults to "v1.0-mini".
+    :type version: str
+    :param camera: Camera channel to use (e.g., "CAM_FRONT"), defaults to "CAM_FRONT".
+    :type camera: str
+    :param split: Dataset split to load ("train" or "val"), defaults to "train".
+    :type split: str
+    :param nusc_obj: Optional pre-initialized NuScenes object to reuse, defaults to None.
+    :type nusc_obj: Optional[NuScenes]
+    :return: Tuple containing:
+             - A pandas DataFrame with columns ["image", "annotation", "split"] for each sample.
+             - An ontology dictionary mapping category names to indices and RGB colors.
+    :rtype: Tuple[pd.DataFrame, dict]
+    """
 
     dataset_dir = os.path.abspath(dataset_dir)
     assert os.path.isdir(dataset_dir), f"Dataset directory not found: {dataset_dir}"
@@ -95,9 +116,7 @@ def build_nuscenes_detection_dataset(
     return dataset, ontology
 
 
-# =========================
 # Dataset class
-# =========================
 class NuScenesDetectionDataset(ImageDetectionDataset):
     """
     Dataset class for nuScenes 2D object detection.
@@ -105,12 +124,16 @@ class NuScenesDetectionDataset(ImageDetectionDataset):
     Inherits from ImageDetectionDataset and parses 3D bounding boxes
     from nuScenes into 2D camera view, dropping unwanted classes.
 
-    Attributes:
-        dataset_dir (str): Path to the nuScenes dataset root.
-        camera (str): Camera channel to use (e.g., "CAM_FRONT").
-        split (str): Dataset split ("train" or "val").
-        nusc (NuScenes): Initialized NuScenes object.
-        cat_to_idx (dict): Mapping from category names to integer indices.
+    :param dataset_dir: Path to the nuScenes dataset root.
+    :type dataset_dir: str
+    :param camera: Camera channel to use (e.g., "CAM_FRONT").
+    :type camera: str
+    :param split: Dataset split ("train" or "val").
+    :type split: str
+    :param nusc: Initialized NuScenes object.
+    :type nusc: NuScenes
+    :param cat_to_idx: Mapping from category names to integer indices.
+    :type cat_to_idx: dict
     """
 
     def __init__(
@@ -120,6 +143,14 @@ class NuScenesDetectionDataset(ImageDetectionDataset):
         camera: str = "CAM_FRONT",
         split: str = "train",
     ):
+        """
+        Initialize the nuScenes 2D detection dataset.
+
+        :param dataset_dir: Path to the nuScenes dataset root directory.
+        :param version: nuScenes dataset version to load, defaults to "v1.0-mini".
+        :param camera: Camera channel to use (e.g., "CAM_FRONT"), defaults to "CAM_FRONT".
+        :param split: Dataset split to load ("train" or "val"), defaults to "train".
+        """
         self.dataset_dir = dataset_dir
         self.camera = camera
         self.split = split
@@ -135,15 +166,15 @@ class NuScenesDetectionDataset(ImageDetectionDataset):
 
     def read_annotation(self, fname: str) -> Tuple[List[List[float]], List[int]]:
         """
-        Read annotations for a single sample.
+        Read annotations for a single nuScenes sample and project 3D boxes
+        into 2D bounding boxes in the selected camera view.
 
-        Args:
-            fname (str): Sample token or filename.
-
-        Returns:
-            Tuple[List[List[float]], List[int]]:
-                - List of bounding boxes [[x1, y1, x2, y2], ...]
-                - Corresponding class indices.
+        :param fname: Sample token or filename.
+        :type fname: str
+        :return: Tuple containing:
+                - List of bounding boxes ``[[x1, y1, x2, y2], ...]``.
+                - List of corresponding class indices.
+        :rtype: Tuple[List[List[float]], List[int]]
         """
 
         # clean token
@@ -186,9 +217,7 @@ class NuScenesDetectionDataset(ImageDetectionDataset):
         return boxes_out, labels_out
 
 
-# =========================
 # Example usage
-# =========================
 # if __name__ == "__main__":
 #     nus = NuScenesDetectionDataset(version="v1.0-mini", dataset_dir="/home/tejass/Downloads/JDE_Robotics/v1.0-mini")
 #     image_path = nus.dataset.iloc[0]['image']
