@@ -227,7 +227,7 @@ class SegmentationMetricsFactory:
 
         :param metric: Name of the metric to compute
         :type metric: str
-        :param method: Method to use for averaging ('macro', 'micro' or 'weighted')
+        :param method: Method to use for averaging ('macro', 'micro', 'weighted' or 'normalized_weighted')
         :type method: str
         :param weights: Weights for weighted averaging, defaults to None
         :type weights: Optional[np.ndarray], optional
@@ -243,12 +243,14 @@ class SegmentationMetricsFactory:
             assert (
                 weights is not None
             ), "Weights should be provided for weighted averaging"
-            
+            return float(np.nansum(metric(per_class=True) * weights))
+        if method == "normalized_weighted":
+            assert (
+                weights is not None
+            ), "Weights should be provided for weighted averaging"
             weight_sum = np.nansum(weights)
-            # Prevent division by zero if the sum of weights is zero
             if weight_sum == 0:
                 return math.nan
-            
             return float(np.nansum(metric(per_class=True) * weights) / weight_sum)
         raise ValueError(f"Unknown method {method}")
 
