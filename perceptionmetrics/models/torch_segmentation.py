@@ -25,7 +25,6 @@ import perceptionmetrics.utils.io as uio
 import perceptionmetrics.utils.segmentation_metrics as um
 import perceptionmetrics.utils.torch as ut
 
-
 AVAILABLE_MODEL_FORMATS_LIDAR = [
     "o3d_randlanet",
     "o3d_kpconv",
@@ -132,6 +131,9 @@ class ImageSegmentationTorchDataset(Dataset):
         target_transform: transforms.Compose,
         splits: List[str] = ["test"],
     ):
+        # Raise early if any requested split is absent — prevents silent NaN metrics
+        dataset._validate_splits(splits)
+
         # Filter split and make filenames global
         dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
         self.dataset = dataset
@@ -183,6 +185,9 @@ class LiDARSegmentationTorchDataset(Dataset):
         get_sample: callable,
         splits: str = ["test"],
     ):
+        # Raise early if any requested split is absent — prevents silent NaN metrics
+        dataset._validate_splits(splits)
+
         # Filter split and make filenames global
         dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
         self.dataset = dataset

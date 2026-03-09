@@ -183,6 +183,9 @@ class ImageDetectionTorchDataset(Dataset):
     ):
         self.dataset = copy(dataset)
 
+        # Raise early if any requested split is absent — prevents silent NaN metrics
+        self.dataset._validate_splits(splits)
+
         # Filter split and make filenames global
         self.dataset.dataset = self.dataset.dataset[
             self.dataset.dataset["split"].isin(splits)
@@ -252,9 +255,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             self.device = torch.device(
                 "cuda"
                 if torch.cuda.is_available()
-                else "mps"
-                if torch.backends.mps.is_available()
-                else "cpu"
+                else "mps" if torch.backends.mps.is_available() else "cpu"
             )
         else:
             self.device = device

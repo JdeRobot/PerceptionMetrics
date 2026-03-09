@@ -9,7 +9,7 @@ import pytest
 # Stub out heavy optional C-extensions that are not available in the test
 # environment (open3d, tqdm, etc.) before importing any perceptionmetrics module.
 # ---------------------------------------------------------------------------
-for _stub in ("open3d",):
+for _stub in ("open3d", "supervision"):
     if _stub not in sys.modules:
         sys.modules[_stub] = MagicMock()
 
@@ -188,3 +188,48 @@ def test_build_dataset(caplog):
 
     with pytest.raises(ValueError, match="test"):
         stub._validate_splits(["test"])
+
+
+def test_eval_missing_split_raises_valueerror():
+    """Ensure ImageDetectionTorchDataset raises ValueError for a missing split.
+
+    This guards against the silent-evaluation-failure pattern where filtering on
+    an absent split produces an empty DataFrame and returns NaN/0.0 metrics.
+
+    :raises pytest.skip.Exception: Skipped when torch or torchvision are unavailable.
+    :raises ValueError: Expected when the requested split is not in the dataset.
+    """
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("torchvision")
+
+    from perceptionmetrics.datasets.detection import ImageDetectionDataset
+    from perceptionmetrics.models.torch_detection import ImageDetectionTorchDataset
+
+    class _StubDetectionDataset(ImageDetectionDataset):
+        def make_fname_global(self):
+            pass
+
+        def read_annotation(self, fname):
+            return []
+
+    stub = _StubDetectionDataset(
+        dataset=pd.DataFrame(
+            [
+                {
+                    "image": "img1.jpg",
+                    "annotation": "lbl1.txt",
+                    "split": "train",
+                },
+                {
+                    "image": "img2.jpg",
+                    "annotation": "lbl2.txt",
+                    "split": "val",
+                },
+            ]
+        ),
+        dataset_dir="/fake",
+        ontology={"cat": {"idx": 0, "rgb": [0, 0, 0]}},
+    )
+
+    with pytest.raises(ValueError, match="test"):
+        ImageDetectionTorchDataset(stub, transform=None, splits=["test"])
