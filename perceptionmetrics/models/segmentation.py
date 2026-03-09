@@ -55,7 +55,7 @@ class SegmentationModel(PerceptionModel):
 
         :param tensor_in: Input tensor (image or point cloud)
         :type tensor_in: Either tf.Tensor or torch.Tensor
-        :return: Segmenation result as a tensor
+        :return: Segmentation result as a tensor
         :rtype: Either tf.Tensor or torch.Tensor
         """
         raise NotImplementedError

@@ -645,7 +645,8 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
             points_fname, self.model_cfg, has_intensity=has_intensity
         )
         result, _, _ = self.inference(sample, self.model, self.model_cfg, ignore_index)
-        result = result.squeeze().cpu().numpy()
+        result = result.detach().cpu().squeeze().numpy()
+        result = np.argmax(result, axis=-1)
 
         if return_sample:
             return result, sample
@@ -731,6 +732,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
             for sample in pbar:
                 # Perform inference
                 pred, label, name = self.inference(sample, self.model, self.model_cfg)
+                pred = torch.argmax(pred, dim=-1).detach()
 
                 # Get valid points masks depending on ignored label indices
                 if ignored_label_indices:

@@ -114,7 +114,7 @@ def inference(
     if label is not None:
         label = torch.from_numpy(label.astype(np.int64)).long().cuda()
 
-    result = torch.argmax(pred.squeeze(), axis=-1), label, name
+    result = pred.squeeze(), label, name
 
     # Return processing time if needed
     if measure_processing_time:

@@ -277,7 +277,6 @@ def inference(
 
     if ignore_index is not None:
         pred["logits"][:, ignore_index] = -1e9
-    pred["logits"] = torch.argmax(pred["logits"], dim=1)
 
     has_labels = pred["labels"][0] is not None
     preds, labels, names = ([], [], []) if has_labels else ([], None, None)

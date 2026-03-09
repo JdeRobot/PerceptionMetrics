@@ -198,7 +198,6 @@ def inference(
     preds = preds[inds_reconstruct, :]
     if ignore_index is not None:
         preds[:, ignore_index] = -1e9
-    preds = torch.argmax(preds, dim=1)
 
     if measure_processing_time:
         return (preds, labels, names), processing_time

@@ -138,7 +138,8 @@ def inference(
     for output in outputs:
         if ignore_index is not None:
             output.pts_seg_logits.pts_seg_logits[ignore_index] = -1e9
-        pred = torch.argmax(output.pts_seg_logits.pts_seg_logits, dim=0)
+
+        pred = output.pts_seg_logits.pts_seg_logits.movedim(1, 0)
         preds.append(pred)
         if has_labels:
             labels.append(output.gt_pts_seg.pts_semantic_mask)
