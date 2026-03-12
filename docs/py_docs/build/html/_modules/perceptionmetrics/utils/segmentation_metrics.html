@@ -511,7 +511,7 @@
 
 <span class="sd">        :param metric: Name of the metric to compute</span>
 <span class="sd">        :type metric: str</span>
-<span class="sd">        :param method: Method to use for averaging (&#39;macro&#39;, &#39;micro&#39; or &#39;weighted&#39;)</span>
+<span class="sd">        :param method: Method to use for averaging (&#39;macro&#39;, &#39;micro&#39;, &#39;weighted&#39; or &#39;normalized_weighted&#39;)</span>
 <span class="sd">        :type method: str</span>
 <span class="sd">        :param weights: Weights for weighted averaging, defaults to None</span>
 <span class="sd">        :type weights: Optional[np.ndarray], optional</span>
@@ -528,6 +528,14 @@
                 <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="p">),</span> <span class="s2">&quot;Weights should be provided for weighted averaging&quot;</span>
             <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">metric</span><span class="p">(</span><span class="n">per_class</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="n">weights</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;normalized_weighted&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span> <span class="s2">&quot;Weights should be provided for weighted averaging&quot;</span>
+            <span class="n">weight_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">weight_sum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">metric</span><span class="p">(</span><span class="n">per_class</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="n">weights</span><span class="p">)</span> <span class="o">/</span> <span class="n">weight_sum</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown method </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
