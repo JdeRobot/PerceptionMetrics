@@ -297,6 +297,8 @@ class DetectionMetricsFactory:
         if len(all_detections) == 0:
             return {"precision": [0.0], "recall": [0.0]}
 
+        fn_count = sum(1 for d in all_detections if d[1] == -1)
+        
         # Sort by score
         all_detections = sorted(
             [d for d in all_detections if d[0] is not None], key=lambda x: -x[0]
@@ -304,7 +306,6 @@ class DetectionMetricsFactory:
 
         tps = [d[1] == 1 for d in all_detections]
         fps = [d[1] == 0 for d in all_detections]
-        fn_count = sum(1 for d in all_detections if d[1] == -1)
 
         _, precision, recall = compute_ap(tps, fps, fn_count)
 
