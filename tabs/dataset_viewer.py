@@ -4,6 +4,7 @@ from streamlit_image_select import image_select
 
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
 
+
 def dataset_viewer_tab():
     import tempfile
     from perceptionmetrics.datasets.coco import CocoDataset
@@ -29,7 +30,9 @@ def dataset_viewer_tab():
     # Setup paths and pagination
     if dataset_type == "coco":
         try:
-            img_dir, ann_file = find_img_dir_and_ann_file(dataset_path=dataset_path, split=split)
+            img_dir, ann_file = find_img_dir_and_ann_file(
+                dataset_path=dataset_path, split=split
+            )
         except FileNotFoundError:
             st.warning("Dataset files not found. Check path and split.")
             return
@@ -168,7 +171,6 @@ def dataset_viewer_tab():
     start_idx = current_page * IMAGES_PER_PAGE
     sample_images = image_files[start_idx : start_idx + IMAGES_PER_PAGE]
     image_paths = [os.path.join(img_dir, img_name) for img_name in sample_images]
-
 
     # Navigation
     col1, col2, col3, col4 = st.columns([0.5, 9.5, 0.5, 0.5])

@@ -8,6 +8,7 @@ from perceptionmetrics.datasets.coco import CocoDataset
 from perceptionmetrics.utils.gui import browse_folder
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
 
+
 def browse_predictions_outdir():
     folder = browse_folder()
     if folder:
@@ -40,8 +41,10 @@ def evaluator_tab():
     elif dataset_path and os.path.isdir(dataset_path):
         try:
             if dataset_type.lower() == "coco":
-                img_dir, ann_file = find_img_dir_and_ann_file(dataset_path=dataset_path, split=split)
-                
+                img_dir, ann_file = find_img_dir_and_ann_file(
+                    dataset_path=dataset_path, split=split
+                )
+
                 if os.path.isdir(img_dir) and os.path.isfile(ann_file):
                     st.session_state[dataset_key] = CocoDataset(
                         annotation_file=ann_file, image_dir=img_dir, split=split

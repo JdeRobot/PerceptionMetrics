@@ -127,7 +127,9 @@ def get_dataset(
         if len(split) > 1:
             raise ValueError("COCO format currently supports only one split at a time")
         split_name = split[0]
-        image_dir, annotation_file = find_img_dir_and_ann_file(dataset_path=dataset_dir, split=split_name)
+        image_dir, annotation_file = find_img_dir_and_ann_file(
+            dataset_path=dataset_dir, split=split_name
+        )
         dataset_args = {
             "annotation_file": annotation_file,
             "image_dir": image_dir,
