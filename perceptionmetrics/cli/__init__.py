@@ -2,6 +2,7 @@ from perceptionmetrics import datasets
 from perceptionmetrics import models
 from perceptionmetrics.cli.evaluate import evaluate
 from perceptionmetrics.cli.computational_cost import computational_cost
+from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
 
 REGISTRY = {
     "evaluate": evaluate,
@@ -126,8 +127,9 @@ def get_dataset(
         if len(split) > 1:
             raise ValueError("COCO format currently supports only one split at a time")
         split_name = split[0]
-        annotation_file = f"{dataset_dir}/annotations/instances_{split_name}2017.json"
-        image_dir = f"{dataset_dir}/images/{split_name}2017"
+        image_dir, annotation_file = find_img_dir_and_ann_file(
+            dataset_path=dataset_dir, split=split_name
+        )
         dataset_args = {
             "annotation_file": annotation_file,
             "image_dir": image_dir,
