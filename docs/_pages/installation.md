@@ -40,21 +40,23 @@ If you want to contribute to the project or modify the source code, clone the re
 git clone https://github.com/JdeRobot/PerceptionMetrics.git
 cd PerceptionMetrics
 ```
+### Using venv
+Create your virtual environment:
+```
+mkdir .venv
+python3 -m venv .venv
+```
 
-### Install Poetry
+Activate your environment and install as pip package:
+```
+source .venv/bin/activate
+pip install -e .
+```
+### Using Poetry
 
-Poetry is used to manage dependencies and development environments.
-
-First install `pipx` (recommended for installing CLI tools):
-
+Install Poetry (if not done before):
 ```
 python3 -m pip install --user pipx
-python3 -m pipx ensurepath
-```
-
-Then install Poetry:
-
-```
 pipx install poetry
 ```
 
@@ -65,70 +67,24 @@ If you run this command inside a `venv`, you may see:
 ERROR: Can not perform a '--user' install. User site-packages are not visible in this virtualenv.
 ```
 
-### Install dependencies
 
-Poetry automatically creates and manages a virtual environment for the project.
-
-Install dependencies with:
+Install dependencies and activate poetry environment (you can get out of the Poetry shell by running `exit`):
 ```
 poetry install
-```
-
-Activate the environment:
-
-```
 poetry shell
 ```
 
-You can exit the Poetry environment anytime by running:
+## Common
+Install your deep learning framework of preference in your environment. We have tested:
+- CUDA Version: `12.6`
+- `torch==2.4.1` and `torchvision==0.19.1`.
+- `torch==2.2.2` and `torchvision==0.17.2`.
+- `tensorflow==2.17.1`
+- `tensorflow==2.16.1`
 
-```
-exit
-```
+If you are using LiDAR, Open3D currently requires `torch==2.2*`.
 
----
+And it's done! You can check the `examples` directory for inspiration and run some of the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 
-## Deep Learning Framework Setup
-
-Install the deep learning framework of your choice inside your environment.
-
-The following configurations have been tested:
-
-* CUDA Version: `12.6`
-* `torch==2.4.1` and `torchvision==0.19.1`
-* `torch==2.2.2` and `torchvision==0.17.2`
-* `tensorflow==2.17.1`
-* `tensorflow==2.16.1`
-
-If you are working with LiDAR models, note that **Open3D currently requires**:
-
-```
-torch==2.2*
-```
-
----
-
-## Running Examples
-
-After installation, you can explore the examples provided in the repository.
-
-If using Poetry:
-
-```
-poetry run python examples/<some_script.py>
-```
-
-or activate the environment:
-
-```
-poetry shell
-python examples/<some_script.py>
-```
-
----
-
-### Additional Environments
-
-Some LiDAR segmentation models, such as **SphereFormer** and **LSK3DNet**, require additional installation steps.
-
-Refer to [additional_envs/INSTRUCTIONS.md](additional_envs/INSTRUCTIONS.md) for detailed setup instructions.
+### Additional environments
+Some LiDAR segmentation models, such as SphereFormer and LSK3DNet, require a dedicated installation workflow. Refer to [additional_envs/INSTRUCTIONS.md](additional_envs/INSTRUCTIONS.md) for detailed setup instructions.
