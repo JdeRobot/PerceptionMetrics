@@ -6,13 +6,41 @@ permalink: /installation/
 sidebar:
   nav: "main"
 ---
-In the near future, *PerceptionMetrics* is planned to be deployed in PyPI. In the meantime, you can clone our repo and build the package locally using either *venv* or *Poetry*.
+
+## Installation
+
+*PerceptionMetrics* can be installed in two different ways depending on your needs:
+
+* **Regular users**: Install the package directly from PyPI.
+* **Developers**: Clone the repository and install the development environment using Poetry.
+
+---
+
+## Install from PyPI (Recommended for users)
+
+The latest stable release of *PerceptionMetrics* is available on PyPI.
+
+Install it with:
 
 ```
-git clone git@github.com:JdeRobot/PerceptionMetrics.git && cd PerceptionMetrics
+pip install perceptionmetrics
 ```
 
-## Using venv
+After installation, you can start using the library in your Python environment.
+
+---
+
+## Developer Installation (Using Poetry)
+
+If you want to contribute to the project or modify the source code, clone the repository and install the dependencies using Poetry.
+
+### Clone the repository
+
+```
+git clone https://github.com/JdeRobot/PerceptionMetrics.git
+cd PerceptionMetrics
+```
+### Using venv
 Create your virtual environment:
 ```
 mkdir .venv
@@ -24,14 +52,21 @@ Activate your environment and install as pip package:
 source .venv/bin/activate
 pip install -e .
 ```
-
-## Using Poetry
+### Using Poetry
 
 Install Poetry (if not done before):
 ```
 python3 -m pip install --user pipx
 pipx install poetry
 ```
+
+⚠️ Note: `pipx` should be installed **outside any virtual environment**.
+If you run this command inside a `venv`, you may see:
+
+```
+ERROR: Can not perform a '--user' install. User site-packages are not visible in this virtualenv.
+```
+
 
 Install dependencies and activate poetry environment (you can get out of the Poetry shell by running `exit`):
 ```
