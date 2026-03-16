@@ -413,6 +413,26 @@ def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarr
 
     return iou_matrix
 
+def compute_iou(boxA, boxB):
+    """Compute Intersection over Union (IoU) between two bounding boxes.
+
+    :param boxA: First bounding box [x1, y1, x2, y2]
+    :type boxA: array-like
+    :param boxB: Second bounding box [x1, y1, x2, y2]
+    :type boxB: array-like
+    :return: IoU value between 0 and 1
+    :rtype: float
+    """
+    xA = max(boxA[0], boxB[0])
+    yA = max(boxA[1], boxB[1])
+    xB = min(boxA[2], boxB[2])
+    yB = min(boxA[3], boxB[3])
+
+    interArea = max(0, xB - xA) * max(0, yB - yA)
+    boxAArea = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
+    boxBArea = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
+    iou = interArea / float(boxAArea + boxBArea - interArea)
+    return iou
 
 def compute_ap(tps, fps, fn):
     """Compute Average Precision (AP) using VOC-style 11-point interpolation.
