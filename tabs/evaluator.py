@@ -57,8 +57,12 @@ def evaluator_tab():
                         f"✅ Dataset loaded: {dataset_path} ({split} split) - {len(dataset.dataset)} samples"
                     )
                 else:
-                    st.warning(
-                        "⚠️ Dataset files not found. Please check the dataset path and split in the sidebar."
+                    st.error(
+                        f"❌ COCO dataset files not found at expected paths:\n"
+                        f"- Images: `images/{split}2017/`\n"
+                        f"- Annotations: `annotations/instances_{split}2017.json`\n\n"
+                        f"Please verify your dataset folder follows this structure. "
+                        f"Custom COCO versions (e.g. 2014) are not yet supported."
                     )
             else:
                 st.warning(
@@ -84,6 +88,14 @@ def evaluator_tab():
             "⚠️ No model loaded. Please load a model using the 'Load Model' button in the sidebar."
         )
 
+    # Show hint if button will be disabled
+    if not dataset_available and not model_available:
+        st.info("ℹ️ Load both a dataset and a model from the sidebar to enable evaluation.")
+    elif not dataset_available:
+        st.info("ℹ️ Load a dataset from the sidebar to enable evaluation.")
+    elif not model_available:
+        st.info("ℹ️ Load a model from the sidebar to enable evaluation.")
+        
     # Evaluation configuration
     st.markdown("### Evaluation Configuration")
 
@@ -132,6 +144,20 @@ def evaluator_tab():
             )
             return
 
+        # Validate predictions output directory before starting evaluation
+        if save_predictions or save_visualizations:
+            if not predictions_outdir_input or not predictions_outdir_input.strip():
+                st.error(
+                    "❌ Please provide a Predictions Output Directory before running evaluation."
+                )
+                return
+            if os.path.isfile(predictions_outdir_input.strip()):
+                st.error(
+                    "❌ The specified output path is a file, not a directory. "
+                    "Please provide a valid directory path."
+                )
+                return
+            
         # Prepare evaluation
         with st.spinner("Running evaluation..."):
             try:
