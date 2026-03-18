@@ -269,12 +269,18 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             try:
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
-            except Exception:
-                print(
-                    "Model is not a TorchScript model. Loading as native PyTorch model."
-                )
-                model = torch.load(model, map_location=self.device, weights_only=False)
-                model_type = "native"
+            except RuntimeError:
+                try:
+                    model = torch.load(
+                        model, map_location=self.device, weights_only=False
+                    )
+                    model_type = "native"
+                except Exception as e:
+                    raise ValueError(
+                        f"Failed to load model. "
+                        f"Ensure it is a valid PyTorch or TorchScript model. Error : {e}"
+                    )
+
         elif isinstance(model, torch.nn.Module):
             model_fname = None
             model_type = "native"
