@@ -12,4 +12,7 @@ docs/py_docs/build/.buildinfo*
 local/
 third_party/
 
+.DS_Storeperceptionmetrics/PerceptionMetrics/
+venv/
 .DS_Store
+perceptionmetrics/PerceptionMetrics/
