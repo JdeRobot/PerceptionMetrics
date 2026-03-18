@@ -67,6 +67,24 @@ Activate your environment and install as pip package:
 source .venv/bin/activate
 pip install -e .
 ```
+### Recommended Setup (For Beginners)
+
+To avoid common installation issues, we recommend:
+
+- Use **Python 3.10 or 3.11** (avoid Python 3.13 due to compatibility issues)
+- Always use a **virtual environment**
+
+#### Step-by-step setup
+
+python3.11 -m venv venv
+source venv/bin/activate
+pip install -e .
+
+#### Setup Jupyter Kernel
+
+pip install ipykernel
+python -m ipykernel install --user --name perceptionmetrics --display-name "Python (PerceptionMetrics)"
+
 
 ### Using Poetry
 
@@ -173,3 +191,20 @@ _To make your first contribution, follow this [Guide](https://github.com/JdeRobo
 
 # Acknowledgements
 LiDAR segmentation support is built upon open-source work from [Open3D-ML](https://github.com/isl-org/Open3D-ML), [mmdetection3d](https://github.com/open-mmlab/mmdetection3d), [SphereFormer](https://github.com/dvlab-research/SphereFormer), and [LSK3DNet](https://github.com/FengZicai/LSK3DNet).
+
+# Troubleshooting
+
+### ModuleNotFoundError: perceptionmetrics
+- Ensure virtual environment is activated  
+- Select correct Jupyter kernel  
+
+### pip install errors
+- Use Python 3.10 or 3.11  
+- Avoid Python 3.13  
+
+### Notebook SyntaxError
+- Ensure text cells are set as Markdown, not Code  
+
+### Kernel issues in Jupyter
+- Restart kernel  
+- Select "Python (PerceptionMetrics)"  
