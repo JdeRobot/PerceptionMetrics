@@ -75,29 +75,17 @@ After installation, you can start using the library in your Python environment.
 
 ---
 
-## Developer Installation (Using Poetry)
+## Developer Installation
 
 If you want to contribute to the project or modify the source code, clone the repository and install the dependencies using Poetry.
 
-### Clone the repository
+#### Clone the repository
 
 ```
 git clone https://github.com/JdeRobot/PerceptionMetrics.git
 cd PerceptionMetrics
 ```
-### Using venv
-Create your virtual environment:
-```
-mkdir .venv
-python3 -m venv .venv
-```
-
-Activate your environment and install as pip package:
-```
-source .venv/bin/activate
-pip install -e .
-```
-### Using Poetry
+### Using Poetry (Recommended)
 
 Install Poetry (if not done before):
 ```
@@ -117,6 +105,18 @@ Install dependencies and activate poetry environment (you can get out of the Poe
 ```
 poetry install
 poetry shell
+```
+### Using venv
+Create your virtual environment:
+```
+mkdir .venv
+python3 -m venv .venv
+```
+
+Activate your environment and install as pip package:
+```
+source .venv/bin/activate
+pip install -e .
 ```
 
 ## Common
