@@ -1,4 +1,5 @@
 import streamlit as st
+import torch
 from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
@@ -25,7 +26,18 @@ st.session_state.setdefault("config_option", "Manual Configuration")
 st.session_state.setdefault("confidence_threshold", 0.5)
 st.session_state.setdefault("nms_threshold", 0.5)
 st.session_state.setdefault("max_detections", 100)
-st.session_state.setdefault("device", "cuda")
+st.session_state.setdefault(
+    "device",
+    (
+        "cuda"
+        if torch.cuda.is_available()
+        else (
+            "mps"
+            if (hasattr(torch.backends, "mps") and torch.backends.mps.is_available())
+            else "cpu"
+        )
+    ),
+)
 st.session_state.setdefault("batch_size", 1)
 st.session_state.setdefault("evaluation_step", 5)
 st.session_state.setdefault("detection_model", None)
@@ -125,9 +137,17 @@ with st.sidebar:
                     key="max_detections",
                 )
             with col2:
+                available_devices = []
+
+                if torch.cuda.is_available():
+                    available_devices.append("cuda")
+                if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+                    available_devices.append("mps")
+                available_devices.append("cpu")
+
                 st.selectbox(
                     "Device",
-                    ["cpu", "cuda", "mps"],
+                    available_devices,
                     key="device",
                 )
                 st.selectbox(
