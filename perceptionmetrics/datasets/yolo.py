@@ -34,8 +34,13 @@ def build_dataset(
     assert os.path.isdir(dataset_dir), f"Dataset directory not found: {dataset_dir}"
 
     # Build ontology from dataset configuration
+
     ontology = {}
-    for idx, name in dataset_info["names"].items():
+    names = dataset_info["names"]
+    # Support both list and dictionary formats for YOLO datasets
+    if isinstance(names, list):
+        names = {i: name for i, name in enumerate(names)}
+    for idx, name in names.items():
         ontology[name] = {
             "idx": idx,
             "rgb": [0, 0, 0],  # Placeholder; YAML doesn't define RGB colors
