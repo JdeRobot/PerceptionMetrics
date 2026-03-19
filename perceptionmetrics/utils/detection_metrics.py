@@ -382,23 +382,36 @@ class DetectionMetricsFactory:
         df = pd.DataFrame(metrics_dict)
         return df.T  # metrics as rows, classes as columns (with mean)
 
-
+# Vectorized implementation replaces nested loops for performance
 def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
-    """Compute IoU matrix between pred and gt boxes.
+    """Vectorized IoU computation between pred and gt boxes."""
 
-    :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)
-    :type pred_boxes: np.ndarray
-    :param gt_boxes: Ground truth bounding boxes, shape (num_gt, 4)
-    :type gt_boxes: np.ndarray
-    :return: IoU matrix with shape (num_pred, num_gt)
-    :rtype: np.ndarray
-    """
-    iou_matrix = np.zeros((len(pred_boxes), len(gt_boxes)))
-    for i, pb in enumerate(pred_boxes):
-        for j, gb in enumerate(gt_boxes):
-            iou_matrix[i, j] = compute_iou(pb, gb)
-    return iou_matrix
+    if len(pred_boxes) == 0 or len(gt_boxes) == 0:
+        return np.zeros((len(pred_boxes), len(gt_boxes)))
 
+    # Expand dims for broadcasting
+    pred_boxes = pred_boxes[:, None, :]   # (N, 1, 4)
+    gt_boxes = gt_boxes[None, :, :]       # (1, M, 4)
+
+    # Intersection
+    x1 = np.maximum(pred_boxes[..., 0], gt_boxes[..., 0])
+    y1 = np.maximum(pred_boxes[..., 1], gt_boxes[..., 1])
+    x2 = np.minimum(pred_boxes[..., 2], gt_boxes[..., 2])
+    y2 = np.minimum(pred_boxes[..., 3], gt_boxes[..., 3])
+
+    inter = np.maximum(0, x2 - x1) * np.maximum(0, y2 - y1)
+
+    # Areas
+    pred_area = (pred_boxes[..., 2] - pred_boxes[..., 0]) * (
+        pred_boxes[..., 3] - pred_boxes[..., 1]
+    )
+    gt_area = (gt_boxes[..., 2] - gt_boxes[..., 0]) * (
+        gt_boxes[..., 3] - gt_boxes[..., 1]
+    )
+
+    union = pred_area + gt_area - inter
+
+    return inter / (union + 1e-6)
 
 def compute_iou(boxA, boxB):
     """Compute Intersection over Union (IoU) between two bounding boxes.
