@@ -194,14 +194,44 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
     ):
         """Image detection model for PyTorch framework
 
-        :param model: Either the filename of a TorchScript model or the model already loaded into a PyTorch module.
-        :type model: Union[str, torch.nn.Module]
-        :param model_cfg: JSON file containing model configuration
-        :type model_cfg: str
-        :param ontology_fname: JSON file containing model output ontology
-        :type ontology_fname: str
-        :param device: torch.device to use (optional). If not provided, will auto-select cuda, mps, or cpu.
-        """
+            :param model: Either the filename of a TorchScript model or the model
+                already loaded into a PyTorch module.
+            :type model: Union[str, torch.nn.Module]
+            :param model_cfg: JSON file containing model configuration. Supports
+                the following keys:
+
+                - ``confidence_threshold`` (float, default 0.5): Minimum confidence
+                score for a detection to be included in evaluation. Range [0.0, 1.0].
+                Lower values include more detections but increase false positives.
+                Higher values increase precision but may miss valid detections.
+                Recommended range: 0.3–0.5 for COCO evaluation. This value
+                directly affects AUC-PR and mAP — a high threshold (e.g. 0.8)
+                on a small image subset will produce near-zero metrics.
+                - ``nms_threshold`` (float, default 0.3): IoU threshold for
+                Non-Maximum Suppression. Boxes with IoU above this value are
+                suppressed.
+                - ``iou_threshold`` (float, default 0.5): IoU threshold used
+                when matching predictions to ground truth during metric
+                computation.
+                - ``batch_size`` (int, default 1): Number of images per batch.
+                - ``num_workers`` (int, default 0): DataLoader worker processes.
+                - ``resize``: Dict with either ``height`` + ``width`` (fixed
+                resize) or ``min_side`` + optional ``max_side`` (aspect-ratio
+                preserving resize).
+                - ``normalization``: Dict with ``mean`` and ``std`` lists for
+                input normalisation.
+
+            :type model_cfg: str
+            :param ontology_fname: JSON file containing model output ontology
+                mapping class names to category IDs. For COCO, category IDs
+                are non-consecutive (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, ...).
+                Ensure IDs match the dataset annotation IDs exactly — mismatched
+                IDs will silently produce incorrect metrics.
+            :type ontology_fname: str
+            :param device: torch.device to use (optional). If not provided,
+                will auto-select cuda, mps, or cpu.
+            :type device: torch.device
+            """
         # Get device (GPU, MPS, or CPU) if not provided
         if device is None:
             self.device = torch.device(
@@ -403,6 +433,19 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         # Calculate total samples for progress tracking
         total_samples = len(dataloader.dataset)
         processed_samples = 0
+
+        # Warn if sample size is too small for reliable metrics
+        MIN_RELIABLE_SAMPLES = 20
+        if total_samples < MIN_RELIABLE_SAMPLES:
+            import warnings
+            warnings.warn(
+                f"Evaluating on only {total_samples} image(s). "
+                f"Results may not be statistically reliable. "
+                f"Consider using at least {MIN_RELIABLE_SAMPLES} images "
+                f"for meaningful AUC-PR and mAP metrics.",
+                UserWarning,
+                stacklevel=2,
+    )
 
         with torch.no_grad():
             # Use tqdm if no progress callback provided, otherwise use regular iteration
