@@ -12,9 +12,4 @@ docs/py_docs/build/.buildinfo*
 local/
 third_party/
 
-.DS_Storevenv/
-.venv/
-__pycache__/
 .DS_Store
-venv/
-.venv/
