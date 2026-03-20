@@ -93,7 +93,6 @@ class DetectionMetricsFactory:
         for label in matches:
             self.results[label].extend(matches[label])
 
-
     def _match_predictions(
         self,
         gt_boxes: np.ndarray,
@@ -392,26 +391,37 @@ def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarr
     :return: IoU matrix with shape (N, M)
     :rtype: np.ndarray
     """
-    assert pred_boxes.ndim == 2 and pred_boxes.shape[1] == 4, f"Expected pred_boxes of shape (N, 4), got {pred_boxes.shape}"
-    assert gt_boxes.ndim == 2 and gt_boxes.shape[1] == 4, f"Expected gt_boxes of shape (M, 4), got {gt_boxes.shape}"
+    assert (
+        pred_boxes.ndim == 2 and pred_boxes.shape[1] == 4
+    ), f"Expected pred_boxes of shape (N, 4), got {pred_boxes.shape}"
+    assert (
+        gt_boxes.ndim == 2 and gt_boxes.shape[1] == 4
+    ), f"Expected gt_boxes of shape (M, 4), got {gt_boxes.shape}"
 
     pred_boxes = pred_boxes[:, np.newaxis, :]  # [N, 1, 4]
-    gt_boxes = gt_boxes[np.newaxis, :, :]      # [1, M, 4]
+    gt_boxes = gt_boxes[np.newaxis, :, :]  # [1, M, 4]
 
     inter_x1 = np.maximum(pred_boxes[..., 0], gt_boxes[..., 0])  # [N, M]
     inter_y1 = np.maximum(pred_boxes[..., 1], gt_boxes[..., 1])  # [N, M]
     inter_x2 = np.minimum(pred_boxes[..., 2], gt_boxes[..., 2])  # [N, M]
     inter_y2 = np.minimum(pred_boxes[..., 3], gt_boxes[..., 3])  # [N, M]
 
-    inter_area = np.maximum(0, inter_x2 - inter_x1) * np.maximum(0, inter_y2 - inter_y1)  # [N, M]
+    inter_area = np.maximum(0, inter_x2 - inter_x1) * np.maximum(
+        0, inter_y2 - inter_y1
+    )  # [N, M]
 
-    pred_area = (pred_boxes[..., 2] - pred_boxes[..., 0]) * (pred_boxes[..., 3] - pred_boxes[..., 1])  # [N, 1]
-    gt_area = (gt_boxes[..., 2] - gt_boxes[..., 0]) * (gt_boxes[..., 3] - gt_boxes[..., 1])            # [1, M]
+    pred_area = (pred_boxes[..., 2] - pred_boxes[..., 0]) * (
+        pred_boxes[..., 3] - pred_boxes[..., 1]
+    )  # [N, 1]
+    gt_area = (gt_boxes[..., 2] - gt_boxes[..., 0]) * (
+        gt_boxes[..., 3] - gt_boxes[..., 1]
+    )  # [1, M]
 
     union_area = pred_area + gt_area - inter_area  # [N, M]
-    iou_matrix = inter_area / np.maximum(union_area, 1e-8) #avoiding zero division
+    iou_matrix = inter_area / np.maximum(union_area, 1e-8)  # avoiding zero division
 
     return iou_matrix
+
 
 def compute_iou(boxA, boxB):
     """Compute Intersection over Union (IoU) between two bounding boxes.
@@ -433,6 +443,7 @@ def compute_iou(boxA, boxB):
     boxBArea = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
     iou = interArea / float(boxAArea + boxBArea - interArea)
     return iou
+
 
 def compute_ap(tps, fps, fn):
     """Compute Average Precision (AP) using VOC-style 11-point interpolation.
