@@ -384,7 +384,7 @@ class DetectionMetricsFactory:
 
 
 def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
-    """Compute IoU matrix between pred and gt boxes.
+    """Compute IoU matrix between pred and gt boxes using vectorized NumPy operations.
 
     :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)
     :type pred_boxes: np.ndarray
@@ -393,11 +393,37 @@ def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarr
     :return: IoU matrix with shape (num_pred, num_gt)
     :rtype: np.ndarray
     """
-    iou_matrix = np.zeros((len(pred_boxes), len(gt_boxes)))
-    for i, pb in enumerate(pred_boxes):
-        for j, gb in enumerate(gt_boxes):
-            iou_matrix[i, j] = compute_iou(pb, gb)
-    return iou_matrix
+    num_pred = len(pred_boxes)
+    num_gt = len(gt_boxes)
+    
+    # Handle empty inputs
+    if num_pred == 0 or num_gt == 0:
+        return np.zeros((num_pred, num_gt))
+    
+    # Expand dimensions for broadcasting: (N, 1, 4) and (1, M, 4)
+    pred_boxes = pred_boxes[:, None, :]  # (N, 1, 4)
+    gt_boxes = gt_boxes[None, :, :]      # (1, M, 4)
+    
+    # Calculate intersection coordinates
+    xA = np.maximum(pred_boxes[..., 0], gt_boxes[..., 0])  # (N, M)
+    yA = np.maximum(pred_boxes[..., 1], gt_boxes[..., 1])  # (N, M)
+    xB = np.minimum(pred_boxes[..., 2], gt_boxes[..., 2])  # (N, M)
+    yB = np.minimum(pred_boxes[..., 3], gt_boxes[..., 3])  # (N, M)
+    
+    # Intersection area
+    inter_area = np.maximum(0, xB - xA) * np.maximum(0, yB - yA)  # (N, M)
+    
+    # Box areas
+    pred_area = (pred_boxes[..., 2] - pred_boxes[..., 0]) * (pred_boxes[..., 3] - pred_boxes[..., 1])  # (N, 1)
+    gt_area = (gt_boxes[..., 2] - gt_boxes[..., 0]) * (gt_boxes[..., 3] - gt_boxes[..., 1])              # (1, M)
+    
+    # Union
+    union = pred_area + gt_area - inter_area  # (N, M)
+    
+    # IoU
+    iou = inter_area / union  # (N, M)
+    
+    return iou
 
 
 def compute_iou(boxA, boxB):
