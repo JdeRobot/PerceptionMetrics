@@ -1,8 +1,10 @@
 import streamlit as st
+import torch
 from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
 from perceptionmetrics.utils.gui import browse_folder
+from perceptionmetrics.utils.torch import get_device_info
 
 
 def browse_dataset_path():
@@ -17,6 +19,8 @@ PAGES = {
     "Evaluator": evaluator_tab,
 }
 
+best_device, available_devices = get_device_info()
+
 # Initialize commonly used session state keys
 st.session_state.setdefault("dataset_path", "")
 st.session_state.setdefault("dataset_type", "YOLO")
@@ -25,7 +29,7 @@ st.session_state.setdefault("config_option", "Manual Configuration")
 st.session_state.setdefault("confidence_threshold", 0.5)
 st.session_state.setdefault("nms_threshold", 0.5)
 st.session_state.setdefault("max_detections", 100)
-st.session_state.setdefault("device", "cuda")
+st.session_state.setdefault("device", best_device)
 st.session_state.setdefault("batch_size", 1)
 st.session_state.setdefault("evaluation_step", 5)
 st.session_state.setdefault("detection_model", None)
@@ -127,7 +131,7 @@ with st.sidebar:
             with col2:
                 st.selectbox(
                     "Device",
-                    ["cpu", "cuda", "mps"],
+                    available_devices,
                     key="device",
                 )
                 st.selectbox(
