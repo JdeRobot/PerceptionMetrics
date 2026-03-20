@@ -27,6 +27,7 @@ pycocotools-windows = { version = "^2.0.0.2", markers = "sys_platform == 'win32'
 Streamlit = "1.54.0"
 streamlit-image-select = "^0.6.0"
 supervision = "^0.18.0"
+torch = "*"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.0"
