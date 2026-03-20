@@ -148,9 +148,9 @@ def dataset_viewer_tab():
     dataset = st.session_state[dataset_key]
 
     # Get image files
-    image_files = [
+    image_files = sorted([
         f for f in os.listdir(img_dir) if f.lower().endswith((".jpg", ".jpeg", ".png"))
-    ]
+])
     if not image_files:
         st.warning("No images found.")
         return
