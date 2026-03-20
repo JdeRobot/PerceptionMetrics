@@ -16,6 +16,7 @@ from perceptionmetrics.datasets import detection as detection_dataset
 from perceptionmetrics.models import detection as detection_model
 from perceptionmetrics.utils import detection_metrics as um
 from perceptionmetrics.utils import image as ui
+from perceptionmetrics.utils.torch import get_device_info
 
 
 def get_resize_args(resize_cfg: Dict[str, Any]) -> Dict[str, Any]:
@@ -250,15 +251,13 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         :type model_cfg: str
         :param ontology_fname: JSON file containing model output ontology
         :type ontology_fname: str
-        :param device: torch.device to use (optional). If not provided, will auto-select cuda, mps, or cpu.
+        :param device: torch.device to use (optional). If not provided, best available device is auto-selected using get_device_info() from perceptionmetrics.utils.torch.
+        :type device: torch.device
         """
         # Get device (GPU, MPS, or CPU) if not provided
         if device is None:
-            self.device = torch.device(
-                "cuda"
-                if torch.cuda.is_available()
-                else "mps" if torch.backends.mps.is_available() else "cpu"
-            )
+            best_device, _ = get_device_info()
+            self.device = torch.device(best_device)
         else:
             self.device = device
 
