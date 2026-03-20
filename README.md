@@ -106,18 +106,28 @@ Install dependencies and activate poetry environment (you can get out of the Poe
 poetry install
 poetry shell
 ```
+
 ### Using venv
 Create your virtual environment:
-```
-mkdir .venv
-python3 -m venv .venv
-```
 
-Activate your environment and install as pip package:
-```
+```bash
+# Linux / macOS
+mkdir -p .venv
+python3 -m venv .venv
+
+# Windows
+python -m venv .venv
+
+# Activate your environment and install as pip package:
+
+# Linux / macOS
 source .venv/bin/activate
 pip install -e .
-```
+
+# Windows
+.venv\Scripts\activate
+pip install -e .
+
 
 ## Common
 Install your deep learning framework of preference in your environment. We have tested:
