@@ -63,3 +63,23 @@ def unsqueeze_data(data: Union[tuple, list], dim: int = 0) -> Union[tuple, list]
         return data.unsqueeze(dim)
     else:
         return data
+
+
+def get_device_info():
+    """Get the best available device(CPU or GPU) and list of available devices.
+
+    :return: Tuple of (best_device, available_devices) where best_device is a string and avaible_devices is a list of strings.
+    :rtype: tuple(str, list[str])
+    """
+
+    available_devices = []
+
+    if torch.cuda.is_available():
+        available_devices.append("cuda")
+    if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        available_devices.append("mps")
+    available_devices.append("cpu")
+
+    best_device = available_devices[0]
+
+    return best_device, available_devices
