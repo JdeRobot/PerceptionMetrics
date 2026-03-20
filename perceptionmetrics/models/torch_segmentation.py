@@ -774,7 +774,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
                             sample_df.to_csv(
                                 os.path.join(predictions_outdir, f"{sample_name}.csv")
                             )
-                        pred.tofile(
+                        sample_pred.tofile(
                             os.path.join(predictions_outdir, f"{sample_name}.bin")
                         )
 
