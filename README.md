@@ -109,13 +109,26 @@ poetry shell
 ### Using venv
 Create your virtual environment:
 ```
+# Linux / macOS
 mkdir .venv
 python3 -m venv .venv
+
+# Windows
+python -m venv .venv
 ```
 
 Activate your environment and install as pip package:
 ```
+# Linux / macOS
 source .venv/bin/activate
+pip install -e .
+
+# Windows (Command Prompt)
+.venv\Scripts\activate
+pip install -e .
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
 pip install -e .
 ```
 
