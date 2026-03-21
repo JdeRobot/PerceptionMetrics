@@ -1527,29 +1527,6 @@ the aspect ratio is preserved.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.torch_segmentation.get_computational_cost">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.torch_segmentation.</span></span><span class="sig-name descname"><span class="pre">get_computational_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_runs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/torch_segmentation.html#get_computational_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.torch_segmentation.get_computational_cost" title="Link to this definition">¶</a></dt>
-<dd><p>Get different metrics related to the computational cost of the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<em>Any</em>) – Either a TorchScript model or an arbitrary PyTorch module</p></li>
-<li><p><strong>dummy_input</strong> (<em>torch.Tensor</em>) – Dummy input data for the model</p></li>
-<li><p><strong>model_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Model filename used to measure model size, defaults to None</p></li>
-<li><p><strong>runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of runs to measure inference time, defaults to 30</p></li>
-<li><p><strong>warm_up_runs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up runs, defaults to 5</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DataFrame containing computational cost information</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="perceptionmetrics.models.torch_segmentation.raise_unknown_model_format_lidar">
 <span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.torch_segmentation.</span></span><span class="sig-name descname"><span class="pre">raise_unknown_model_format_lidar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_format</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/torch_segmentation.html#raise_unknown_model_format_lidar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.torch_segmentation.raise_unknown_model_format_lidar" title="Link to this definition">¶</a></dt>
 <dd><p>Raise an exception if the LiDAR model format is unknown</p>
@@ -1738,7 +1715,6 @@ the aspect ratio is preserved.</p>
 <li><a class="reference internal" href="#perceptionmetrics.models.torch_segmentation.TorchLiDARSegmentationModel.predict"><code class="docutils literal notranslate"><span class="pre">TorchLiDARSegmentationModel.predict()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#perceptionmetrics.models.torch_segmentation.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">get_computational_cost()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.torch_segmentation.raise_unknown_model_format_lidar"><code class="docutils literal notranslate"><span class="pre">raise_unknown_model_format_lidar()</span></code></a></li>
 </ul>
 </li>

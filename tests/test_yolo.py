@@ -3,13 +3,12 @@ import sys
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
-import pytest
 
 # ---------------------------------------------------------------------------
 # Stub out heavy optional C-extensions that are not available in the test
 # environment (open3d, tqdm, etc.) before importing any perceptionmetrics module.
 # ---------------------------------------------------------------------------
-for _stub in ("open3d",):
+for _stub in ("open3d", "supervision"):
     if _stub not in sys.modules:
         sys.modules[_stub] = MagicMock()
 
@@ -90,7 +89,7 @@ def _make_patched_build_dataset(yaml_content, label_files_by_split):
 
 
 def test_build_dataset(caplog):
-    """Regression tests for build_dataset covering missing/null splits and happy paths.
+    """Regression tests for build_dataset and split validation.
 
     Verifies that:
     - No TypeError is raised when 'test' key is absent from the YAML.
