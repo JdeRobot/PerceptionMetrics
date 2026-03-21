@@ -17,13 +17,14 @@ from perceptionmetrics.datasets.rellis3d import (
 from perceptionmetrics.datasets.rugd import RUGDImageSegmentationDataset
 from perceptionmetrics.datasets.wildscenes import WildscenesImageSegmentationDataset
 from perceptionmetrics.datasets.nuscenes_detection import NuScenesDetectionDataset
+from perceptionmetrics.datasets.nuimages import NuImagesDetectionDataset
+from perceptionmetrics.datasets.nuimages import NuImagesSegmentationDataset
 
 try:
     from perceptionmetrics.datasets.coco import CocoDataset
 except ImportError:
     print("COCO dataset dependencies not available")
     CocoDataset = None
-
 REGISTRY = {
     "gaia_image_segmentation": GaiaImageSegmentationDataset,
     "gaia_lidar_segmentation": GaiaLiDARSegmentationDataset,
@@ -36,6 +37,8 @@ REGISTRY = {
     "rugd_image_segmentation": RUGDImageSegmentationDataset,
     "wildscenes_image_segmentation": WildscenesImageSegmentationDataset,
     "nuscenes_detection": NuScenesDetectionDataset,
+    "nuimages_detection": NuImagesDetectionDataset,
+    "nuimages_segmentation": NuImagesSegmentationDataset,
 }
 
 if CocoDataset is not None:
