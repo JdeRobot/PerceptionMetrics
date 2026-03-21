@@ -59,13 +59,25 @@ In the near future, *PerceptionMetrics* is planned to be deployed in PyPI. In th
 ### Using venv
 Create your virtual environment:
 ```
+# Linux / macOS
 python3 -m venv .venv
+
+# Windows
+python -m venv .venv
 ```
 
 Activate your environment and install as pip package:
 ```
+# Linux / macOS
 source .venv/bin/activate
 pip install -e .
+
+# Windows (Command Prompt)
+.venv\Scripts\activate
+pip install -e .
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
 ```
 
 ### Using Poetry

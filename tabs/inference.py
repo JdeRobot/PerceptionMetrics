@@ -3,14 +3,7 @@ from typing import Optional
 import streamlit as st
 import json
 from PIL import Image
-try:
-    import torch
-except ImportError:
-    raise ImportError(
-        "PyTorch is required for GUI-based inference and evaluation. "
-        "Please install it manually (e.g., pip install torch). "
-    )
-
+import torch
 
 
 def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
@@ -107,7 +100,7 @@ def inference_tab():
                         st.metric("Max Confidence", f"{max_confidence:.3f}")
 
                     # Display and download detection results
-                    st.markdown("#### Detection Results")
+                    st.markdown("#### Detection Details")
 
                     # Convert predictions to JSON format
                     detection_results = []
