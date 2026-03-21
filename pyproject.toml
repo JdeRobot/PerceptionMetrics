@@ -41,6 +41,10 @@ furo = "^2025.12.19"
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0.0"
 
+[tool.poetry.group.torch.dependencies]
+torch = "2.4.1"
+torchvision = "0.19.1"
+
 [tool.poetry.scripts]
 pm_evaluate = "perceptionmetrics.cli.evaluate:evaluate"
 pm_batch = "perceptionmetrics.cli.batch:batch"
