@@ -513,13 +513,13 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             if has_gpu:
                 tf.config.experimental.set_synchronous_execution(True)
 
-            start_time = time.time()
+            start_time = time.perf_counter()
             self.inference(dummy_input)
 
             if has_gpu:
                 tf.config.experimental.set_synchronous_execution(True)
 
-            inference_times.append(time.time() - start_time)
+            inference_times.append(time.perf_counter() - start_time)
 
         # Retrieve computational cost information
         result = {
