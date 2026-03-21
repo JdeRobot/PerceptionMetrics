@@ -388,7 +388,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
         # Build a LUT for transforming ontology if needed
         lut_ontology = uc.get_ontology_conversion_lut(
-            self.ontology, dataset.ontology, ontology_translation
+            dataset.ontology, self.ontology, ontology_translation
         )
         lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
