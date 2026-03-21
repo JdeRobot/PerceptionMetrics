@@ -18,11 +18,12 @@ def parse_args() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--model_weights", type=str, required=True, help="Tensorflow model weights in HDF5 format"
+        "--model_weights",
+        type=str,
+        required=True,
+        help="Tensorflow model weights in HDF5 format",
     )
-    parser.add_argument(
-        "--model_name", type=str, required=True, help="TASM model name"
-    )
+    parser.add_argument("--model_name", type=str, required=True, help="TASM model name")
     parser.add_argument(
         "--ontology",
         type=str,

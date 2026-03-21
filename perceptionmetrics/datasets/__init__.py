@@ -42,4 +42,4 @@ REGISTRY = {
 }
 
 if CocoDataset is not None:
-    REGISTRY["coco_detection"] = CocoDataset
+    REGISTRY["coco_image_detection"] = CocoDataset

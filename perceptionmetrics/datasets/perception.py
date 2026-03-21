@@ -73,6 +73,27 @@ class PerceptionDataset(ABC):
             [self.dataset, new_dataset.dataset], verify_integrity=True
         )
 
+    def _validate_splits(self, splits: List[str]) -> None:
+        """Raise ValueError if any requested split is absent from the loaded dataset.
+
+        Prevents silent evaluation failures where filtering on a missing split
+        produces an empty DataFrame and returns NaN/0.0 metrics without error.
+
+        :param splits: List of split names to validate
+        :type splits: List[str]
+        :raises ValueError: If a requested split is not present in the dataset
+        """
+        available = (
+            set(self.dataset["split"].unique()) if len(self.dataset) > 0 else set()
+        )
+        for split in splits:
+            if split not in available:
+                raise ValueError(
+                    f"Split '{split}' is not present in the loaded dataset. "
+                    f"Available splits: {sorted(available)}. "
+                    f"Check that the split is defined in the dataset YAML."
+                )
+
     def get_label_count(self, splits: Optional[List[str]] = None):
         """Get label count for each class in the dataset
 

@@ -266,7 +266,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.segmentation_metrics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">um</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.torch</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ut</span>
 
-
 <span class="n">AVAILABLE_MODEL_FORMATS_LIDAR</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;o3d_randlanet&quot;</span><span class="p">,</span>
     <span class="s2">&quot;o3d_kpconv&quot;</span><span class="p">,</span>
@@ -287,33 +286,6 @@
     <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown model format: </span><span class="si">{</span><span class="n">model_format</span><span class="si">}</span><span class="s2">.&quot;</span>
     <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Available formats: </span><span class="si">{</span><span class="n">AVAILABLE_MODEL_FORMATS_LIDAR</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="get_computational_cost">
-<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.torch_segmentation.get_computational_cost">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_computational_cost</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="n">dummy_input</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-    <span class="n">model_fname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">runs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
-    <span class="n">warm_up_runs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get different metrics related to the computational cost of the model</span>
-
-<span class="sd">    :param model: Either a TorchScript model or an arbitrary PyTorch module</span>
-<span class="sd">    :type model: Any</span>
-<span class="sd">    :param dummy_input: Dummy input data for the model</span>
-<span class="sd">    :type dummy_input: torch.Tensor</span>
-<span class="sd">    :param model_fname: Model filename used to measure model size, defaults to None</span>
-<span class="sd">    :type model_fname: Optional[str], optional</span>
-<span class="sd">    :param runs: Number of runs to measure inference time, defaults to 30</span>
-<span class="sd">    :type runs: int, optional</span>
-<span class="sd">    :param warm_up_runs: Number of warm-up runs, defaults to 5</span>
-<span class="sd">    :type warm_up_runs: int, optional</span>
-<span class="sd">    :return: DataFrame containing computational cost information</span>
-<span class="sd">    :rtype: pd.DataFrame</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
@@ -387,6 +359,9 @@
         <span class="n">target_transform</span><span class="p">:</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">,</span>
         <span class="n">splits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">],</span>
     <span class="p">):</span>
+        <span class="c1"># Raise early if any requested split is absent — prevents silent NaN metrics</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">_validate_splits</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span>
+
         <span class="c1"># Filter split and make filenames global</span>
         <span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;split&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">splits</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
@@ -441,6 +416,9 @@
         <span class="n">get_sample</span><span class="p">:</span> <span class="nb">callable</span><span class="p">,</span>
         <span class="n">splits</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">],</span>
     <span class="p">):</span>
+        <span class="c1"># Raise early if any requested split is absent — prevents silent NaN metrics</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">_validate_splits</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span>
+
         <span class="c1"># Filter split and make filenames global</span>
         <span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;split&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">splits</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
@@ -1058,7 +1036,7 @@
                             <span class="n">sample_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
                                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_name</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
                             <span class="p">)</span>
-                        <span class="n">pred</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span>
+                        <span class="n">sample_pred</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span>
                             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_name</span><span class="si">}</span><span class="s2">.bin&quot;</span><span class="p">)</span>
                         <span class="p">)</span>
 

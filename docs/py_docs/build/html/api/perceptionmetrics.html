@@ -274,6 +274,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.datasets.html#perceptionmetrics.datasets.coco.build_coco_dataset"><code class="docutils literal notranslate"><span class="pre">build_coco_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.datasets.html#perceptionmetrics.datasets.coco.find_img_dir_and_ann_file"><code class="docutils literal notranslate"><span class="pre">find_img_dir_and_ann_file()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.datasets.html#module-perceptionmetrics.datasets.detection">perceptionmetrics.datasets.detection module</a><ul>
@@ -396,6 +397,7 @@
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.detection.ImageDetectionModel"><code class="docutils literal notranslate"><span class="pre">ImageDetectionModel</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.detection.ImageDetectionModel.eval"><code class="docutils literal notranslate"><span class="pre">ImageDetectionModel.eval()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.detection.ImageDetectionModel.inference"><code class="docutils literal notranslate"><span class="pre">ImageDetectionModel.inference()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.detection.ImageDetectionModel.predict"><code class="docutils literal notranslate"><span class="pre">ImageDetectionModel.predict()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.detection.LiDARDetectionModel"><code class="docutils literal notranslate"><span class="pre">LiDARDetectionModel</span></code></a><ul>
@@ -415,6 +417,7 @@
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.perception.PerceptionModel.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">PerceptionModel.get_computational_cost()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.perception.PerceptionModel.get_lut_ontology"><code class="docutils literal notranslate"><span class="pre">PerceptionModel.get_lut_ontology()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.perception.PerceptionModel.inference"><code class="docutils literal notranslate"><span class="pre">PerceptionModel.inference()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.perception.PerceptionModel.predict"><code class="docutils literal notranslate"><span class="pre">PerceptionModel.predict()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -463,11 +466,13 @@
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.eval"><code class="docutils literal notranslate"><span class="pre">TorchImageDetectionModel.eval()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">TorchImageDetectionModel.get_computational_cost()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.inference"><code class="docutils literal notranslate"><span class="pre">TorchImageDetectionModel.inference()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.predict"><code class="docutils literal notranslate"><span class="pre">TorchImageDetectionModel.predict()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.data_to_device"><code class="docutils literal notranslate"><span class="pre">data_to_device()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">get_computational_cost()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.get_data_shape"><code class="docutils literal notranslate"><span class="pre">get_data_shape()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.get_resize_args"><code class="docutils literal notranslate"><span class="pre">get_resize_args()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.models.html#module-perceptionmetrics.models.torch_segmentation">perceptionmetrics.models.torch_segmentation module</a><ul>
@@ -491,7 +496,6 @@
 <li class="toctree-l4"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_segmentation.TorchLiDARSegmentationModel.predict"><code class="docutils literal notranslate"><span class="pre">TorchLiDARSegmentationModel.predict()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_segmentation.get_computational_cost"><code class="docutils literal notranslate"><span class="pre">get_computational_cost()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.html#perceptionmetrics.models.torch_segmentation.raise_unknown_model_format_lidar"><code class="docutils literal notranslate"><span class="pre">raise_unknown_model_format_lidar()</span></code></a></li>
 </ul>
 </li>
@@ -521,6 +525,14 @@
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.utils.html#perceptionmetrics.utils.detection_metrics.compute_ap"><code class="docutils literal notranslate"><span class="pre">compute_ap()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.utils.html#perceptionmetrics.utils.detection_metrics.compute_iou"><code class="docutils literal notranslate"><span class="pre">compute_iou()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.utils.html#perceptionmetrics.utils.detection_metrics.compute_iou_matrix"><code class="docutils literal notranslate"><span class="pre">compute_iou_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.utils.html#module-perceptionmetrics.utils.gui">perceptionmetrics.utils.gui module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.utils.html#perceptionmetrics.utils.gui.browse_folder"><code class="docutils literal notranslate"><span class="pre">browse_folder()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.utils.html#module-perceptionmetrics.utils.image">perceptionmetrics.utils.image module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.utils.html#perceptionmetrics.utils.image.draw_detections"><code class="docutils literal notranslate"><span class="pre">draw_detections()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.utils.html#module-perceptionmetrics.utils.io">perceptionmetrics.utils.io module</a><ul>

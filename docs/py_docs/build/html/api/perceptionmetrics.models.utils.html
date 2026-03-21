@@ -510,7 +510,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output</strong> (<em>torch.Tensor</em>) – Tensor of shape [num_classes + 4, num_anchors] containing bounding box predictions and class logits.</p></li>
 <li><p><strong>confidence_threshold</strong> (<em>float</em>) – Confidence threshold to filter boxes.</p></li>
-<li><p><strong>nms_threshold</strong> (<em>float</em>) – IoU threshold for Non-Maximum Suppression (NMS).</p></li>
+<li><p><strong>nms_threshold</strong> (<em>float</em>) – IoU threshold for Non-Maximum Suppression (NMS). Some models may not perform NMS (e.g. YOLOv26).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

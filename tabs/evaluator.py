@@ -5,6 +5,16 @@ import json
 from perceptionmetrics.datasets.coco import CocoDataset
 
 
+from perceptionmetrics.utils.gui import browse_folder
+from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
+
+
+def browse_predictions_outdir():
+    folder = browse_folder()
+    if folder:
+        st.session_state.predictions_outdir = folder
+
+
 def evaluator_tab():
     st.header("Evaluator")
     st.markdown("Evaluate your model on the loaded dataset using PerceptionMetrics.")
@@ -31,9 +41,8 @@ def evaluator_tab():
     elif dataset_path and os.path.isdir(dataset_path):
         try:
             if dataset_type.lower() == "coco":
-                img_dir = os.path.join(dataset_path, f"images/{split}2017")
-                ann_file = os.path.join(
-                    dataset_path, "annotations", f"instances_{split}2017.json"
+                img_dir, ann_file = find_img_dir_and_ann_file(
+                    dataset_path=dataset_path, split=split
                 )
 
                 if os.path.isdir(img_dir) and os.path.isfile(ann_file):
@@ -84,6 +93,27 @@ def evaluator_tab():
         help="Save individual predictions and metrics per sample",
     )
 
+    save_visualizations = st.checkbox(
+        "Save Visualizations",
+        value=False,
+        help="Save visualized qualitative results (Image + GT + Preds)",
+    )
+
+    predictions_outdir_input = None
+    if save_predictions or save_visualizations:
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.text_input("Predictions Output Directory", key="predictions_outdir")
+        with col2:
+            st.markdown(
+                "<div style='margin-bottom: 1.75rem;'></div>", unsafe_allow_html=True
+            )
+            st.button(
+                "Browse", on_click=browse_predictions_outdir, key="browse_preds_outdir"
+            )
+
+        predictions_outdir_input = st.session_state.get("predictions_outdir")
+
     ontology_translation = st.file_uploader(
         "Ontology Translation (Optional)",
         type=["json"],
@@ -129,8 +159,14 @@ def evaluator_tab():
 
                 # Prepare predictions output directory if needed
                 predictions_outdir = None
-                if save_predictions:
-                    predictions_outdir = tempfile.mkdtemp(prefix="eval_predictions_")
+                if save_predictions or save_visualizations:
+                    if predictions_outdir_input and predictions_outdir_input.strip():
+                        predictions_outdir = predictions_outdir_input.strip()
+                        os.makedirs(predictions_outdir, exist_ok=True)
+                    else:
+                        predictions_outdir = tempfile.mkdtemp(
+                            prefix="eval_predictions_"
+                        )
 
                 # Create progress bar for evaluation
                 progress_bar = st.progress(0)
@@ -214,6 +250,7 @@ def evaluator_tab():
                         ontology_translation=ontology_translation_path,
                         predictions_outdir=predictions_outdir,
                         results_per_sample=save_predictions,
+                        save_visualizations=save_visualizations,
                         progress_callback=progress_callback,
                         metrics_callback=metrics_callback,
                     )
@@ -234,6 +271,7 @@ def evaluator_tab():
                 st.session_state["evaluation_config"] = {
                     "split": split,
                     "predictions_saved": save_predictions,
+                    "visualizations_saved": save_visualizations,
                 }
 
                 st.success("✅ Evaluation completed successfully!")

@@ -509,6 +509,44 @@ independent evaluations without creating a new object.</p>
 </dd></dl>
 
 </section>
+<section id="module-perceptionmetrics.utils.gui">
+<span id="perceptionmetrics-utils-gui-module"></span><h2>perceptionmetrics.utils.gui module<a class="headerlink" href="#module-perceptionmetrics.utils.gui" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="perceptionmetrics.utils.gui.browse_folder">
+<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.gui.</span></span><span class="sig-name descname"><span class="pre">browse_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/gui.html#browse_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.gui.browse_folder" title="Link to this definition">¶</a></dt>
+<dd><p>Opens a native folder selection dialog and returns the selected folder path.
+Works on Windows, macOS, and Linux (with zenity or kdialog).
+Returns None if cancelled or error.</p>
+</dd></dl>
+
+</section>
+<section id="module-perceptionmetrics.utils.image">
+<span id="perceptionmetrics-utils-image-module"></span><h2>perceptionmetrics.utils.image module<a class="headerlink" href="#module-perceptionmetrics.utils.image" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="perceptionmetrics.utils.image.draw_detections">
+<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.image.</span></span><span class="sig-name descname"><span class="pre">draw_detections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/image.html#draw_detections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.image.draw_detections" title="Link to this definition">¶</a></dt>
+<dd><p>Draw bounding boxes and labels on the image using supervision.
+Adapts to different supervision versions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>Image.Image</em>) – PIL Image</p></li>
+<li><p><strong>boxes</strong> (<em>np.ndarray</em>) – Bounding boxes in xyxy format</p></li>
+<li><p><strong>class_ids</strong> (<em>np.ndarray</em>) – Class indices</p></li>
+<li><p><strong>class_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of class names corresponding to class_ids</p></li>
+<li><p><strong>scores</strong> (<em>np.ndarray</em>) – Confidence scores (optional)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Annotated image as numpy array</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-perceptionmetrics.utils.io">
 <span id="perceptionmetrics-utils-io-module"></span><h2>perceptionmetrics.utils.io module<a class="headerlink" href="#module-perceptionmetrics.utils.io" title="Link to this heading">¶</a></h2>
 <dl class="py function">
@@ -836,7 +874,7 @@ independent evaluations without creating a new object.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>metric</strong> (<em>str</em>) – Name of the metric to compute</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – Method to use for averaging (‘macro’, ‘micro’ or ‘weighted’)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – Method to use for averaging (‘macro’, ‘micro’, ‘weighted’ or ‘normalized_weighted’)</p></li>
 <li><p><strong>weights</strong> (<em>Optional</em><em>[</em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – Weights for weighted averaging, defaults to None</p></li>
 <li><p><strong>metric_name</strong> (<em>str</em>)</p></li>
 </ul>
@@ -1215,6 +1253,14 @@ independent evaluations without creating a new object.</p>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.compute_ap"><code class="docutils literal notranslate"><span class="pre">compute_ap()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.compute_iou"><code class="docutils literal notranslate"><span class="pre">compute_iou()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.compute_iou_matrix"><code class="docutils literal notranslate"><span class="pre">compute_iou_matrix()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-perceptionmetrics.utils.gui">perceptionmetrics.utils.gui module</a><ul>
+<li><a class="reference internal" href="#perceptionmetrics.utils.gui.browse_folder"><code class="docutils literal notranslate"><span class="pre">browse_folder()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-perceptionmetrics.utils.image">perceptionmetrics.utils.image module</a><ul>
+<li><a class="reference internal" href="#perceptionmetrics.utils.image.draw_detections"><code class="docutils literal notranslate"><span class="pre">draw_detections()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-perceptionmetrics.utils.io">perceptionmetrics.utils.io module</a><ul>

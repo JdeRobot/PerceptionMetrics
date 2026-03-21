@@ -1,3 +1,4 @@
+from copy import copy
 import os
 import time
 from typing import Any, List, Optional, Tuple, Union, Dict
@@ -8,11 +9,49 @@ from PIL import Image
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2 as transforms
-from tqdm.notebook import tqdm
+from torchvision import tv_tensors
+from tqdm.auto import tqdm
 
 from perceptionmetrics.datasets import detection as detection_dataset
 from perceptionmetrics.models import detection as detection_model
 from perceptionmetrics.utils import detection_metrics as um
+from perceptionmetrics.utils import image as ui
+
+
+def get_resize_args(resize_cfg: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Get the resize arguments for torchvision.transforms.Resize from the configuration.
+
+    :param resize_cfg: Resize configuration dictionary
+    :return: Dictionary with arguments for transforms.Resize
+    """
+    resize_args = {"interpolation": transforms.InterpolationMode.BILINEAR}
+    fixed_h = resize_cfg.get("height")
+    fixed_w = resize_cfg.get("width")
+    min_side = resize_cfg.get("min_side")
+    max_side = resize_cfg.get("max_side")
+
+    if fixed_h is not None and fixed_w is not None:
+        if min_side is not None:
+            raise ValueError(
+                "Resize config cannot satisfy both fixed dimensions (width/height) and min_side. They are mutually exclusive."
+            )
+        resize_args["size"] = (fixed_h, fixed_w)
+    elif min_side is not None:
+        resize_args["size"] = min_side
+        if fixed_h is not None or fixed_w is not None:
+            raise ValueError(
+                "Resize config cannot satisfy both fixed dimensions (width/height) and min_side. They are mutually exclusive."
+            )
+    else:
+        raise ValueError(
+            "Resize config must contain either 'height' and 'width' or 'min_side' and 'max_side'."
+        )
+
+    if max_side is not None:
+        resize_args["max_size"] = max_side
+
+    return resize_args
 
 
 def data_to_device(
@@ -142,9 +181,16 @@ class ImageDetectionTorchDataset(Dataset):
         transform: transforms.Compose,
         splits: List[str] = ["test"],
     ):
+        self.dataset = copy(dataset)
+
+        # Raise early if any requested split is absent — prevents silent NaN metrics
+        self.dataset._validate_splits(splits)
+
         # Filter split and make filenames global
-        dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
-        self.dataset = dataset
+        self.dataset.dataset = self.dataset.dataset[
+            self.dataset.dataset["split"].isin(splits)
+        ]
+
         # Use the dataset's make_fname_global method instead of manual path joining
         self.dataset.make_fname_global()
 
@@ -170,12 +216,16 @@ class ImageDetectionTorchDataset(Dataset):
         boxes, category_indices = self.dataset.read_annotation(ann_path)
 
         # Convert boxes/labels to tensors
-        boxes = torch.as_tensor(boxes, dtype=torch.float32)  # [N, 4]
-        category_indices = torch.as_tensor(category_indices, dtype=torch.int64)  # [N]
+        if len(boxes) == 0:
+            boxes = torch.zeros((0, 4), dtype=torch.float32)
+        boxes = tv_tensors.BoundingBoxes(
+            boxes, format="XYXY", canvas_size=(image.height, image.width)
+        )
+        category_indices = torch.as_tensor(category_indices, dtype=torch.int64)
 
         target = {
-            "boxes": boxes,  # shape [N, 4] in [x1, y1, x2, y2] format
-            "labels": category_indices,  # shape [N]
+            "boxes": boxes,  # [N, 4]
+            "labels": category_indices,  # [N]
         }
 
         if self.transform:
@@ -254,27 +304,18 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         if self.model_format == "yolo":
             self.postprocess_args.append(self.nms_threshold)
 
-        # --- Add reverse mapping for idx to class_name ---
+        # Add reverse mapping for idx to class_name
         self.idx_to_class_name = {v["idx"]: k for k, v in self.ontology.items()}
 
         # Build input transforms (resize, normalize, etc.)
         self.transform_input = []
 
-        # Default resize to 640x640 if not specified
-        if "resize" in self.model_cfg:
-            resize_height = self.model_cfg["resize"].get("height", 640)
-            resize_width = self.model_cfg["resize"].get("width", 640)
+        resize_cfg = self.model_cfg.get("resize")
+        if resize_cfg is not None:
+            resize_args = get_resize_args(resize_cfg)
+            self.transform_input.append(transforms.Resize(**resize_args))
         else:
-            # Default to 640x640 when no resize is specified
-            resize_height = 640
-            resize_width = 640
-
-        self.transform_input += [
-            transforms.Resize(
-                size=(resize_height, resize_width),
-                interpolation=transforms.InterpolationMode.BILINEAR,
-            )
-        ]
+            print("'resize_cfg' missing in model config. No resizing will be applied.")
 
         if "crop" in self.model_cfg:
             crop_size = (
@@ -304,18 +345,36 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
 
         self.transform_input = transforms.Compose(self.transform_input)
 
-    def inference(self, image: Image.Image) -> Dict[str, torch.Tensor]:
-        """Perform object detection inference for a single image
+    def predict(
+        self, image: Image.Image, return_sample: bool = False
+    ) -> Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]:
+        """Perform prediction for a single image
 
         :param image: PIL image
         :type image: Image.Image
+        :param return_sample: Whether to return the sample data along with predictions, defaults to False
+        :type return_sample: bool, optional
+        :return: Detection result or a tuple with the detection result and the input sample tensor
+        :rtype: Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]
+        """
+        sample = self.transform_input(image).unsqueeze(0).to(self.device)
+        result = self.inference(sample)
+
+        if return_sample:
+            return result, sample
+        else:
+            return result
+
+    def inference(self, tensor_in: torch.Tensor) -> Dict[str, torch.Tensor]:
+        """Perform inference for a tensor
+
+        :param tensor_in: Input tensor
+        :type tensor_in: torch.Tensor
         :return: Dictionary with keys 'boxes', 'labels', 'scores'
         :rtype: Dict[str, torch.Tensor]
         """
-        tensor = self.transform_input(image).unsqueeze(0).to(self.device)
-
         with torch.no_grad():
-            result = self.model(tensor)[0]  # Return only first image's result
+            result = self.model(tensor_in.to(self.device))[0]  # only first image
 
         # Apply threshold filtering from model config
         result = self.postprocess_detection(result, *self.postprocess_args)
@@ -329,6 +388,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
+        save_visualizations: bool = False,
         progress_callback=None,
         metrics_callback=None,
     ) -> pd.DataFrame:
@@ -344,6 +404,8 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         :type predictions_outdir: Optional[str]
         :param results_per_sample: Store per-sample metrics
         :type results_per_sample: bool
+        :param save_visualizations: Save visualized results (GT vs Pred)
+        :type save_visualizations: bool
         :param progress_callback: Optional callback function for progress updates in Streamlit UI
         :type progress_callback: Optional[Callable[[int, int], None]]
         :param metrics_callback: Optional callback function for intermediate metrics updates in Streamlit UI
@@ -351,9 +413,9 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
-        if results_per_sample and predictions_outdir is None:
+        if (results_per_sample or save_visualizations) and predictions_outdir is None:
             raise ValueError(
-                "predictions_outdir required if results_per_sample is True"
+                "predictions_outdir required if results_per_sample or save_visualizations is True"
             )
 
         if predictions_outdir is not None:
@@ -365,7 +427,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
         # Create DataLoader
-        dataset = ImageDetectionTorchDataset(
+        torch_dataset = ImageDetectionTorchDataset(
             dataset,
             transform=self.transform_input,
             splits=[split] if isinstance(split, str) else split,
@@ -375,10 +437,10 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         if progress_callback is not None and metrics_callback is not None:
             num_workers = 0
         else:
-            num_workers = self.model_cfg.get("num_workers")
+            num_workers = self.model_cfg.get("num_workers", 0)
 
         dataloader = DataLoader(
-            dataset,
+            torch_dataset,
             batch_size=self.model_cfg.get("batch_size", 1),
             num_workers=num_workers,
             collate_fn=lambda batch: tuple(
@@ -414,7 +476,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
 
             for image_ids, images, targets in iterator:
                 # Defensive check for empty images
-                if not images or any(img.numel() == 0 for img in images):
+                if not images or any(image.numel() == 0 for image in images):
                     print("Skipping batch: empty image tensor detected.")
                     continue
 
@@ -424,6 +486,8 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                 for i in range(len(images)):
                     gt = targets[i]
                     pred = predictions[i]
+                    image_tensor = images[i]
+                    sample_id = image_ids[i]
 
                     # Post-process predictions
                     pred = self.postprocess_detection(pred, *self.postprocess_args)
@@ -441,38 +505,38 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                         pred["scores"],
                     )
 
-                    # Store predictions if needed
+                    # Store predictions or visualizations if needed
                     if predictions_outdir is not None:
-                        sample_id = image_ids[i]
                         pred_boxes = pred["boxes"].cpu().numpy()
                         pred_labels = pred["labels"].cpu().numpy()
                         pred_scores = pred["scores"].cpu().numpy()
-                        out_data = []
 
-                        for box, label, score in zip(
-                            pred_boxes, pred_labels, pred_scores
-                        ):
-                            # Convert label index to class name using model ontology
-                            class_name = self.idx_to_class_name.get(
-                                int(label), f"class_{label}"
-                            )
-                            out_data.append(
-                                {
-                                    "image_id": sample_id,
-                                    "label": class_name,
-                                    "score": float(score),
-                                    "bbox": box.tolist(),
-                                }
-                            )
-
-                        df = pd.DataFrame(out_data)
-                        df.to_json(
-                            os.path.join(predictions_outdir, f"{sample_id}.json"),
-                            orient="records",
-                            indent=2,
-                        )
-
+                        # Save JSON with predictions and csv with metrics per sample
                         if results_per_sample:
+                            out_data = []
+                            for box, label, score in zip(
+                                pred_boxes, pred_labels, pred_scores
+                            ):
+                                # Convert label index to class name using model ontology
+                                class_name = self.idx_to_class_name.get(
+                                    int(label), f"class_{label}"
+                                )
+                                out_data.append(
+                                    {
+                                        "image_id": sample_id,
+                                        "label": class_name,
+                                        "score": float(score),
+                                        "bbox": box.tolist(),
+                                    }
+                                )
+
+                            df = pd.DataFrame(out_data)
+                            df.to_json(
+                                os.path.join(predictions_outdir, f"{sample_id}.json"),
+                                orient="records",
+                                indent=2,
+                            )
+
                             sample_mf = um.DetectionMetricsFactory(
                                 iou_threshold=iou_threshold, num_classes=self.n_classes
                             )
@@ -489,6 +553,54 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                                     predictions_outdir, f"{sample_id}_metrics.csv"
                                 )
                             )
+
+                        # Save visualizations per sample
+                        if save_visualizations:
+                            pil_image = transforms.ToPILImage()(image_tensor.cpu())
+
+                            gt_boxes = gt["boxes"].cpu().numpy()
+                            gt_labels = gt["labels"].cpu().numpy()
+                            gt_class_names = [
+                                self.idx_to_class_name.get(int(label), str(label))
+                                for label in gt_labels
+                            ]
+
+                            pred_class_names = [
+                                self.idx_to_class_name.get(int(label), str(label))
+                                for label in pred_labels
+                            ]
+
+                            image_gt = ui.draw_detections(
+                                pil_image.copy(),
+                                gt_boxes,
+                                gt_labels,
+                                gt_class_names,
+                                scores=None,
+                            )
+                            image_pred = ui.draw_detections(
+                                pil_image.copy(),
+                                pred_boxes,
+                                pred_labels,
+                                pred_class_names,
+                                scores=pred_scores,
+                            )
+
+                            pil_gt = Image.fromarray(image_gt)
+                            pil_pred = Image.fromarray(image_pred)
+
+                            combined_width = pil_gt.width + pil_pred.width
+                            combined_height = max(pil_gt.height, pil_pred.height)
+
+                            combined_image = Image.new(
+                                "RGB", (combined_width, combined_height)
+                            )
+                            combined_image.paste(pil_gt, (0, 0))
+                            combined_image.paste(pil_pred, (pil_gt.width, 0))
+
+                            out_file = os.path.join(
+                                predictions_outdir, f"{sample_id}.jpg"
+                            )
+                            combined_image.save(out_file)
 
                     processed_samples += 1
 

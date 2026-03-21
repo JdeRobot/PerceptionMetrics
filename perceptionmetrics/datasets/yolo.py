@@ -1,4 +1,5 @@
 from glob import glob
+import logging
 import os
 from typing import Tuple, List, Optional
 
@@ -33,8 +34,13 @@ def build_dataset(
     assert os.path.isdir(dataset_dir), f"Dataset directory not found: {dataset_dir}"
 
     # Build ontology from dataset configuration
+
     ontology = {}
-    for idx, name in dataset_info["names"].items():
+    names = dataset_info["names"]
+    # Support both list and dictionary formats for YOLO datasets
+    if isinstance(names, list):
+        names = {i: name for i, name in enumerate(names)}
+    for idx, name in names.items():
         ontology[name] = {
             "idx": idx,
             "rgb": [0, 0, 0],  # Placeholder; YAML doesn't define RGB colors
@@ -43,26 +49,30 @@ def build_dataset(
     # Build dataset DataFrame
     rows = []
     for split in ["train", "val", "test"]:
-        if split in dataset_info:
-            images_dir = os.path.join(dataset_dir, dataset_info[split])
-            labels_dir = os.path.join(
-                dataset_dir, dataset_info[split].replace("images", "labels")
+        split_path = dataset_info.get(split)
+        if not split_path:
+            logging.warning(
+                "Split '%s' is missing or has no path defined in '%s'; skipping.",
+                split,
+                dataset_fname,
             )
-            for label_fname in glob(os.path.join(labels_dir, "*.txt")):
-                label_basename = os.path.basename(label_fname)
-                image_basename = label_basename.replace(".txt", f".{im_ext}")
-                image_fname = os.path.join(images_dir, image_basename)
-                os.path.basename(image_fname)
-                if not os.path.isfile(image_fname):
-                    continue
+            continue
+        images_dir = os.path.join(dataset_dir, split_path)
+        labels_dir = os.path.join(dataset_dir, split_path.replace("images", "labels"))
+        for label_fname in glob(os.path.join(labels_dir, "*.txt")):
+            label_basename = os.path.basename(label_fname)
+            image_basename = label_basename.replace(".txt", f".{im_ext}")
+            image_fname = os.path.join(images_dir, image_basename)
+            if not os.path.isfile(image_fname):
+                continue
 
-                rows.append(
-                    {
-                        "image": os.path.join("images", split, image_basename),
-                        "annotation": os.path.join("labels", split, label_basename),
-                        "split": split,
-                    }
-                )
+            rows.append(
+                {
+                    "image": os.path.join("images", split, image_basename),
+                    "annotation": os.path.join("labels", split, label_basename),
+                    "split": split,
+                }
+            )
 
     dataset = pd.DataFrame(rows)
     dataset.attrs = {"ontology": ontology}
