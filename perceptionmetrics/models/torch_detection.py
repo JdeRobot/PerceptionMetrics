@@ -269,20 +269,53 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
             except Exception:
-                print(
-                    "Model is not a TorchScript model. Loading as native PyTorch model."
-                )
-                model = torch.load(model, map_location=self.device, weights_only=False)
-                model_type = "native"
-        elif isinstance(model, torch.nn.Module):
-            model_fname = None
-            model_type = "native"
-        else:
-            raise ValueError("Model must be a filename or a torch.nn.Module")
+                try:
+                    loaded = torch.load(model, map_location=self.device, weights_only=False)
+                    # Handle Ultralytics/YOLO-style dict checkpoints
+                    if isinstance(loaded, dict):
+                        candidate = loaded.get("ema") or loaded.get("model")
+                        if candidate is None or not hasattr(candidate, "forward"):
+                            raise ValueError(
+                                """
+                                The loaded .pt file is a dictionary but doesn't contain a valid model under keys 'model' or 'ema'. Please export to TorchScript for better compatibility.
+                                """
+                            )
+                        model = candidate
+                    else:
+                        model = loaded
+                    model_type = "native"
+                # Fallback for missing Ultralytics dependency
+                except (ModuleNotFoundError, AttributeError) as e:
+                    raise ImportError(
+                        f"Failed to load native .pt model. This often happens if the 'ultralytics' "
+                        f"library is missing or incompatible. \nOriginal error: {e}\n"
+                        f"SUGGESTION: 'pip install ultralytics' or export your model to TorchScript."
+                    ) from e
 
         # Init parent class
         super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
-        self.model = self.model.to(self.device).eval()
+        
+        # Define the Wrapper with DType Alignment
+        class DetectionModelWrapper(torch.nn.Module):
+            def __init__(self, model):
+                super().__init__()
+                self.inner_model = model
+                self.model_dtype = torch.float32
+                if hasattr(model, "parameters"):
+                    try:
+                        self.model_dtype = next(model.parameters()).dtype
+                    except StopIteration:
+                        pass
+            
+            # Handle input precision, tuple extraction, and output precision
+            def forward(self, x):
+                x = x.to(self.model_dtype)
+                out = self.inner_model(x)
+                if isinstance(out, (list, tuple)):
+                    out = out[0]
+                return out.float()
+
+        self.model = DetectionModelWrapper(self.model).to(self.device).eval()
 
         # Load post-processing functions for specific model formats
         self.model_format = self.model_cfg.get("model_format", "torchvision")
