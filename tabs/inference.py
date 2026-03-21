@@ -3,7 +3,14 @@ from typing import Optional
 import streamlit as st
 import json
 from PIL import Image
-import torch
+try:
+    import torch
+except ImportError:
+    raise ImportError(
+        "PyTorch is required for GUI-based inference and evaluation. "
+        "Please install it manually (e.g., pip install torch). "
+    )
+
 
 
 def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
