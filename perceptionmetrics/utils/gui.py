@@ -1,30 +1,60 @@
-import tkinter as tk
-from tkinter import filedialog
+import sys
+import subprocess
 
 
 def browse_folder():
     """
-    Opens  folder selection dialog and returns the selected folder path.
-
-    :returns: Absolute path of the selected folder, or ``None`` if the
-              dialog is cancelled or an error occurs.
-    :rtype: str | None
-
+    Opens a native folder selection dialog and returns the selected folder path.
+    Works on Windows, macOS, and Linux (with zenity or kdialog).
+    Returns None if cancelled or error.
     """
-    result = None
-
     try:
-        root = tk.Tk()
-        root.withdraw()  # Hide the root window
-        # Bring dialog to the front
-        root.attributes("-topmost", True)
-        folder = filedialog.askdirectory(
-            title="Select folder",
-            mustexist=True,
-        )
-        if folder:
-            result = folder
-        root.destroy()
-        return result
+        if sys.platform.startswith("win"):
+            script = (
+                "Add-Type -AssemblyName System.windows.forms;"
+                "$f=New-Object System.Windows.Forms.FolderBrowserDialog;"
+                'if($f.ShowDialog() -eq "OK"){Write-Output $f.SelectedPath}'
+            )
+            result = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", script],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            folder = result.stdout.strip()
+            return folder if folder else None
+        elif sys.platform == "darwin":
+            script = 'POSIX path of (choose folder with prompt "Select folder:")'
+            result = subprocess.run(
+                ["osascript", "-e", script], capture_output=True, text=True, timeout=30
+            )
+            folder = result.stdout.strip()
+            return folder if folder else None
+        else:
+            # Linux: try zenity, then kdialog
+            for cmd in [
+                [
+                    "zenity",
+                    "--file-selection",
+                    "--directory",
+                    "--title=Select folder",
+                ],
+                [
+                    "kdialog",
+                    "--getexistingdirectory",
+                    "--title",
+                    "Select folder",
+                ],
+            ]:
+                try:
+                    result = subprocess.run(
+                        cmd, capture_output=True, text=True, timeout=30
+                    )
+                    if result.returncode == 0:
+                        folder = result.stdout.strip()
+                        return folder if folder else None
+                except (FileNotFoundError, Exception):
+                    continue
+            return None
     except Exception:
         return None
