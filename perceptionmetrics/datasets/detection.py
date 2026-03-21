@@ -25,10 +25,12 @@ class DetectionDataset(PerceptionDataset):
 
         :param splits: List of splits to consider
         :return: Numpy array of label counts per class
+        :raises ValueError: If any requested split is not present in the dataset
         """
         if splits is None:
             splits = ["train", "val"]
 
+        self._validate_splits(splits)
         df = self.dataset[self.dataset["split"].isin(splits)]
         n_classes = max(c["idx"] for c in self.ontology.values()) + 1
         label_count = np.zeros(n_classes, dtype=np.uint64)

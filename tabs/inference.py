@@ -100,7 +100,7 @@ def inference_tab():
                         st.metric("Max Confidence", f"{max_confidence:.3f}")
 
                     # Display and download detection results
-                    st.markdown("#### Detection Results")
+                    st.markdown("#### Detection Details")
 
                     # Convert predictions to JSON format
                     detection_results = []

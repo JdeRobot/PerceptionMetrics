@@ -258,7 +258,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.segmentation_metrics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">um</span>
 
-
 <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">set_experimental_options</span><span class="p">({</span><span class="s2">&quot;layout_optimizer&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
 
 
@@ -382,6 +381,9 @@
             <span class="n">std</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">normalization</span><span class="p">[</span><span class="s2">&quot;std&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="n">std</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keep_aspect</span> <span class="o">=</span> <span class="n">keep_aspect</span>
+
+        <span class="c1"># Raise early if any requested split is absent — prevents silent NaN metrics</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">_validate_splits</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span>
 
         <span class="c1"># Filter split and make filenames global</span>
         <span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;split&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">splits</span><span class="p">)]</span>
