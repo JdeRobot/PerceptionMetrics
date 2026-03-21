@@ -6,10 +6,11 @@ from PIL import Image
 try:
     import torch
 except ImportError:
-    torch = None
+    raise ImportError(
+        "PyTorch is required for GUI-based inference and evaluation. "
+        "Please install it manually (e.g., pip install torch). "
+    )
 
-if torch is None:
-    raise ImportError("Please install PyTorch to use inference feature")
 
 
 def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
