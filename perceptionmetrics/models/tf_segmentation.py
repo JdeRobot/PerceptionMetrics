@@ -465,8 +465,8 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
                         sample_df.to_csv(
                             os.path.join(predictions_outdir, f"{sample_idx}.csv")
                         )
-                    pred = Image.fromarray(np.squeeze(pred).astype(np.uint8))
-                    pred.save(os.path.join(predictions_outdir, f"{sample_idx}.png"))
+                    sample_img = Image.fromarray(np.squeeze(sample_pred).astype(np.uint8))
+                    sample_img.save(os.path.join(predictions_outdir, f"{sample_idx}.png"))
 
         return um.get_metrics_dataframe(metrics_factory, eval_ontology)
 
