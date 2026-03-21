@@ -57,7 +57,7 @@ class DetectionModel(PerceptionModel):
         """Perform evaluation for a detection dataset
 
         :param dataset: Detection dataset for which evaluation will be performed
-        :type dataset: ImageDetecctionDataset
+        :type dataset: ImageDetectionDataset
         :param split: Split(s) to use, defaults to "test"
         :type split: Union[str, List[str]]
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
