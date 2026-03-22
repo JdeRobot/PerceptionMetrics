@@ -20,7 +20,7 @@ def build_dataset(
     :type split_dir: str
     :param ontology_fname: YAML file contained in the ontology compressed directory
     :type ontology_fname: str
-    :return: Dataset and onotology
+    :return: Dataset and ontology
     :rtype: Tuple[dict, dict]
     """
     # Check that provided paths exist and ensure they are absolute
