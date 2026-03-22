@@ -12,7 +12,7 @@ from perceptionmetrics.utils import io as uio
 
 def build_dataset(
     dataset_fname: str, dataset_dir: Optional[str] = None, im_ext: str = "jpg"
-) -> Tuple[pd.DataFrame, dict]:
+) -> Tuple[pd.DataFrame, dict, str]:
     """Build dataset and ontology dictionaries from YOLO dataset structure
 
     :param dataset_fname: Path to the YAML dataset configuration file
