@@ -223,7 +223,8 @@ class SegmentationMetricsFactory:
         
     def get_mean_iou(self) -> float:
         """Mean Intersection over Union (mIoU) across all classes"""    
-        return float(np.nanmean(self.get_iou(per_class=True)))
+        iou = self.get_iou(per_class=True)
+        return float(np.nanmean(iou))
 
     def get_averaged_metric(
         self, metric_name: str, method: str, weights: Optional[np.ndarray] = None
