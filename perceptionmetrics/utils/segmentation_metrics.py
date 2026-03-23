@@ -23,6 +23,7 @@ class SegmentationMetricsFactory:
         "accuracy",
         "f1_score",
         "iou",
+        "mean_iou",
     ]
 
     def __init__(self, n_classes: int):
@@ -219,6 +220,10 @@ class SegmentationMetricsFactory:
             return float(tp / union) if union > 0 else math.nan
         else:
             return np.where(union > 0, tp / union, np.nan)
+        
+    def get_mean_iou(self) -> float:
+        """Mean Intersection over Union (mIoU) across all classes"""    
+        return float(np.nanmean(self.get_iou(per_class=True)))
 
     def get_averaged_metric(
         self, metric_name: str, method: str, weights: Optional[np.ndarray] = None
