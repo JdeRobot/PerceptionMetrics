@@ -311,9 +311,13 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             def forward(self, x):
                 x = x.to(self.model_dtype)
                 out = self.inner_model(x)
-                if isinstance(out, (list, tuple)):
+                # Only unwrap TUPLES (native YOLO .pt)
+                # Avoid unwrapping LISTS (torchvision Mask R-CNN)
+                if isinstance(out, tuple) and len(out) > 0:
                     out = out[0]
-                return out.float()
+                if isinstance(out, torch.Tensor):
+                    return out.float()
+                return out
 
         self.model = DetectionModelWrapper(self.model).to(self.device).eval()
 
