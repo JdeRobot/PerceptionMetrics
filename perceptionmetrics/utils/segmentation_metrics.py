@@ -222,7 +222,7 @@ class SegmentationMetricsFactory:
         else:
             return np.where(union > 0, tp / union, np.nan)
         
-    def get_mean_iou(self) -> float:
+    def get_mean_iou(self, per_class: bool = False) -> float:
         """Mean Intersection over Union (mIoU) across all classes"""    
         iou = self.get_iou(per_class=True)
         return float(np.nanmean(iou))
