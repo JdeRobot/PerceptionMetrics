@@ -23,7 +23,6 @@ class SegmentationMetricsFactory:
         "accuracy",
         "f1_score",
         "iou",
-        "mean_iou",
         "dice_score",
     ]
 
