@@ -491,16 +491,16 @@ independent evaluations without creating a new object.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="perceptionmetrics.utils.detection_metrics.compute_iou_matrix">
 <span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.detection_metrics.</span></span><span class="sig-name descname"><span class="pre">compute_iou_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_boxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_boxes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/detection_metrics.html#compute_iou_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.detection_metrics.compute_iou_matrix" title="Link to this definition">¶</a></dt>
-<dd><p>Compute IoU matrix between pred and gt boxes.</p>
+<dd><p>Compute IoU matrix between pred and gt boxes using vectorized operations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pred_boxes</strong> (<em>np.ndarray</em>) – Predicted bounding boxes, shape (num_pred, 4)</p></li>
-<li><p><strong>gt_boxes</strong> (<em>np.ndarray</em>) – Ground truth bounding boxes, shape (num_gt, 4)</p></li>
+<li><p><strong>pred_boxes</strong> (<em>np.ndarray</em>) – Predicted bounding boxes, shape (N, 4) in [x1, y1, x2, y2] format</p></li>
+<li><p><strong>gt_boxes</strong> (<em>np.ndarray</em>) – Ground truth bounding boxes, shape (M, 4) in [x1, y1, x2, y2] format</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>IoU matrix with shape (num_pred, num_gt)</p>
+<dd class="field-even"><p>IoU matrix with shape (N, M)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -517,6 +517,13 @@ independent evaluations without creating a new object.</p>
 <dd><p>Opens a native folder selection dialog and returns the selected folder path.
 Works on Windows, macOS, and Linux (with zenity or kdialog).
 Returns None if cancelled or error.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="perceptionmetrics.utils.gui.is_wsl">
+<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.gui.</span></span><span class="sig-name descname"><span class="pre">is_wsl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/gui.html#is_wsl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.gui.is_wsl" title="Link to this definition">¶</a></dt>
+<dd><p>Detect if running in Windows Subsystem for Linux (WSL).
+Returns True if WSL is detected, False otherwise.</p>
 </dd></dl>
 
 </section>
@@ -1257,6 +1264,7 @@ independent evaluations without creating a new object.</p>
 </li>
 <li><a class="reference internal" href="#module-perceptionmetrics.utils.gui">perceptionmetrics.utils.gui module</a><ul>
 <li><a class="reference internal" href="#perceptionmetrics.utils.gui.browse_folder"><code class="docutils literal notranslate"><span class="pre">browse_folder()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.utils.gui.is_wsl"><code class="docutils literal notranslate"><span class="pre">is_wsl()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-perceptionmetrics.utils.image">perceptionmetrics.utils.image module</a><ul>

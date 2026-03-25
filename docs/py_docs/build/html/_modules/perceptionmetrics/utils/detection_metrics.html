@@ -342,7 +342,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">matches</span><span class="p">[</span><span class="n">label</span><span class="p">])</span></div>
 
 
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_match_predictions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gt_boxes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -651,19 +650,44 @@
 <div class="viewcode-block" id="compute_iou_matrix">
 <a class="viewcode-back" href="../../../api/perceptionmetrics.utils.html#perceptionmetrics.utils.detection_metrics.compute_iou_matrix">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_iou_matrix</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">gt_boxes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute IoU matrix between pred and gt boxes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute IoU matrix between pred and gt boxes using vectorized operations.</span>
 
-<span class="sd">    :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)</span>
+<span class="sd">    :param pred_boxes: Predicted bounding boxes, shape (N, 4) in [x1, y1, x2, y2] format</span>
 <span class="sd">    :type pred_boxes: np.ndarray</span>
-<span class="sd">    :param gt_boxes: Ground truth bounding boxes, shape (num_gt, 4)</span>
+<span class="sd">    :param gt_boxes: Ground truth bounding boxes, shape (M, 4) in [x1, y1, x2, y2] format</span>
 <span class="sd">    :type gt_boxes: np.ndarray</span>
-<span class="sd">    :return: IoU matrix with shape (num_pred, num_gt)</span>
+<span class="sd">    :return: IoU matrix with shape (N, M)</span>
 <span class="sd">    :rtype: np.ndarray</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">iou_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">gt_boxes</span><span class="p">)))</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">gb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gt_boxes</span><span class="p">):</span>
-            <span class="n">iou_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_iou</span><span class="p">(</span><span class="n">pb</span><span class="p">,</span> <span class="n">gb</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">pred_boxes</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">pred_boxes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expected pred_boxes of shape (N, 4), got </span><span class="si">{</span><span class="n">pred_boxes</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">gt_boxes</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">gt_boxes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expected gt_boxes of shape (M, 4), got </span><span class="si">{</span><span class="n">gt_boxes</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">pred_boxes</span> <span class="o">=</span> <span class="n">pred_boxes</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># [N, 1, 4]</span>
+    <span class="n">gt_boxes</span> <span class="o">=</span> <span class="n">gt_boxes</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>  <span class="c1"># [1, M, 4]</span>
+
+    <span class="n">inter_x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">gt_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># [N, M]</span>
+    <span class="n">inter_y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">gt_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># [N, M]</span>
+    <span class="n">inter_x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">gt_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>  <span class="c1"># [N, M]</span>
+    <span class="n">inter_y2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">gt_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>  <span class="c1"># [N, M]</span>
+
+    <span class="n">inter_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inter_x2</span> <span class="o">-</span> <span class="n">inter_x1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="n">inter_y2</span> <span class="o">-</span> <span class="n">inter_y1</span>
+    <span class="p">)</span>  <span class="c1"># [N, M]</span>
+
+    <span class="n">pred_area</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pred_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">pred_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">pred_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># [N, 1]</span>
+    <span class="n">gt_area</span> <span class="o">=</span> <span class="p">(</span><span class="n">gt_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gt_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">gt_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">gt_boxes</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># [1, M]</span>
+
+    <span class="n">union_area</span> <span class="o">=</span> <span class="n">pred_area</span> <span class="o">+</span> <span class="n">gt_area</span> <span class="o">-</span> <span class="n">inter_area</span>  <span class="c1"># [N, M]</span>
+    <span class="n">iou_matrix</span> <span class="o">=</span> <span class="n">inter_area</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">union_area</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>  <span class="c1"># avoiding zero division</span>
+
     <span class="k">return</span> <span class="n">iou_matrix</span></div>
 
 
