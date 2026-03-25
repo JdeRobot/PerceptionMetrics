@@ -81,7 +81,9 @@ def build_dataset(
 
         sample_name, _ = os.path.splitext(os.path.basename(data_fname))
         scene_name = sample_name.split("_")[0]
-        split = split_sequences[scene_name]
+        split = split_sequences.get(scene_name)
+        if split is None:
+            raise ValueError(f"Scene '{scene_name}' not found in split configuration")
 
         dataset[sample_name] = (data_fname, label_fname, split)
 
