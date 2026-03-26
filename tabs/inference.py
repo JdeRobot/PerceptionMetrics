@@ -6,7 +6,7 @@ from PIL import Image
 import torch
 
 
-def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
+def draw_detections(image: Image.Image, predictions: dict, label_map: Optional[dict] = None):
     """Draw color-coded bounding boxes and labels on the image using supervision.
 
     :param image: PIL Image
@@ -72,6 +72,7 @@ def inference_tab():
                 predictions, sample_tensor = st.session_state.detection_model.predict(
                     image, return_sample=True
                 )
+
                 from torchvision.transforms import v2 as transforms
 
                 img_to_draw = transforms.ToPILImage()(sample_tensor[0])
@@ -84,19 +85,26 @@ def inference_tab():
                 st.image(result_img, caption="Detection Results", width="stretch")
 
                 # Display detection statistics
-                if (
-                    predictions.get("scores") is not None
-                    and len(predictions["scores"]) > 0
-                ):
+                scores_val = predictions.get("scores")
+                has_detections = False
+                if scores_val is not None:
+                    try:
+                        has_detections = len(scores_val) > 0
+                    except TypeError:
+                        has_detections = getattr(scores_val, "numel", lambda: 0)() > 0
+
+                if has_detections:
                     st.markdown("#### Detection Statistics")
                     col1, col2, col3 = st.columns(3)
                     with col1:
-                        st.metric("Total Detections", len(predictions["scores"]))
+                        # Use numel() for safe count of detections (works on all tensor shapes)
+                        num_detections = scores_val.numel() if hasattr(scores_val, "numel") else len(scores_val)
+                        st.metric("Total Detections", num_detections)
                     with col2:
-                        avg_confidence = float(predictions["scores"].mean())
+                        avg_confidence = float(scores_val.mean())
                         st.metric("Avg Confidence", f"{avg_confidence:.3f}")
                     with col3:
-                        max_confidence = float(predictions["scores"].max())
+                        max_confidence = float(scores_val.max())
                         st.metric("Max Confidence", f"{max_confidence:.3f}")
 
                     # Display and download detection results
@@ -104,16 +112,19 @@ def inference_tab():
 
                     # Convert predictions to JSON format
                     detection_results = []
-                    boxes = predictions.get("boxes", torch.empty(0)).cpu().numpy()
+                    boxes = predictions.get("boxes", torch.empty((0, 4))).cpu().numpy()
                     labels = predictions.get("labels", torch.empty(0)).cpu().numpy()
                     scores = predictions.get("scores", torch.empty(0)).cpu().numpy()
 
                     for i in range(len(scores)):
-                        class_name = (
-                            label_map.get(int(labels[i]), f"class_{labels[i]}")
-                            if label_map
-                            else f"class_{labels[i]}"
-                        )
+                        class_name = f"class_{labels[i]}"
+                        if label_map is not None and isinstance(label_map, dict):
+                            class_name = label_map.get(int(labels[i]), class_name)
+
+                        # Skip entries where the box is missing or malformed
+                        if i >= len(boxes) or len(boxes[i]) < 4:
+                            continue
+
                         detection_results.append(
                             {
                                 "detection_id": i,
@@ -143,5 +154,6 @@ def inference_tab():
                     )
                 else:
                     st.info("No detections found in the image.")
+
             except Exception as e:
                 st.error(f"Failed to run inference: {e}")
