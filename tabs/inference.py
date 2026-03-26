@@ -84,19 +84,24 @@ def inference_tab():
                 st.image(result_img, caption="Detection Results", width="stretch")
 
                 # Display detection statistics
-                if (
-                    predictions.get("scores") is not None
-                    and len(predictions["scores"]) > 0
-                ):
+                scores_val = predictions.get("scores")
+                has_detections = False
+                if scores_val is not None:
+                    try:
+                        has_detections = len(scores_val) > 0
+                    except TypeError:
+                        has_detections = getattr(scores_val, "numel", lambda: 0)() > 0
+
+                if has_detections:
                     st.markdown("#### Detection Statistics")
                     col1, col2, col3 = st.columns(3)
                     with col1:
-                        st.metric("Total Detections", len(predictions["scores"]))
+                        st.metric("Total Detections", len(scores_val) if hasattr(scores_val, "__len__") else getattr(scores_val, "numel")())
                     with col2:
-                        avg_confidence = float(predictions["scores"].mean())
+                        avg_confidence = float(scores_val.mean())
                         st.metric("Avg Confidence", f"{avg_confidence:.3f}")
                     with col3:
-                        max_confidence = float(predictions["scores"].max())
+                        max_confidence = float(scores_val.max())
                         st.metric("Max Confidence", f"{max_confidence:.3f}")
 
                     # Display and download detection results
@@ -104,16 +109,25 @@ def inference_tab():
 
                     # Convert predictions to JSON format
                     detection_results = []
-                    boxes = predictions.get("boxes", torch.empty(0)).cpu().numpy()
+                    boxes = predictions.get("boxes", torch.empty((0, 4))).cpu().numpy()
                     labels = predictions.get("labels", torch.empty(0)).cpu().numpy()
                     scores = predictions.get("scores", torch.empty(0)).cpu().numpy()
 
                     for i in range(len(scores)):
-                        class_name = (
-                            label_map.get(int(labels[i]), f"class_{labels[i]}")
-                            if label_map
-                            else f"class_{labels[i]}"
-                        )
+                        class_name = f"class_{labels[i]}"
+                        if label_map is not None and isinstance(label_map, dict):
+                            class_name = label_map.get(int(labels[i]), class_name)
+                        
+                        # Ensure boxes[i] has 4 elements to avoid index errors
+                        bbox_x1, bbox_y1, bbox_x2, bbox_y2 = 0.0, 0.0, 0.0, 0.0
+                        if i < len(boxes) and len(boxes[i]) >= 4:
+                            bbox_x1, bbox_y1, bbox_x2, bbox_y2 = (
+                                float(boxes[i][0]),
+                                float(boxes[i][1]),
+                                float(boxes[i][2]),
+                                float(boxes[i][3]),
+                            )
+
                         detection_results.append(
                             {
                                 "detection_id": i,
@@ -121,12 +135,12 @@ def inference_tab():
                                 "class_name": class_name,
                                 "confidence": float(scores[i]),
                                 "bbox": {
-                                    "x1": float(boxes[i][0]),
-                                    "y1": float(boxes[i][1]),
-                                    "x2": float(boxes[i][2]),
-                                    "y2": float(boxes[i][3]),
+                                    "x1": bbox_x1,
+                                    "y1": bbox_y1,
+                                    "x2": bbox_x2,
+                                    "y2": bbox_y2,
                                 },
-                                "bbox_xyxy": boxes[i].tolist(),
+                                "bbox_xyxy": boxes[i].tolist() if i < len(boxes) else [],
                             }
                         )
 
