@@ -101,11 +101,28 @@ ERROR: Can not perform a '--user' install. User site-packages are not visible in
 ```
 
 
-Install dependencies and activate poetry environment (you can get out of the Poetry shell by running `exit`):
-```
+Install dependencies:
+```bash
 poetry install
-poetry shell
 ```
+
+
+Activate the environment: 
+
+Depending on your Poetry version, use one of the following (you can leave the environment by running deactivate or exit):
+
+   * For Poetry 2.0+:
+     ```bash
+     poetry env activate
+     ```
+   * For Poetry 1.x:
+     ```bash
+     poetry shell
+     ```
+
+   *Note: Alternatively, you can run any command directly without activating the environment by prefixing it with `poetry run` (e.g., `poetry run python main.py`).*
+
+
 ### Using venv
 Create your virtual environment:
 ```
