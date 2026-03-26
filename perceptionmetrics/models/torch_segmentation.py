@@ -835,7 +835,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
         # Measure inference time with GPU synchronization
         cuda_available = torch.cuda.is_available()
         for _ in range(warm_up_runs):
-            if "o3d" in self.model_format:
+            if "o3d" in self.model_format:  # reset random sampling for Open3D-ML models
                 subsampled_points, _, sampler, _, _, _ = sample
                 self._reset_sampler(sampler, subsampled_points.shape[0], self.n_classes)
 
