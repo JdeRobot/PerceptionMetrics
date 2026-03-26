@@ -8,9 +8,7 @@ try:
 except ImportError:
     raise ImportError(
         "PyTorch is required for GUI-based inference and evaluation. "
-        "Please install it with: pip install torch==2.4.1 "
     )
-
 
 
 def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
