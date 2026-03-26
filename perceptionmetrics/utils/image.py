@@ -14,7 +14,7 @@ def draw_detections(
 ) -> np.ndarray:
     """
     Draw bounding boxes and labels on the image using supervision.
-    Adapts to different supervision versions.
+    Requires supervision>=0.18 and uses BoxAnnotator + LabelAnnotator.
 
     :param image: PIL Image
     :type image: Image.Image
@@ -31,6 +31,9 @@ def draw_detections(
     """
     image = np.array(image)
 
+    if len(boxes) == 0:
+        return image
+
     # Create supervision detections
     detections = sv.Detections(xyxy=boxes, class_id=class_ids, confidence=scores)
 
@@ -41,33 +44,19 @@ def draw_detections(
             name = class_names[i]
         else:
             name = str(class_ids[i])
-
         if scores is not None and i < len(scores):
             labels.append(f"{name}: {scores[i]:.2f}")
         else:
             labels.append(name)
 
-    try:
-        # Try older style (BoxAnnotator handles labels)
-        try:
-            palette = sv.Color.DEFAULT
-        except AttributeError:
-            palette = sv.ColorPalette.default()
+    box_annotator = sv.BoxAnnotator()
+    ann_image = box_annotator.annotate(scene=image, detections=detections)
 
-        annotator = sv.BoxAnnotator(
-            color=palette, text_scale=0.7, text_thickness=1, text_padding=2
-        )
-        ann_image = annotator.annotate(
-            scene=image, detections=detections, labels=labels
-        )
-    except TypeError:
-        # Fallback for newer supervision (BoxAnnotator + LabelAnnotator)
-        box_annotator = sv.BoxAnnotator()
-        ann_image = box_annotator.annotate(scene=image, detections=detections)
-
-        label_annotator = sv.LabelAnnotator()
-        ann_image = label_annotator.annotate(
-            scene=ann_image, detections=detections, labels=labels
-        )
+    label_annotator = sv.LabelAnnotator(
+        text_scale=0.7, text_thickness=1, text_padding=2
+    )
+    ann_image = label_annotator.annotate(
+        scene=ann_image, detections=detections, labels=labels
+    )
 
     return ann_image
