@@ -11,7 +11,7 @@ def dataset_viewer_tab():
     from perceptionmetrics.datasets.yolo import YOLODataset
     import numpy as np
     from PIL import Image
-    from supervision import BoxAnnotator, Detections, LabelAnnotator
+    from perceptionmetrics.utils.image import draw_detections
 
     # Get inputs from session state
     dataset_path = st.session_state.get("dataset_path", "")
@@ -34,7 +34,6 @@ def dataset_viewer_tab():
         except FileNotFoundError:
             st.warning("Dataset files not found. Check path and split.")
             return
-
     elif dataset_type == "yolo":
         dataset_config_file = st.session_state.get("dataset_config_file", None)
         img_dir = os.path.join(dataset_path, f"images/{split}")
@@ -73,10 +72,10 @@ def dataset_viewer_tab():
                 margin-top: -0.85rem !important;
             }
             </style>
-        """,
+            """,
             unsafe_allow_html=True,
         )
-        st.markdown("<div style='margin-bottom: 0;'></div>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
 
     # Load dataset
     dataset_key = f"{dataset_path}_{split}"
@@ -96,17 +95,14 @@ def dataset_viewer_tab():
                     ) as tmp:
                         tmp.write(dataset_config_file.read())
                         tmp_path = tmp.name
-
                     # Load YOLO dataset
                     yolo_dataset = YOLODataset(tmp_path, dataset_path)
                     st.session_state["full_dataset_df"] = yolo_dataset.dataset
-
                     # Filter dataset for the selected split
                     yolo_dataset.dataset = yolo_dataset.dataset[
                         yolo_dataset.dataset["split"] == split
                     ].reset_index(drop=True)
                     st.session_state[dataset_key] = yolo_dataset
-
                     os.unlink(tmp_path)  # Clean up temp file
                 else:
                     st.warning(
@@ -116,7 +112,6 @@ def dataset_viewer_tab():
             else:
                 st.error("Unsupported dataset type.")
                 return
-
         except Exception as e:
             st.error(f"Failed to load dataset: {e}")
             return
@@ -143,11 +138,14 @@ def dataset_viewer_tab():
                     return
         except Exception:
             pass
+
     dataset = st.session_state[dataset_key]
 
     # Get image files
     image_files = [
-        f for f in os.listdir(img_dir) if f.lower().endswith((".jpg", ".jpeg", ".png"))
+        f
+        for f in os.listdir(img_dir)
+        if f.lower().endswith((".jpg", ".jpeg", ".png"))
     ]
     if not image_files:
         st.warning("No images found.")
@@ -160,12 +158,10 @@ def dataset_viewer_tab():
         (len(image_files) + IMAGES_PER_PAGE - 1) // IMAGES_PER_PAGE,
     )
     page_key = f"image_page_{dataset_path}_{split}"
-
     if page_key not in st.session_state:
         st.session_state[page_key] = 0
     current_page = max(0, min(st.session_state[page_key], total_pages - 1))
     st.session_state[page_key] = current_page
-
     start_idx = current_page * IMAGES_PER_PAGE
     sample_images = image_files[start_idx : start_idx + IMAGES_PER_PAGE]
     image_paths = [os.path.join(img_dir, img_name) for img_name in sample_images]
@@ -178,12 +174,14 @@ def dataset_viewer_tab():
             st.rerun()
     with col2:
         st.markdown(
-            f"<div style='text-align:center;font-weight:bold;'>Page {current_page + 1} of {total_pages}</div>",
+            f"<p style='text-align:center'>Page {current_page + 1} of {total_pages}</p>",
             unsafe_allow_html=True,
         )
     with col3:
         if st.button(
-            "⟩", key="next_page_btn", disabled=(current_page >= total_pages - 1)
+            "⟩",
+            key="next_page_btn",
+            disabled=(current_page >= total_pages - 1)
         ):
             st.session_state[page_key] = current_page + 1
             st.rerun()
@@ -201,11 +199,13 @@ def dataset_viewer_tab():
         col1, col2, col3 = st.columns([4, 1, 1])
         with col1:
             selected_img = st.selectbox(
-                "Search image:", options=image_files, key="search_image"
+                "Search image:",
+                options=image_files,
+                key="search_image"
             )
         with col2:
             st.markdown(
-                "<div style='margin-bottom: 2.4rem;'></div>", unsafe_allow_html=True
+                "<br>", unsafe_allow_html=True
             )
             if st.button("Go to image", key="go_to_image_btn"):
                 new_page = image_files.index(selected_img) // IMAGES_PER_PAGE
@@ -217,7 +217,7 @@ def dataset_viewer_tab():
                 st.rerun()
         with col3:
             st.markdown(
-                "<div style='margin-bottom: 2.4rem;'></div>", unsafe_allow_html=True
+                "<br>", unsafe_allow_html=True
             )
             if st.button("Cancel", key="cancel_search_btn"):
                 st.session_state["show_search_dropdown"] = False
@@ -238,6 +238,7 @@ def dataset_viewer_tab():
     img_select_index = st.session_state.get(img_select_key)
     if img_select_index is None or not isinstance(img_select_index, int):
         img_select_index = 0
+
     selected_img_path = (
         image_select(
             label="",
@@ -269,14 +270,16 @@ def dataset_viewer_tab():
                 annotation_id = ann_row.iloc[0]["annotation"]
                 if dataset_type == "yolo":
                     annotation_id = os.path.join(dataset.dataset_dir, annotation_id)
-
                 boxes, category_indices = dataset.read_annotation(annotation_id)
+
+                # Ensure boxes array has correct shape even when empty
+                boxes_arr = np.array(boxes).reshape(-1, 4)
+                category_arr = np.array(category_indices)
 
                 # Get class names from ontology
                 ontology = getattr(dataset, "ontology", None)
                 if ontology is None and hasattr(dataset.dataset, "attrs"):
                     ontology = dataset.dataset.attrs.get("ontology", None)
-
                 if ontology:
                     catid_to_name = {v["idx"]: k for k, v in ontology.items()}
                     class_names = [
@@ -286,19 +289,12 @@ def dataset_viewer_tab():
                 else:
                     class_names = [str(cat_id) for cat_id in category_indices]
 
-                # Annotate image
-                detections = Detections(
-                    xyxy=np.array(boxes), class_id=np.array(category_indices)
-                )
-                box_annotator = BoxAnnotator()
-                label_annotator = LabelAnnotator(
-                    text_scale=0.7, text_thickness=1, text_padding=2
-                )
-                annotated_img = box_annotator.annotate(
-                    scene=img_np.copy(), detections=detections
-                )
-                annotated_img = label_annotator.annotate(
-                    scene=annotated_img, detections=detections, labels=class_names
+                # Annotate image using the shared draw_detections helper
+                annotated_img = draw_detections(
+                    image=img,
+                    boxes=boxes_arr,
+                    class_ids=category_arr,
+                    class_names=class_names,
                 )
 
                 # Resize for display
