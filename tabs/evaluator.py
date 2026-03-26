@@ -29,21 +29,32 @@ def evaluator_tab():
     dataset_path = st.session_state.get("dataset_path", "")
     dataset_type = st.session_state.get("dataset_type", "Coco")
     split = st.session_state.get("split", "val")
+    manual_paths_enabled = st.session_state.get("manual_paths_enabled", False)
+    manual_img_dir = st.session_state.get("manual_img_dir", "").strip()
+    manual_ann_file = st.session_state.get("manual_ann_file", "").strip()
+    using_manual_paths = manual_paths_enabled and bool(manual_img_dir) and bool(manual_ann_file)
 
     # Try to get existing dataset from session state first
-    dataset_key = f"{dataset_path}_{split}"
+    dataset_key = (
+        f"manual_{manual_img_dir}_{manual_ann_file}_{split}"
+        if using_manual_paths
+        else f"{dataset_path}_{split}"
+    )
     if dataset_key in st.session_state:
         dataset = st.session_state[dataset_key]
         dataset_available = True
         st.success(
-            f"✅ Dataset loaded: {dataset_path} ({split} split) - {len(dataset.dataset)} samples"
+            f"✅ Dataset loaded: {dataset_path or 'manual paths'} ({split} split) - {len(dataset.dataset)} samples"
         )
-    elif dataset_path and os.path.isdir(dataset_path):
+    elif using_manual_paths or (dataset_path and os.path.isdir(dataset_path)):
         try:
             if dataset_type.lower() == "coco":
-                img_dir, ann_file = find_img_dir_and_ann_file(
-                    dataset_path=dataset_path, split=split
-                )
+                if using_manual_paths:
+                    img_dir, ann_file = manual_img_dir, manual_ann_file
+                else:
+                    img_dir, ann_file = find_img_dir_and_ann_file(
+                        dataset_path=dataset_path, split=split
+                    )
 
                 if os.path.isdir(img_dir) and os.path.isfile(ann_file):
                     st.session_state[dataset_key] = CocoDataset(
@@ -58,7 +69,14 @@ def evaluator_tab():
                     )
                 else:
                     st.warning(
-                        "⚠️ Dataset files not found. Please check the dataset path and split in the sidebar."
+                        "⚠️ Dataset files not found. Check the dataset path and split in the sidebar, "
+                        "or use **Manual Path Override**.\n\n"
+                        "**Expected auto-detection structure:**\n"
+                        "```\n"
+                        "dataset_root/\n"
+                        f"├── images/{split}/\n"
+                        f"└── annotations/instances_{split}.json\n"
+                        "```"
                     )
             else:
                 st.warning(
@@ -66,6 +84,7 @@ def evaluator_tab():
                 )
         except Exception as e:
             st.error(f"❌ Error loading dataset: {e}")
+
     else:
         st.warning(
             "⚠️ No dataset path provided. Please set the dataset path in the sidebar."

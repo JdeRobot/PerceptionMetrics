@@ -19,23 +19,39 @@ def dataset_viewer_tab():
     dataset_path = st.session_state.get("dataset_path", "")
     dataset_type = st.session_state.get("dataset_type", "COCO").lower()
     split = st.session_state.get("split", "val")
+    manual_paths_enabled = st.session_state.get("manual_paths_enabled", False)
+    manual_img_dir = st.session_state.get("manual_img_dir", "").strip()
+    manual_ann_file = st.session_state.get("manual_ann_file", "").strip()
+    using_manual_paths = manual_paths_enabled and bool(manual_img_dir) and bool(manual_ann_file)
 
     # Header row only
     st.header("Dataset Viewer")
 
-    if not dataset_path or not os.path.isdir(dataset_path):
+    if not using_manual_paths and (not dataset_path or not os.path.isdir(dataset_path)):
         st.warning("⚠️ Please select a valid dataset folder.")
         return
 
     # Setup paths and pagination
     if dataset_type == "coco":
-        try:
-            img_dir, ann_file = find_img_dir_and_ann_file(
-                dataset_path=dataset_path, split=split
-            )
-        except FileNotFoundError:
-            st.warning("Dataset files not found. Check path and split.")
-            return
+        if using_manual_paths:
+            img_dir, ann_file = manual_img_dir, manual_ann_file
+        else:
+            try:
+                img_dir, ann_file = find_img_dir_and_ann_file(
+                    dataset_path=dataset_path, split=split
+                )
+            except FileNotFoundError:
+                st.warning(
+                    "Dataset files not found. Check path and split, or tick "
+                    "**Use manual paths** in the sidebar.\n\n"
+                    "**Expected auto-detection structure:**\n"
+                    "```\n"
+                    "dataset_root/\n"
+                    f"├── images/{split}/\n"
+                    f"└── annotations/instances_{split}.json\n"
+                    "```"
+                )
+                return
 
     elif dataset_type == "yolo":
         dataset_config_file = st.session_state.get("dataset_config_file", None)
@@ -81,7 +97,11 @@ def dataset_viewer_tab():
         st.markdown("<div style='margin-bottom: 0;'></div>", unsafe_allow_html=True)
 
     # Load dataset
-    dataset_key = f"{dataset_path}_{split}"
+    dataset_key = (
+        f"manual_{manual_img_dir}_{manual_ann_file}_{split}"
+        if using_manual_paths
+        else f"{dataset_path}_{split}"
+    )
     if dataset_key not in st.session_state:
         try:
             if dataset_type == "coco":
@@ -120,7 +140,16 @@ def dataset_viewer_tab():
                 return
 
         except Exception as e:
-            st.error(f"Failed to load dataset: {e}")
+            source = "manual paths" if using_manual_paths else "auto-detected paths"
+            st.error(
+                f"❌ Failed to load dataset ({source}): {e}\n\n"
+                "**Expected COCO structure:**\n"
+                "```\n"
+                "dataset_root/\n"
+                f"├── images/{split}/\n"
+                f"└── annotations/instances_{split}.json\n"
+                "```"
+            )
             return
     else:
         # Ensure cached dataset has the correct split; if not, rebuild it

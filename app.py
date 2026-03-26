@@ -2,7 +2,7 @@ import streamlit as st
 from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
-from perceptionmetrics.utils.gui import browse_folder
+from perceptionmetrics.utils.gui import browse_folder, browse_file
 
 
 def browse_dataset_path():
@@ -30,6 +30,9 @@ st.session_state.setdefault("batch_size", 1)
 st.session_state.setdefault("evaluation_step", 5)
 st.session_state.setdefault("detection_model", None)
 st.session_state.setdefault("detection_model_loaded", False)
+st.session_state.setdefault("manual_paths_enabled", False)
+st.session_state.setdefault("manual_img_dir", "")
+st.session_state.setdefault("manual_ann_file", "")
 
 # Sidebar: Dataset Inputs
 with st.sidebar:
@@ -67,6 +70,45 @@ with st.sidebar:
                 key="dataset_config_file",
                 help="Upload a YAML dataset configuration file.",
             )
+
+        # Manual path override — COCO only
+        if st.session_state.get("dataset_type", "COCO") == "COCO":
+            st.checkbox("Use manual paths", key="manual_paths_enabled")
+
+            if st.session_state.get("manual_paths_enabled", False):
+                def _browse_img_dir():
+                    folder = browse_folder()
+                    if folder:
+                        st.session_state.manual_img_dir = folder
+
+                def _browse_ann_file():
+                    fpath = browse_file(filetypes=[".json"])
+                    if fpath:
+                        st.session_state.manual_ann_file = fpath
+
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.text_input("Image Directory", key="manual_img_dir")
+                with col2:
+                    st.markdown(
+                        "<div style='margin-bottom: 1.75rem;'></div>",
+                        unsafe_allow_html=True,
+                    )
+                    st.button("Browse", on_click=_browse_img_dir, key="browse_manual_img_dir")
+
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.text_input("Annotation File (.json)", key="manual_ann_file")
+                with col2:
+                    st.markdown(
+                        "<div style='margin-bottom: 1.75rem;'></div>",
+                        unsafe_allow_html=True,
+                    )
+                    st.button("Browse", on_click=_browse_ann_file, key="browse_manual_ann_file")
+            else:
+                # Clear manual paths when checkbox is off
+                st.session_state.manual_img_dir = ""
+                st.session_state.manual_ann_file = ""
 
     with st.expander("Model Inputs", expanded=False):
         st.file_uploader(
