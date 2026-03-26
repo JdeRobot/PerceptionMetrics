@@ -6,7 +6,7 @@ from PIL import Image
 import torch
 
 
-def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
+def draw_detections(image: Image.Image, predictions: dict, label_map: Optional[dict] = None):
     """Draw color-coded bounding boxes and labels on the image using supervision.
 
     :param image: PIL Image
@@ -72,6 +72,7 @@ def inference_tab():
                 predictions, sample_tensor = st.session_state.detection_model.predict(
                     image, return_sample=True
                 )
+
                 from torchvision.transforms import v2 as transforms
 
                 img_to_draw = transforms.ToPILImage()(sample_tensor[0])
@@ -96,7 +97,9 @@ def inference_tab():
                     st.markdown("#### Detection Statistics")
                     col1, col2, col3 = st.columns(3)
                     with col1:
-                        st.metric("Total Detections", len(scores_val) if hasattr(scores_val, "__len__") else getattr(scores_val, "numel")())
+                        # Use numel() for safe count of detections (works on all tensor shapes)
+                        num_detections = scores_val.numel() if hasattr(scores_val, "numel") else len(scores_val)
+                        st.metric("Total Detections", num_detections)
                     with col2:
                         avg_confidence = float(scores_val.mean())
                         st.metric("Avg Confidence", f"{avg_confidence:.3f}")
@@ -117,16 +120,10 @@ def inference_tab():
                         class_name = f"class_{labels[i]}"
                         if label_map is not None and isinstance(label_map, dict):
                             class_name = label_map.get(int(labels[i]), class_name)
-                        
-                        # Ensure boxes[i] has 4 elements to avoid index errors
-                        bbox_x1, bbox_y1, bbox_x2, bbox_y2 = 0.0, 0.0, 0.0, 0.0
-                        if i < len(boxes) and len(boxes[i]) >= 4:
-                            bbox_x1, bbox_y1, bbox_x2, bbox_y2 = (
-                                float(boxes[i][0]),
-                                float(boxes[i][1]),
-                                float(boxes[i][2]),
-                                float(boxes[i][3]),
-                            )
+
+                        # Skip entries where the box is missing or malformed
+                        if i >= len(boxes) or len(boxes[i]) < 4:
+                            continue
 
                         detection_results.append(
                             {
@@ -135,12 +132,12 @@ def inference_tab():
                                 "class_name": class_name,
                                 "confidence": float(scores[i]),
                                 "bbox": {
-                                    "x1": bbox_x1,
-                                    "y1": bbox_y1,
-                                    "x2": bbox_x2,
-                                    "y2": bbox_y2,
+                                    "x1": float(boxes[i][0]),
+                                    "y1": float(boxes[i][1]),
+                                    "x2": float(boxes[i][2]),
+                                    "y2": float(boxes[i][3]),
                                 },
-                                "bbox_xyxy": boxes[i].tolist() if i < len(boxes) else [],
+                                "bbox_xyxy": boxes[i].tolist(),
                             }
                         )
 
@@ -157,5 +154,6 @@ def inference_tab():
                     )
                 else:
                     st.info("No detections found in the image.")
+
             except Exception as e:
                 st.error(f"Failed to run inference: {e}")
