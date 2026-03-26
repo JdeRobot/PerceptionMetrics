@@ -376,7 +376,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         self,
         dataset: segmentation_dataset.ImageSegmentationDataset,
         split: Union[str, List[str]] = "test",
-        ontology_translation: Optional[Union[str, dict]] = None,
+        ontology_translation: Optional[str] = None,
         translation_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
@@ -387,15 +387,9 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         :type dataset: ImageSegmentationDataset
         :param split: Split or splits to be used from the dataset, defaults to "test"
         :type split: Union[str, List[str]], optional
-        :param ontology_translation: Path to a JSON file, or an already-loaded dict, mapping dataset class names
-            to model class names (for ``dataset_to_model``) or the reverse (for ``model_to_dataset``), depending on
-            ``translation_direction``. If ``None``, no ontology conversion is applied (dataset label indices must match
-            model output class indices), consistent with :meth:`TorchLiDARSegmentationModel.eval`.
-        :type ontology_translation: Optional[Union[str, dict]], optional
-        :param translation_direction: Direction of the ontology translation, either ``dataset_to_model`` (map GT
-            labels into model index space; metrics use the model ontology) or ``model_to_dataset`` (map predictions
-            into dataset index space; metrics use the dataset ontology). Must match how ``ontology_translation`` keys
-            are defined. Defaults to ``dataset_to_model`` (same pattern as :class:`TorchLiDARSegmentationModel`).
+        :param ontology_translation: JSON file containing translation between dataset and model output ontologies
+        :type ontology_translation: Optional[str], optional
+        :param translation_direction: Direction of the ontology translation, either 'dataset_to_model' or 'model_to_dataset', defaults to "dataset_to_model"
         :type translation_direction: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
         :type predictions_outdir: Optional[str], optional
@@ -418,8 +412,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         eval_ontology = self.ontology
 
         if ontology_translation is not None:
-            if isinstance(ontology_translation, str):
-                ontology_translation = uio.read_json(ontology_translation)
+            ontology_translation = uio.read_json(ontology_translation)
             if translation_direction == "dataset_to_model":
                 lut_ontology = uc.get_ontology_conversion_lut(
                     dataset.ontology, self.ontology, ontology_translation
@@ -464,7 +457,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
             for idx, image, label in pbar:
                 # Perform inference
                 pred = self.inference(image)
-                pred_cls = torch.argmax(pred, dim=1)
+                pred = torch.argmax(pred, dim=1)
 
                 # Get valid points masks depending on ignored label indices
                 if ignored_label_indices:
@@ -477,15 +470,13 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
                 # Convert labels or predictions if needed (same semantics as TorchLiDARSegmentationModel)
                 if lut_ontology is not None:
                     if translation_direction == "dataset_to_model":
-                        label = label.to(lut_ontology.device)
                         label = lut_ontology[label]
                     else:
-                        pred_cls = pred_cls.to(lut_ontology.device)
-                        pred_cls = lut_ontology[pred_cls]
+                        pred = lut_ontology[pred]
 
                 # Prepare data and update metrics factory
                 label = label.squeeze(dim=1).cpu().numpy()
-                pred = pred_cls.cpu().numpy()
+                pred = pred.cpu().numpy()
                 if valid_mask is not None:
                     valid_mask = valid_mask.squeeze(dim=1).cpu().numpy()
 
