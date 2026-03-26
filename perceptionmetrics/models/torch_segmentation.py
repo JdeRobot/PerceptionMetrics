@@ -843,7 +843,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
 
         inference_times = []
         for _ in range(runs):
-            if "o3d" in self.model_format:
+            if "o3d" in self.model_format:  # reset random sampling for Open3D-ML models
                 subsampled_points, _, sampler, _, _, _ = sample
                 self._reset_sampler(sampler, subsampled_points.shape[0], self.n_classes)
             if cuda_available:
