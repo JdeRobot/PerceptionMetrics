@@ -8,7 +8,7 @@ try:
 except ImportError:
     raise ImportError(
         "PyTorch is required for GUI-based inference and evaluation. "
-        "Please install it manually (e.g., pip install torch). "
+        "Please install it with: pip install torch==2.4.1 "
     )
 
 
