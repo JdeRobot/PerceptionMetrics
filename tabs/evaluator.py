@@ -120,11 +120,23 @@ def evaluator_tab():
         help="JSON file for translating between dataset and model ontologies",
     )
 
+    # Disable Run Evaluation button if output dir is missing
+    output_dir_required = save_predictions or save_visualizations
+    output_dir_missing = output_dir_required and not (
+        predictions_outdir_input and predictions_outdir_input.strip()
+    )
+
+    if output_dir_missing:
+        st.warning(
+            "⚠️ Please provide a Predictions Output Directory to enable evaluation "
+            "when 'Save Predictions' or 'Save Visualizations' is turned on."
+        )
+
     # Run evaluation button
     if st.button(
         "🚀 Run Evaluation",
         type="primary",
-        disabled=not (dataset_available and model_available),
+        disabled=not (dataset_available and model_available) or output_dir_missing,
     ):
         if not dataset_available or not model_available:
             st.error(

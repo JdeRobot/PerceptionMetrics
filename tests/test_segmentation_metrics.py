@@ -1,9 +1,11 @@
 import math
 
 import numpy as np
+from numpy.testing import assert_allclose
 import pytest
 from perceptionmetrics.utils.detection_metrics import DetectionMetricsFactory
 from perceptionmetrics.utils.segmentation_metrics import SegmentationMetricsFactory
+from perceptionmetrics.utils.detection_metrics import compute_iou_matrix, compute_iou
 
 
 @pytest.fixture
@@ -196,3 +198,55 @@ def test_dice_score():
 
     assert dice.shape[0] == 2
     assert np.all(dice >= 0) and np.all(dice <= 1)
+
+def compute_iou_matrix_reference(
+    pred_boxes: np.ndarray, gt_boxes: np.ndarray
+) -> np.ndarray:
+    """Compute IoU matrix between pred and gt boxes.
+
+    :param pred_boxes: Predicted bounding boxes, shape (num_pred, 4)
+    :type pred_boxes: np.ndarray
+    :param gt_boxes: Ground truth bounding boxes, shape (num_gt, 4)
+    :type gt_boxes: np.ndarray
+    :return: IoU matrix with shape (num_pred, num_gt)
+    :rtype: np.ndarray
+    """
+    iou_matrix = np.zeros((len(pred_boxes), len(gt_boxes)))
+    for i, pb in enumerate(pred_boxes):
+        for j, gb in enumerate(gt_boxes):
+            iou_matrix[i, j] = compute_iou(pb, gb)
+    return iou_matrix
+
+
+# tests for vectorized iou calculation test
+def test_compute_iou_matrix():
+    rng = np.random.default_rng(42)
+
+    # perfect overlap — diagonal must be 1.0
+    boxes = np.array([[0, 0, 10, 10], [5, 5, 15, 15]], dtype=float)
+    assert_allclose(np.diag(compute_iou_matrix(boxes, boxes)), 1.0)
+
+    # no overlap — must be exactly 0.0
+    assert (
+        compute_iou_matrix(
+            np.array([[0, 0, 10, 10.0]]), np.array([[20, 20, 30, 30.0]])
+        )[0, 0]
+        == 0.0
+    )
+
+    # empty inputs — shape must be correct
+    dummy, empty = np.array([[0, 0, 10, 10.0]]), np.empty((0, 4))
+    assert compute_iou_matrix(empty, dummy).shape == (0, 1)
+    assert compute_iou_matrix(dummy, empty).shape == (1, 0)
+
+    # random batches - must match reference implementation
+    for N, M in [(1, 1), (3, 2), (200, 150)]:
+        p_xy = rng.uniform(0, 500, (N, 2))
+        gt_xy = rng.uniform(0, 500, (M, 2))
+        pred = np.column_stack([p_xy, p_xy + rng.uniform(10, 100, (N, 2))])
+        gt = np.column_stack([gt_xy, gt_xy + rng.uniform(10, 100, (M, 2))])
+        assert_allclose(
+            compute_iou_matrix(pred, gt),
+            compute_iou_matrix_reference(pred, gt),
+            atol=1e-10,
+        )

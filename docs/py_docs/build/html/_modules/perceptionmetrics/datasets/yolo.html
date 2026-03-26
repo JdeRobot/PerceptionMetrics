@@ -255,7 +255,7 @@
 <a class="viewcode-back" href="../../../api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.yolo.build_dataset">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">build_dataset</span><span class="p">(</span>
     <span class="n">dataset_fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">im_ext</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;jpg&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build dataset and ontology dictionaries from YOLO dataset structure</span>
 
 <span class="sd">    :param dataset_fname: Path to the YAML dataset configuration file</span>
