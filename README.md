@@ -126,6 +126,19 @@ Install your deep learning framework of preference in your environment. We have 
 - `torch==2.2.2` and `torchvision==0.17.2`.
 - `tensorflow==2.17.1`
 - `tensorflow==2.16.1`
+> ⚠️ **Note on PyTorch Installation (Important for Windows users)**
+>
+> By default, installing `torch` via `pip` may install a CUDA-enabled build (e.g., `+cu121`), which requires compatible NVIDIA drivers and CUDA setup.
+>
+> On systems without proper CUDA configuration, this can lead to runtime errors 
+>
+> To ensure a stable setup, we recommend installing the CPU-only version of PyTorch unless GPU support is explicitly required:
+>
+> ```bash
+> pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+> ```
+>
+> GPU users can install CUDA-specific builds manually based on their system configuration.
 
 If you are using LiDAR, Open3D currently requires `torch==2.2*`.
 
