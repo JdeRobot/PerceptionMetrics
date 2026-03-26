@@ -180,3 +180,19 @@ def test_detection_reset_clears_data_and_allows_reuse():
         assert len(factory.results) == 0
         assert len(factory.raw_data) == 0
         assert sum(factory.gt_counts.values()) == 0
+
+def test_dice_score():
+    import numpy as np
+    from perceptionmetrics.utils.segmentation_metrics import SegmentationMetricsFactory
+
+    factory = SegmentationMetricsFactory(n_classes=2)
+
+    pred = np.array([0, 1, 0, 1])
+    gt   = np.array([0, 1, 1, 0])
+
+    factory.update(pred, gt)
+
+    dice = factory.get_dice_score(per_class=True)
+
+    assert dice.shape[0] == 2
+    assert np.all(dice >= 0) and np.all(dice <= 1)

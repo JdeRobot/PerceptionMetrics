@@ -23,7 +23,6 @@ class SegmentationMetricsFactory:
         "accuracy",
         "f1_score",
         "iou",
-        "mean_iou",
         "dice_score",
     ]
 
@@ -221,11 +220,6 @@ class SegmentationMetricsFactory:
             return float(tp / union) if union > 0 else math.nan
         else:
             return np.where(union > 0, tp / union, np.nan)
-        
-    def get_mean_iou(self) -> float:
-        """Mean Intersection over Union (mIoU) across all classes"""    
-        iou = self.get_iou(per_class=True)
-        return float(np.nanmean(iou))
     
     def get_dice_score(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """Dice Score = 2 * TP / (2 * TP + FP + FN)
