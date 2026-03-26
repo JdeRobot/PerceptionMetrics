@@ -14,7 +14,7 @@ def draw_detections(
 ) -> np.ndarray:
     """
     Draw bounding boxes and labels on the image using supervision.
-    Adapts to different supervision versions.
+    Requires supervision>=0.18 and uses BoxAnnotator + LabelAnnotator.
 
     :param image: PIL Image
     :type image: Image.Image
@@ -44,7 +44,6 @@ def draw_detections(
             name = class_names[i]
         else:
             name = str(class_ids[i])
-
         if scores is not None and i < len(scores):
             labels.append(f"{name}: {scores[i]:.2f}")
         else:
