@@ -31,6 +31,9 @@ def draw_detections(
     """
     image = np.array(image)
 
+    if len(boxes) == 0:
+        return image
+
     # Create supervision detections
     detections = sv.Detections(xyxy=boxes, class_id=class_ids, confidence=scores)
 
@@ -47,27 +50,14 @@ def draw_detections(
         else:
             labels.append(name)
 
-    try:
-        # Try older style (BoxAnnotator handles labels)
-        try:
-            palette = sv.Color.DEFAULT
-        except AttributeError:
-            palette = sv.ColorPalette.default()
+    box_annotator = sv.BoxAnnotator()
+    ann_image = box_annotator.annotate(scene=image, detections=detections)
 
-        annotator = sv.BoxAnnotator(
-            color=palette, text_scale=0.7, text_thickness=1, text_padding=2
-        )
-        ann_image = annotator.annotate(
-            scene=image, detections=detections, labels=labels
-        )
-    except TypeError:
-        # Fallback for newer supervision (BoxAnnotator + LabelAnnotator)
-        box_annotator = sv.BoxAnnotator()
-        ann_image = box_annotator.annotate(scene=image, detections=detections)
-
-        label_annotator = sv.LabelAnnotator()
-        ann_image = label_annotator.annotate(
-            scene=ann_image, detections=detections, labels=labels
-        )
+    label_annotator = sv.LabelAnnotator(
+        text_scale=0.7, text_thickness=1, text_padding=2
+    )
+    ann_image = label_annotator.annotate(
+        scene=ann_image, detections=detections, labels=labels
+    )
 
     return ann_image
