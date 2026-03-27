@@ -10,6 +10,50 @@ from perceptionmetrics.datasets.detection import ImageDetectionDataset
 from perceptionmetrics.utils import io as uio
 
 
+def find_yaml_and_dataset_dir(dataset_path: str, split: str) -> Tuple[str, str]:
+    """
+    Find a YAML config file and validate the dataset root for a YOLO dataset.
+
+    Searches for any ``*.yaml`` / ``*.yml`` file in *dataset_path*.  Accepts
+    any filename (e.g. ``data.yaml``, ``coco128.yaml``) so the function works
+    with datasets that use non-standard YAML names.
+
+    :param dataset_path: Root of the YOLO dataset (contains a *.yaml, images/, labels/)
+    :type dataset_path: str
+    :param split: Dataset split name (e.g., "train", "val", "test") — used only
+        to surface a clearer error when the YAML lacks that split key.
+    :type split: str
+    :return: Tuple of (yaml_path, dataset_path)
+    :rtype: Tuple[str, str]
+    :raises FileNotFoundError: If no YAML file exists in *dataset_path*, or if
+        the requested split key is missing/null in the YAML.
+    """
+    if not os.path.isdir(dataset_path):
+        raise FileNotFoundError(f"Dataset root not found: {dataset_path}")
+
+    # Accept any .yaml / .yml in the root — prefer data.yaml if present
+    yaml_candidates = glob(os.path.join(dataset_path, "*.yaml")) + glob(
+        os.path.join(dataset_path, "*.yml")
+    )
+    if not yaml_candidates:
+        raise FileNotFoundError(
+            f"No YAML config file found in {dataset_path}. "
+            "Expected a *.yaml or *.yml file at the dataset root."
+        )
+    # Prefer data.yaml; fall back to the first match
+    preferred = os.path.join(dataset_path, "data.yaml")
+    yaml_path = preferred if preferred in yaml_candidates else yaml_candidates[0]
+
+    dataset_info = uio.read_yaml(yaml_path)
+    split_path = dataset_info.get(split)
+    if not split_path:
+        raise FileNotFoundError(
+            f"Split '{split}' is missing or null in {yaml_path}."
+        )
+
+    return yaml_path, dataset_path
+
+
 def build_dataset(
     dataset_fname: str, dataset_dir: Optional[str] = None, im_ext: str = "jpg"
 ) -> Tuple[pd.DataFrame, dict, str]:
@@ -57,8 +101,31 @@ def build_dataset(
                 dataset_fname,
             )
             continue
-        images_dir = os.path.join(dataset_dir, split_path)
-        labels_dir = os.path.join(dataset_dir, split_path.replace("images", "labels"))
+
+        # Resolve images_dir robustly:
+        # The YAML's split_path may be an absolute path originating from a
+        # different machine (e.g. a Colab path like /content/.../images/train).
+        # When os.path.join(dataset_dir, split_path) would resolve to a
+        # non-existent directory, fall back to the canonical local layout:
+        # <dataset_dir>/images/<split> and <dataset_dir>/labels/<split>.
+        candidate_images = os.path.join(dataset_dir, split_path)
+        if os.path.isabs(split_path) or not os.path.isdir(candidate_images):
+            images_dir = os.path.join(dataset_dir, "images", split)
+            labels_dir = os.path.join(dataset_dir, "labels", split)
+            if not os.path.isdir(images_dir):
+                logging.warning(
+                    "Image directory for split '%s' not found at '%s' or '%s'; skipping.",
+                    split,
+                    candidate_images,
+                    images_dir,
+                )
+                continue
+        else:
+            images_dir = candidate_images
+            labels_dir = os.path.join(
+                dataset_dir, split_path.replace("images", "labels")
+            )
+
         for label_fname in glob(os.path.join(labels_dir, "*.txt")):
             label_basename = os.path.basename(label_fname)
             image_basename = label_basename.replace(".txt", f".{im_ext}")

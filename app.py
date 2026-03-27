@@ -2,7 +2,79 @@ import streamlit as st
 from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
-from perceptionmetrics.utils.gui import browse_folder
+from perceptionmetrics.utils.gui import browse_folder, browse_file
+
+
+# ---------------------------------------------------------------------------
+# Sidebar helpers
+# ---------------------------------------------------------------------------
+
+def _browse_img_dir():
+    folder = browse_folder()
+    if folder:
+        st.session_state.manual_img_dir = folder
+
+
+def _browse_ann_file():
+    fpath = browse_file(filetypes=[".json"])
+    if fpath:
+        st.session_state.manual_ann_file = fpath
+
+
+def _browse_manual_dataset_dir():
+    folder = browse_folder()
+    if folder:
+        st.session_state.manual_dataset_dir = folder
+
+
+_MANUAL_PATH_KEYS = (
+    "manual_img_dir",
+    "manual_ann_file",
+    "manual_dataset_dir",
+)
+
+
+def _render_manual_override_section(dataset_type: str):
+    """Render the 'Use manual paths' checkbox and its dataset-specific inputs.
+
+    For COCO: image directory + annotation JSON file.
+    For YOLO: dataset root directory + data.yaml file.
+    Clears all manual-path session keys when the checkbox is off.
+    """
+    st.checkbox("Use manual paths", key="manual_paths_enabled")
+
+    if not st.session_state.get("manual_paths_enabled", False):
+        for k in _MANUAL_PATH_KEYS:
+            st.session_state[k] = ""
+        return
+
+    _spacer = "<div style='margin-bottom: 1.75rem;'></div>"
+
+    if dataset_type == "COCO":
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.text_input("Image Directory", key="manual_img_dir")
+        with col2:
+            st.markdown(_spacer, unsafe_allow_html=True)
+            st.button("Browse", on_click=_browse_img_dir,
+                      key="browse_manual_img_dir")
+
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.text_input("Annotation File (.json)", key="manual_ann_file")
+        with col2:
+            st.markdown(_spacer, unsafe_allow_html=True)
+            st.button("Browse", on_click=_browse_ann_file,
+                      key="browse_manual_ann_file")
+
+    elif dataset_type == "YOLO":
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.text_input("Dataset Root Directory", key="manual_dataset_dir")
+        with col2:
+            st.markdown(_spacer, unsafe_allow_html=True)
+            st.button("Browse", on_click=_browse_manual_dataset_dir,
+                      key="browse_manual_dataset_dir")
 
 
 def browse_dataset_path():
@@ -30,6 +102,10 @@ st.session_state.setdefault("batch_size", 1)
 st.session_state.setdefault("evaluation_step", 5)
 st.session_state.setdefault("detection_model", None)
 st.session_state.setdefault("detection_model_loaded", False)
+st.session_state.setdefault("manual_paths_enabled", False)
+st.session_state.setdefault("manual_img_dir", "")
+st.session_state.setdefault("manual_ann_file", "")
+st.session_state.setdefault("manual_dataset_dir", "")
 
 # Sidebar: Dataset Inputs
 with st.sidebar:
@@ -67,6 +143,11 @@ with st.sidebar:
                 key="dataset_config_file",
                 help="Upload a YAML dataset configuration file.",
             )
+
+        # Manual path override — COCO and YOLO
+        _render_manual_override_section(
+            st.session_state.get("dataset_type", "COCO")
+        )
 
     with st.expander("Model Inputs", expanded=False):
         st.file_uploader(

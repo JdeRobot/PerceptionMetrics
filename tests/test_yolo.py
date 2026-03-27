@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from unittest.mock import MagicMock, patch
 
@@ -19,7 +20,7 @@ _tqdm_mod = sys.modules["tqdm"]
 if not callable(getattr(_tqdm_mod, "tqdm", None)):
     _tqdm_mod.tqdm = lambda iterable, **kw: iterable  # type: ignore[attr-defined]
 
-from perceptionmetrics.datasets.yolo import build_dataset  # noqa: E402
+from perceptionmetrics.datasets.yolo import build_dataset, find_yaml_and_dataset_dir  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -84,7 +85,7 @@ def _make_patched_build_dataset(yaml_content, label_files_by_split):
 
 
 # ---------------------------------------------------------------------------
-# Tests
+# Tests for build_dataset
 # ---------------------------------------------------------------------------
 
 
@@ -158,3 +159,60 @@ def test_build_dataset(caplog):
     assert "cat" in ontology and "dog" in ontology
     assert ontology["cat"]["idx"] == 0
     assert ontology["dog"]["idx"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Tests for find_yaml_and_dataset_dir
+# ---------------------------------------------------------------------------
+
+
+def test_find_yaml_and_dataset_dir_valid():
+    """Happy path: valid root with a YAML and a present split."""
+    fake_root = "/fake/dataset"
+    fake_yaml = os.path.join(fake_root, "data.yaml")
+    fake_yaml_content = {"train": "images/train", "names": {0: "cat"}}
+
+    with patch("os.path.isdir", return_value=True), patch(
+        "perceptionmetrics.datasets.yolo.glob",
+        side_effect=lambda pattern: [fake_yaml] if "*.yaml" in pattern else [],
+    ), patch(
+        "perceptionmetrics.datasets.yolo.uio.read_yaml",
+        return_value=fake_yaml_content,
+    ):
+        yaml_path, dataset_dir = find_yaml_and_dataset_dir(fake_root, "train")
+
+    assert yaml_path == fake_yaml
+    assert dataset_dir == fake_root
+
+
+def test_find_yaml_and_dataset_dir_no_yaml():
+    """Raises FileNotFoundError when no YAML file exists in the root."""
+    import pytest
+
+    with patch("os.path.isdir", return_value=True), patch(
+        "perceptionmetrics.datasets.yolo.glob", return_value=[],
+    ):
+        with pytest.raises(FileNotFoundError, match="No YAML config"):
+            find_yaml_and_dataset_dir("/fake/dataset", "train")
+
+
+def test_find_yaml_and_dataset_dir_missing_or_null_split():
+    """Raises FileNotFoundError when the requested split is absent or null."""
+    import pytest
+
+    fake_root = "/fake/dataset"
+    fake_yaml = os.path.join(fake_root, "data.yaml")
+
+    for bad_yaml in [
+        {"train": "images/train", "names": {0: "cat"}},       # 'val' missing entirely
+        {"train": "images/train", "val": None, "names": {0: "cat"}},  # 'val' is null
+    ]:
+        with patch("os.path.isdir", return_value=True), patch(
+            "perceptionmetrics.datasets.yolo.glob",
+            side_effect=lambda pattern: [fake_yaml] if "*.yaml" in pattern else [],
+        ), patch(
+            "perceptionmetrics.datasets.yolo.uio.read_yaml",
+            return_value=bad_yaml,
+        ):
+            with pytest.raises(FileNotFoundError, match="val"):
+                find_yaml_and_dataset_dir(fake_root, "val")

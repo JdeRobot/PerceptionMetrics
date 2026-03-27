@@ -3,6 +3,7 @@ import os
 from streamlit_image_select import image_select
 
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
+from perceptionmetrics.datasets.yolo import find_yaml_and_dataset_dir
 
 
 def dataset_viewer_tab():
@@ -19,32 +20,98 @@ def dataset_viewer_tab():
     dataset_path = st.session_state.get("dataset_path", "")
     dataset_type = st.session_state.get("dataset_type", "COCO").lower()
     split = st.session_state.get("split", "val")
+    manual_paths_enabled = st.session_state.get("manual_paths_enabled", False)
+    # COCO manual paths
+    manual_img_dir = st.session_state.get("manual_img_dir", "").strip()
+    manual_ann_file = st.session_state.get("manual_ann_file", "").strip()
+    using_manual_paths = manual_paths_enabled and bool(manual_img_dir) and bool(manual_ann_file)
+    # YOLO manual paths (only dataset root dir — YAML is auto-discovered)
+    manual_dataset_dir = st.session_state.get("manual_dataset_dir", "").strip()
+    using_yolo_manual_paths = manual_paths_enabled and bool(manual_dataset_dir)
 
     # Header row only
     st.header("Dataset Viewer")
 
-    if not dataset_path or not os.path.isdir(dataset_path):
+    if (
+        not using_manual_paths
+        and not using_yolo_manual_paths
+        and (not dataset_path or not os.path.isdir(dataset_path))
+    ):
         st.warning("⚠️ Please select a valid dataset folder.")
         return
 
     # Setup paths and pagination
     if dataset_type == "coco":
-        try:
-            img_dir, ann_file = find_img_dir_and_ann_file(
-                dataset_path=dataset_path, split=split
-            )
-        except FileNotFoundError:
-            st.warning("Dataset files not found. Check path and split.")
-            return
+        if using_manual_paths:
+            img_dir, ann_file = manual_img_dir, manual_ann_file
+        else:
+            try:
+                img_dir, ann_file = find_img_dir_and_ann_file(
+                    dataset_path=dataset_path, split=split
+                )
+            except FileNotFoundError:
+                st.warning(
+                    "Dataset files not found. Check path and split, or tick "
+                    "**Use manual paths** in the sidebar.\n\n"
+                    "**Expected auto-detection structure:**\n"
+                    "```\n"
+                    "dataset_root/\n"
+                    f"├── images/{split}/\n"
+                    f"└── annotations/instances_{split}.json\n"
+                    "```"
+                )
+                return
 
     elif dataset_type == "yolo":
-        dataset_config_file = st.session_state.get("dataset_config_file", None)
-        img_dir = os.path.join(dataset_path, f"images/{split}")
+        if using_yolo_manual_paths:
+            # Manual path: auto-discover YAML inside the provided root
+            dataset_config_file = None
+            try:
+                yolo_yaml_path, yolo_dataset_dir = find_yaml_and_dataset_dir(
+                    dataset_path=manual_dataset_dir, split=split
+                )
+            except FileNotFoundError as exc:
+                st.warning(
+                    f"YOLO dataset not found in manual path: {exc}\n\n"
+                    "Ensure your dataset folder has the standard structure:\n"
+                    "```\n"
+                    "dataset_root/\n"
+                    "├── *.yaml  (e.g. data.yaml)\n"
+                    f"├── images/{split}/\n"
+                    f"└── labels/{split}/\n"
+                    "```"
+                )
+                return
+            img_dir = os.path.join(yolo_dataset_dir, f"images/{split}")
+        else:
+            dataset_config_file = st.session_state.get("dataset_config_file", None)
+            try:
+                yolo_yaml_path, yolo_dataset_dir = find_yaml_and_dataset_dir(
+                    dataset_path=dataset_path, split=split
+                )
+                img_dir = os.path.join(yolo_dataset_dir, f"images/{split}")
+            except FileNotFoundError as exc:
+                if dataset_config_file is not None:
+                    # fall back to uploaded YAML path
+                    yolo_yaml_path = None  # will be resolved from uploaded file
+                    yolo_dataset_dir = dataset_path
+                    img_dir = os.path.join(dataset_path, f"images/{split}")
+                else:
+                    st.warning(
+                        f"YOLO dataset not found: {exc}\n\n"
+                        "Tick **Use manual paths** in the sidebar, or ensure your "
+                        "dataset folder has the standard structure:\n"
+                        "```\n"
+                        "dataset_root/\n"
+                        "├── *.yaml  (e.g. data.yaml)\n"
+                        f"├── images/{split}/\n"
+                        f"└── labels/{split}/\n"
+                        "```"
+                    )
+                    return
+
         if not os.path.isdir(img_dir):
             st.warning("Image directory not found.")
-            return
-        if dataset_config_file is None:
-            st.warning("Dataset configuration file not found. Please upload it.")
             return
     else:
         st.error("Unsupported dataset type.")
@@ -81,7 +148,12 @@ def dataset_viewer_tab():
         st.markdown("<div style='margin-bottom: 0;'></div>", unsafe_allow_html=True)
 
     # Load dataset
-    dataset_key = f"{dataset_path}_{split}"
+    if using_manual_paths:
+        dataset_key = f"manual_coco_{manual_img_dir}_{manual_ann_file}_{split}"
+    elif using_yolo_manual_paths:
+        dataset_key = f"manual_yolo_{manual_dataset_dir}_{split}"
+    else:
+        dataset_key = f"{dataset_path}_{split}"
     if dataset_key not in st.session_state:
         try:
             if dataset_type == "coco":
@@ -91,36 +163,49 @@ def dataset_viewer_tab():
                     split=split,
                 )
             elif dataset_type == "yolo":
-                if dataset_config_file is not None:
-                    # Save uploaded config file to a temporary location
+                if using_yolo_manual_paths:
+                    # Manual paths: use yaml + dir directly, no temp file needed
+                    yolo_dataset = YOLODataset(yolo_yaml_path, yolo_dataset_dir)
+                elif dataset_config_file is not None:
+                    # Uploaded YAML: persist to a temp file for YOLODataset
                     with tempfile.NamedTemporaryFile(
                         delete=False, suffix=".yaml"
                     ) as tmp:
                         tmp.write(dataset_config_file.read())
                         tmp_path = tmp.name
-
-                    # Load YOLO dataset
-                    yolo_dataset = YOLODataset(tmp_path, dataset_path)
-                    st.session_state["full_dataset_df"] = yolo_dataset.dataset
-
-                    # Filter dataset for the selected split
-                    yolo_dataset.dataset = yolo_dataset.dataset[
-                        yolo_dataset.dataset["split"] == split
-                    ].reset_index(drop=True)
-                    st.session_state[dataset_key] = yolo_dataset
-
+                    yolo_dataset = YOLODataset(tmp_path, yolo_dataset_dir)
                     os.unlink(tmp_path)  # Clean up temp file
                 else:
                     st.warning(
-                        "Dataset configuration file not found. Please upload it."
+                        "Dataset configuration file not found. Please upload it "
+                        "or use **Use manual paths** in the sidebar."
                     )
                     return
+
+                st.session_state["full_dataset_df"] = yolo_dataset.dataset
+                # Filter dataset for the selected split
+                yolo_dataset.dataset = yolo_dataset.dataset[
+                    yolo_dataset.dataset["split"] == split
+                ].reset_index(drop=True)
+                st.session_state[dataset_key] = yolo_dataset
             else:
                 st.error("Unsupported dataset type.")
                 return
 
         except Exception as e:
-            st.error(f"Failed to load dataset: {e}")
+            if using_manual_paths or using_yolo_manual_paths:
+                source = "manual paths"
+            else:
+                source = "auto-detected paths"
+            st.error(
+                f"❌ Failed to load dataset ({source}): {e}\n\n"
+                "**Expected COCO structure:**\n"
+                "```\n"
+                "dataset_root/\n"
+                f"├── images/{split}/\n"
+                f"└── annotations/instances_{split}.json\n"
+                "```"
+            )
             return
     else:
         # Ensure cached dataset has the correct split; if not, rebuild it
