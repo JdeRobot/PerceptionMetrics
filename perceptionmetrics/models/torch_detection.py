@@ -413,7 +413,13 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             return result
 
     def inference(self, tensor_in: torch.Tensor) -> Dict[str, torch.Tensor]:
-        """Perform inference for a tensor"""
+        """Perform inference for a tensor
+
+        :param tensor_in: Input tensor
+        :type tensor_in: torch.Tensor
+        :return: Dictionary with keys 'boxes', 'labels', 'scores'
+        :rtype: Dict[str, torch.Tensor]
+        """
         with torch.no_grad():
             if hasattr(self.model, "predict") and not isinstance(
                 self.model, torch.nn.Module
