@@ -213,6 +213,8 @@ class ImageDetectionTorchDataset(Dataset):
         boxes, category_indices = self.dataset.read_annotation(ann_path)
 
         # Convert boxes/labels to tensors
+        if len(boxes) == 0:
+            boxes = torch.zeros((0, 4), dtype=torch.float32)
         boxes = tv_tensors.BoundingBoxes(
             boxes, format="XYXY", canvas_size=(image.height, image.width)
         )
@@ -252,9 +254,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             self.device = torch.device(
                 "cuda"
                 if torch.cuda.is_available()
-                else "mps"
-                if torch.backends.mps.is_available()
-                else "cpu"
+                else "mps" if torch.backends.mps.is_available() else "cpu"
             )
         else:
             self.device = device
@@ -270,7 +270,20 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                 print(
                     "Model is not a TorchScript model. Loading as native PyTorch model."
                 )
+
+                from ultralytics.nn.tasks import DetectionModel
+                import torch.serialization
+
+                torch.serialization.add_safe_globals([DetectionModel])
+
                 model = torch.load(model, map_location=self.device, weights_only=False)
+
+                if isinstance(model, dict):
+                    if "model" in model:
+                        model = model["model"]
+                    elif "state_dict" in model:
+                        model = model["state_dict"]
+
                 model_type = "native"
         elif isinstance(model, torch.nn.Module):
             model_fname = None
@@ -281,6 +294,16 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         # Init parent class
         super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
         self.model = self.model.to(self.device).eval()
+
+        # FORCE CPU + FLOAT32 FIX
+        if str(self.device) == "cpu":
+            try:
+                self.model.float()
+            except:
+                try:
+                    self.model.model.float()
+                except:
+                    pass
 
         # Load post-processing functions for specific model formats
         self.model_format = self.model_cfg.get("model_format", "torchvision")
@@ -296,15 +319,34 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         # Load confidence and NMS thresholds from config
         self.confidence_threshold = self.model_cfg.get("confidence_threshold", 0.5)
         self.nms_threshold = self.model_cfg.get("nms_threshold", 0.3)
+        self.max_detections = self.model_cfg.get("max_detections", 20)
 
-        self.postprocess_args = [self.confidence_threshold]
-        if self.model_format == "yolo":
-            self.postprocess_args.append(self.nms_threshold)
+        # Standardize post-processing arguments
+        self.postprocess_args = [
+            self.confidence_threshold,
+            self.nms_threshold,
+            self.max_detections,
+        ]
 
-        # Add reverse mapping for idx to class_name
-        self.idx_to_class_name = {v["idx"]: k for k, v in self.ontology.items()}
+        # Build idx -> class name mapping for ontology
+        self.idx_to_class_name = {}
+        if isinstance(self.ontology, dict) and "classes" in self.ontology:
+            for item in self.ontology["classes"]:
+                self.idx_to_class_name[item["id"]] = item["name"]
+        elif isinstance(self.ontology, list):
+            for i, name in enumerate(self.ontology):
+                self.idx_to_class_name[i] = name
+        else:
+            for k, v in self.ontology.items():
+                if isinstance(v, dict):
+                    idx = v.get("idx", k)
+                    self.idx_to_class_name[int(idx)] = k
+                elif isinstance(v, int):
+                    self.idx_to_class_name[v] = k
+                elif str(k).isdigit():
+                    self.idx_to_class_name[int(k)] = str(v)
 
-        # Build input transforms (resize, normalize, etc.)
+        # Build input transforms
         self.transform_input = []
 
         resize_cfg = self.model_cfg.get("resize")
@@ -332,30 +374,35 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                 transforms.ConvertDtype(torch.float32),
             ]
 
-        if "normalization" in self.model_cfg:
-            self.transform_input += [
-                transforms.Normalize(
-                    mean=self.model_cfg["normalization"]["mean"],
-                    std=self.model_cfg["normalization"]["std"],
-                )
-            ]
-
         self.transform_input = transforms.Compose(self.transform_input)
 
     def predict(
         self, image: Image.Image, return_sample: bool = False
-    ) -> Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]:
-        """Perform prediction for a single image
-
-        :param image: PIL image
-        :type image: Image.Image
-        :param return_sample: Whether to return the sample data along with predictions, defaults to False
-        :type return_sample: bool, optional
-        :return: Detection result or a tuple with the detection result and the input sample tensor
-        :rtype: Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]
-        """
+    ) -> Union[Dict[str, Any], Tuple[Dict[str, Any], torch.Tensor]]:
+        """Perform prediction and scale boxes back to original size."""
+        orig_w, orig_h = image.size
         sample = self.transform_input(image).unsqueeze(0).to(self.device)
+
+        # Capture input dimensions after preprocessing
+        _, _, target_h, target_w = sample.shape
+
         result = self.inference(sample)
+
+        # SCALE BOXES BACK TO ORIGINAL IMAGE SIZE
+        if "boxes" in result and result["boxes"].numel() > 0:
+            boxes = result["boxes"].clone()
+            # Scaling coordinates from model input space back to original image space
+            boxes[:, [0, 2]] *= orig_w / target_w
+            boxes[:, [1, 3]] *= orig_h / target_h
+            result["boxes"] = boxes
+
+        # MAP INDICES TO NAMES FOR DISPLAY
+        if "labels" in result:
+            labels = result["labels"]
+            class_names = [
+                self.idx_to_class_name.get(int(l), f"class_{l}") for l in labels
+            ]
+            result["class_names"] = class_names
 
         if return_sample:
             return result, sample
@@ -363,19 +410,21 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             return result
 
     def inference(self, tensor_in: torch.Tensor) -> Dict[str, torch.Tensor]:
-        """Perform inference for a tensor
-
-        :param tensor_in: Input tensor
-        :type tensor_in: torch.Tensor
-        :return: Dictionary with keys 'boxes', 'labels', 'scores'
-        :rtype: Dict[str, torch.Tensor]
-        """
+        """Perform inference for a tensor"""
         with torch.no_grad():
-            result = self.model(tensor_in.to(self.device))[0]  # only first image
+            if hasattr(self.model, "predict") and not isinstance(
+                self.model, torch.nn.Module
+            ):
+                results = self.model.predict(tensor_in)
+            else:
+                results = self.model(tensor_in)
 
-        # Apply threshold filtering from model config
+        if isinstance(results, list) and len(results) > 0:
+            result = results[0]
+        else:
+            result = results
+
         result = self.postprocess_detection(result, *self.postprocess_args)
-
         return result
 
     def eval(
@@ -389,27 +438,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         progress_callback=None,
         metrics_callback=None,
     ) -> pd.DataFrame:
-        """Evaluate model over a detection dataset and compute metrics
-
-        :param dataset: Image detection dataset
-        :type dataset: ImageDetectionDataset
-        :param split: Dataset split(s) to evaluate
-        :type split: Union[str, List[str]]
-        :param ontology_translation: Optional translation for class mapping
-        :type ontology_translation: Optional[str]
-        :param predictions_outdir: Directory to save predictions, if desired
-        :type predictions_outdir: Optional[str]
-        :param results_per_sample: Store per-sample metrics
-        :type results_per_sample: bool
-        :param save_visualizations: Save visualized results (GT vs Pred)
-        :type save_visualizations: bool
-        :param progress_callback: Optional callback function for progress updates in Streamlit UI
-        :type progress_callback: Optional[Callable[[int, int], None]]
-        :param metrics_callback: Optional callback function for intermediate metrics updates in Streamlit UI
-        :type metrics_callback: Optional[Callable[[pd.DataFrame, int, int], None]]
-        :return: DataFrame containing evaluation results
-        :rtype: pd.DataFrame
-        """
+        """Evaluate model over a detection dataset and compute metrics"""
         if (results_per_sample or save_visualizations) and predictions_outdir is None:
             raise ValueError(
                 "predictions_outdir required if results_per_sample or save_visualizations is True"
@@ -418,82 +447,69 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         if predictions_outdir is not None:
             os.makedirs(predictions_outdir, exist_ok=True)
 
-        # Build LUT if ontology translation is provided
         lut_ontology = self.get_lut_ontology(dataset.ontology, ontology_translation)
         if lut_ontology is not None:
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
-        # Create DataLoader
         torch_dataset = ImageDetectionTorchDataset(
             dataset,
             transform=self.transform_input,
             splits=[split] if isinstance(split, str) else split,
         )
 
-        # This ensures compatibility with Streamlit and callback functions
-        if progress_callback is not None and metrics_callback is not None:
-            num_workers = 0
-        else:
-            num_workers = self.model_cfg.get("num_workers", 0)
+        num_workers = (
+            0 if progress_callback is not None else self.model_cfg.get("num_workers", 0)
+        )
 
         dataloader = DataLoader(
             torch_dataset,
             batch_size=self.model_cfg.get("batch_size", 1),
             num_workers=num_workers,
-            collate_fn=lambda batch: tuple(
-                zip(*batch)
-            ),  # handles variable-size targets
+            collate_fn=lambda batch: tuple(zip(*batch)),
         )
 
-        # Get iou_threshold from model config, default to 0.5 if not present
         iou_threshold = self.model_cfg.get("iou_threshold", 0.5)
-
-        # Get evaluation_step from model config, default to None (no intermediate updates)
         evaluation_step = self.model_cfg.get("evaluation_step", None)
-        # If evaluation_step is 0, treat as None (disabled)
         if evaluation_step == 0:
             evaluation_step = None
 
-        # Init metrics
         metrics_factory = um.DetectionMetricsFactory(
             iou_threshold=iou_threshold, num_classes=self.n_classes
         )
 
-        # Calculate total samples for progress tracking
         total_samples = len(dataloader.dataset)
         processed_samples = 0
 
         with torch.no_grad():
-            # Use tqdm if no progress callback provided, otherwise use regular iteration
-            if progress_callback is None:
-                pbar = tqdm(dataloader, leave=True)
-                iterator = pbar
-            else:
-                iterator = dataloader
+            iterator = (
+                dataloader
+                if progress_callback is not None
+                else tqdm(dataloader, leave=True)
+            )
 
             for image_ids, images, targets in iterator:
-                # Defensive check for empty images
                 if not images or any(image.numel() == 0 for image in images):
-                    print("Skipping batch: empty image tensor detected.")
                     continue
 
                 images = torch.stack(images).to(self.device)
-                predictions = self.model(images)
+                if hasattr(self.model, "predict") and not isinstance(
+                    self.model, torch.nn.Module
+                ):
+                    batch_results = self.model.predict(images)
+                else:
+                    batch_results = self.model(images)
 
                 for i in range(len(images)):
                     gt = targets[i]
-                    pred = predictions[i]
+                    r = batch_results[i]
+                    pred = self.postprocess_detection(r, *self.postprocess_args)
+
                     image_tensor = images[i]
                     sample_id = image_ids[i]
 
-                    # Post-process predictions
-                    pred = self.postprocess_detection(pred, *self.postprocess_args)
-
-                    # Apply ontology translation if needed
                     if lut_ontology is not None:
                         gt["labels"] = lut_ontology[gt["labels"]]
 
-                    # Update metrics
                     metrics_factory.update(
                         gt["boxes"],
                         gt["labels"],
@@ -502,19 +518,16 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                         pred["scores"],
                     )
 
-                    # Store predictions or visualizations if needed
                     if predictions_outdir is not None:
                         pred_boxes = pred["boxes"].cpu().numpy()
                         pred_labels = pred["labels"].cpu().numpy()
                         pred_scores = pred["scores"].cpu().numpy()
 
-                        # Save JSON with predictions and csv with metrics per sample
                         if results_per_sample:
                             out_data = []
                             for box, label, score in zip(
                                 pred_boxes, pred_labels, pred_scores
                             ):
-                                # Convert label index to class name using model ontology
                                 class_name = self.idx_to_class_name.get(
                                     int(label), f"class_{label}"
                                 )
@@ -551,20 +564,17 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                                 )
                             )
 
-                        # Save visualizations per sample
                         if save_visualizations:
                             pil_image = transforms.ToPILImage()(image_tensor.cpu())
-
                             gt_boxes = gt["boxes"].cpu().numpy()
                             gt_labels = gt["labels"].cpu().numpy()
                             gt_class_names = [
-                                self.idx_to_class_name.get(int(label), str(label))
-                                for label in gt_labels
+                                self.idx_to_class_name.get(int(l), str(l))
+                                for l in gt_labels
                             ]
-
                             pred_class_names = [
-                                self.idx_to_class_name.get(int(label), str(label))
-                                for label in pred_labels
+                                self.idx_to_class_name.get(int(l), str(l))
+                                for l in pred_labels
                             ]
 
                             image_gt = ui.draw_detections(
@@ -585,41 +595,34 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                             pil_gt = Image.fromarray(image_gt)
                             pil_pred = Image.fromarray(image_pred)
 
-                            combined_width = pil_gt.width + pil_pred.width
-                            combined_height = max(pil_gt.height, pil_pred.height)
-
                             combined_image = Image.new(
-                                "RGB", (combined_width, combined_height)
+                                "RGB",
+                                (
+                                    pil_gt.width + pil_pred.width,
+                                    max(pil_gt.height, pil_pred.height),
+                                ),
                             )
                             combined_image.paste(pil_gt, (0, 0))
                             combined_image.paste(pil_pred, (pil_gt.width, 0))
-
-                            out_file = os.path.join(
-                                predictions_outdir, f"{sample_id}.jpg"
+                            combined_image.save(
+                                os.path.join(predictions_outdir, f"{sample_id}.jpg")
                             )
-                            combined_image.save(out_file)
 
                     processed_samples += 1
-
-                    # Call progress callback if provided
                     if progress_callback is not None:
                         progress_callback(processed_samples, total_samples)
 
-                    # Call metrics callback if provided and evaluation_step is reached
                     if (
                         metrics_callback is not None
                         and evaluation_step is not None
                         and processed_samples % evaluation_step == 0
                     ):
-                        # Get intermediate metrics
-                        intermediate_metrics = metrics_factory.get_metrics_dataframe(
-                            self.ontology
-                        )
                         metrics_callback(
-                            intermediate_metrics, processed_samples, total_samples
+                            metrics_factory.get_metrics_dataframe(self.ontology),
+                            processed_samples,
+                            total_samples,
                         )
 
-        # Return both the DataFrame and the metrics factory for access to precision-recall curves
         return {
             "metrics_df": metrics_factory.get_metrics_dataframe(self.ontology),
             "metrics_factory": metrics_factory,
