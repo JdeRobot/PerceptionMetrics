@@ -441,7 +441,27 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         progress_callback=None,
         metrics_callback=None,
     ) -> pd.DataFrame:
-        """Evaluate model over a detection dataset and compute metrics"""
+        """Evaluate model over a detection dataset and compute metrics
+
+        :param dataset: Image detection dataset
+        :type dataset: ImageDetectionDataset
+        :param split: Dataset split(s) to evaluate
+        :type split: Union[str, List[str]]
+        :param ontology_translation: Optional translation for class mapping
+        :type ontology_translation: Optional[str]
+        :param predictions_outdir: Directory to save predictions, if desired
+        :type predictions_outdir: Optional[str]
+        :param results_per_sample: Store per-sample metrics
+        :type results_per_sample: bool
+        :param save_visualizations: Save visualized results (GT vs Pred)
+        :type save_visualizations: bool
+        :param progress_callback: Optional callback function for progress updates in Streamlit UI
+        :type progress_callback: Optional[Callable[[int, int], None]]
+        :param metrics_callback: Optional callback function for intermediate metrics updates in Streamlit UI
+        :type metrics_callback: Optional[Callable[[pd.DataFrame, int, int], None]]
+        :return: DataFrame containing evaluation results
+        :rtype: pd.DataFrame
+        """
         if (results_per_sample or save_visualizations) and predictions_outdir is None:
             raise ValueError(
                 "predictions_outdir required if results_per_sample or save_visualizations is True"
