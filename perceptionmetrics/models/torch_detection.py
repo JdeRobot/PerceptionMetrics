@@ -382,7 +382,15 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
     def predict(
         self, image: Image.Image, return_sample: bool = False
     ) -> Union[Dict[str, Any], Tuple[Dict[str, Any], torch.Tensor]]:
-        """Perform prediction and scale boxes back to original size."""
+        """Perform prediction for a single image
+
+        :param image: PIL image
+        :type image: Image.Image
+        :param return_sample: Whether to return the sample data along with predictions, defaults to False
+        :type return_sample: bool, optional
+        :return: Detection result or a tuple with the detection result and the input sample tensor
+        :rtype: Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]
+        """
         orig_w, orig_h = image.size
         sample = self.transform_input(image).unsqueeze(0).to(self.device)
 
