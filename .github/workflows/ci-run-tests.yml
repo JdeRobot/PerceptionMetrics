@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
@@ -22,9 +25,6 @@ jobs:
         with:
           python-version: '3.10'
           cache: 'poetry'
-
-      - name: Install Poetry
-        run: pip install poetry
 
       - name: Cache pytest
         uses: actions/cache@v3
