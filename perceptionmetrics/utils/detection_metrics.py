@@ -442,7 +442,8 @@ def compute_iou(boxA, boxB):
     interArea = max(0, xB - xA) * max(0, yB - yA)
     boxAArea = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
     boxBArea = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
-    iou = interArea / float(boxAArea + boxBArea - interArea)
+    union = float(boxAArea + boxBArea - interArea)
+    iou = interArea / union if union > 0 else 0.0
     return iou
 
 
