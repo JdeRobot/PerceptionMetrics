@@ -65,7 +65,7 @@ def build_dataset(
         label_fname = os.path.join(dataset_dir, label_fname)
 
         if not os.path.isfile(data_fname) or not os.path.isfile(label_fname):
-            missing_file = "data" if not os.path.isfile(label_fname) else "label"
+            missing_file = "data" if not os.path.isfile(data_fname) else "label"
             logging.warning(f"Missing {missing_file} for {sample_name}. Skipped!")
             skipped_samples.append(sample_name)
             continue

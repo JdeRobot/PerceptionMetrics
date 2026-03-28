@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>perceptionmetrics.models.onnx - PerceptionMetrics 3.0.0 documentation</title>
+        <title>perceptionmetrics.utils.gui - PerceptionMetrics 3.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -238,21 +238,95 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for perceptionmetrics.models.onnx</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageSegmentationModel</span>
+          <h1>Source code for perceptionmetrics.utils.gui</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
 
 
-<div class="viewcode-block" id="OnnxImageSegmentationModel">
-<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.onnx.OnnxImageSegmentationModel">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">OnnxImageSegmentationModel</span><span class="p">(</span><span class="n">ImageSegmentationModel</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_cfg</span><span class="p">,</span> <span class="n">ontology_fname</span><span class="p">,</span> <span class="n">model_fname</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-            <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">,</span>
-            <span class="n">model_cfg</span><span class="o">=</span><span class="n">model_cfg</span><span class="p">,</span>
-            <span class="n">ontology_fname</span><span class="o">=</span><span class="n">ontology_fname</span><span class="p">,</span>
-            <span class="n">model_fname</span><span class="o">=</span><span class="n">model_fname</span><span class="p">,</span>
-        <span class="p">)</span></div>
+<div class="viewcode-block" id="is_wsl">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.utils.html#perceptionmetrics.utils.gui.is_wsl">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_wsl</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Detect if running in Windows Subsystem for Linux (WSL).</span>
+<span class="sd">    Returns True if WSL is detected, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="s2">&quot;wsl&quot;</span> <span class="ow">in</span> <span class="n">platform</span><span class="o">.</span><span class="n">release</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;microsoft&quot;</span> <span class="ow">in</span> <span class="n">platform</span><span class="o">.</span><span class="n">release</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="browse_folder">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.utils.html#perceptionmetrics.utils.gui.browse_folder">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">browse_folder</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Opens a native folder selection dialog and returns the selected folder path.</span>
+<span class="sd">    Works on Windows, macOS, and Linux (with zenity or kdialog).</span>
+<span class="sd">    Returns None if cancelled or error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">is_windows</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win&quot;</span><span class="p">)</span>
+        <span class="n">is_wsl_env</span> <span class="o">=</span> <span class="n">is_wsl</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">is_windows</span> <span class="ow">or</span> <span class="n">is_wsl_env</span><span class="p">:</span>
+            <span class="n">script</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Add-Type -AssemblyName System.windows.forms;&quot;</span>
+                <span class="s2">&quot;$f=New-Object System.Windows.Forms.FolderBrowserDialog;&quot;</span>
+                <span class="s1">&#39;if($f.ShowDialog() -eq &quot;OK&quot;){Write-Output $f.SelectedPath}&#39;</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;powershell.exe&quot;</span><span class="p">,</span> <span class="s2">&quot;-NoProfile&quot;</span><span class="p">,</span> <span class="s2">&quot;-Command&quot;</span><span class="p">,</span> <span class="n">script</span><span class="p">],</span>
+                <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">folder</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">folder</span> <span class="ow">and</span> <span class="n">is_wsl_env</span><span class="p">:</span> <span class="c1"># Convert Windows path to WSL path</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                    <span class="p">[</span><span class="s2">&quot;wslpath&quot;</span><span class="p">,</span> <span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">],</span>
+                    <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">folder</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">folder</span> <span class="k">if</span> <span class="n">folder</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+            <span class="n">script</span> <span class="o">=</span> <span class="s1">&#39;POSIX path of (choose folder with prompt &quot;Select folder:&quot;)&#39;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;osascript&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="n">script</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span>
+            <span class="p">)</span>
+            <span class="n">folder</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">folder</span> <span class="k">if</span> <span class="n">folder</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Linux: try zenity, then kdialog</span>
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;zenity&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;--file-selection&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;--directory&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;--title=Select folder&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;kdialog&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;--getexistingdirectory&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;--title&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Select folder&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># zenity and kdialog return 1 on cancel</span>
+                        <span class="n">folder</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="k">return</span> <span class="n">folder</span> <span class="k">if</span> <span class="n">folder</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+                    <span class="k">continue</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 </pre></div>
         </article>

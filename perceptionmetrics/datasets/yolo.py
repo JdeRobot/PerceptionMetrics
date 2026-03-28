@@ -1,4 +1,5 @@
 from glob import glob
+import logging
 import os
 from typing import Tuple, List, Optional
 
@@ -11,7 +12,7 @@ from perceptionmetrics.utils import io as uio
 
 def build_dataset(
     dataset_fname: str, dataset_dir: Optional[str] = None, im_ext: str = "jpg"
-) -> Tuple[pd.DataFrame, dict]:
+) -> Tuple[pd.DataFrame, dict, str]:
     """Build dataset and ontology dictionaries from YOLO dataset structure
 
     :param dataset_fname: Path to the YAML dataset configuration file
@@ -48,26 +49,30 @@ def build_dataset(
     # Build dataset DataFrame
     rows = []
     for split in ["train", "val", "test"]:
-        if split in dataset_info:
-            images_dir = os.path.join(dataset_dir, dataset_info[split])
-            labels_dir = os.path.join(
-                dataset_dir, dataset_info[split].replace("images", "labels")
+        split_path = dataset_info.get(split)
+        if not split_path:
+            logging.warning(
+                "Split '%s' is missing or has no path defined in '%s'; skipping.",
+                split,
+                dataset_fname,
             )
-            for label_fname in glob(os.path.join(labels_dir, "*.txt")):
-                label_basename = os.path.basename(label_fname)
-                image_basename = label_basename.replace(".txt", f".{im_ext}")
-                image_fname = os.path.join(images_dir, image_basename)
-                os.path.basename(image_fname)
-                if not os.path.isfile(image_fname):
-                    continue
+            continue
+        images_dir = os.path.join(dataset_dir, split_path)
+        labels_dir = os.path.join(dataset_dir, split_path.replace("images", "labels"))
+        for label_fname in glob(os.path.join(labels_dir, "*.txt")):
+            label_basename = os.path.basename(label_fname)
+            image_basename = label_basename.replace(".txt", f".{im_ext}")
+            image_fname = os.path.join(images_dir, image_basename)
+            if not os.path.isfile(image_fname):
+                continue
 
-                rows.append(
-                    {
-                        "image": os.path.join("images", split, image_basename),
-                        "annotation": os.path.join("labels", split, label_basename),
-                        "split": split,
-                    }
-                )
+            rows.append(
+                {
+                    "image": os.path.join("images", split, image_basename),
+                    "annotation": os.path.join("labels", split, label_basename),
+                    "split": split,
+                }
+            )
 
     dataset = pd.DataFrame(rows)
     dataset.attrs = {"ontology": ontology}

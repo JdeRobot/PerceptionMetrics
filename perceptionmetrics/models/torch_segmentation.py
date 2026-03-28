@@ -25,7 +25,6 @@ import perceptionmetrics.utils.io as uio
 import perceptionmetrics.utils.segmentation_metrics as um
 import perceptionmetrics.utils.torch as ut
 
-
 AVAILABLE_MODEL_FORMATS_LIDAR = [
     "o3d_randlanet",
     "o3d_kpconv",
@@ -44,30 +43,6 @@ def raise_unknown_model_format_lidar(model_format: str) -> None:
     msg = f"Unknown model format: {model_format}."
     msg += f"Available formats: {AVAILABLE_MODEL_FORMATS_LIDAR}"
     raise Exception(msg)
-
-
-def get_computational_cost(
-    model: Any,
-    dummy_input: torch.Tensor,
-    model_fname: Optional[str] = None,
-    runs: int = 30,
-    warm_up_runs: int = 5,
-) -> pd.DataFrame:
-    """Get different metrics related to the computational cost of the model
-
-    :param model: Either a TorchScript model or an arbitrary PyTorch module
-    :type model: Any
-    :param dummy_input: Dummy input data for the model
-    :type dummy_input: torch.Tensor
-    :param model_fname: Model filename used to measure model size, defaults to None
-    :type model_fname: Optional[str], optional
-    :param runs: Number of runs to measure inference time, defaults to 30
-    :type runs: int, optional
-    :param warm_up_runs: Number of warm-up runs, defaults to 5
-    :type warm_up_runs: int, optional
-    :return: DataFrame containing computational cost information
-    :rtype: pd.DataFrame
-    """
 
 
 class CustomResize(torch.nn.Module):
@@ -132,6 +107,9 @@ class ImageSegmentationTorchDataset(Dataset):
         target_transform: transforms.Compose,
         splits: List[str] = ["test"],
     ):
+        # Raise early if any requested split is absent — prevents silent NaN metrics
+        dataset._validate_splits(splits)
+
         # Filter split and make filenames global
         dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
         self.dataset = dataset
@@ -183,6 +161,9 @@ class LiDARSegmentationTorchDataset(Dataset):
         get_sample: callable,
         splits: str = ["test"],
     ):
+        # Raise early if any requested split is absent — prevents silent NaN metrics
+        dataset._validate_splits(splits)
+
         # Filter split and make filenames global
         dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
         self.dataset = dataset
@@ -774,7 +755,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
                             sample_df.to_csv(
                                 os.path.join(predictions_outdir, f"{sample_name}.csv")
                             )
-                        pred.tofile(
+                        sample_pred.tofile(
                             os.path.join(predictions_outdir, f"{sample_name}.bin")
                         )
 

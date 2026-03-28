@@ -243,6 +243,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.cli.evaluate</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.cli.computational_cost</span><span class="w"> </span><span class="kn">import</span> <span class="n">computational_cost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.datasets.coco</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_img_dir_and_ann_file</span>
 
 <span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;evaluate&quot;</span><span class="p">:</span> <span class="n">evaluate</span><span class="p">,</span>
@@ -372,8 +373,9 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;COCO format currently supports only one split at a time&quot;</span><span class="p">)</span>
         <span class="n">split_name</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">annotation_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s2">/annotations/instances_</span><span class="si">{</span><span class="n">split_name</span><span class="si">}</span><span class="s2">2017.json&quot;</span>
-        <span class="n">image_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s2">/images/</span><span class="si">{</span><span class="n">split_name</span><span class="si">}</span><span class="s2">2017&quot;</span>
+        <span class="n">image_dir</span><span class="p">,</span> <span class="n">annotation_file</span> <span class="o">=</span> <span class="n">find_img_dir_and_ann_file</span><span class="p">(</span>
+            <span class="n">dataset_path</span><span class="o">=</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split_name</span>
+        <span class="p">)</span>
         <span class="n">dataset_args</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;annotation_file&quot;</span><span class="p">:</span> <span class="n">annotation_file</span><span class="p">,</span>
             <span class="s2">&quot;image_dir&quot;</span><span class="p">:</span> <span class="n">image_dir</span><span class="p">,</span>

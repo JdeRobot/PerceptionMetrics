@@ -17,7 +17,6 @@ import perceptionmetrics.utils.conversion as uc
 import perceptionmetrics.utils.io as uio
 import perceptionmetrics.utils.segmentation_metrics as um
 
-
 tf.config.optimizer.set_experimental_options({"layout_optimizer": False})
 
 
@@ -133,6 +132,9 @@ class ImageSegmentationTensorflowDataset:
             std = tf.constant(normalization["std"], dtype=tf.float32)
             self.normalization = {"mean": mean, "std": std}
         self.keep_aspect = keep_aspect
+
+        # Raise early if any requested split is absent — prevents silent NaN metrics
+        dataset._validate_splits(splits)
 
         # Filter split and make filenames global
         dataset.dataset = dataset.dataset[dataset.dataset["split"].isin(splits)]
@@ -463,8 +465,8 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
                         sample_df.to_csv(
                             os.path.join(predictions_outdir, f"{sample_idx}.csv")
                         )
-                    pred = Image.fromarray(np.squeeze(pred).astype(np.uint8))
-                    pred.save(os.path.join(predictions_outdir, f"{sample_idx}.png"))
+                    sample_img = Image.fromarray(np.squeeze(sample_pred).astype(np.uint8))
+                    sample_img.save(os.path.join(predictions_outdir, f"{sample_idx}.png"))
 
         return um.get_metrics_dataframe(metrics_factory, eval_ontology)
 

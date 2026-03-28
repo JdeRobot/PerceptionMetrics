@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>perceptionmetrics.models.onnx - PerceptionMetrics 3.0.0 documentation</title>
+        <title>perceptionmetrics.utils.image - PerceptionMetrics 3.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -238,21 +238,82 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for perceptionmetrics.models.onnx</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageSegmentationModel</span>
+          <h1>Source code for perceptionmetrics.utils.image</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">supervision</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sv</span>
 
 
-<div class="viewcode-block" id="OnnxImageSegmentationModel">
-<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.onnx.OnnxImageSegmentationModel">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">OnnxImageSegmentationModel</span><span class="p">(</span><span class="n">ImageSegmentationModel</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_cfg</span><span class="p">,</span> <span class="n">ontology_fname</span><span class="p">,</span> <span class="n">model_fname</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-            <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">,</span>
-            <span class="n">model_cfg</span><span class="o">=</span><span class="n">model_cfg</span><span class="p">,</span>
-            <span class="n">ontology_fname</span><span class="o">=</span><span class="n">ontology_fname</span><span class="p">,</span>
-            <span class="n">model_fname</span><span class="o">=</span><span class="n">model_fname</span><span class="p">,</span>
-        <span class="p">)</span></div>
+<div class="viewcode-block" id="draw_detections">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.utils.html#perceptionmetrics.utils.image.draw_detections">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_detections</span><span class="p">(</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span>
+    <span class="n">boxes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">class_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">class_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">scores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw bounding boxes and labels on the image using supervision.</span>
+<span class="sd">    Adapts to different supervision versions.</span>
+
+<span class="sd">    :param image: PIL Image</span>
+<span class="sd">    :type image: Image.Image</span>
+<span class="sd">    :param boxes: Bounding boxes in xyxy format</span>
+<span class="sd">    :type boxes: np.ndarray</span>
+<span class="sd">    :param class_ids: Class indices</span>
+<span class="sd">    :type class_ids: np.ndarray</span>
+<span class="sd">    :param class_names: List of class names corresponding to class_ids</span>
+<span class="sd">    :type class_names: List[str]</span>
+<span class="sd">    :param scores: Confidence scores (optional)</span>
+<span class="sd">    :type scores: np.ndarray</span>
+<span class="sd">    :return: Annotated image as numpy array</span>
+<span class="sd">    :rtype: np.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+    <span class="c1"># Create supervision detections</span>
+    <span class="n">detections</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">Detections</span><span class="p">(</span><span class="n">xyxy</span><span class="o">=</span><span class="n">boxes</span><span class="p">,</span> <span class="n">class_id</span><span class="o">=</span><span class="n">class_ids</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="n">scores</span><span class="p">)</span>
+
+    <span class="c1"># Construct labels</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">class_ids</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">class_names</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">class_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">class_ids</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">):</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Try older style (BoxAnnotator handles labels)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">palette</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">DEFAULT</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">palette</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">ColorPalette</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+
+        <span class="n">annotator</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">BoxAnnotator</span><span class="p">(</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">palette</span><span class="p">,</span> <span class="n">text_scale</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">text_thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">text_padding</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="n">ann_image</span> <span class="o">=</span> <span class="n">annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">scene</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">detections</span><span class="o">=</span><span class="n">detections</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="c1"># Fallback for newer supervision (BoxAnnotator + LabelAnnotator)</span>
+        <span class="n">box_annotator</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">BoxAnnotator</span><span class="p">()</span>
+        <span class="n">ann_image</span> <span class="o">=</span> <span class="n">box_annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">scene</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">detections</span><span class="o">=</span><span class="n">detections</span><span class="p">)</span>
+
+        <span class="n">label_annotator</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">LabelAnnotator</span><span class="p">()</span>
+        <span class="n">ann_image</span> <span class="o">=</span> <span class="n">label_annotator</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">scene</span><span class="o">=</span><span class="n">ann_image</span><span class="p">,</span> <span class="n">detections</span><span class="o">=</span><span class="n">detections</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ann_image</span></div>
 
 </pre></div>
         </article>

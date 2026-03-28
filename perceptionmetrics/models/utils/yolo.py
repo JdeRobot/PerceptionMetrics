@@ -26,14 +26,12 @@ def postprocess_detection(
     """
 
     # CASE 1: YOLOv8 Results object
-
     if hasattr(output, "boxes"):
         boxes = output.boxes.xyxy
         scores = output.boxes.conf
         labels = output.boxes.cls.long()
 
     # CASE 2: List / Tuple wrapper
-
     elif isinstance(output, (list, tuple)):
         output = output[0]
         return postprocess_detection(
@@ -41,7 +39,6 @@ def postprocess_detection(
         )
 
     # CASE 3: Raw Tensor
-
     elif isinstance(output, torch.Tensor):
         if output.dim() == 3:
             output = output[0]
@@ -104,7 +101,6 @@ def postprocess_detection(
         raise ValueError(f"Unsupported YOLO output type: {type(output)}")
 
     # FILTER by confidence
-
     keep = scores > confidence_threshold
     boxes, scores, labels = boxes[keep], scores[keep], labels[keep]
 
@@ -116,13 +112,11 @@ def postprocess_detection(
         }
 
     # CLASS-WISE NMS (original behaviour preserved)
-
     offset = labels.float() * CLASS_NMS_OFFSET
     keep_idx = nms(boxes + offset[:, None], scores, nms_threshold)
     boxes, scores, labels = boxes[keep_idx], scores[keep_idx], labels[keep_idx]
 
     # LIMIT to max_detections
-
     if len(scores) > max_detections:
         boxes = boxes[:max_detections]
         scores = scores[:max_detections]

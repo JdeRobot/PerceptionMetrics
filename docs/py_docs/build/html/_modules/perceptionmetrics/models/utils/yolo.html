@@ -259,35 +259,46 @@
 <span class="sd">    :type output: torch.Tensor</span>
 <span class="sd">    :param confidence_threshold: Confidence threshold to filter boxes.</span>
 <span class="sd">    :type confidence_threshold: float</span>
-<span class="sd">    :param nms_threshold: IoU threshold for Non-Maximum Suppression (NMS).</span>
+<span class="sd">    :param nms_threshold: IoU threshold for Non-Maximum Suppression (NMS). Some models may not perform NMS (e.g. YOLOv26).</span>
 <span class="sd">    :type nms_threshold: float</span>
 <span class="sd">    :return: Dictionary with keys &#39;boxes&#39;, &#39;labels&#39;, and &#39;scores&#39;.</span>
 <span class="sd">    :rtype: dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Split boxes and class logits</span>
-    <span class="n">boxes_xywh</span> <span class="o">=</span> <span class="n">output</span><span class="p">[:</span><span class="mi">4</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># [8400, 4] (cx, cy, w, h) in pixels</span>
-    <span class="n">cls_logits</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">4</span><span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># [8400, 28]</span>
+    <span class="n">is_yolov26</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">6</span>
 
-    <span class="c1"># Get boxes above confidence threshold</span>
-    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cls_logits</span> <span class="o">&gt;</span> <span class="n">confidence_threshold</span><span class="p">)</span>
-    <span class="n">boxes_xywh</span> <span class="o">=</span> <span class="n">boxes_xywh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">scores</span> <span class="o">=</span> <span class="n">cls_logits</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">j</span>
+    <span class="c1"># Parse model output and filter by confidence threshold</span>
+    <span class="k">if</span> <span class="n">is_yolov26</span><span class="p">:</span>
+        <span class="n">boxes_xyxy</span> <span class="o">=</span> <span class="n">output</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">output</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">output</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
 
-    <span class="c1"># Convert (cx,cy,w,h) -&gt; (x1,y1,x2,y2)</span>
-    <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">boxes_xywh</span><span class="o">.</span><span class="n">unbind</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">x1</span> <span class="o">=</span> <span class="n">cx</span> <span class="o">-</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span>
-    <span class="n">y1</span> <span class="o">=</span> <span class="n">cy</span> <span class="o">-</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span>
-    <span class="n">x2</span> <span class="o">=</span> <span class="n">cx</span> <span class="o">+</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span>
-    <span class="n">y2</span> <span class="o">=</span> <span class="n">cy</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span>
-    <span class="n">boxes_xyxy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scores</span> <span class="o">&gt;</span> <span class="n">confidence_threshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">boxes_xyxy</span> <span class="o">=</span> <span class="n">boxes_xyxy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">boxes_xywh</span> <span class="o">=</span> <span class="n">output</span><span class="p">[:</span><span class="mi">4</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">cls_logits</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">4</span><span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
 
-    <span class="c1"># Apply class-wise NMS</span>
-    <span class="n">offset</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">*</span> <span class="n">CLASS_NMS_OFFSET</span>
-    <span class="n">keep_idx</span> <span class="o">=</span> <span class="n">nms</span><span class="p">(</span><span class="n">boxes_xyxy</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">scores</span><span class="p">,</span> <span class="n">nms_threshold</span><span class="p">)</span>
-    <span class="n">boxes_xyxy</span> <span class="o">=</span> <span class="n">boxes_xyxy</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
-    <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cls_logits</span> <span class="o">&gt;</span> <span class="n">confidence_threshold</span><span class="p">)</span>
+        <span class="n">boxes_xywh</span> <span class="o">=</span> <span class="n">boxes_xywh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">cls_logits</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">j</span>
+
+        <span class="c1"># Convert (cx,cy,w,h) -&gt; (x1,y1,x2,y2)</span>
+        <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">boxes_xywh</span><span class="o">.</span><span class="n">unbind</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">cx</span> <span class="o">-</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="n">cy</span> <span class="o">-</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">cx</span> <span class="o">+</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">y2</span> <span class="o">=</span> <span class="n">cy</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">boxes_xyxy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Apply class-wise NMS</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">*</span> <span class="n">CLASS_NMS_OFFSET</span>
+        <span class="n">keep_idx</span> <span class="o">=</span> <span class="n">nms</span><span class="p">(</span><span class="n">boxes_xyxy</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">scores</span><span class="p">,</span> <span class="n">nms_threshold</span><span class="p">)</span>
+        <span class="n">boxes_xyxy</span> <span class="o">=</span> <span class="n">boxes_xyxy</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;boxes&quot;</span><span class="p">:</span> <span class="n">boxes_xyxy</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">labels</span><span class="p">,</span> <span class="s2">&quot;scores&quot;</span><span class="p">:</span> <span class="n">scores</span><span class="p">}</span></div>
 

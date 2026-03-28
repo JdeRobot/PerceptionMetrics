@@ -6,6 +6,7 @@ from perceptionmetrics.datasets.coco import CocoDataset
 
 
 from perceptionmetrics.utils.gui import browse_folder
+from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
 
 
 def browse_predictions_outdir():
@@ -40,9 +41,8 @@ def evaluator_tab():
     elif dataset_path and os.path.isdir(dataset_path):
         try:
             if dataset_type.lower() == "coco":
-                img_dir = os.path.join(dataset_path, f"images/{split}2017")
-                ann_file = os.path.join(
-                    dataset_path, "annotations", f"instances_{split}2017.json"
+                img_dir, ann_file = find_img_dir_and_ann_file(
+                    dataset_path=dataset_path, split=split
                 )
 
                 if os.path.isdir(img_dir) and os.path.isfile(ann_file):
@@ -120,11 +120,23 @@ def evaluator_tab():
         help="JSON file for translating between dataset and model ontologies",
     )
 
+    # Disable Run Evaluation button if output dir is missing
+    output_dir_required = save_predictions or save_visualizations
+    output_dir_missing = output_dir_required and not (
+        predictions_outdir_input and predictions_outdir_input.strip()
+    )
+
+    if output_dir_missing:
+        st.warning(
+            "⚠️ Please provide a Predictions Output Directory to enable evaluation "
+            "when 'Save Predictions' or 'Save Visualizations' is turned on."
+        )
+
     # Run evaluation button
     if st.button(
         "🚀 Run Evaluation",
         type="primary",
-        disabled=not (dataset_available and model_available),
+        disabled=not (dataset_available and model_available) or output_dir_missing,
     ):
         if not dataset_available or not model_available:
             st.error(
