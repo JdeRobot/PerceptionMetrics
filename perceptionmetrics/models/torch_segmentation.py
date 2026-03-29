@@ -217,15 +217,21 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
         # If 'model' contains a string, check that it is a valid filename and load model
         if isinstance(model, str):
-            assert os.path.isfile(model), "TorchScript Model file not found"
+            if not os.path.isfile(model):
+                raise FileNotFoundError(f"Model file not found: {model}")
             model_fname = model
             try:
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
-            except:
-                print("Model is not a TorchScript model. Loading as a PyTorch module.")
-                model = torch.load(model, map_location=self.device)
-                model_type = "native"
+            except (RuntimeError, EOFError) as jit_err:
+                try:
+                    model = torch.load(model, map_location=self.device, weights_only=False)
+                    model_type = "native"
+                except Exception as load_err:
+                    raise RuntimeError(
+                        f"Failed to load model as TorchScript or PyTorch module. "
+                        f"TorchScript error: {jit_err}. PyTorch error: {load_err}"
+                    ) from load_err
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
             model_fname = None
@@ -541,15 +547,22 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
 
         # If 'model' contains a string, check that it is a valid filename and load model
         if isinstance(model, str):
-            assert os.path.isfile(model), "TorchScript Model file not found"
+            if not os.path.isfile(model):
+                raise FileNotFoundError(f"Model file not found: {model}")
             model_fname = model
             try:
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
-            except Exception:
-                print("Model is not a TorchScript model. Loading as a PyTorch module.")
-                model = torch.load(model, map_location=self.device)
-                model_type = "native"
+            except (RuntimeError, EOFError) as jit_err:
+                # TorchScript load failed, try loading as native PyTorch
+                try:
+                    model = torch.load(model, map_location=self.device, weights_only=False)
+                    model_type = "native"
+                except Exception as load_err:
+                    raise RuntimeError(
+                        f"Failed to load model as TorchScript or PyTorch module. "
+                        f"TorchScript error: {jit_err}. PyTorch error: {load_err}"
+                    ) from load_err
 
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
