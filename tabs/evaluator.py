@@ -4,6 +4,9 @@ import tempfile
 import json
 from perceptionmetrics.datasets.coco import CocoDataset
 
+from perceptionmetrics.utils.latency_profiler import LatencyReport
+import time
+
 
 from perceptionmetrics.utils.gui import browse_folder
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
@@ -13,6 +16,8 @@ def browse_predictions_outdir():
     folder = browse_folder()
     if folder:
         st.session_state.predictions_outdir = folder
+
+latency_report = LatencyReport()
 
 
 def evaluator_tab():
@@ -256,6 +261,7 @@ def evaluator_tab():
 
                 try:
                     # Use the full dataset for evaluation
+                    _t0 = time.perf_counter()
                     results = model.eval(
                         dataset=dataset,
                         split=split,
@@ -266,6 +272,7 @@ def evaluator_tab():
                         progress_callback=progress_callback,
                         metrics_callback=metrics_callback,
                     )
+                    latency_report.record(time.perf_counter() - _t0)
                 except Exception as e:
                     st.error(f"Error in model.eval(): {e}")
                     return
@@ -293,7 +300,18 @@ def evaluator_tab():
                 import traceback
 
                 st.code(traceback.format_exc())
+    # Render latency section in Streamlit
+    st.subheader("⚡ Inference Latency")
+    summary = latency_report.summary()
+    if summary:
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Mean Latency", f"{summary['mean_ms']} ms")
+        col2.metric("FPS",          f"{summary['fps']}")
+        col3.metric("P95 Latency",  f"{summary['p95_ms']} ms")
+        col4.metric("P99 Latency",  f"{summary['p99_ms']} ms")
 
+        with st.expander("Full Latency Report"):
+            st.json(summary)
     # Display results (either from current evaluation or previous)
     if "evaluation_results" in st.session_state:
         display_evaluation_results(st.session_state["evaluation_results"])
