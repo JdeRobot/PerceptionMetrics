@@ -3,7 +3,6 @@ from typing import Optional
 import streamlit as st
 import json
 from PIL import Image
-import torch
 
 
 def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
@@ -18,6 +17,7 @@ def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] =
     :return: np.ndarray with detections drawn (for st.image)
     :rtype: np.ndarray
     """
+    import torch
     from perceptionmetrics.utils import image as ui
 
     boxes = predictions.get("boxes", torch.empty(0)).cpu().numpy()
@@ -103,6 +103,7 @@ def inference_tab():
                     st.markdown("#### Detection Details")
 
                     # Convert predictions to JSON format
+                    import torch
                     detection_results = []
                     boxes = predictions.get("boxes", torch.empty(0)).cpu().numpy()
                     labels = predictions.get("labels", torch.empty(0)).cpu().numpy()

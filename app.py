@@ -234,8 +234,19 @@ with st.sidebar:
                     )
 
         # Load model action in sidebar
-        from perceptionmetrics.models.torch_detection import TorchImageDetectionModel
+        try:
+            from perceptionmetrics.models.torch_detection import TorchImageDetectionModel
+            _torch_available = True
+        except (ImportError, OSError):
+            _torch_available = False
         import json, tempfile
+
+        if not _torch_available:
+            st.warning(
+                "⚠️ PyTorch غير متاح على هذا النظام. "
+                "تبويب Inference لن يعمل. "
+                "يُرجى تثبيت PyTorch بشكل صحيح."
+            )
 
         load_model_btn = st.button(
             "Load Model",
@@ -243,6 +254,7 @@ with st.sidebar:
             width="stretch",
             help="Load and save the model for use in the Inference tab",
             key="sidebar_load_model_btn",
+            disabled=not _torch_available,
         )
 
         if load_model_btn:
