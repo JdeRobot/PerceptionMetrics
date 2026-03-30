@@ -56,6 +56,12 @@ def build_dataset(
     dataset_dirs = {
         split: os.path.abspath(d) for split, d in dataset_dirs.items() if d is not None
     }
+    # Validate dataset directories
+for split, dataset_dir in dataset_dirs.items():
+    if not os.path.exists(dataset_dir):
+        raise FileNotFoundError(
+            f"{split} dataset directory '{dataset_dir}' does not exist"
+        )
     if not dataset_dirs:
         raise ValueError("At least one dataset directory must be provided")
 
