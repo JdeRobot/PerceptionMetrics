@@ -211,3 +211,18 @@ _To make your first contribution, follow this [Guide](https://github.com/JdeRobo
 
 # Acknowledgements
 LiDAR segmentation support is built upon open-source work from [Open3D-ML](https://github.com/isl-org/Open3D-ML), [mmdetection3d](https://github.com/open-mmlab/mmdetection3d), [SphereFormer](https://github.com/dvlab-research/SphereFormer), and [LSK3DNet](https://github.com/FengZicai/LSK3DNet).
+## Quick Start Guide
+
+1. Clone the repository:
+   git clone https://github.com/JdeRobot/PerceptionMetrics.git
+
+2. Install dependencies:
+   pip install -r requirements.txt
+
+3. Run the application:
+   python main.py
+
+## Common Issues
+
+- If GUI does not load, ensure Streamlit is installed correctly.
+- If dataset loading fails, verify dataset format compatibility.
