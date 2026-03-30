@@ -1,3 +1,6 @@
+import warnings
+from pathlib import Path
+
 from copy import copy
 import os
 import time
@@ -266,15 +269,28 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         if isinstance(model, str):
             assert os.path.isfile(model), "Torch model file not found"
             model_fname = model
-            try:
+            suffix = Path(model).suffix.lower()
+            if suffix == ".torchscript":
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
-            except Exception:
-                print(
-                    "Model is not a TorchScript model. Loading as native PyTorch model."
-                )
+            elif suffix in (".pt", ".pth"):
                 model = torch.load(model, map_location=self.device, weights_only=False)
                 model_type = "native"
+            else:
+                try:
+                    model = torch.jit.load(model, map_location=self.device)
+                    model_type = "compiled"
+                except RuntimeError:
+                    warnings.warn(
+                        f"Could not load '{model}' as a TorchScript model (RuntimeError). "
+                        "Falling back to torch.load(). If this file is a TorchScript model, "
+                        "rename it to use the '.torchscript' extension to avoid this warning.",
+                        UserWarning,
+                        stacklevel=2,
+                    )
+                    model = torch.load(model, map_location=self.device, weights_only=False)
+                    model_type = "native"
+        
         elif isinstance(model, torch.nn.Module):
             model_fname = None
             model_type = "native"

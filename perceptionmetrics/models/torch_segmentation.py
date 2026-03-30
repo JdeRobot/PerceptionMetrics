@@ -4,6 +4,9 @@ import time
 import tempfile
 from typing import Any, List, Optional, Tuple, Union
 
+import warnings
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -219,13 +222,27 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         if isinstance(model, str):
             assert os.path.isfile(model), "TorchScript Model file not found"
             model_fname = model
-            try:
+            suffix = Path(model).suffix.lower()
+            if suffix == ".torchscript":
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
-            except:
-                print("Model is not a TorchScript model. Loading as a PyTorch module.")
-                model = torch.load(model, map_location=self.device)
+            elif suffix in (".pt", ".pth"):
+                model = torch.load(model, map_location=self.device, weights_only=False)
                 model_type = "native"
+            else:
+                try:
+                    model = torch.jit.load(model, map_location=self.device)
+                    model_type = "compiled"
+                except RuntimeError:
+                    warnings.warn(
+                        f"Could not load '{model}' as a TorchScript model (RuntimeError). "
+                        "Falling back to torch.load(). If this file is a TorchScript model, "
+                        "rename it to use the '.torchscript' extension to avoid this warning.",
+                        UserWarning,
+                        stacklevel=2,
+                    )
+                    model = torch.load(model, map_location=self.device, weights_only=False)
+                    model_type = "native"
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
             model_fname = None
@@ -543,14 +560,27 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
         if isinstance(model, str):
             assert os.path.isfile(model), "TorchScript Model file not found"
             model_fname = model
-            try:
+            suffix = Path(model).suffix.lower()
+            if suffix == ".torchscript":
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
-            except Exception:
-                print("Model is not a TorchScript model. Loading as a PyTorch module.")
-                model = torch.load(model, map_location=self.device)
+            elif suffix in (".pt", ".pth"):
+                model = torch.load(model, map_location=self.device, weights_only=False)
                 model_type = "native"
-
+            else:
+                try:
+                    model = torch.jit.load(model, map_location=self.device)
+                    model_type = "compiled"
+                except RuntimeError:
+                    warnings.warn(
+                        f"Could not load '{model}' as a TorchScript model (RuntimeError). "
+                        "Falling back to torch.load(). If this file is a TorchScript model, "
+                        "rename it to use the '.torchscript' extension to avoid this warning.",
+                        UserWarning,
+                        stacklevel=2,
+                    )
+                    model = torch.load(model, map_location=self.device, weights_only=False)
+                    model_type = "native"
         # Otherwise, check that it is a PyTorch module
         elif isinstance(model, torch.nn.Module):
             model_fname = None
