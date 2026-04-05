@@ -18,6 +18,8 @@ def postprocess_detection(
     :type confidence_threshold: float
     :param nms_threshold: IoU threshold for Non-Maximum Suppression (NMS). Some models may not perform NMS (e.g. YOLOv26).
     :type nms_threshold: float
+    :param max_detections: Maximum number of best detections to keep per image after filtering.
+    :type max_detections: int
     :return: Dictionary with keys 'boxes', 'labels', and 'scores'.
     :rtype: dict
     """

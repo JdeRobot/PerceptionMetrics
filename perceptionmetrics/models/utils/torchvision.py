@@ -7,6 +7,8 @@ def postprocess_detection(
     :type output: dict
     :param confidence_threshold: Confidence threshold to filter boxes.
     :type confidence_threshold: float
+    :param max_detections: Maximum number of best detections to keep per image after filtering.
+    :type max_detections: int
     :return: Dictionary with keys 'boxes', 'labels', and 'scores'.
     :rtype: dict
     """
