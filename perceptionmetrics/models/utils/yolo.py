@@ -9,6 +9,7 @@ def postprocess_detection(
     output: torch.Tensor,
     confidence_threshold: float = 0.25,
     nms_threshold: float = 0.45,
+    max_detections: int = 100
 ):
     """Post-process YOLO model output.
 
@@ -56,5 +57,14 @@ def postprocess_detection(
         boxes_xyxy = boxes_xyxy[keep_idx]
         scores = scores[keep_idx]
         labels = labels[keep_idx]
+
+        if max_detections > 0:
+            limit = min(max_detections, scores.shape[0])
+            if limit > 0:
+                limited_idx = scores.argsort(descending = True)[:limit]
+                boxes_xyxy = boxes_xyxy[limited_idx]
+                scores = scores[limited_idx]
+                labels = labels[limited_idx]
+
 
     return {"boxes": boxes_xyxy, "labels": labels, "scores": scores}
