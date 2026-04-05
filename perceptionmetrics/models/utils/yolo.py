@@ -1,7 +1,6 @@
 import torch
 from torchvision.ops import nms
 
-
 CLASS_NMS_OFFSET = 7680  # offset to apply to boxes for class-wise NMS
 
 
@@ -9,7 +8,7 @@ def postprocess_detection(
     output: torch.Tensor,
     confidence_threshold: float = 0.25,
     nms_threshold: float = 0.45,
-    max_detections: int = 100
+    max_detections: int = 100,
 ):
     """Post-process YOLO model output.
 
@@ -61,10 +60,9 @@ def postprocess_detection(
         if max_detections > 0:
             limit = min(max_detections, scores.shape[0])
             if limit > 0:
-                limited_idx = scores.argsort(descending = True)[:limit]
+                limited_idx = scores.argsort(descending=True)[:limit]
                 boxes_xyxy = boxes_xyxy[limited_idx]
                 scores = scores[limited_idx]
                 labels = labels[limited_idx]
-
 
     return {"boxes": boxes_xyxy, "labels": labels, "scores": scores}
