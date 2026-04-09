@@ -127,9 +127,13 @@ class DetectionMetricsFactory:
 
         ious = compute_iou_matrix(pred_boxes, gt_boxes)  # shape: (num_preds, num_gts)
 
-        for i, (p_box, p_label, score) in enumerate(
-            zip(pred_boxes, pred_labels, pred_scores)
-        ):
+        # Sort predictions by descending score to ensure highest-confidence predictions match first
+        sorted_indices = np.argsort([-s for s in pred_scores])
+
+        for i in sorted_indices:
+            p_box = pred_boxes[i]
+            p_label = pred_labels[i]
+            score = pred_scores[i]
             max_iou = 0
             max_j = -1
 
@@ -442,7 +446,8 @@ def compute_iou(boxA, boxB):
     interArea = max(0, xB - xA) * max(0, yB - yA)
     boxAArea = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
     boxBArea = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
-    iou = interArea / float(boxAArea + boxBArea - interArea)
+    unionArea = float(boxAArea + boxBArea - interArea)
+    iou = interArea / unionArea if unionArea > 0 else 0.0
     return iou
 
 
