@@ -39,7 +39,7 @@ myst-parser = "^4.0.1"
 furo = "^2025.12.19"
 
 [tool.poetry.group.test.dependencies]
-pytest = "^8.0.0"
+pytest = ">=8,<10"
 
 [tool.poetry.scripts]
 pm_evaluate = "perceptionmetrics.cli.evaluate:evaluate"
