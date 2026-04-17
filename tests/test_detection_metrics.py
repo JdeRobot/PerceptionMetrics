@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from perceptionmetrics.utils.detection_metrics import DetectionMetricsFactory
-from perceptionmetrics.utils.detection_metrics import compute_iou_matrix
+from perceptionmetrics.utils.detection_metrics import compute_iou_matrix, compute_iou
 
 @pytest.fixture
 def metrics_factory():
@@ -101,6 +101,20 @@ def test_compute_coco_map_sensitivity(metrics_factory):
 
     assert np.isclose(coco_map, 0.4)
     assert coco_map < 1.0, "mAP should not be perfect for a shifted box"
+
+def test_compute_iou_zero_area_boxes():
+    """Test that compute_iou handles zero-area (degenerate/point) boxes without crashing."""
+    # Two point boxes (zero area) — should return 0.0 instead of ZeroDivisionError
+    assert compute_iou([5, 5, 5, 5], [5, 5, 5, 5]) == 0.0
+
+    # One zero-area box, one normal box
+    assert compute_iou([5, 5, 5, 5], [0, 0, 10, 10]) == 0.0
+
+    # Two normal non-overlapping boxes
+    assert compute_iou([0, 0, 10, 10], [20, 20, 30, 30]) == 0.0
+
+    # Identical boxes — perfect IoU
+    assert compute_iou([0, 0, 10, 10], [0, 0, 10, 10]) == 1.0
 
 def test_compute_coco_map_perfect_match(metrics_factory):
     """Test that a perfect overlap results in a 1.0 COCO mAP."""
