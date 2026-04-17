@@ -41,7 +41,7 @@ def get_data_shape(data: Union[tuple, list]) -> Union[tuple, list]:
     elif torch.is_tensor(data):
         return tuple(data.shape)
     else:
-        return tuple(data.shape)
+        return data
 
 
 def unsqueeze_data(data: Union[tuple, list], dim: int = 0) -> Union[tuple, list]:
