@@ -257,6 +257,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">detection</span> <span class="k">as</span> <span class="n">detection_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">detection_metrics</span> <span class="k">as</span> <span class="n">um</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">image</span> <span class="k">as</span> <span class="n">ui</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device_info</span>
 
 
 <div class="viewcode-block" id="get_resize_args">
@@ -508,15 +509,13 @@
 <span class="sd">        :type model_cfg: str</span>
 <span class="sd">        :param ontology_fname: JSON file containing model output ontology</span>
 <span class="sd">        :type ontology_fname: str</span>
-<span class="sd">        :param device: torch.device to use (optional). If not provided, will auto-select cuda, mps, or cpu.</span>
+<span class="sd">        :param device: torch.device to use (optional). If not provided, best available device is auto-selected using get_device_info() from perceptionmetrics.utils.torch.</span>
+<span class="sd">        :type device: torch.device</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get device (GPU, MPS, or CPU) if not provided</span>
         <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span>
-                <span class="s2">&quot;cuda&quot;</span>
-                <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>
-                <span class="k">else</span> <span class="s2">&quot;mps&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">mps</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
-            <span class="p">)</span>
+            <span class="n">best_device</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_device_info</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">best_device</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
 
@@ -527,12 +526,18 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
                 <span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;compiled&quot;</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">&quot;Model is not a TorchScript model. Loading as native PyTorch model.&quot;</span>
-                <span class="p">)</span>
-                <span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;native&quot;</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+                        <span class="n">model</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                    <span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;native&quot;</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Failed to load model. &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Ensure it is a valid PyTorch or TorchScript model. Error : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
             <span class="n">model_fname</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;native&quot;</span>

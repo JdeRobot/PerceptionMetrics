@@ -23,6 +23,7 @@ class SegmentationMetricsFactory:
         "accuracy",
         "f1_score",
         "iou",
+        "dice_score",
     ]
 
     def __init__(self, n_classes: int):
@@ -219,6 +220,24 @@ class SegmentationMetricsFactory:
             return float(tp / union) if union > 0 else math.nan
         else:
             return np.where(union > 0, tp / union, np.nan)
+    
+    def get_dice_score(self, per_class: bool = True) -> Union[np.ndarray, float]:
+        """Dice Score = 2 * TP / (2 * TP + FP + FN)
+
+        :param per_class: Return per class Dice score, defaults to True
+        :type per_class: bool, optional
+        :return: Dice score value (per class if per_class=True, otherwise global)
+        :rtype: Union[np.ndarray, float]
+        """
+        tp = self.get_tp(per_class)
+        fp = self.get_fp(per_class)
+        fn = self.get_fn(per_class)
+        denominator = 2 * tp + fp + fn
+
+        if np.isscalar(denominator):
+            return float(2 * tp / denominator) if denominator > 0 else math.nan
+        else:
+            return np.where(denominator > 0, 2 * tp / denominator, np.nan)
 
     def get_averaged_metric(
         self, metric_name: str, method: str, weights: Optional[np.ndarray] = None
