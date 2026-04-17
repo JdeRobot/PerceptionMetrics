@@ -304,10 +304,14 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         # Load confidence and NMS thresholds from config
         self.confidence_threshold = self.model_cfg.get("confidence_threshold", 0.5)
         self.nms_threshold = self.model_cfg.get("nms_threshold", 0.3)
+        self.max_detections_per_image = self.model_cfg.get(
+            "max_detections_per_image", -1
+        )
 
         self.postprocess_args = [self.confidence_threshold]
         if self.model_format == "yolo":
             self.postprocess_args.append(self.nms_threshold)
+        self.postprocess_args.append(self.max_detections_per_image)
 
         # Add reverse mapping for idx to class_name
         self.idx_to_class_name = {v["idx"]: k for k, v in self.ontology.items()}

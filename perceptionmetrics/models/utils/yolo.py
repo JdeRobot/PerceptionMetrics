@@ -1,7 +1,6 @@
 import torch
 from torchvision.ops import nms
 
-
 CLASS_NMS_OFFSET = 7680  # offset to apply to boxes for class-wise NMS
 
 
@@ -9,6 +8,7 @@ def postprocess_detection(
     output: torch.Tensor,
     confidence_threshold: float = 0.25,
     nms_threshold: float = 0.45,
+    max_detections: int = -1,
 ):
     """Post-process YOLO model output.
 
@@ -18,6 +18,8 @@ def postprocess_detection(
     :type confidence_threshold: float
     :param nms_threshold: IoU threshold for Non-Maximum Suppression (NMS). Some models may not perform NMS (e.g. YOLOv26).
     :type nms_threshold: float
+    :param max_detections: Maximum number of best detections to keep per image after filtering.
+    :type max_detections: int
     :return: Dictionary with keys 'boxes', 'labels', and 'scores'.
     :rtype: dict
     """
@@ -56,5 +58,11 @@ def postprocess_detection(
         boxes_xyxy = boxes_xyxy[keep_idx]
         scores = scores[keep_idx]
         labels = labels[keep_idx]
+
+        if max_detections > 0 and max_detections < scores.shape[0]:
+            limited_idx = scores.argsort(descending=True)[:max_detections]
+            boxes_xyxy = boxes_xyxy[limited_idx]
+            scores = scores[limited_idx]
+            labels = labels[limited_idx]
 
     return {"boxes": boxes_xyxy, "labels": labels, "scores": scores}
