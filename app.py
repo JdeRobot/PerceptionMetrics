@@ -53,14 +53,14 @@ with st.sidebar:
             )
 
         # Second row: Path and Browse button
-        col1, col2 = st.columns([3, 1])
+        col1, col2 = st.columns([3.5, 2])
         with col1:
             st.text_input("Dataset Folder", key="dataset_path")
         with col2:
             st.markdown(
                 "<div style='margin-bottom: 1.75rem;'></div>", unsafe_allow_html=True
             )
-            st.button("Browse", on_click=browse_dataset_path)
+            st.button("Browse", on_click=browse_dataset_path, use_container_width=True)
 
         # Additional input for YOLO config file
         if st.session_state.get("dataset_type", "COCO") == "YOLO":
