@@ -491,16 +491,16 @@ independent evaluations without creating a new object.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="perceptionmetrics.utils.detection_metrics.compute_iou_matrix">
 <span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.detection_metrics.</span></span><span class="sig-name descname"><span class="pre">compute_iou_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_boxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt_boxes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/detection_metrics.html#compute_iou_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.detection_metrics.compute_iou_matrix" title="Link to this definition">¶</a></dt>
-<dd><p>Compute IoU matrix between pred and gt boxes.</p>
+<dd><p>Compute IoU matrix between pred and gt boxes using vectorized operations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pred_boxes</strong> (<em>np.ndarray</em>) – Predicted bounding boxes, shape (num_pred, 4)</p></li>
-<li><p><strong>gt_boxes</strong> (<em>np.ndarray</em>) – Ground truth bounding boxes, shape (num_gt, 4)</p></li>
+<li><p><strong>pred_boxes</strong> (<em>np.ndarray</em>) – Predicted bounding boxes, shape (N, 4) in [x1, y1, x2, y2] format</p></li>
+<li><p><strong>gt_boxes</strong> (<em>np.ndarray</em>) – Ground truth bounding boxes, shape (M, 4) in [x1, y1, x2, y2] format</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>IoU matrix with shape (num_pred, num_gt)</p>
+<dd class="field-even"><p>IoU matrix with shape (N, M)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -517,6 +517,13 @@ independent evaluations without creating a new object.</p>
 <dd><p>Opens a native folder selection dialog and returns the selected folder path.
 Works on Windows, macOS, and Linux (with zenity or kdialog).
 Returns None if cancelled or error.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="perceptionmetrics.utils.gui.is_wsl">
+<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.gui.</span></span><span class="sig-name descname"><span class="pre">is_wsl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/gui.html#is_wsl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.gui.is_wsl" title="Link to this definition">¶</a></dt>
+<dd><p>Detect if running in Windows Subsystem for Linux (WSL).
+Returns True if WSL is detected, False otherwise.</p>
 </dd></dl>
 
 </section>
@@ -846,7 +853,7 @@ Adapts to different supervision versions.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.METRIC_NAMES">
-<span class="sig-name descname"><span class="pre">METRIC_NAMES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['tp',</span> <span class="pre">'fp',</span> <span class="pre">'fn',</span> <span class="pre">'tn',</span> <span class="pre">'precision',</span> <span class="pre">'recall',</span> <span class="pre">'accuracy',</span> <span class="pre">'f1_score',</span> <span class="pre">'iou']</span></em><a class="headerlink" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.METRIC_NAMES" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">METRIC_NAMES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['tp',</span> <span class="pre">'fp',</span> <span class="pre">'fn',</span> <span class="pre">'tn',</span> <span class="pre">'precision',</span> <span class="pre">'recall',</span> <span class="pre">'accuracy',</span> <span class="pre">'f1_score',</span> <span class="pre">'iou',</span> <span class="pre">'dice_score']</span></em><a class="headerlink" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.METRIC_NAMES" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -898,6 +905,23 @@ Adapts to different supervision versions.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_dice_score">
+<span class="sig-name descname"><span class="pre">get_dice_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">per_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/segmentation_metrics.html#SegmentationMetricsFactory.get_dice_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_dice_score" title="Link to this definition">¶</a></dt>
+<dd><p>Dice Score = 2 * TP / (2 * TP + FP + FN)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>per_class</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per class Dice score, defaults to True</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dice score value (per class if per_class=True, otherwise global)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[np.ndarray, float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1158,6 +1182,20 @@ independent evaluations without creating a new object.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="perceptionmetrics.utils.torch.get_device_info">
+<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.torch.</span></span><span class="sig-name descname"><span class="pre">get_device_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/torch.html#get_device_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.torch.get_device_info" title="Link to this definition">¶</a></dt>
+<dd><p>Get the best available device(CPU or GPU) and list of available devices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple of (best_device, available_devices) where best_device is a string and avaible_devices is a list of strings.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple(str, list[str])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="perceptionmetrics.utils.torch.unsqueeze_data">
 <span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.torch.</span></span><span class="sig-name descname"><span class="pre">unsqueeze_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/torch.html#unsqueeze_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.torch.unsqueeze_data" title="Link to this definition">¶</a></dt>
 <dd><p>Unsqueeze provided data along given dimension</p>
@@ -1257,6 +1295,7 @@ independent evaluations without creating a new object.</p>
 </li>
 <li><a class="reference internal" href="#module-perceptionmetrics.utils.gui">perceptionmetrics.utils.gui module</a><ul>
 <li><a class="reference internal" href="#perceptionmetrics.utils.gui.browse_folder"><code class="docutils literal notranslate"><span class="pre">browse_folder()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.utils.gui.is_wsl"><code class="docutils literal notranslate"><span class="pre">is_wsl()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-perceptionmetrics.utils.image">perceptionmetrics.utils.image module</a><ul>
@@ -1292,6 +1331,7 @@ independent evaluations without creating a new object.</p>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_accuracy"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_accuracy()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_averaged_metric"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_averaged_metric()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_confusion_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_dice_score"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_dice_score()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_f1_score"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_f1_score()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_fn"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_fn()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_fp"><code class="docutils literal notranslate"><span class="pre">SegmentationMetricsFactory.get_fp()</span></code></a></li>
@@ -1312,6 +1352,7 @@ independent evaluations without creating a new object.</p>
 <li><a class="reference internal" href="#module-perceptionmetrics.utils.torch">perceptionmetrics.utils.torch module</a><ul>
 <li><a class="reference internal" href="#perceptionmetrics.utils.torch.data_to_device"><code class="docutils literal notranslate"><span class="pre">data_to_device()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.torch.get_data_shape"><code class="docutils literal notranslate"><span class="pre">get_data_shape()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.utils.torch.get_device_info"><code class="docutils literal notranslate"><span class="pre">get_device_info()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.torch.unsqueeze_data"><code class="docutils literal notranslate"><span class="pre">unsqueeze_data()</span></code></a></li>
 </ul>
 </li>

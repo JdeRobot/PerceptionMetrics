@@ -358,6 +358,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         dataset: segmentation_dataset.ImageSegmentationDataset,
         split: Union[str, List[str]] = "test",
         ontology_translation: Optional[str] = None,
+        translation_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
     ) -> pd.DataFrame:
@@ -368,7 +369,9 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         :param split: Split or splits to be used from the dataset, defaults to "test"
         :type split: Union[str, List[str]], optional
         :param ontology_translation: JSON file containing translation between dataset and model output ontologies
-        :type ontology_translation: str, optional
+        :type ontology_translation: Optional[str], optional
+        :param translation_direction: Direction of the ontology translation, either 'dataset_to_model' or 'model_to_dataset', defaults to "dataset_to_model"
+        :type translation_direction: str, optional
         :param predictions_outdir: Directory to save predictions per sample, defaults to None. If None, predictions are not saved.
         :type predictions_outdir: Optional[str], optional
         :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
@@ -386,11 +389,26 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         if predictions_outdir is not None:
             os.makedirs(predictions_outdir, exist_ok=True)
 
-        # Build a LUT for transforming ontology if needed
-        lut_ontology = uc.get_ontology_conversion_lut(
-            dataset.ontology, self.ontology, ontology_translation
-        )
-        lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
+        # Build a LUT for transforming ontology if needed (aligned with TorchLiDARSegmentationModel.eval)
+        eval_ontology = self.ontology
+
+        if ontology_translation is not None:
+            ontology_translation = uio.read_json(ontology_translation)
+            if translation_direction == "dataset_to_model":
+                lut_ontology = uc.get_ontology_conversion_lut(
+                    dataset.ontology, self.ontology, ontology_translation
+                )
+            else:
+                eval_ontology = dataset.ontology
+                lut_ontology = uc.get_ontology_conversion_lut(
+                    self.ontology, dataset.ontology, ontology_translation
+                )
+
+            lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
+        else:
+            lut_ontology = None
+
+        n_classes = len(eval_ontology)
 
         # Retrieve ignored label indices
         ignored_label_indices = []
@@ -412,7 +430,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         )
 
         # Init metrics
-        metrics_factory = um.SegmentationMetricsFactory(self.n_classes)
+        metrics_factory = um.SegmentationMetricsFactory(n_classes)
 
         # Evaluation loop
         with torch.no_grad():
@@ -420,6 +438,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
             for idx, image, label in pbar:
                 # Perform inference
                 pred = self.inference(image)
+                pred = torch.argmax(pred, dim=1)
 
                 # Get valid points masks depending on ignored label indices
                 if ignored_label_indices:
@@ -429,13 +448,16 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
                 else:
                     valid_mask = None
 
-                # Convert labels if needed
+                # Convert labels or predictions if needed (same semantics as TorchLiDARSegmentationModel)
                 if lut_ontology is not None:
-                    label = lut_ontology[label]
+                    if translation_direction == "dataset_to_model":
+                        label = lut_ontology[label]
+                    else:
+                        pred = lut_ontology[pred]
 
                 # Prepare data and update metrics factory
                 label = label.squeeze(dim=1).cpu().numpy()
-                pred = torch.argmax(pred, axis=1).cpu().numpy()
+                pred = pred.cpu().numpy()
                 if valid_mask is not None:
                     valid_mask = valid_mask.squeeze(dim=1).cpu().numpy()
 
@@ -451,13 +473,13 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
                                 valid_mask[i] if valid_mask is not None else None
                             )
                             sample_mf = um.SegmentationMetricsFactory(
-                                n_classes=self.n_classes
+                                n_classes=n_classes
                             )
                             sample_mf.update(
                                 sample_pred, sample_label, sample_valid_mask
                             )
                             sample_df = um.get_metrics_dataframe(
-                                sample_mf, self.ontology
+                                sample_mf, eval_ontology
                             )
                             sample_df.to_csv(
                                 os.path.join(predictions_outdir, f"{sample_idx}.csv")
@@ -469,7 +491,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
                             os.path.join(predictions_outdir, f"{sample_idx}.png")
                         )
 
-        return um.get_metrics_dataframe(metrics_factory, self.ontology)
+        return um.get_metrics_dataframe(metrics_factory, eval_ontology)
 
     def get_computational_cost(
         self, image_size: Tuple[int], runs: int = 30, warm_up_runs: int = 5

@@ -26,7 +26,6 @@ pycocotools = "^2.0.7"
 Streamlit = "1.54.0"
 streamlit-image-select = "^0.6.0"
 supervision = "^0.18.0"
-nuscenes-devkit = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.0"
@@ -40,7 +39,7 @@ myst-parser = "^4.0.1"
 furo = "^2025.12.19"
 
 [tool.poetry.group.test.dependencies]
-pytest = "^8.0.0"
+pytest = "^9.0.3"
 
 [tool.poetry.scripts]
 pm_evaluate = "perceptionmetrics.cli.evaluate:evaluate"

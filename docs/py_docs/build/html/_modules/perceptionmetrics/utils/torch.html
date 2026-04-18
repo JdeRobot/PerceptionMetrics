@@ -313,6 +313,29 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
+
+
+<div class="viewcode-block" id="get_device_info">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.utils.html#perceptionmetrics.utils.torch.get_device_info">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_device_info</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the best available device(CPU or GPU) and list of available devices.</span>
+
+<span class="sd">    :return: Tuple of (best_device, available_devices) where best_device is a string and avaible_devices is a list of strings.</span>
+<span class="sd">    :rtype: tuple(str, list[str])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">available_devices</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">available_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="p">,</span> <span class="s2">&quot;mps&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">mps</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">available_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;mps&quot;</span><span class="p">)</span>
+    <span class="n">available_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+    <span class="n">best_device</span> <span class="o">=</span> <span class="n">available_devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">best_device</span><span class="p">,</span> <span class="n">available_devices</span></div>
+
 </pre></div>
         </article>
       </div>

@@ -160,7 +160,11 @@ def batch(command, jobs_cfg):
             print(f"Error processing job {job_id}: {e}")
             continue
 
-        # We assume that the command returns the results as a pandas DataFrame
+        # Handle both dict and DataFrame results
+        # Detection models return a dict with metrics_df and metrics_factory
+        if isinstance(result, dict):
+            result = result.get("metrics_df")
+
         result["job_id"] = job_id
         result = result.set_index("job_id", append=True)
 

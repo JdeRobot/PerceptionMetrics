@@ -5,6 +5,7 @@ __pycache__
 .ipynb_checkpoints
 
 .venv
+venv/
 dist
 docs/py_docs/build/.doctrees/
 docs/py_docs/build/.buildinfo*

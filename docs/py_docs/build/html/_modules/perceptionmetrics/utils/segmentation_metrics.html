@@ -266,6 +266,7 @@
         <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span>
         <span class="s2">&quot;f1_score&quot;</span><span class="p">,</span>
         <span class="s2">&quot;iou&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dice_score&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
@@ -500,6 +501,27 @@
             <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">tp</span> <span class="o">/</span> <span class="n">union</span><span class="p">)</span> <span class="k">if</span> <span class="n">union</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">union</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tp</span> <span class="o">/</span> <span class="n">union</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="SegmentationMetricsFactory.get_dice_score">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.utils.html#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_dice_score">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dice_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">per_class</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dice Score = 2 * TP / (2 * TP + FP + FN)</span>
+
+<span class="sd">        :param per_class: Return per class Dice score, defaults to True</span>
+<span class="sd">        :type per_class: bool, optional</span>
+<span class="sd">        :return: Dice score value (per class if per_class=True, otherwise global)</span>
+<span class="sd">        :rtype: Union[np.ndarray, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tp</span><span class="p">(</span><span class="n">per_class</span><span class="p">)</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fp</span><span class="p">(</span><span class="n">per_class</span><span class="p">)</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fn</span><span class="p">(</span><span class="n">per_class</span><span class="p">)</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">fn</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">denominator</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">tp</span> <span class="o">/</span> <span class="n">denominator</span><span class="p">)</span> <span class="k">if</span> <span class="n">denominator</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">denominator</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tp</span> <span class="o">/</span> <span class="n">denominator</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SegmentationMetricsFactory.get_averaged_metric">

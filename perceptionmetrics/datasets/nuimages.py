@@ -10,7 +10,6 @@ from perceptionmetrics.datasets import segmentation as segmentation_dataset
 
 DROP = {}
 
-
 def _get_rgb_from_idx(class_idx: int) -> List[int]:
     """Generate a deterministic RGB color for a class index."""
     rng = np.random.default_rng(seed=class_idx + 17)
@@ -18,12 +17,10 @@ def _get_rgb_from_idx(class_idx: int) -> List[int]:
     return [int(rgb[0]), int(rgb[1]), int(rgb[2])]
 
 
-def build_nuimages_dataset(
+def build_nuimages_detection_dataset(
     dataset_dir: str,
     version: str = "v1.0-mini",
     split: str = "train",
-    task: str = "detection",
-    labels_rel_dir: str = "generated/nuimages_segmentation_labels",
     nuim_object: Optional[NuImages] = None,
 ) -> Tuple[pd.DataFrame, dict]:
     """
@@ -37,8 +34,6 @@ def build_nuimages_dataset(
     :type version: str
     :param split: Dataset split to load ("train" or "val"), defaults to "train".
     :type split: str
-    :param task: Task type ("detection" or "segmentation"), defaults to "detection".
-    :type task: str
     :param nuim_object: Optional pre-initialized NuImages object to reuse, defaults to None.
     :type nuim_object: Optional[NuImages]
     :return: Tuple containing:
@@ -58,39 +53,76 @@ def build_nuimages_dataset(
         else NuImages(version=version, dataroot=dataset_dir, verbose=False)
     )
 
-    if task == "detection":
-        all_categories = [cat["name"] for cat in nuim.category]
-        categories = [cat for cat in all_categories if cat not in DROP]
+    all_categories = [cat["name"] for cat in nuim.category]
+    categories = [cat for cat in all_categories if cat not in DROP]
 
-        ontology = {
-            name: {"idx": i + 1, "rgb": _get_rgb_from_idx(i + 1)}
-            for i, name in enumerate(categories)
-        }
-        cat_to_idx = {name: ontology[name]["idx"] for name in ontology}
+    ontology = {
+        name: {"idx": i + 1, "rgb": _get_rgb_from_idx(i + 1)}
+        for i, name in enumerate(categories)
+    }
+    cat_to_idx = {name: ontology[name]["idx"] for name in ontology}
 
-        rows = []
-        for sample in nuim.sample:
-            key_camera_token = sample["key_camera_token"]
-            sample_data = nuim.get("sample_data", key_camera_token)
-            rows.append(
-                {
-                    "image": os.path.join(dataset_dir, sample_data["filename"]),
-                    "annotation": key_camera_token,
-                    "split": split,
-                }
-            )
-
-        dataset = pd.DataFrame(rows)
-        dataset.attrs = {
-            "ontology": ontology,
-            "cat_to_idx": cat_to_idx,
-        }
-
-        print(
-            f"Built nuimages detection dataset with {len(dataset)} samples and "
-            f"{len(categories)} categories."
+    rows = []
+    for sample in nuim.sample:
+        key_camera_token = sample["key_camera_token"]
+        sample_data = nuim.get("sample_data", key_camera_token)
+        rows.append(
+            {
+                "image": os.path.join(dataset_dir, sample_data["filename"]),
+                "annotation": key_camera_token,
+                "split": split,
+            }
         )
-        return dataset, ontology
+
+    dataset = pd.DataFrame(rows)
+    dataset.attrs = {
+        "ontology": ontology,
+        "cat_to_idx": cat_to_idx,
+    }
+
+    print(
+        f"Built nuimages detection dataset with {len(dataset)} samples and "
+        f"{len(categories)} categories."
+    )
+    return dataset, ontology
+
+
+def build_nuimages_segmentation_dataset(
+    dataset_dir: str,
+    version: str = "v1.0-mini",
+    split: str = "train",
+    labels_rel_dir: str = "generated/nuimages_segmentation_labels",
+    nuim_object: Optional[NuImages] = None,
+) -> Tuple[pd.DataFrame, dict]:
+    """
+    Build a nuImages semantic segmentation dataset index and masks.
+
+    :param dataset_dir: Path to the nuImages dataset root directory.
+    :type dataset_dir: str
+    :param version: nuImages dataset version to load, defaults to "v1.0-mini".
+    :type version: str
+    :param split: Dataset split to load ("train" or "val"), defaults to "train".
+    :type split: str
+    :param labels_rel_dir: Relative directory for segmentation labels, defaults to "generated/nuimages_segmentation_labels".
+    :type labels_rel_dir: str
+    :param nuim_object: Optional pre-initialized NuImages object to reuse, defaults to None.
+    :type nuim_object: Optional[NuImages]
+    :return: Tuple containing:
+             - A pandas DataFrame with columns ["image", "label", "split"] for each sample.
+             - An ontology dictionary mapping category names to indices.
+    :rtype: Tuple[pd.DataFrame, dict]
+    """
+
+    dataset_dir = os.path.abspath(dataset_dir)
+    assert os.path.isdir(
+        dataset_dir
+    ), f"Dataset directory {dataset_dir} does not exist."
+
+    nuim = (
+        nuim_object
+        if nuim_object
+        else NuImages(version=version, dataroot=dataset_dir, verbose=False)
+    )
 
     ## For segmentation, we build semantic masks from surface annotations for keyframe images
 
@@ -170,11 +202,10 @@ class NuImagesDetectionDataset(ImageDetectionDataset):
         self.split = split
         self.nuim = NuImages(dataroot=dataset_dir, version=version)
 
-        dataset, ontology = build_nuimages_dataset(
-            dataset_dir,
+        dataset, ontology = build_nuimages_detection_dataset(
+            dataset_dir=dataset_dir,
             version=version,
             split=split,
-            task="detection",
             nuim_object=self.nuim,
         )
 
@@ -267,11 +298,10 @@ class NuImagesSegmentationDataset(segmentation_dataset.ImageSegmentationDataset)
         ), f"Dataset directory {dataset_dir} does not exist."
 
         self.nuim = NuImages(dataroot=dataset_dir, version=version)
-        dataset, ontology = build_nuimages_dataset(
-            dataset_dir,
+        dataset, ontology = build_nuimages_segmentation_dataset(
+            dataset_dir=dataset_dir,
             version=version,
             split=split,
-            task="segmentation",
             labels_rel_dir=labels_rel_dir,
             nuim_object=self.nuim,
         )
@@ -279,27 +309,11 @@ class NuImagesSegmentationDataset(segmentation_dataset.ImageSegmentationDataset)
         super().__init__(dataset, dataset_dir, ontology)
 
 
-# if __name__ == "__main__":
-#     dataset_dir = "/home/tejass/Downloads/JDE_Robotics/nuimages-v1.0-mini"
-#     version = "v1.0-mini"
-#     split = "train"
-#     dataset = NuImages(dataset_dir, version, split)
-#     print (dataset.dataset.head())
-#     image_path = dataset.dataset.iloc[0]['image']
-#     annotation_token = dataset.dataset.iloc[0]['annotation']
-
-#     # Example debug: draw boxes
-#     import cv2
-#     img = cv2.imread(image_path)
-#     boxes, labels = dataset.read_annotation(annotation_token)
-#     for box in boxes:
-#         img = cv2.rectangle(img, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 2)
-#     cv2.imwrite("debug_nuimages.jpg", img)
 
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    dataset_dir = "/home/tejass/Downloads/JDE_Robotics/nuimages-v1.0-mini"
+    dataset_dir = "local/data/nuimages-v1.0-mini"
     version = "v1.0-mini"
     split = "train"
     dataset = NuImagesSegmentationDataset(dataset_dir, version, split)
@@ -312,7 +326,6 @@ if __name__ == "__main__":
     img = cv2.imread(img_path)
     label_img = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE)
 
-    # Bright color palette
     bright_colors = [
         [255, 0, 0],  # red
         [0, 255, 0],  # green
@@ -363,4 +376,3 @@ if __name__ == "__main__":
     plt.title("Image with Segmentation Overlay and Labels")
     plt.show()
 
-    # cv2.imwrite("debug_nuimages_segmentation_label.png", cv2.imread(label))

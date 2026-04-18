@@ -52,7 +52,7 @@ def build_coco_dataset(
     image_dir: str,
     coco_obj: Optional[COCO] = None,
     split: str = "train",
-) -> Tuple[pd.DataFrame, dict]:
+) -> Tuple[pd.DataFrame, dict, str]:
     """Build dataset and ontology dictionaries from COCO dataset structure
 
     :param annotation_file: Path to the COCO-format JSON annotation file
