@@ -300,16 +300,9 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             def __init__(self, model):
                 super().__init__()
                 self.inner_model = model
-                self.model_dtype = torch.float32
-                if hasattr(model, "parameters"):
-                    try:
-                        self.model_dtype = next(model.parameters()).dtype
-                    except StopIteration:
-                        pass
             
             # Handle input precision, tuple extraction, and output precision
             def forward(self, x):
-                x = x.to(self.model_dtype)
                 out = self.inner_model(x)
                 # Only unwrap TUPLES (native YOLO .pt)
                 # Avoid unwrapping LISTS (torchvision Mask R-CNN)
@@ -319,7 +312,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                     return out.float()
                 return out
 
-        self.model = DetectionModelWrapper(self.model).to(self.device).eval()
+        self.model = DetectionModelWrapper(self.model).to(self.device).float().eval()
 
         # Load post-processing functions for specific model formats
         self.model_format = self.model_cfg.get("model_format", "torchvision")
