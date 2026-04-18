@@ -1,3 +1,7 @@
+from perceptionmetrics.datasets.bdd100k import (
+    BDD100KDetectionDataset,
+    build_bdd100k_dataset,
+)
 from perceptionmetrics.datasets.gaia import (
     GaiaImageSegmentationDataset,
     GaiaLiDARSegmentationDataset,
@@ -16,6 +20,7 @@ from perceptionmetrics.datasets.rellis3d import (
 )
 from perceptionmetrics.datasets.rugd import RUGDImageSegmentationDataset
 from perceptionmetrics.datasets.wildscenes import WildscenesImageSegmentationDataset
+
 try:
     from perceptionmetrics.datasets.coco import CocoDataset
 except ImportError:
@@ -23,6 +28,7 @@ except ImportError:
     CocoDataset = None
 
 REGISTRY = {
+    "bdd100k_image_detection": BDD100KDetectionDataset,
     "gaia_image_segmentation": GaiaImageSegmentationDataset,
     "gaia_lidar_segmentation": GaiaLiDARSegmentationDataset,
     "generic_image_segmentation": GenericImageSegmentationDataset,
