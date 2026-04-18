@@ -1,3 +1,7 @@
+from perceptionmetrics.datasets.nuimages import (
+    NuImagesDetectionDataset,
+    NuImagesSegmentationDataset,
+)
 from perceptionmetrics.datasets.gaia import (
     GaiaImageSegmentationDataset,
     GaiaLiDARSegmentationDataset,
@@ -33,6 +37,8 @@ REGISTRY = {
     "rellis3d_lidar_segmentation": Rellis3DLiDARSegmentationDataset,
     "rugd_image_segmentation": RUGDImageSegmentationDataset,
     "wildscenes_image_segmentation": WildscenesImageSegmentationDataset,
+    "nuimages_image_segmentation": NuImagesSegmentationDataset,
+    "nuimages_detection": NuImagesDetectionDataset,
 }
 
 if CocoDataset is not None:
