@@ -136,17 +136,20 @@ def get_computational_cost(
                 model(*dummy_tuple)
 
     # Measure inference time
+    use_cuda = next(model.parameters()).device.type == "cuda"
     inference_times = []
     for _ in range(runs):
-        torch.cuda.synchronize()
-        start = time.time()
+        if use_cuda:
+            torch.cuda.synchronize()
+        start = time.perf_counter()
         with torch.no_grad():
             if hasattr(model, "inference"):
                 model.inference(*dummy_tuple)
             else:
                 model(*dummy_tuple)
-        torch.cuda.synchronize()
-        inference_times.append(time.time() - start)
+        if use_cuda:
+            torch.cuda.synchronize()
+        inference_times.append(time.perf_counter() - start)
 
     # Get number of parameters
     n_params = sum(p.numel() for p in model.parameters())
