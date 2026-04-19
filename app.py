@@ -1,4 +1,5 @@
 import streamlit as st
+import torch  # Import torch early to avoid DLL conflicts with cv2/other libraries
 from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
