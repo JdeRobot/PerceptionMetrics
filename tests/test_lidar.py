@@ -215,8 +215,8 @@ class TestUtilityFunctions:
         if not hasattr(point_cloud.points, "_mock_name"):
             assert len(point_cloud.points) == len(sample_points)
             assert len(point_cloud.colors) == len(sample_colors)
-        assert np.allclose(np.asarray(point_cloud.points), sample_points)
-        assert np.allclose(np.asarray(point_cloud.colors), sample_colors)
+            assert np.allclose(np.asarray(point_cloud.points), sample_points)
+            assert np.allclose(np.asarray(point_cloud.colors), sample_colors)
 
     @patch("open3d.visualization.draw_geometries")
     def test_view_point_cloud(self, mock_draw, sample_points, sample_colors):
