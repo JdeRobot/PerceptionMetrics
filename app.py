@@ -50,7 +50,7 @@ with st.sidebar:
             )
 
         # Second row: Path and Browse button
-        col1, col2 = st.columns([3.5, 2])
+        col1, col2 = st.columns([3.5, 2.5])
         with col1:
             st.text_input("Dataset Folder", key="dataset_path")
         with col2:
