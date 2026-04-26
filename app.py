@@ -2,6 +2,7 @@ import streamlit as st
 from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
+from tabs.computational_cost import computational_cost_tab
 from perceptionmetrics.utils.gui import browse_folder
 from perceptionmetrics.utils.torch import get_device_info
 
@@ -16,6 +17,8 @@ PAGES = {
     "Dataset Viewer": dataset_viewer_tab,
     "Inference": inference_tab,
     "Evaluator": evaluator_tab,
+    "Computational Cost": computational_cost_tab,
+
 }
 
 best_device, available_devices = get_device_info()
@@ -382,7 +385,7 @@ with st.sidebar:
                             st.error(f"Failed to load model: {e}")
 
 # Main content area with horizontal tabs
-tab1, tab2, tab3 = st.tabs(["Dataset Viewer", "Inference", "Evaluator"])
+tab1, tab2, tab3, tab4 = st.tabs(["Dataset Viewer", "Inference", "Evaluator", "Computational Cost"])
 
 with tab1:
     dataset_viewer_tab()
@@ -390,3 +393,5 @@ with tab2:
     inference_tab()
 with tab3:
     evaluator_tab()
+with tab4:
+    computational_cost_tab()
