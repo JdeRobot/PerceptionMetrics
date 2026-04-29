@@ -5,6 +5,18 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 
 # ---------------------------------------------------------------------------
+# Try importing real optional C-extensions first so they get cached in
+# sys.modules. This prevents the stub block below from replacing a real
+# library that IS available in the environment (e.g. open3d), which would
+# otherwise leak a MagicMock into other test modules like test_lidar.py.
+# ---------------------------------------------------------------------------
+for _real in ("open3d", "supervision"):
+    try:
+        __import__(_real)
+    except ImportError:
+        pass
+
+# ---------------------------------------------------------------------------
 # Stub out heavy optional C-extensions that are not available in the test
 # environment (open3d, tqdm, etc.) before importing any perceptionmetrics module.
 # ---------------------------------------------------------------------------
