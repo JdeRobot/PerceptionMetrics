@@ -27,7 +27,7 @@ st.session_state.setdefault("split", "test")
 st.session_state.setdefault("config_option", "Manual Configuration")
 st.session_state.setdefault("confidence_threshold", 0.5)
 st.session_state.setdefault("nms_threshold", 0.5)
-st.session_state.setdefault("max_detections", 100)
+st.session_state.setdefault("max_detections", -1)
 st.session_state.setdefault("device", best_device)
 st.session_state.setdefault("batch_size", 1)
 st.session_state.setdefault("evaluation_step", 5)
@@ -122,7 +122,7 @@ with st.sidebar:
                 )
                 st.number_input(
                     "Max Detections/Image",
-                    min_value=1,
+                    min_value=-1,
                     max_value=1000,
                     step=1,
                     key="max_detections",
@@ -279,7 +279,7 @@ with st.sidebar:
                         st.session_state.get("confidence_threshold", 0.5)
                     )
                     nms_threshold = float(st.session_state.get("nms_threshold", 0.5))
-                    max_detections = int(st.session_state.get("max_detections", 100))
+                    max_detections = int(st.session_state.get("max_detections", -1))
                     device = st.session_state.get("device", "cpu")
                     batch_size = int(st.session_state.get("batch_size", 1))
                     evaluation_step = int(st.session_state.get("evaluation_step", 5))
