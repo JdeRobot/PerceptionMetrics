@@ -178,10 +178,20 @@ class DetectionMetricsFactory:
 
             ap, precision, recall = compute_ap(tps, fps, fn_count)
 
+            precision_val = precision[-1] if len(precision) > 0 else 0
+            recall_val = recall[-1] if len(recall) > 0 else 0
+
+            f1_score = (
+                2 * precision_val * recall_val / (precision_val + recall_val)
+                if (precision_val + recall_val) > 0
+                else 0.0
+            )
+
             metrics[label] = {
                 "AP": ap,
-                "Precision": precision[-1] if len(precision) > 0 else 0,
-                "Recall": recall[-1] if len(recall) > 0 else 0,
+                "Precision": precision_val,
+                "Recall": recall_val,
+                "F1": f1_score,   
                 "TP": sum(tps),
                 "FP": sum(fps),
                 "FN": fn_count,
@@ -352,7 +362,7 @@ class DetectionMetricsFactory:
         metrics_dict = {}
         class_names = list(ontology.keys())
 
-        for metric in ["AP", "Precision", "Recall", "TP", "FP", "FN"]:
+        for metric in ["AP", "Precision", "Recall","F1","TP", "FP", "FN"]:
             metrics_dict[metric] = {}
             for class_name, class_data in ontology.items():
                 idx = class_data["idx"]
