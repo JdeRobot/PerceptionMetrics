@@ -1,7 +1,9 @@
 import streamlit as st
+import torch  # Import torch early to avoid DLL conflicts with cv2/other libraries
 from tabs.dataset_viewer import dataset_viewer_tab
 from tabs.inference import inference_tab
 from tabs.evaluator import evaluator_tab
+from tabs.error_analysis import render_error_analysis
 from perceptionmetrics.utils.gui import browse_folder
 from perceptionmetrics.utils.torch import get_device_info
 
@@ -382,7 +384,9 @@ with st.sidebar:
                             st.error(f"Failed to load model: {e}")
 
 # Main content area with horizontal tabs
-tab1, tab2, tab3 = st.tabs(["Dataset Viewer", "Inference", "Evaluator"])
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["Dataset Viewer", "Inference", "Evaluator", "Error Analysis"]
+)
 
 with tab1:
     dataset_viewer_tab()
@@ -390,3 +394,5 @@ with tab2:
     inference_tab()
 with tab3:
     evaluator_tab()
+with tab4:
+    render_error_analysis()
