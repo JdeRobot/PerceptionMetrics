@@ -389,6 +389,26 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         if predictions_outdir is not None:
             os.makedirs(predictions_outdir, exist_ok=True)
 
+        splits = [split] if isinstance(split, str) else split
+        ignored_classes = self.model_cfg.get("ignored_classes", [])
+        use_evaluator = (
+            ontology_translation is None
+            and predictions_outdir is None
+            and not results_per_sample
+            and len(ignored_classes) == 0
+        )
+
+        if use_evaluator:
+            # Use minimal evaluator only for default/simple path to avoid
+            # modifying advanced evaluation behavior (ontology, saving, etc.).
+            from perceptionmetrics.evaluation.segmentation_evaluator import (
+                SegmentationEvaluator,
+            )
+
+            evaluator = SegmentationEvaluator(n_classes=len(self.ontology))
+            metrics_factory = evaluator.evaluate(self, dataset, splits)
+            return um.get_metrics_dataframe(metrics_factory, self.ontology)
+
         # Build a LUT for transforming ontology if needed (aligned with TorchLiDARSegmentationModel.eval)
         eval_ontology = self.ontology
 
@@ -420,7 +440,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
             dataset,
             transform=self.transform_input,
             target_transform=self.transform_label,
-            splits=[split] if isinstance(split, str) else split,
+            splits=splits,
         )
 
         dataloader = DataLoader(
