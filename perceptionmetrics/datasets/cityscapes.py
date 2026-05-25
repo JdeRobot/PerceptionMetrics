@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from glob import glob
+import json
 import os
 from typing import Optional, Tuple
 
@@ -9,11 +10,15 @@ from perceptionmetrics.datasets import segmentation as segmentation_dataset
 from cityscapesscripts.helpers.labels import labels
 
 
-def build_dataset_ontology(use_train_id: bool = False) -> dict:
+def build_dataset_ontology(
+    use_train_id: bool = False, ontology_fname: Optional[str] = None
+) -> dict:
     """Build ontology dictionary from Cityscapes dataset labels
 
     :param use_train_id: Whether to use train IDs instead of Cityscapes label IDs, defaults to False
     :type use_train_id: bool, optional
+    :param ontology_fname: Optional JSON file path where the ontology should be saved, defaults to None
+    :type ontology_fname: Optional[str], optional
     :return: Ontology dictionary mapping class names to label metadata
     :rtype: dict
     """
@@ -30,7 +35,24 @@ def build_dataset_ontology(use_train_id: bool = False) -> dict:
             "has_instances": label.hasInstances,
             "rgb": label.color,
         }
+
+    if ontology_fname is not None:
+        ontology_dir = os.path.dirname(ontology_fname)
+        if ontology_dir:
+            os.makedirs(ontology_dir, exist_ok=True)
+        with open(ontology_fname, "w", encoding="utf-8") as f:
+            json.dump(ontology, f, indent=2)
+
     return ontology
+
+
+def build_train_id_ontology_translation() -> dict:
+    """Build ontology translation from Cityscapes label IDs to train IDs.
+
+    :return: Translation dictionary mapping raw Cityscapes class names to train ID class names
+    :rtype: dict
+    """
+    return {label.name: label.name for label in labels if not label.ignoreInEval}
 
 
 def build_dataset(
@@ -74,6 +96,13 @@ def build_dataset(
     }
     if not dataset_dirs:
         raise ValueError("At least one dataset directory must be provided")
+
+    if use_train_id and label_suffix == "_gtFine_labelIds.png":
+        raise ValueError(
+            "use_train_id=True requires train-id labels. Set "
+            "label_suffix='_gtFine_labelTrainIds.png' or export the dataset to a "
+            "train-id ontology before evaluating train-id models."
+        )
 
     ontology = build_dataset_ontology(use_train_id=use_train_id)
     dataset = OrderedDict()
