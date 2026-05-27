@@ -44,6 +44,14 @@ perceptionmetrics.datasets.goose module
    :undoc-members:
    :show-inheritance:
 
+perceptionmetrics.datasets.nuimages module
+------------------------------------------
+
+.. automodule:: perceptionmetrics.datasets.nuimages
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 perceptionmetrics.datasets.perception module
 --------------------------------------------
 

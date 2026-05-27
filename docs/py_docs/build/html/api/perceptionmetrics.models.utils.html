@@ -253,22 +253,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html">perceptionmetrics.models.utils.o3d package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#module-perceptionmetrics.models.utils.o3d.kpconv">perceptionmetrics.models.utils.o3d.kpconv module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics.models.utils.o3d.kpconv.transform_input"><code class="docutils literal notranslate"><span class="pre">transform_input()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics.models.utils.o3d.kpconv.update_probs"><code class="docutils literal notranslate"><span class="pre">update_probs()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#module-perceptionmetrics.models.utils.o3d.randlanet">perceptionmetrics.models.utils.o3d.randlanet module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics.models.utils.o3d.randlanet.transform_input"><code class="docutils literal notranslate"><span class="pre">transform_input()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics.models.utils.o3d.randlanet.update_probs"><code class="docutils literal notranslate"><span class="pre">update_probs()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#module-perceptionmetrics.models.utils.o3d">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics.models.utils.o3d.get_sample"><code class="docutils literal notranslate"><span class="pre">get_sample()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics.models.utils.o3d.inference"><code class="docutils literal notranslate"><span class="pre">inference()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics.models.utils.o3d.reset_sampler"><code class="docutils literal notranslate"><span class="pre">reset_sampler()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics-models-utils-o3d-kpconv-module">perceptionmetrics.models.utils.o3d.kpconv module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#perceptionmetrics-models-utils-o3d-randlanet-module">perceptionmetrics.models.utils.o3d.randlanet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="perceptionmetrics.models.utils.o3d.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -277,254 +264,23 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils.lsk3dnet">
-<span id="perceptionmetrics-models-utils-lsk3dnet-module"></span><h2>perceptionmetrics.models.utils.lsk3dnet module<a class="headerlink" href="#module-perceptionmetrics.models.utils.lsk3dnet" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.lsk3dnet.collate_fn">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.lsk3dnet.</span></span><span class="sig-name descname"><span class="pre">collate_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/lsk3dnet.html#collate_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.lsk3dnet.collate_fn" title="Link to this definition">¶</a></dt>
-<dd><p>Collate function for batching samples</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>samples</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – list of sample dictionaries</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>collated batch dictionary</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.lsk3dnet.compute_normals_range">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.lsk3dnet.</span></span><span class="sig-name descname"><span class="pre">compute_normals_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_vertex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_H</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_W</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extrapolate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blur_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/lsk3dnet.html#compute_normals_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.lsk3dnet.compute_normals_range" title="Link to this definition">¶</a></dt>
-<dd><p>Compute normals for each point using range image-based method.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.lsk3dnet.get_sample">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.lsk3dnet.</span></span><span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_processing_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/lsk3dnet.html#get_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.lsk3dnet.get_sample" title="Link to this definition">¶</a></dt>
-<dd><p>Get sample data for mmdetection3d models</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points_fname</strong> (<em>str</em>) – filename of the point cloud</p></li>
-<li><p><strong>model_cfg</strong> (<em>dict</em>) – model configuration</p></li>
-<li><p><strong>label_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – filename of the semantic label, defaults to None</p></li>
-<li><p><strong>name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – sample name, defaults to None</p></li>
-<li><p><strong>idx</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – sample numerical index, defaults to None</p></li>
-<li><p><strong>has_intensity</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether the point cloud has intensity values, defaults to True</p></li>
-<li><p><strong>measure_processing_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to measure processing time, defaults to False</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>sample data dictionary and processing time dictionary (if measured)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[dict, Optional[dict]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.lsk3dnet.inference">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.lsk3dnet.</span></span><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_processing_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/lsk3dnet.html#inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.lsk3dnet.inference" title="Link to this definition">¶</a></dt>
-<dd><p>Perform inference on a sample using an LSK3DNet model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sample</strong> (<em>dict</em>) – sample data dictionary</p></li>
-<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – LSK3DNet model</p></li>
-<li><p><strong>model_cfg</strong> (<em>dict</em>) – model configuration</p></li>
-<li><p><strong>ignore_index</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – list of class indices to ignore during inference, defaults to None</p></li>
-<li><p><strong>measure_processing_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to measure processing time, defaults to False</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple of (predictions, labels, names) and processing time dictionary (if measured)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[Tuple[torch.Tensor, Optional[torch.Tensor], List[str]], Optional[dict]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.lsk3dnet.range_projection">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.lsk3dnet.</span></span><span class="sig-name descname"><span class="pre">range_projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_vertex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fov_up</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fov_down</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-25.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_H</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_W</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/lsk3dnet.html#range_projection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.lsk3dnet.range_projection" title="Link to this definition">¶</a></dt>
-<dd><p>Project a pointcloud into a spherical projection (range image).</p>
-</dd></dl>
-
+<section id="perceptionmetrics-models-utils-lsk3dnet-module">
+<h2>perceptionmetrics.models.utils.lsk3dnet module<a class="headerlink" href="#perceptionmetrics-models-utils-lsk3dnet-module" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils.mmdet3d">
-<span id="perceptionmetrics-models-utils-mmdet3d-module"></span><h2>perceptionmetrics.models.utils.mmdet3d module<a class="headerlink" href="#module-perceptionmetrics.models.utils.mmdet3d" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.mmdet3d.get_sample">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.mmdet3d.</span></span><span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_processing_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/mmdet3d.html#get_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.mmdet3d.get_sample" title="Link to this definition">¶</a></dt>
-<dd><p>Get sample data for mmdetection3d models</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points_fname</strong> (<em>str</em>) – filename of the point cloud</p></li>
-<li><p><strong>model_cfg</strong> (<em>dict</em>) – model configuration</p></li>
-<li><p><strong>label_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – filename of the semantic label, defaults to None</p></li>
-<li><p><strong>name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – sample name, defaults to None</p></li>
-<li><p><strong>idx</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – sample numerical index, defaults to None</p></li>
-<li><p><strong>has_intensity</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether the point cloud has intensity values, defaults to True</p></li>
-<li><p><strong>measure_processing_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to measure processing time, defaults to False</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>sample data and optionally processing time</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[ dict, Optional[dict] ]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.mmdet3d.inference">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.mmdet3d.</span></span><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_processing_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/mmdet3d.html#inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.mmdet3d.inference" title="Link to this definition">¶</a></dt>
-<dd><p>Perform inference on a sample using an mmdetection3D model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sample</strong> (<em>dict</em>) – sample data dictionary</p></li>
-<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – mmdetection3D model</p></li>
-<li><p><strong>model_cfg</strong> (<em>dict</em>) – model configuration</p></li>
-<li><p><strong>measure_processing_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to measure processing time, defaults to False</p></li>
-<li><p><strong>ignore_index</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – list of class indices to ignore during inference, defaults to None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>predictions, labels (if available), sample names and optionally processing time</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[ Tuple[torch.Tensor, Optional[torch.Tensor], Optional[List[str]]], Optional[dict] ]</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="perceptionmetrics-models-utils-mmdet3d-module">
+<h2>perceptionmetrics.models.utils.mmdet3d module<a class="headerlink" href="#perceptionmetrics-models-utils-mmdet3d-module" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils.sphereformer">
-<span id="perceptionmetrics-models-utils-sphereformer-module"></span><h2>perceptionmetrics.models.utils.sphereformer module<a class="headerlink" href="#module-perceptionmetrics.models.utils.sphereformer" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.sphereformer.collate_fn">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.sphereformer.</span></span><span class="sig-name descname"><span class="pre">collate_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/sphereformer.html#collate_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.sphereformer.collate_fn" title="Link to this definition">¶</a></dt>
-<dd><p>Collate function for batching samples</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>samples</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – list of sample dictionaries</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>collated batch dictionary</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.sphereformer.get_sample">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.sphereformer.</span></span><span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_processing_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/sphereformer.html#get_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.sphereformer.get_sample" title="Link to this definition">¶</a></dt>
-<dd><p>Get sample data for mmdetection3d models</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points_fname</strong> (<em>str</em>) – filename of the point cloud</p></li>
-<li><p><strong>model_cfg</strong> (<em>dict</em>) – model configuration</p></li>
-<li><p><strong>label_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – filename of the semantic label, defaults to None</p></li>
-<li><p><strong>name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – sample name, defaults to None</p></li>
-<li><p><strong>idx</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – sample numerical index, defaults to None</p></li>
-<li><p><strong>has_intensity</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether the point cloud has intensity values, defaults to True</p></li>
-<li><p><strong>measure_processing_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to measure processing time, defaults to False</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>sample data dictionary and processing time dictionary (if measured)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[dict, Optional[dict]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.sphereformer.inference">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.sphereformer.</span></span><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_processing_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/sphereformer.html#inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.sphereformer.inference" title="Link to this definition">¶</a></dt>
-<dd><p>Perform inference on a sample using an SphereFormer model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sample</strong> (<em>dict</em>) – sample data dictionary</p></li>
-<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – SphereFormer model</p></li>
-<li><p><strong>model_cfg</strong> (<em>dict</em>) – model configuration</p></li>
-<li><p><strong>measure_processing_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to measure processing time, defaults to False</p></li>
-<li><p><strong>ignore_index</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – list of class indices to ignore during inference, defaults to None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple of (predictions, labels, names) and processing time dictionary (if measured)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[Tuple[torch.Tensor, Optional[torch.Tensor], List[str]], Optional[dict]]</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="perceptionmetrics-models-utils-sphereformer-module">
+<h2>perceptionmetrics.models.utils.sphereformer module<a class="headerlink" href="#perceptionmetrics-models-utils-sphereformer-module" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils.torchvision">
-<span id="perceptionmetrics-models-utils-torchvision-module"></span><h2>perceptionmetrics.models.utils.torchvision module<a class="headerlink" href="#module-perceptionmetrics.models.utils.torchvision" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.torchvision.postprocess_detection">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.torchvision.</span></span><span class="sig-name descname"><span class="pre">postprocess_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/torchvision.html#postprocess_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.torchvision.postprocess_detection" title="Link to this definition">¶</a></dt>
-<dd><p>Post-process torchvision model output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<em>dict</em>) – Dictionary with keys ‘boxes’, ‘labels’, and ‘scores’.</p></li>
-<li><p><strong>confidence_threshold</strong> (<em>float</em>) – Confidence threshold to filter boxes.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary with keys ‘boxes’, ‘labels’, and ‘scores’.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="perceptionmetrics-models-utils-torchvision-module">
+<h2>perceptionmetrics.models.utils.torchvision module<a class="headerlink" href="#perceptionmetrics-models-utils-torchvision-module" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils.yolo">
-<span id="perceptionmetrics-models-utils-yolo-module"></span><h2>perceptionmetrics.models.utils.yolo module<a class="headerlink" href="#module-perceptionmetrics.models.utils.yolo" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.yolo.postprocess_detection">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.yolo.</span></span><span class="sig-name descname"><span class="pre">postprocess_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nms_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.45</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/yolo.html#postprocess_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.yolo.postprocess_detection" title="Link to this definition">¶</a></dt>
-<dd><p>Post-process YOLO model output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<em>torch.Tensor</em>) – Tensor of shape [num_classes + 4, num_anchors] containing bounding box predictions and class logits.</p></li>
-<li><p><strong>confidence_threshold</strong> (<em>float</em>) – Confidence threshold to filter boxes.</p></li>
-<li><p><strong>nms_threshold</strong> (<em>float</em>) – IoU threshold for Non-Maximum Suppression (NMS). Some models may not perform NMS (e.g. YOLOv26).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary with keys ‘boxes’, ‘labels’, and ‘scores’.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="perceptionmetrics-models-utils-yolo-module">
+<h2>perceptionmetrics.models.utils.yolo module<a class="headerlink" href="#perceptionmetrics-models-utils-yolo-module" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-perceptionmetrics.models.utils" title="Link to this heading">¶</a></h2>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -586,34 +342,12 @@
 <li><a class="reference internal" href="#">perceptionmetrics.models.utils package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils.lsk3dnet">perceptionmetrics.models.utils.lsk3dnet module</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.lsk3dnet.collate_fn"><code class="docutils literal notranslate"><span class="pre">collate_fn()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.lsk3dnet.compute_normals_range"><code class="docutils literal notranslate"><span class="pre">compute_normals_range()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.lsk3dnet.get_sample"><code class="docutils literal notranslate"><span class="pre">get_sample()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.lsk3dnet.inference"><code class="docutils literal notranslate"><span class="pre">inference()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.lsk3dnet.range_projection"><code class="docutils literal notranslate"><span class="pre">range_projection()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils.mmdet3d">perceptionmetrics.models.utils.mmdet3d module</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.mmdet3d.get_sample"><code class="docutils literal notranslate"><span class="pre">get_sample()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.mmdet3d.inference"><code class="docutils literal notranslate"><span class="pre">inference()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils.sphereformer">perceptionmetrics.models.utils.sphereformer module</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.sphereformer.collate_fn"><code class="docutils literal notranslate"><span class="pre">collate_fn()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.sphereformer.get_sample"><code class="docutils literal notranslate"><span class="pre">get_sample()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.sphereformer.inference"><code class="docutils literal notranslate"><span class="pre">inference()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils.torchvision">perceptionmetrics.models.utils.torchvision module</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.torchvision.postprocess_detection"><code class="docutils literal notranslate"><span class="pre">postprocess_detection()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils.yolo">perceptionmetrics.models.utils.yolo module</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.yolo.postprocess_detection"><code class="docutils literal notranslate"><span class="pre">postprocess_detection()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils">Module contents</a></li>
+<li><a class="reference internal" href="#perceptionmetrics-models-utils-lsk3dnet-module">perceptionmetrics.models.utils.lsk3dnet module</a></li>
+<li><a class="reference internal" href="#perceptionmetrics-models-utils-mmdet3d-module">perceptionmetrics.models.utils.mmdet3d module</a></li>
+<li><a class="reference internal" href="#perceptionmetrics-models-utils-sphereformer-module">perceptionmetrics.models.utils.sphereformer module</a></li>
+<li><a class="reference internal" href="#perceptionmetrics-models-utils-torchvision-module">perceptionmetrics.models.utils.torchvision module</a></li>
+<li><a class="reference internal" href="#perceptionmetrics-models-utils-yolo-module">perceptionmetrics.models.utils.yolo module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

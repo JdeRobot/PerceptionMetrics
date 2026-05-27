@@ -250,166 +250,14 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils.o3d.kpconv">
-<span id="perceptionmetrics-models-utils-o3d-kpconv-module"></span><h2>perceptionmetrics.models.utils.o3d.kpconv module<a class="headerlink" href="#module-perceptionmetrics.models.utils.o3d.kpconv" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.o3d.kpconv.transform_input">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.o3d.kpconv.</span></span><span class="sig-name descname"><span class="pre">transform_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/o3d/kpconv.html#transform_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.o3d.kpconv.transform_input" title="Link to this definition">¶</a></dt>
-<dd><p>Transform point cloud data into input data for the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – Point cloud data</p></li>
-<li><p><strong>cfg</strong> (<em>dict</em>) – Dictionary containing model configuration file</p></li>
-<li><p><strong>sampler</strong> (<em>ul.Sampler</em>) – Object for sampling point cloud</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Model input data and selected indices</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[ Tuple[ torch.Tensor, List[torch.Tensor], List[torch.Tensor], List[torch.Tensor], List[torch.Tensor], List[torch.Tensor], ], List[np.ndarray], ]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.o3d.kpconv.update_probs">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.o3d.kpconv.</span></span><span class="sig-name descname"><span class="pre">update_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_probs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_probs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/o3d/kpconv.html#update_probs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.o3d.kpconv.update_probs" title="Link to this definition">¶</a></dt>
-<dd><p>Update test probabilities with new model output using weighted average for a
-smooth transition between predictions</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>new_probs</strong> (<em>torch.Tensor</em>) – New probabilities to be added to the test probabilities</p></li>
-<li><p><strong>indices</strong> (<em>torch.Tensor</em>) – Corresponding indices of the new probabilities</p></li>
-<li><p><strong>test_probs</strong> (<em>torch.Tensor</em>) – Test probabilities to be updated</p></li>
-<li><p><strong>lengths</strong> (<em>int</em>) – Length of each subsampled set of points</p></li>
-<li><p><strong>weight</strong> (<em>float</em><em>, </em><em>optional</em>) – Weight used in the weighted average, defaults to 0.95</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Updated test probabilities</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="perceptionmetrics-models-utils-o3d-kpconv-module">
+<h2>perceptionmetrics.models.utils.o3d.kpconv module<a class="headerlink" href="#perceptionmetrics-models-utils-o3d-kpconv-module" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils.o3d.randlanet">
-<span id="perceptionmetrics-models-utils-o3d-randlanet-module"></span><h2>perceptionmetrics.models.utils.o3d.randlanet module<a class="headerlink" href="#module-perceptionmetrics.models.utils.o3d.randlanet" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.o3d.randlanet.transform_input">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.o3d.randlanet.</span></span><span class="sig-name descname"><span class="pre">transform_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/o3d/randlanet.html#transform_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.o3d.randlanet.transform_input" title="Link to this definition">¶</a></dt>
-<dd><p>Transform point cloud data into input data for the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – Point cloud data</p></li>
-<li><p><strong>cfg</strong> (<em>dict</em>) – Dictionary containing model configuration file</p></li>
-<li><p><strong>sampler</strong> (<em>Optional</em><em>[</em><em>ul.Sampler</em><em>]</em><em>, </em><em>optional</em>) – Object for sampling point cloud, defaults to None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Model input data and selected indices</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[ Tuple[ torch.Tensor, List[torch.Tensor], List[torch.Tensor], List[torch.Tensor], List[torch.Tensor], ], np.ndarray, ]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.o3d.randlanet.update_probs">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.o3d.randlanet.</span></span><span class="sig-name descname"><span class="pre">update_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_probs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_probs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/o3d/randlanet.html#update_probs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.o3d.randlanet.update_probs" title="Link to this definition">¶</a></dt>
-<dd><p>Update test probabilities with new model output using weighted average for a
-smooth transition between predictions</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>new_probs</strong> (<em>torch.Tensor</em>) – New probabilities to be added to the test probabilities</p></li>
-<li><p><strong>indices</strong> (<em>torch.Tensor</em>) – Corresponding indices of the new probabilities</p></li>
-<li><p><strong>test_probs</strong> (<em>torch.Tensor</em>) – Test probabilities to be updated</p></li>
-<li><p><strong>n_classes</strong> (<em>int</em>) – Number of classes</p></li>
-<li><p><strong>weight</strong> (<em>float</em><em>, </em><em>optional</em>) – Weight used in the weighted average, defaults to 0.95</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Updated test probabilities</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="perceptionmetrics-models-utils-o3d-randlanet-module">
+<h2>perceptionmetrics.models.utils.o3d.randlanet module<a class="headerlink" href="#perceptionmetrics-models-utils-o3d-randlanet-module" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-perceptionmetrics.models.utils.o3d">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-perceptionmetrics.models.utils.o3d" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.o3d.get_sample">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.o3d.</span></span><span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_processing_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/o3d.html#get_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.o3d.get_sample" title="Link to this definition">¶</a></dt>
-<dd><p>Get sample data for mmdetection3d models</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points_fname</strong> (<em>str</em>) – filename of the point cloud</p></li>
-<li><p><strong>model_cfg</strong> (<em>dict</em>) – model configuration</p></li>
-<li><p><strong>label_fname</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – filename of the semantic label, defaults to None</p></li>
-<li><p><strong>name</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – sample name, defaults to None</p></li>
-<li><p><strong>idx</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – sample numerical index, defaults to None</p></li>
-<li><p><strong>has_intensity</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether the point cloud has intensity values, defaults to True</p></li>
-<li><p><strong>measure_processing_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to measure processing time, defaults to False</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>sample data and optionally processing time</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[ Tuple[np.ndarray, np.ndarray, ul.Sampler, np.ndarray, str, int], Tuple[np.ndarray, np.ndarray, ul.Sampler, np.ndarray, str, int], Dict[str, float] ]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.o3d.inference">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.o3d.</span></span><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_processing_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/o3d.html#inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.o3d.inference" title="Link to this definition">¶</a></dt>
-<dd><p>Perform inference on a sample using an Open3D-ML model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sample</strong> (<em>dict</em>) – sample data dictionary</p></li>
-<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – Open3D-ML model</p></li>
-<li><p><strong>model_cfg</strong> (<em>dict</em>) – model configuration</p></li>
-<li><p><strong>measure_processing_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to measure processing time, defaults to False</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>predicted labels, ground truth labels, sample name and optionally processing time</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[ Tuple[torch.Tensor, Optional[torch.Tensor], Optional[str]], Tuple[torch.Tensor, Optional[torch.Tensor], Optional[str], Dict[str, float]] ]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.models.utils.o3d.reset_sampler">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.o3d.</span></span><span class="sig-name descname"><span class="pre">reset_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/o3d.html#reset_sampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.o3d.reset_sampler" title="Link to this definition">¶</a></dt>
-<dd><p>Reset sampler object probabilities</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sampler</strong> (<em>ul.Sampler</em>) – Sampler object</p></li>
-<li><p><strong>num_points</strong> (<em>int</em>) – Number of points in the point cloud</p></li>
-<li><p><strong>num_classes</strong> (<em>int</em>) – Number of semantic classes</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -470,22 +318,9 @@ smooth transition between predictions</p>
             <ul>
 <li><a class="reference internal" href="#">perceptionmetrics.models.utils.o3d package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils.o3d.kpconv">perceptionmetrics.models.utils.o3d.kpconv module</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.o3d.kpconv.transform_input"><code class="docutils literal notranslate"><span class="pre">transform_input()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.o3d.kpconv.update_probs"><code class="docutils literal notranslate"><span class="pre">update_probs()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils.o3d.randlanet">perceptionmetrics.models.utils.o3d.randlanet module</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.o3d.randlanet.transform_input"><code class="docutils literal notranslate"><span class="pre">transform_input()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.o3d.randlanet.update_probs"><code class="docutils literal notranslate"><span class="pre">update_probs()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-perceptionmetrics.models.utils.o3d">Module contents</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.o3d.get_sample"><code class="docutils literal notranslate"><span class="pre">get_sample()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.o3d.inference"><code class="docutils literal notranslate"><span class="pre">inference()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.models.utils.o3d.reset_sampler"><code class="docutils literal notranslate"><span class="pre">reset_sampler()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#perceptionmetrics-models-utils-o3d-kpconv-module">perceptionmetrics.models.utils.o3d.kpconv module</a></li>
+<li><a class="reference internal" href="#perceptionmetrics-models-utils-o3d-randlanet-module">perceptionmetrics.models.utils.o3d.randlanet module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
