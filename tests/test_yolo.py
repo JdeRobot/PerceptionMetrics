@@ -1,29 +1,10 @@
 import logging
-import sys
-from unittest.mock import MagicMock, patch
+from typing import Any, Dict, List, Tuple
+from unittest.mock import patch
 
 import pandas as pd
-
-# ---------------------------------------------------------------------------
-# Stub out heavy optional C-extensions that are not available in the test
-# environment (open3d, tqdm, etc.) before importing any perceptionmetrics module.
-# ---------------------------------------------------------------------------
-for _stub in ("open3d", "supervision"):
-    if _stub not in sys.modules:
-        sys.modules[_stub] = MagicMock()
-
-# Ensure tqdm.tqdm is a callable no-op (used in detection.py)
-if "tqdm" not in sys.modules:
-    import tqdm  # noqa: F401 – available in the environment
-_tqdm_mod = sys.modules["tqdm"]
-if not callable(getattr(_tqdm_mod, "tqdm", None)):
-    _tqdm_mod.tqdm = lambda iterable, **kw: iterable  # type: ignore[attr-defined]
-
+import pytest
 from perceptionmetrics.datasets.yolo import build_dataset  # noqa: E402
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 _FAKE_YAML_TRAIN_VAL_ONLY = {
     "path": "/fake/dataset",
@@ -50,7 +31,9 @@ _FAKE_YAML_ALL_SPLITS = {
 }
 
 
-def _make_patched_build_dataset(yaml_content, label_files_by_split):
+def _make_patched_build_dataset(
+    yaml_content: Dict[str, Any], label_files_by_split: Dict[str, List[str]]
+) -> Tuple[pd.DataFrame, Dict[str, Any], Any]:
     """Return a call to build_dataset with filesystem calls mocked.
 
     :param yaml_content: Dictionary simulating parsed YAML content
@@ -63,13 +46,13 @@ def _make_patched_build_dataset(yaml_content, label_files_by_split):
     fake_dataset_fname = "/fake/dataset/data.yaml"
     fake_dataset_dir = "/fake/dataset"
 
-    def _fake_glob(pattern):
+    def _fake_glob(pattern: str) -> List[str]:
         for split, files in label_files_by_split.items():
             if split in pattern:
                 return files
         return []
 
-    def _fake_isfile(path):
+    def _fake_isfile(path: str) -> bool:
         # Treat any .txt file as label, any other as image
         return True
 
@@ -83,12 +66,7 @@ def _make_patched_build_dataset(yaml_content, label_files_by_split):
         return build_dataset(fake_dataset_fname, fake_dataset_dir)
 
 
-# ---------------------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------------------
-
-
-def test_build_dataset(caplog):
+def test_build_dataset(caplog: pytest.LogCaptureFixture) -> None:
     """Regression tests for build_dataset and split validation.
 
     Verifies that:

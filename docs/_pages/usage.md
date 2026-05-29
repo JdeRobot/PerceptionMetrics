@@ -45,24 +45,24 @@ You can check the [`examples` directory](https://github.com/JdeRobot/PerceptionM
 #### [Full docs for the Python library](https://jderobot.github.io/PerceptionMetrics/py_docs/build/html/index.html)
 
 ## Command-line interface
-PerceptionMetrics currently provides a CLI with two commands, `pm_evaluate` and `pm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files.
+PerceptionMetrics currently provides a CLI with three commands, `pm_eval_model`, `pm_eval_preds` and `pm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files.
 
-#### `pm_evaluate`
+#### `pm_eval_model`
 Run a single evaluation job given a model and dataset configurations.
 
 **Segmentation Example:**
 ```shell
-pm_evaluate segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset  --dataset_ontology /path/to/ontology.json --out_fname /path/to/results.csv
+pm_eval_model segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset  --dataset_ontology /path/to/ontology.json --out_fname /path/to/results.csv
 ```
 
 **Detection Example:**
 ```shell
-pm_evaluate detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --out_fname /path/to/results.csv
+pm_eval_model detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --out_fname /path/to/results.csv
 ```
 
 Docs:
 ```shell
-Usage: pm_evaluate [OPTIONS] {segmentation|detection} {image|lidar}
+Usage: pm_eval_model [OPTIONS] {segmentation|detection} {image|lidar}
 
   Evaluate model on dataset
 
@@ -110,6 +110,67 @@ Options:
                                   and CSV) per sample will be stored. If not
                                   provided, predictions per sample will not be
                                   saved
+  --help                          Show this message and exit.
+```
+
+#### `pm_eval_preds`
+Evaluate pre-computed predictions stored on disk against a ground truth dataset.
+
+**Example:**
+```shell
+pm_eval_preds segmentation image --dataset_format gaia --dataset_fname /path/to/dataset.parquet --predictions_dir /path/to/predictions --split test --out_fname /path/to/results.csv
+```
+
+Docs:
+```shell
+Usage: pm_eval_preds [OPTIONS] {segmentation|detection} {image|lidar}
+
+  Evaluate pre-computed predictions stored on disk against a GT dataset
+
+Options:
+  --predictions_dir DIRECTORY     Root directory containing prediction files,
+                                  organized in the same split/filename
+                                  structure as the GT dataset  [required]
+  --dataset_format [gaia|rellis3d|goose|generic|rugd|coco]
+                                  Dataset format  [default: gaia]
+  --dataset_fname FILE            Parquet dataset file
+  --dataset_dir DIRECTORY         Dataset directory (used for 'Rellis3D',
+                                  'Wildscenes', and 'COCO' formats)
+  --split_dir DIRECTORY           Directory containing .lst or .csv split
+                                  files (used for 'Rellis3D' and 'Wildscenes'
+                                  formats, respectively)
+  --train_dataset_dir DIRECTORY   Train dataset directory (used for 'GOOSE'
+                                  and 'Generic' formats)
+  --val_dataset_dir DIRECTORY     Validation dataset directory (used for
+                                  'GOOSE' and 'Generic' formats)
+  --test_dataset_dir DIRECTORY    Test dataset directory (used for 'GOOSE' and
+                                  'Generic' formats)
+  --images_dir TEXT               Directory containing data (used for 'RUGD'
+                                  format)
+  --labels_dir TEXT               Directory containing annotations (used for
+                                  'RUGD' format)
+  --data_suffix TEXT              Data suffix to be used to filter data (used
+                                  for 'Generic' format)
+  --label_suffix TEXT             Label suffix to be used to filter labels
+                                  (used for 'Generic' format)
+  --dataset_ontology FILE         JSON containing dataset ontology (used for
+                                  'Generic' and 'Rellis3D' formats)
+  --split TEXT                    Name of the split or splits separated by
+                                  commas to be evaluated  [default: test]
+  --pred_ontology FILE            JSON file containing the prediction ontology
+                                  (only needed when it differs from the
+                                  dataset ontology)
+  --ontology_translation FILE     JSON file containing translation between
+                                  dataset and prediction ontologies
+  --translation_direction [dataset_to_model|model_to_dataset]
+                                  Direction of the ontology translation
+                                  [default: dataset_to_model]
+  --ignored_classes TEXT          Class name(s) to ignore during evaluation
+                                  (repeat for multiple)
+  --out_fname PATH                CSV file where the evaluation results will
+                                  be stored  [required]
+  --results_per_sample            Store per-sample CSV results next to each
+                                  prediction file
   --help                          Show this message and exit.
 ```
 

@@ -1,13 +1,6 @@
-import sys
-from unittest.mock import MagicMock
-
 import pandas as pd
 import pytest
 
-# Stub heavy optional C-extensions that are not installed in the test environment
-for _stub in ("open3d", "supervision"):
-    if _stub not in sys.modules:
-        sys.modules[_stub] = MagicMock()
 
 from perceptionmetrics.datasets.perception import PerceptionDataset  # noqa: E402
 

@@ -107,7 +107,7 @@ poetry install
 ```
 
 
-Activate the environment: 
+Activate the environment:
 
 Depending on your Poetry version, use one of the following (you can leave the environment by running deactivate or exit):
 
@@ -177,17 +177,17 @@ For detailed GUI documentation, see our [GUI guide](https://jderobot.github.io/P
 You can check the `examples` directory for further inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 
 ## Command-line interface
-PerceptionMetrics provides a CLI with two commands, `pm_evaluate` and `pm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files. More details are provided in [PerceptionMetrics website](https://jderobot.github.io/PerceptionMetrics/usage/#command-line-interface).
+PerceptionMetrics provides a CLI with several commands (e.g. `pm_eval_model` and `pm_batch`). Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files. More details are provided in [PerceptionMetrics website](https://jderobot.github.io/PerceptionMetrics/usage/#command-line-interface).
 
 ### Example Usage
 **Segmentation:**
 ```bash
-pm_evaluate segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset --dataset_ontology /path/to/ontology.json --out_fname /path/to/results.csv
+pm_eval_model segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset --dataset_ontology /path/to/ontology.json --out_fname /path/to/results.csv
 ```
 
 **Detection:**
 ```bash
-pm_evaluate detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --out_fname /path/to/results.csv
+pm_eval_model detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --out_fname /path/to/results.csv
 ```
 
 <h1 id="DetectionMetrics">DetectionMetrics</h1>

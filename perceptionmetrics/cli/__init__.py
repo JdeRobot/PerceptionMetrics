@@ -1,11 +1,13 @@
 from perceptionmetrics import datasets
 from perceptionmetrics import models
-from perceptionmetrics.cli.evaluate import evaluate
+from perceptionmetrics.cli.eval_model import eval_model
+from perceptionmetrics.cli.eval_preds import eval_preds
 from perceptionmetrics.cli.computational_cost import computational_cost
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
 
 REGISTRY = {
-    "evaluate": evaluate,
+    "eval_model": eval_model,
+    "eval_preds": eval_preds,
     "computational_cost": computational_cost,
 }
 

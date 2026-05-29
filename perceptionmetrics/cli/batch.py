@@ -16,9 +16,14 @@ def batch(command, jobs_cfg):
     """Perform PerceptionMetrics jobs in batch mode"""
     jobs_cfg = uio.read_yaml(jobs_cfg)
 
-    # If a single model has been provided, convert it to a list
-    if not isinstance(jobs_cfg["model"], list):
-        jobs_cfg["model"] = [jobs_cfg["model"]]
+    # If a single model/predictions has been provided, convert it to a list
+    target_key = "model" if "model" in jobs_cfg else "predictions"
+    if not isinstance(jobs_cfg[target_key], list):
+        jobs_cfg[target_key] = [jobs_cfg[target_key]]
+    
+    # Alias predictions to model so the rest of the iteration logic works
+    if target_key == "predictions":
+        jobs_cfg["model"] = jobs_cfg.pop("predictions")
 
     # Same for dataset
     has_dataset = "dataset" in jobs_cfg
@@ -107,14 +112,23 @@ def batch(command, jobs_cfg):
             }
 
             model_cfg = job_components[0]
-            params.update(
-                {
-                    "model_format": model_cfg["format"],
-                    "model": model_cfg["path"],
-                    "model_ontology": model_cfg["ontology"],
-                    "model_cfg": model_cfg["cfg"],
-                }
-            )
+            if command == "eval_model" or command == "computational_cost":
+                params.update(
+                    {
+                        "model_format": model_cfg["format"],
+                        "model": model_cfg["path"],
+                        "model_ontology": model_cfg["ontology"],
+                        "model_cfg": model_cfg.get("cfg"),
+                    }
+                )
+            elif command == "eval_preds":
+                params.update(
+                    {
+                        "predictions_dir": model_cfg["path"],
+                    }
+                )
+                if "ontology" in model_cfg:
+                    params["pred_ontology"] = model_cfg["ontology"]
 
             if command == "computational_cost":
                 if jobs_cfg["input_type"] == "image":
