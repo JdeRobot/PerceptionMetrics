@@ -263,23 +263,22 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
 
         # Load model from file or use passed instance
         if isinstance(model, str):
-            assert os.path.isfile(model), "Torch model file not found"
+            if not os.path.isfile(model):
+                raise FileNotFoundError(f"Model file not found: {model}")
             model_fname = model
             try:
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
-            except RuntimeError:
+            except (RuntimeError, EOFError) as jit_err:
+                # TorchScript load failed, try loading as native PyTorch
                 try:
-                    model = torch.load(
-                        model, map_location=self.device, weights_only=False
-                    )
+                    model = torch.load(model, map_location=self.device, weights_only=False)
                     model_type = "native"
-                except Exception as e:
-                    raise ValueError(
-                        f"Failed to load model. "
-                        f"Ensure it is a valid PyTorch or TorchScript model. Error : {e}"
-                    )
-
+                except Exception as load_err:
+                    raise RuntimeError(
+                        f"Failed to load model as TorchScript or PyTorch module. "
+                        f"TorchScript error: {jit_err}. PyTorch error: {load_err}"
+                    ) from load_err
         elif isinstance(model, torch.nn.Module):
             model_fname = None
             model_type = "native"
