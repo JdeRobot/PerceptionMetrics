@@ -16,7 +16,7 @@ def parse_split(ctx, param, value):
     return splits
 
 
-@click.command(name="evaluate", help="Evaluate model on dataset")
+@click.command(name="eval_model", help="Evaluate model on dataset")
 @click.argument("task", type=click.Choice(["segmentation", "detection"], case_sensitive=False))
 @click.argument(
     "input_type", type=click.Choice(["image", "lidar"], case_sensitive=False)
@@ -138,7 +138,7 @@ def parse_split(ctx, param, value):
     help="Directory where predictions (images/points and CSV) per sample will be "
     "stored. If not provided, predictions per sample will not be saved",
 )
-def evaluate(
+def eval_model(
     task,
     input_type,
     model_format,
@@ -163,7 +163,7 @@ def evaluate(
     predictions_outdir,
 ):
     """Evaluate model on dataset"""
-    if isinstance(split, str):  # if evaluate has been called directly
+    if isinstance(split, str):  # if eval_model has been called directly
         split = parse_split(None, None, split)
 
     model = cli.get_model(
@@ -200,4 +200,4 @@ def evaluate(
 
 
 if __name__ == "__main__":
-    evaluate()
+    eval_model()

@@ -24,6 +24,3 @@ try:
     REGISTRY["tensorflow_image_segmentation"] = TensorflowImageSegmentationModel
 except ImportError:
     print("Tensorflow not available")
-
-if not REGISTRY:
-    raise Exception("No valid deep learning framework found")

@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import os
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -71,6 +71,39 @@ class ImageDetectionDataset(DetectionDataset):
         # TODO implement COCO or VOC parsing in their classes separately.
         raise NotImplementedError("Implement annotation reading logic")
 
+    def eval_preds(
+        self,
+        predictions_dir: str,
+        split: Union[str, List[str]] = "test",
+        ontology_translation: Optional[dict] = None,
+        translation_direction: str = "dataset_to_model",
+        pred_ontology: Optional[dict] = None,
+        ignored_classes: Optional[List[str]] = None,
+        results_per_sample: bool = False,
+    ) -> pd.DataFrame:
+        """Evaluate pre-computed predictions stored on disk against GT annotations.
+
+        :param predictions_dir: Root directory containing prediction annotation files.
+        :type predictions_dir: str
+        :param split: Split or splits to evaluate, defaults to "test"
+        :type split: Union[str, List[str]], optional
+        :param ontology_translation: Translation dictionary between GT and prediction ontologies. Only required when the two ontologies differ.
+        :type ontology_translation: Optional[dict], optional
+        :param translation_direction: Direction of the ontology translation. ``"dataset_to_model"`` maps GT labels to the prediction ontology. ``"model_to_dataset"`` maps predictions to the GT ontology. Defaults to ``"dataset_to_model"``.
+        :type translation_direction: str, optional
+        :param pred_ontology: Ontology used by the predictions. If ``None``, it is assumed to match the GT ontology.
+        :type pred_ontology: Optional[dict], optional
+        :param ignored_classes: List of class names to exclude from evaluation. These class names must exist in the GT ontology.
+        :type ignored_classes: Optional[List[str]], optional
+        :param results_per_sample: If ``True``, per-sample results are saved next to each prediction file inside predictions_dir.
+        :type results_per_sample: bool, optional
+        :return: DataFrame containing evaluation results
+        :rtype: pd.DataFrame
+        """
+        raise NotImplementedError(
+            "eval_preds is not yet implemented for ImageDetectionDataset"
+        )
+
 
 class LiDARDetectionDataset(DetectionDataset):
     """LiDAR detection dataset class."""
@@ -105,3 +138,36 @@ class LiDARDetectionDataset(DetectionDataset):
         """
         # TODO Implement format specific parsing
         raise NotImplementedError("Implement LiDAR detection annotation reading")
+
+    def eval_preds(
+        self,
+        predictions_dir: str,
+        split: Union[str, List[str]] = "test",
+        ontology_translation: Optional[dict] = None,
+        translation_direction: str = "dataset_to_model",
+        pred_ontology: Optional[dict] = None,
+        ignored_classes: Optional[List[str]] = None,
+        results_per_sample: bool = False,
+    ) -> pd.DataFrame:
+        """Evaluate pre-computed predictions stored on disk against GT annotations.
+
+        :param predictions_dir: Root directory containing prediction annotation files.
+        :type predictions_dir: str
+        :param split: Split or splits to evaluate, defaults to "test"
+        :type split: Union[str, List[str]], optional
+        :param ontology_translation: Translation dictionary between GT and prediction ontologies. Only required when the two ontologies differ.
+        :type ontology_translation: Optional[dict], optional
+        :param translation_direction: Direction of the ontology translation. ``"dataset_to_model"`` maps GT labels to the prediction ontology. ``"model_to_dataset"`` maps predictions to the GT ontology. Defaults to ``"dataset_to_model"``.
+        :type translation_direction: str, optional
+        :param pred_ontology: Ontology used by the predictions. If ``None``, it is assumed to match the GT ontology.
+        :type pred_ontology: Optional[dict], optional
+        :param ignored_classes: List of class names to exclude from evaluation. These class names must exist in the GT ontology.
+        :type ignored_classes: Optional[List[str]], optional
+        :param results_per_sample: If ``True``, per-sample results are saved next to each prediction file inside predictions_dir.
+        :type results_per_sample: bool, optional
+        :return: DataFrame containing evaluation results
+        :rtype: pd.DataFrame
+        """
+        raise NotImplementedError(
+            "eval_preds is not yet implemented for LiDARDetectionDataset"
+        )

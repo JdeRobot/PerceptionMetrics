@@ -1,7 +1,7 @@
 from abc import abstractmethod
 import os
 import shutil
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -12,6 +12,7 @@ from perceptionmetrics.datasets.perception import PerceptionDataset
 import perceptionmetrics.utils.io as uio
 import perceptionmetrics.utils.conversion as uc
 import perceptionmetrics.utils.lidar as ul
+import perceptionmetrics.utils.segmentation_metrics as um
 
 
 class SegmentationDataset(PerceptionDataset):
@@ -243,6 +244,121 @@ class ImageSegmentationDataset(SegmentationDataset):
 
         return label_count
 
+    def eval_preds(
+        self,
+        predictions_dir: str,
+        split: Union[str, List[str]] = "test",
+        ontology_translation: Optional[dict] = None,
+        translation_direction: str = "dataset_to_model",
+        pred_ontology: Optional[dict] = None,
+        ignored_classes: Optional[List[str]] = None,
+        results_per_sample: bool = False,
+    ) -> pd.DataFrame:
+        """Evaluate pre-computed predictions stored on disk against GT labels. The predictions directory must mirror the GT dataset layout.
+
+        :param predictions_dir: Root directory containing prediction label images.
+        :type predictions_dir: str
+        :param split: Split or splits to evaluate, defaults to "test"
+        :type split: Union[str, List[str]], optional
+        :param ontology_translation: Translation dictionary between GT and prediction ontologies. Only required when the two ontologies differ.
+        :type ontology_translation: Optional[dict], optional
+        :param translation_direction: Direction of the ontology translation. ``"dataset_to_model"`` maps GT labels to the prediction ontology (metrics are reported in the prediction ontology). ``"model_to_dataset"`` maps predictions to the GT ontology (metrics are reported in the GT ontology). Defaults to ``"dataset_to_model"``.
+        :type translation_direction: str, optional
+        :param pred_ontology: Ontology used by the predictions. If ``None``, it is assumed to match the GT ontology.
+        :type pred_ontology: Optional[dict], optional
+        :param ignored_classes: List of class names to exclude from evaluation. These class names must exist in the GT ontology.
+        :type ignored_classes: Optional[List[str]], optional
+        :param results_per_sample: If ``True``, per-sample CSV results are saved next to each prediction file inside predictions_dir.
+        :type results_per_sample: bool, optional
+        :return: DataFrame containing evaluation results
+        :rtype: pd.DataFrame
+        """
+        splits = [split] if isinstance(split, str) else split
+        self._validate_splits(splits)
+
+        df = self.dataset[self.dataset["split"].isin(splits)]
+
+        # Determine the evaluation ontology and build a LUT if needed
+        eval_ontology = self.ontology
+        lut_ontology = None
+
+        if pred_ontology is None:
+            pred_ontology = self.ontology
+
+        if pred_ontology != self.ontology:
+            if ontology_translation is None:
+                raise ValueError(
+                    "'ontology_translation' must be provided when GT and prediction "
+                    "ontologies differ."
+                )
+            if translation_direction == "dataset_to_model":
+                eval_ontology = pred_ontology
+                lut_ontology = uc.get_ontology_conversion_lut(
+                    self.ontology, pred_ontology, ontology_translation
+                )
+            else:
+                lut_ontology = uc.get_ontology_conversion_lut(
+                    pred_ontology, self.ontology, ontology_translation
+                )
+
+        n_classes = len(eval_ontology)
+
+        # Retrieve ignored label indices
+        ignored_label_indices = []
+        if ignored_classes:
+            for cls_name in ignored_classes:
+                ignored_label_indices.append(self.ontology[cls_name]["idx"])
+
+        # Init metrics
+        metrics_factory = um.SegmentationMetricsFactory(n_classes)
+
+        pbar = tqdm(df.iterrows(), total=len(df), leave=True)
+        for sample_name, row in pbar:
+            pbar.set_description(f"Evaluating sample: {sample_name}")
+
+            # Read GT label
+            gt_label_fname = row["label"]
+            if self.dataset_dir is not None:
+                gt_label_fname = os.path.join(self.dataset_dir, gt_label_fname)
+            gt = self.read_label(gt_label_fname)
+
+            # Read prediction label
+            pred_label_fname = row["label"]
+            pred_label_fname = os.path.join(predictions_dir, pred_label_fname)
+            if not os.path.isfile(pred_label_fname):
+                raise FileNotFoundError(
+                    f"Prediction file not found: {pred_label_fname}"
+                )
+            pred = cv2.imread(pred_label_fname, 0)
+
+            # Build valid mask from ignored classes
+            valid_mask = None
+            if ignored_label_indices:
+                valid_mask = np.ones(gt.shape, dtype=bool)
+                for idx in ignored_label_indices:
+                    valid_mask &= gt != idx
+
+            # Apply ontology translation
+            if lut_ontology is not None:
+                if translation_direction == "dataset_to_model":
+                    gt = lut_ontology[gt]
+                else:
+                    pred = lut_ontology[pred]
+
+            metrics_factory.update(pred, gt, valid_mask)
+
+            # Per-sample results
+            if results_per_sample:
+                sample_mf = um.SegmentationMetricsFactory(n_classes)
+                sample_mf.update(pred, gt, valid_mask)
+                sample_df = um.get_metrics_dataframe(sample_mf, eval_ontology)
+                sample_csv = os.path.join(
+                    predictions_dir, row["split"], f"{sample_name}.csv"
+                )
+                sample_df.to_csv(sample_csv)
+
+        return um.get_metrics_dataframe(metrics_factory, eval_ontology)
+
 
 class LiDARSegmentationDataset(SegmentationDataset):
     """Parent lidar segmentation dataset class
@@ -428,3 +544,37 @@ class LiDARSegmentationDataset(SegmentationDataset):
         """
         label, _ = ul.read_semantickitti_label(fname)
         return label
+
+    def eval_preds(
+        self,
+        predictions_dir: str,
+        split: Union[str, List[str]] = "test",
+        ontology_translation: Optional[dict] = None,
+        translation_direction: str = "dataset_to_model",
+        pred_ontology: Optional[dict] = None,
+        ignored_classes: Optional[List[str]] = None,
+        results_per_sample: bool = False,
+    ) -> pd.DataFrame:
+        """Evaluate pre-computed predictions stored on disk against GT labels.
+
+        :param predictions_dir: Root directory containing prediction label files.
+        :type predictions_dir: str
+        :param split: Split or splits to evaluate, defaults to "test"
+        :type split: Union[str, List[str]], optional
+        :param ontology_translation: Translation dictionary between GT and prediction ontologies. Only required when the two ontologies differ.
+        :type ontology_translation: Optional[dict], optional
+        :param translation_direction: Direction of the ontology translation. ``"dataset_to_model"`` maps GT labels to the prediction ontology. ``"model_to_dataset"`` maps predictions to the GT ontology. Defaults to ``"dataset_to_model"``.
+        :type translation_direction: str, optional
+        :param pred_ontology: Ontology used by the predictions. If ``None``, it is assumed to match the GT ontology.
+        :type pred_ontology: Optional[dict], optional
+        :param ignored_classes: List of class names to exclude from evaluation. These class names must exist in the GT ontology.
+        :type ignored_classes: Optional[List[str]], optional
+        :param results_per_sample: If ``True``, per-sample results are saved next to each prediction file inside predictions_dir.
+        :type results_per_sample: bool, optional
+        :return: DataFrame containing evaluation results
+        :rtype: pd.DataFrame
+        """
+        raise NotImplementedError(
+            "eval_preds is not yet implemented for LiDARSegmentationDataset"
+        )
+
