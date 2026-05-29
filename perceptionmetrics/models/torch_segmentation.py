@@ -349,7 +349,20 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
                 tensor_out = self.model(tensor_in.to(self.device))
 
             if isinstance(tensor_out, dict):
-                tensor_out = tensor_out["out"]
+                if "out" in tensor_out:
+                    tensor_out = tensor_out["out"]
+                elif "logits" in tensor_out:
+                    tensor_out = tensor_out["logits"]
+            elif hasattr(tensor_out, "logits"):
+                tensor_out = tensor_out.logits
+
+            if tensor_out.shape[-2:] != tensor_in.shape[-2:]:
+                tensor_out = torch.nn.functional.interpolate(
+                    tensor_out,
+                    size=tensor_in.shape[-2:],
+                    mode="bilinear",
+                    align_corners=False,
+                )
 
         return tensor_out
 

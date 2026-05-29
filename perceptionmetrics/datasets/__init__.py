@@ -43,6 +43,7 @@ REGISTRY = {
     "cityscapes_image_segmentation": CityscapesImageSegmentationDataset,
     "nuimages_image_segmentation": NuImagesSegmentationDataset,
     "nuimages_detection": NuImagesDetectionDataset,
+    "cityscapes_image_segmentation": CityscapesImageSegmentationDataset,
 }
 
 if CocoDataset is not None:
