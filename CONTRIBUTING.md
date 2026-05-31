@@ -20,7 +20,7 @@ Report any unacceptable behavior to one of the [maintainers](#contact).
 <a name="#before-you-start"></a>
 ## Before You Start
 
-- Read the `README.md` and project documentation carefully.
+- Read the `README.md` and project documentation carefully before setting up your environment.
 - **Run the notebook tutorials first** to:
   - Verify your environment setup
   - Understand what the tool does
