@@ -22,7 +22,7 @@ best_device, available_devices = get_device_info()
 
 # Initialize commonly used session state keys
 st.session_state.setdefault("dataset_path", "")
-st.session_state.setdefault("dataset_type", "YOLO")
+st.session_state.setdefault("dataset_type", "COCO")
 st.session_state.setdefault("split", "test")
 st.session_state.setdefault("config_option", "Manual Configuration")
 st.session_state.setdefault("confidence_threshold", 0.5)
@@ -42,7 +42,7 @@ with st.sidebar:
         with col1:
             st.selectbox(
                 "Type",
-                ["COCO", "YOLO"],
+                ["COCO"],
                 key="dataset_type",
             )
         with col2:
@@ -63,13 +63,7 @@ with st.sidebar:
             st.button("Browse", on_click=browse_dataset_path)
 
         # Additional input for YOLO config file
-        if st.session_state.get("dataset_type", "COCO") == "YOLO":
-            st.file_uploader(
-                "Dataset Configuration (.yaml)",
-                type=["yaml"],
-                key="dataset_config_file",
-                help="Upload a YAML dataset configuration file.",
-            )
+      
 
     with st.expander("Model Inputs", expanded=False):
         st.file_uploader(
