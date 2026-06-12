@@ -21,6 +21,7 @@ from perceptionmetrics.datasets.rellis3d import (
 from perceptionmetrics.datasets.rugd import RUGDImageSegmentationDataset
 from perceptionmetrics.datasets.wildscenes import WildscenesImageSegmentationDataset
 from perceptionmetrics.datasets.cityscapes import CityscapesImageSegmentationDataset
+from perceptionmetrics.datasets.semantickitti import SemanticKITTILiDARSegmentationDataset
 
 try:
     from perceptionmetrics.datasets.coco import CocoDataset
@@ -44,6 +45,7 @@ REGISTRY = {
     "nuimages_image_segmentation": NuImagesSegmentationDataset,
     "nuimages_detection": NuImagesDetectionDataset,
     "cityscapes_image_segmentation": CityscapesImageSegmentationDataset,
+    "semantickitti_lidar_segmentation": SemanticKITTILiDARSegmentationDataset
 }
 
 if CocoDataset is not None:
