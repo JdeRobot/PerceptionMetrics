@@ -20,8 +20,6 @@ from tqdm import tqdm
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 from perceptionmetrics.models import segmentation as segmentation_model
-import perceptionmetrics.utils.conversion as uc
-import perceptionmetrics.utils.io as uio
 import perceptionmetrics.utils.segmentation_metrics as um
 import perceptionmetrics.utils.torch as ut
 
@@ -408,24 +406,12 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         if predictions_outdir is not None:
             os.makedirs(predictions_outdir, exist_ok=True)
 
-        # Build a LUT for transforming ontology if needed (aligned with TorchLiDARSegmentationModel.eval)
-        eval_ontology = self.ontology
-
-        if ontology_translation is not None:
-            ontology_translation = uio.read_json(ontology_translation)
-            if translation_direction == "dataset_to_model":
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    dataset.ontology, self.ontology, ontology_translation
-                )
-            else:
-                eval_ontology = dataset.ontology
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    self.ontology, dataset.ontology, ontology_translation
-                )
-
+        # Build a LUT for transforming ontology if needed
+        lut_ontology, eval_ontology = self.get_eval_lut_ontology(
+            dataset.ontology, ontology_translation, translation_direction
+        )
+        if lut_ontology is not None:
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
-        else:
-            lut_ontology = None
 
         n_classes = len(eval_ontology)
 
@@ -743,23 +729,11 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
             os.makedirs(predictions_outdir, exist_ok=True)
 
         # Build a LUT for transforming ontology if needed
-        eval_ontology = self.ontology
-
-        if ontology_translation is not None:
-            ontology_translation = uio.read_json(ontology_translation)
-            if translation_direction == "dataset_to_model":
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    dataset.ontology, self.ontology, ontology_translation
-                )
-            else:
-                eval_ontology = dataset.ontology
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    self.ontology, dataset.ontology, ontology_translation
-                )
-
+        lut_ontology, eval_ontology = self.get_eval_lut_ontology(
+            dataset.ontology, ontology_translation, translation_direction
+        )
+        if lut_ontology is not None:
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
-        else:
-            lut_ontology = None
 
         n_classes = len(eval_ontology)
 
