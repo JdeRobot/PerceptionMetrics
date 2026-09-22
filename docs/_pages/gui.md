@@ -34,15 +34,21 @@ The following videos show the GUI workflow for the currently supported tasks:
 
 #### Image Detection GUI
 
-<iframe src="https://drive.google.com/file/d/1iNk-V3rwN9tZ2pAd_HONAkVLm3JstF00/preview" width="100%" height="420" allow="autoplay" allowfullscreen></iframe>
+<div style="position: relative; width: 100%; max-width: 720px; aspect-ratio: 16 / 9; margin-bottom: 1.5rem;">
+  <iframe src="https://www.youtube.com/embed/fRQmvGkb9KI" title="Image Detection GUI tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; inset: 0; width: 100%; height: 100%;"></iframe>
+</div>
 
 #### Image Segmentation GUI
 
-<iframe src="https://drive.google.com/file/d/16ixtrevvqDn6l2iuYXxHBcm4Z5IwSlOl/preview" width="100%" height="420" allow="autoplay" allowfullscreen></iframe>
+<div style="position: relative; width: 100%; max-width: 720px; aspect-ratio: 16 / 9; margin-bottom: 1.5rem;">
+  <iframe src="https://www.youtube.com/embed/B1z6mrsk8Cw" title="Image Segmentation GUI tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; inset: 0; width: 100%; height: 100%;"></iframe>
+</div>
 
 #### LiDAR Segmentation GUI
 
-<iframe src="https://drive.google.com/file/d/1BDT6fjLFPlG3HuHE9wWhCxwKQJ_X2PjQ/preview" width="100%" height="420" allow="autoplay" allowfullscreen></iframe>
+<div style="position: relative; width: 100%; max-width: 720px; aspect-ratio: 16 / 9; margin-bottom: 1.5rem;">
+  <iframe src="https://www.youtube.com/embed/sPIOhqD__AI" title="LiDAR Segmentation GUI tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; inset: 0; width: 100%; height: 100%;"></iframe>
+</div>
 
 ### 📁 Dataset Viewer Tab
 

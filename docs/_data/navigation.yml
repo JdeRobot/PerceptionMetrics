@@ -69,6 +69,12 @@ main:
       url: /compatibility/#lidar-semantic-segmentation
     - title: "Image object detection"
       url: /compatibility/#image-object-detection
+  - title: Datasets
+    url: /datasets
+  - title: Models
+    url: /models
+  - title: Metrics
+    url: /metrics
   - title: Usage
     url: /usage
     children:

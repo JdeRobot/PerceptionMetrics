@@ -42,23 +42,24 @@ excerpt:
   <tr>
     <td rowspan="2">Segmentation</td>
     <td>Image</td>
-    <td>RELLIS-3D, GOOSE, RUGD, WildScenes, custom GAIA format</td>
+    <td>Cityscapes, nuImages, RELLIS-3D, GOOSE, RUGD,<br>WildScenes, GAIA, Generic</td>
     <td>PyTorch, Tensorflow</td>
   </tr>
   <tr>
     <td>LiDAR</td>
-    <td>RELLIS-3D, GOOSE, WildScenes, custom GAIA format</td>
-    <td>PyTorch (tested with <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>, <a href="https://github.com/open-mmlab/mmdetection3d">mmdetection3d</a>, <a href="https://github.com/dvlab-research/SphereFormer">SphereFormer</a>, and <a href="https://github.com/FengZicai/LSK3DNet">LSK3DNet</a> models)</td>  </tr>
+    <td>SemanticKITTI, RELLIS-3D, GOOSE,<br>WildScenes, GAIA, Generic</td>
+    <td>PyTorch (tested with <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>, <a href="https://github.com/open-mmlab/mmdetection3d">mmdetection3d</a>, <a href="https://github.com/dvlab-research/SphereFormer">SphereFormer</a>, and <a href="https://github.com/FengZicai/LSK3DNet">LSK3DNet</a> models)</td>
+  </tr>
   <tr>
     <td>Object detection</td>
     <td>Image</td>
-    <td>COCO, YOLO</td>
+    <td>COCO, YOLO, nuImages</td>
     <td>PyTorch (tested with torchvision and torchscript-exported YOLO models)</td>
   </tr>
 </tbody>
 </table>
 
-More details about the specific metrics and input/output formats required fow each framework are provided in the [Compatibility](https://jderobot.github.io/PerceptionMetrics/compatibility/) section
+More details about the specific metrics and input/output formats required for each framework are provided in the [Compatibility](https://jderobot.github.io/PerceptionMetrics/compatibility/) section
 
 # DetectionMetrics
 
