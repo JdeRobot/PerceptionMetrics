@@ -814,6 +814,29 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="perceptionmetrics.models.segmentation.SegmentationModel.get_eval_lut_ontology">
+<span class="sig-name descname"><span class="pre">get_eval_lut_ontology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_ontology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translation_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dataset_to_model'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/segmentation.html#SegmentationModel.get_eval_lut_ontology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.segmentation.SegmentationModel.get_eval_lut_ontology" title="Link to this definition">¶</a></dt>
+<dd><p>Build the ontology conversion LUT. When no translation file is given, both
+ontologies are matched by class name: shared names with differing indices are
+converted after issuing a warning, while differing names raise an error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_ontology</strong> (<em>dict</em>) – Image or LiDAR dataset ontology</p></li>
+<li><p><strong>ontology_translation</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – JSON file containing translation between dataset and model ontologies, defaults to None</p></li>
+<li><p><strong>translation_direction</strong> (<em>str</em><em>, </em><em>optional</em>) – Direction of the ontology translation, either ‘dataset_to_model’ or ‘model_to_dataset’, defaults to “dataset_to_model”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>LUT converting indices in the requested direction and the ontology to be used for evaluation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[Optional[np.ndarray], dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="perceptionmetrics.models.segmentation.SegmentationModel.inference">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor_in</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/segmentation.html#SegmentationModel.inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.segmentation.SegmentationModel.inference" title="Link to this definition">¶</a></dt>
 <dd><p>Perform inference for a tensor</p>
@@ -1644,6 +1667,7 @@ the aspect ratio is preserved.</p>
 </li>
 <li><a class="reference internal" href="#perceptionmetrics.models.segmentation.SegmentationModel"><code class="docutils literal notranslate"><span class="pre">SegmentationModel</span></code></a><ul>
 <li><a class="reference internal" href="#perceptionmetrics.models.segmentation.SegmentationModel.eval"><code class="docutils literal notranslate"><span class="pre">SegmentationModel.eval()</span></code></a></li>
+<li><a class="reference internal" href="#perceptionmetrics.models.segmentation.SegmentationModel.get_eval_lut_ontology"><code class="docutils literal notranslate"><span class="pre">SegmentationModel.get_eval_lut_ontology()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.segmentation.SegmentationModel.inference"><code class="docutils literal notranslate"><span class="pre">SegmentationModel.inference()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.models.segmentation.SegmentationModel.predict"><code class="docutils literal notranslate"><span class="pre">SegmentationModel.predict()</span></code></a></li>
 </ul>
