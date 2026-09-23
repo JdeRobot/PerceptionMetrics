@@ -1,6 +1,6 @@
 import streamlit as st
 
-from tabs.tasks.utils import browse_file, browse_folder
+from gui.tasks.utils import browse_file, browse_folder
 
 
 def browse_lidar_dataset_path():

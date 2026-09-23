@@ -8,7 +8,7 @@ from PIL import Image
 
 from perceptionmetrics.datasets.cityscapes import CityscapesImageSegmentationDataset
 from perceptionmetrics.datasets.nuimages import NuImagesSegmentationDataset
-from tabs.tasks.utils import render_image_grid
+from gui.tasks.utils import render_image_grid
 
 
 def _overlay_mask(image, label, ontology, opacity):

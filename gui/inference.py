@@ -1,7 +1,7 @@
 import streamlit as st
-from tabs.tasks.image_detection.inference import render_image_detection_inference
-from tabs.tasks.image_segmentation.inference import render_image_segmentation_inference
-from tabs.tasks.lidar_segmentation.inference import render_lidar_segmentation_inference
+from gui.tasks.image_detection.inference import render_image_detection_inference
+from gui.tasks.image_segmentation.inference import render_image_segmentation_inference
+from gui.tasks.lidar_segmentation.inference import render_lidar_segmentation_inference
 
 
 def inference_tab():
