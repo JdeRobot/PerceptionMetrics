@@ -95,6 +95,9 @@ def render_image_detection_inference():
                 predictions, result_img = run_image_detection_inference(
                     st.session_state.detection_model, image
                 )
+                label_map = getattr(
+                    st.session_state.detection_model, "idx_to_class_name", None
+                )
 
                 st.markdown("#### Detection Results")
                 st.image(result_img, caption="Detection Results", width="stretch")
