@@ -271,6 +271,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
 
             if "resize" in self.model_cfg:
                 tensor = resize_image(
+                    tensor,
                     method="bilinear",
                     width=self.model_cfg["resize"].get("width", None),
                     height=self.model_cfg["resize"].get("height", None),
