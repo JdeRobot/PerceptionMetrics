@@ -1,12 +1,12 @@
 import streamlit as st
 
 from perceptionmetrics.utils.torch import get_device_info
-from tabs.dataset_viewer import dataset_viewer_tab
-from tabs.evaluator import evaluator_tab
-from tabs.inference import inference_tab
-from tabs.tasks.image_detection.sidebar import render_image_detection_sidebar
-from tabs.tasks.image_segmentation.sidebar import render_image_segmentation_sidebar
-from tabs.tasks.lidar_segmentation.sidebar import render_lidar_segmentation_sidebar
+from gui.dataset_viewer import dataset_viewer_tab
+from gui.evaluator import evaluator_tab
+from gui.inference import inference_tab
+from gui.tasks.image_detection.sidebar import render_image_detection_sidebar
+from gui.tasks.image_segmentation.sidebar import render_image_segmentation_sidebar
+from gui.tasks.lidar_segmentation.sidebar import render_lidar_segmentation_sidebar
 st.set_page_config(page_title="PerceptionMetrics", layout="wide")
 
 PAGES = {

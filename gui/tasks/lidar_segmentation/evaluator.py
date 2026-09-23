@@ -4,8 +4,8 @@ import tempfile
 
 import streamlit as st
 
-from tabs.tasks.lidar_segmentation.dataset_viewer import load_semantic_kitti_dataset
-from tabs.tasks.utils import browse_folder
+from gui.tasks.lidar_segmentation.dataset_viewer import load_semantic_kitti_dataset
+from gui.tasks.utils import browse_folder
 
 
 def browse_lidar_predictions_outdir():

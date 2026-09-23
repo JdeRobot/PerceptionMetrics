@@ -2,7 +2,7 @@ import streamlit as st
 import os
 
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
-from tabs.tasks.utils import render_image_grid
+from gui.tasks.utils import render_image_grid
 
 
 def render_image_detection_viewer():
