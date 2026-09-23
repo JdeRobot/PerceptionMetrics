@@ -47,6 +47,23 @@ def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] =
     )
 
 
+def run_image_detection_inference(model, image: Image.Image):
+    """Run model inference and draw detections on the original image.
+
+    :param model: Loaded image detection model.
+    :type model: object
+    :param image: Original RGB image uploaded by the user.
+    :type image: PIL.Image.Image
+    :return: Model predictions and the rendered detection image.
+    :rtype: tuple[dict, numpy.ndarray]
+    """
+    predictions = model.predict(image)
+    label_map = getattr(model, "idx_to_class_name", None)
+    result_img = draw_detections(image, predictions, label_map)
+
+    return predictions, result_img
+
+
 def render_image_detection_inference():
     """Render the image detection inference tab in Streamlit."""
 
@@ -75,16 +92,12 @@ def render_image_detection_inference():
         with st.spinner("Running inference..."):
             try:
                 image = Image.open(image_file).convert("RGB")
-                predictions, sample_tensor = st.session_state.detection_model.predict(
-                    image, return_sample=True
+                predictions, result_img = run_image_detection_inference(
+                    st.session_state.detection_model, image
                 )
-                from torchvision.transforms import v2 as transforms
-
-                img_to_draw = transforms.ToPILImage()(sample_tensor[0])
                 label_map = getattr(
                     st.session_state.detection_model, "idx_to_class_name", None
                 )
-                result_img = draw_detections(img_to_draw, predictions, label_map)
 
                 st.markdown("#### Detection Results")
                 st.image(result_img, caption="Detection Results", width="stretch")
