@@ -1,8 +1,13 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 # skip these tests when unavailable
 torch = pytest.importorskip("torch")
 pytest.importorskip("torchvision")
+
+if isinstance(torch, MagicMock):
+    pytest.skip("real torch/torchvision required", allow_module_level=True)
 
 from perceptionmetrics.utils.torch import data_to_device, get_data_shape, unsqueeze_data
 
@@ -59,22 +64,23 @@ def test_torch_raises_type_error():
     # Ensure non-tensors raise TypeError
     data = "string"
     device = torch.device("cpu")
-    
+
     with pytest.raises(TypeError, match="expected torch.Tensor"):
         data_to_device(data, device)
-        
+
     with pytest.raises(TypeError, match="expected torch.Tensor"):
         get_data_shape(data)
-        
+
     with pytest.raises(TypeError, match="expected torch.Tensor"):
         unsqueeze_data(data)
+
 
 def test_torch_raises_type_error_nested():
     # Test nested invalid types
     data = [torch.randn(2), "invalid"]
-    
+
     with pytest.raises(TypeError, match="expected torch.Tensor"):
         data_to_device(data, torch.device("cpu"))
-        
+
     with pytest.raises(TypeError, match="expected torch.Tensor"):
         get_data_shape(data)
