@@ -1,3 +1,10 @@
+from perceptionmetrics.utils.logging_config import get_logger, add_file_handler
+
+_logger = get_logger(__name__)
+
+# For file based logging.
+# add_file_handler("logs/run.log")    
+ 
 REGISTRY = {}
 
 try:
@@ -9,14 +16,14 @@ try:
     REGISTRY["torch_image_segmentation"] = TorchImageSegmentationModel
     REGISTRY["torch_lidar_segmentation"] = TorchLiDARSegmentationModel
 except ImportError:
-    print("Torch not available")
+    _logger.warning("Torch not available – segmentation models disabled.")
 
 try:
     from perceptionmetrics.models.torch_detection import TorchImageDetectionModel
 
     REGISTRY["torch_image_detection"] = TorchImageDetectionModel
 except ImportError:
-    print("Torch detection not available")
+    _logger.warning("Torch detection not available – detection model disabled.")
 
 try:
     from perceptionmetrics.models.tf_segmentation import (
@@ -25,7 +32,7 @@ try:
 
     REGISTRY["tensorflow_image_segmentation"] = TensorflowImageSegmentationModel
 except ImportError:
-    print("Tensorflow not available")
+    _logger.warning("TensorFlow not available – segmentation model disabled.")
 
 if not REGISTRY:
     print(
