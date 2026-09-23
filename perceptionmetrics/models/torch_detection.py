@@ -26,6 +26,8 @@ from perceptionmetrics.utils.torch import (
     pad_to_closest_divisor,
 )
 
+AVAILABLE_MODEL_FORMATS_LIDAR_DETECTION = ["mmdet3d"]
+
 
 def data_to_device(
     data: Union[Dict[str, torch.Tensor], List[Dict[str, torch.Tensor]]],
@@ -214,6 +216,55 @@ class ImageDetectionTorchDataset(Dataset):
             image, target = self.transform(image, target)
 
         return self.dataset.dataset.index[idx], image, target
+
+
+class LiDARDetectionTorchDataset(Dataset):
+    """Dataset wrapper for LiDAR detection PyTorch models.
+
+    This wrapper keeps the expected 3D box representation explicit:
+    boxes are stored as [x, y, z, dx, dy, dz, yaw] where x, y, z is the
+    box center in the LiDAR frame, dx, dy, dz are dimensions, and yaw is
+    the heading angle.
+
+    :param dataset: LiDAR detection dataset
+    :type dataset: LiDARDetectionDataset
+    :param splits: Splits to be used from the dataset, defaults to ["test"]
+    :type splits: List[str], optional
+    """
+
+    def __init__(
+        self,
+        dataset: detection_dataset.LiDARDetectionDataset,
+        splits: List[str] = ["test"],
+    ):
+        self.dataset = copy(dataset)
+        self.dataset._validate_splits(splits)
+        self.dataset.dataset = self.dataset.dataset[
+            self.dataset.dataset["split"].isin(splits)
+        ]
+        self.dataset.make_fname_global()
+
+    def __len__(self):
+        return len(self.dataset.dataset)
+
+    def __getitem__(
+        self, idx: int
+    ) -> Tuple[int, torch.Tensor, Dict[str, torch.Tensor]]:
+        row = self.dataset.dataset.iloc[idx]
+        points_path = row["points"]
+        annotation_path = row["annotation"]
+
+        points = self.dataset.read_points(points_path)
+        boxes_3d, labels = self.dataset.read_annotation(annotation_path)
+        boxes_3d = np.asarray(boxes_3d, dtype=np.float32).reshape(-1, 7)
+        labels = np.asarray(labels, dtype=np.int64)
+
+        target = {
+            "boxes_3d": torch.as_tensor(boxes_3d, dtype=torch.float32),
+            "labels": torch.as_tensor(labels, dtype=torch.int64),
+        }
+
+        return self.dataset.dataset.index[idx], torch.as_tensor(points), target
 
 
 class TorchImageDetectionModel(detection_model.ImageDetectionModel):
@@ -700,4 +751,112 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
         dummy_input = torch.randn(1, 3, *image_size).to(self.device)
         return get_computational_cost(
             self.model, dummy_input, self.model_fname, runs, warm_up_runs
+        )
+
+
+class TorchLiDARDetectionModel(detection_model.LiDARDetectionModel):
+    """Skeleton for LiDAR detection models using PyTorch backends.
+
+    The intended prediction format is based on common 3D detection toolkits such
+    as MMDetection3D and nuScenes-style boxes:
+
+    boxes_3d: [N, 7] tensor/array with [x, y, z, dx, dy, dz, yaw]
+    labels: [N] class indices
+    scores: [N] confidence scores
+
+    Actual backend-specific inference and metric evaluation are intentionally
+    left unwired until the LiDAR detection dataset and metric contract is
+    finalized.
+    """
+
+    def __init__(
+        self,
+        model: Union[str, torch.nn.Module],
+        model_cfg: str,
+        ontology_fname: str,
+        device: torch.device = None,
+    ):
+        if device is None:
+            best_device, _ = get_device_info()
+            self.device = torch.device(best_device)
+        else:
+            self.device = torch.device(device)
+
+        model_fname = model if isinstance(model, str) else None
+        model_type = "native"
+
+        super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
+
+        self.model_format = self.model_cfg.get("model_format", "mmdet3d").lower()
+        if self.model_format not in AVAILABLE_MODEL_FORMATS_LIDAR_DETECTION:
+            raise ValueError(
+                f"Unsupported LiDAR detection model_format: {self.model_format}"
+            )
+
+        self.idx_to_class_name = {v["idx"]: k for k, v in self.ontology.items()}
+
+        if isinstance(self.model, torch.nn.Module):
+            self.model = self.model.to(self.device).eval()
+
+    def predict(
+        self, points: np.ndarray, return_sample: bool = False
+    ) -> Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]:
+        """Perform prediction for a single LiDAR point cloud.
+
+        :param points: Point cloud array with shape [N, 3] or [N, 4]
+        :type points: np.ndarray
+        :param return_sample: Whether to return the prepared tensor
+        :type return_sample: bool
+        :return: LiDAR detection result, optionally with the input tensor
+        :rtype: Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]
+        """
+        sample = torch.as_tensor(points, dtype=torch.float32, device=self.device)
+        result = self.inference(sample)
+
+        if return_sample:
+            return result, sample
+        return result
+
+    def inference(self, points: Union[np.ndarray, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        """Run LiDAR detection inference.
+
+        This method is a skeleton. Backend-specific MMDetection3D preparation and
+        post-processing should be added here.
+        """
+        raise NotImplementedError(
+            "TorchLiDARDetectionModel inference is not implemented yet. "
+            "Expected output format is boxes_3d [N, 7], labels [N], scores [N]."
+        )
+
+    def eval(
+        self,
+        dataset: detection_dataset.LiDARDetectionDataset,
+        split: Union[str, List[str]] = "test",
+        ontology_translation: Optional[str] = None,
+        predictions_outdir: Optional[str] = None,
+        results_per_sample: bool = False,
+        progress_callback=None,
+        metrics_callback=None,
+    ) -> pd.DataFrame:
+        """Evaluate a LiDAR detection model.
+
+        Kept as an explicit placeholder until 3D detection metrics are added.
+        """
+        raise NotImplementedError(
+            "TorchLiDARDetectionModel eval is not implemented yet. "
+            "LiDAR detection needs 3D box metrics before evaluation can be wired."
+        )
+
+    def get_computational_cost(
+        self,
+        point_cloud_size: Tuple[int, int] = (100000, 4),
+        runs: int = 30,
+        warm_up_runs: int = 5,
+    ) -> pd.DataFrame:
+        """Get computational cost for a LiDAR detection model.
+
+        This is left unwired while inference is still a skeleton.
+        """
+        raise NotImplementedError(
+            "TorchLiDARDetectionModel computational cost is not implemented yet."
         )

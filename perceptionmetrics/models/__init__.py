@@ -12,9 +12,13 @@ except ImportError:
     print("Torch not available")
 
 try:
-    from perceptionmetrics.models.torch_detection import TorchImageDetectionModel
+    from perceptionmetrics.models.torch_detection import (
+        TorchImageDetectionModel,
+        TorchLiDARDetectionModel,
+    )
 
     REGISTRY["torch_image_detection"] = TorchImageDetectionModel
+    REGISTRY["torch_lidar_detection"] = TorchLiDARDetectionModel
 except ImportError:
     print("Torch detection not available")
 
