@@ -4,8 +4,8 @@ import numpy as np
 
 try:
     from open3d._ml3d.datasets.utils import DataProcessing
-except Exception:
-    print("Open3D-ML3D not available")
+except ImportError:
+    print("Warning: Open3D-ML3D not available. RandLANet functionality will be limited.")
 import torch
 
 import perceptionmetrics.utils.lidar as ul

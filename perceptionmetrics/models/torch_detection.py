@@ -244,12 +244,14 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
 
         # Load model from file or use passed instance
         if isinstance(model, str):
-            assert os.path.isfile(model), "Torch model file not found"
+            if not os.path.isfile(model):
+                raise FileNotFoundError(f"Model file not found: {model}")
             model_fname = model
             try:
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
-            except Exception:
+            except (RuntimeError, EOFError) as jit_err:
+                # TorchScript load failed, try loading as native PyTorch
                 try:
                     loaded = torch.load(model, map_location=self.device, weights_only=False)
                     # Handle Ultralytics/YOLO-style dict checkpoints
@@ -257,9 +259,9 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                         candidate = loaded.get("ema") or loaded.get("model")
                         if candidate is None or not hasattr(candidate, "forward"):
                             raise ValueError(
-                                """
-                                The loaded .pt file is a dictionary but doesn't contain a valid model under keys 'model' or 'ema'. Please export to TorchScript for better compatibility.
-                                """
+                                "The loaded .pt file is a dictionary but doesn't contain a "
+                                "valid model under keys 'model' or 'ema'. Please export to "
+                                "TorchScript for better compatibility."
                             )
                         model = candidate
                     else:
@@ -268,11 +270,22 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                 # Fallback for missing Ultralytics dependency
                 except (ModuleNotFoundError, AttributeError) as e:
                     raise ImportError(
-                        f"Failed to load native .pt model. This often happens if the 'ultralytics' "
-                        f"library is missing or incompatible. \nOriginal error: {e}\n"
-                        f"SUGGESTION: 'pip install ultralytics' or export your model to TorchScript."
+                        f"Failed to load native .pt model. This often happens if the "
+                        f"'ultralytics' library is missing or incompatible.\n"
+                        f"Original error: {e}\n"
+                        f"SUGGESTION: 'pip install ultralytics' or export your model to "
+                        f"TorchScript."
                     ) from e
-
+                except Exception as load_err:
+                    raise RuntimeError(
+                        f"Failed to load model as TorchScript or PyTorch module. "
+                        f"TorchScript error: {jit_err}. PyTorch error: {load_err}"
+                    ) from load_err
+        elif isinstance(model, torch.nn.Module):
+            model_fname = None
+            model_type = "native"
+        else:
+            raise ValueError("Model must be a filename or a torch.nn.Module")
         # Init parent class
         super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
 
