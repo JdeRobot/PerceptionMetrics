@@ -2,7 +2,7 @@ import os
 
 import streamlit as st
 
-from tabs.tasks.utils import browse_file, browse_folder
+from gui.tasks.utils import browse_file, browse_folder
 
 
 IMAGE_SEGMENTATION_DATASETS = [

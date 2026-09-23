@@ -1,7 +1,7 @@
 import streamlit as st
-from tabs.tasks.image_detection.evaluator import render_image_detection_evaluator
-from tabs.tasks.image_segmentation.evaluator import render_image_segmentation_evaluator
-from tabs.tasks.lidar_segmentation.evaluator import render_lidar_segmentation_evaluator
+from gui.tasks.image_detection.evaluator import render_image_detection_evaluator
+from gui.tasks.image_segmentation.evaluator import render_image_segmentation_evaluator
+from gui.tasks.lidar_segmentation.evaluator import render_lidar_segmentation_evaluator
 
 
 def evaluator_tab():

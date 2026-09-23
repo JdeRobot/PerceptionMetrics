@@ -4,10 +4,10 @@ import tempfile
 
 import streamlit as st
 
-from tabs.tasks.image_segmentation.dataset_viewer import (
+from gui.tasks.image_segmentation.dataset_viewer import (
     load_image_segmentation_dataset,
 )
-from tabs.tasks.utils import browse_folder
+from gui.tasks.utils import browse_folder
 
 
 def browse_segmentation_predictions_outdir():
