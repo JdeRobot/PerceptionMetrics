@@ -1,11 +1,12 @@
 import streamlit as st
 import os
-from streamlit_image_select import image_select
 
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
+from gui.tasks.utils import render_image_grid
 
 
-def dataset_viewer_tab():
+def render_image_detection_viewer():
+    """Render the image detection dataset viewer tab in Streamlit."""
     import tempfile
     from perceptionmetrics.datasets.coco import CocoDataset
     from perceptionmetrics.datasets.yolo import YOLODataset
@@ -49,36 +50,6 @@ def dataset_viewer_tab():
     else:
         st.error("Unsupported dataset type.")
         return
-
-    # Pagination and search row
-    nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([1, 1, 2, 1.5])
-    with nav_col1:
-        pass  # Placeholder for "< page" button, to be added later in the code
-    with nav_col2:
-        pass  # Placeholder for ">" button, to be added later in the code
-    with nav_col3:
-        pass  # Placeholder for page info, to be added later in the code
-    with nav_col4:
-        # Move the button up by reducing the margin and decrease button size with custom CSS
-        st.markdown(
-            """
-            <style>
-            div[data-testid="stButton"] button#search_icon_btn {
-                padding: 0.15rem 0.5rem;
-                font-size: 0.85rem;
-                min-height: 1.5rem;
-                height: 1.5rem;
-                line-height: 1.1;
-            }
-            /* Move the button up by adding negative top margin */
-            div[data-testid="stButton"] {
-                margin-top: -0.85rem !important;
-            }
-            </style>
-        """,
-            unsafe_allow_html=True,
-        )
-        st.markdown("<div style='margin-bottom: 0;'></div>", unsafe_allow_html=True)
 
     # Load dataset
     dataset_key = f"{dataset_path}_{split}"
@@ -155,102 +126,13 @@ def dataset_viewer_tab():
         st.warning("No images found.")
         return
 
-    # Pagination
-    IMAGES_PER_PAGE = 12
-    _, total_pages = (
-        len(image_files),
-        (len(image_files) + IMAGES_PER_PAGE - 1) // IMAGES_PER_PAGE,
-    )
-    page_key = f"image_page_{dataset_path}_{split}"
-
-    if page_key not in st.session_state:
-        st.session_state[page_key] = 0
-    current_page = max(0, min(st.session_state[page_key], total_pages - 1))
-    st.session_state[page_key] = current_page
-
-    start_idx = current_page * IMAGES_PER_PAGE
-    sample_images = image_files[start_idx : start_idx + IMAGES_PER_PAGE]
-    image_paths = [os.path.join(img_dir, img_name) for img_name in sample_images]
-
-    # Navigation
-    col1, col2, col3, col4 = st.columns([0.5, 9.5, 0.5, 0.5])
-    with col1:
-        if st.button("⟨", key="prev_page_btn", disabled=(current_page == 0)):
-            st.session_state[page_key] = current_page - 1
-            st.rerun()
-    with col2:
-        st.markdown(
-            f"<div style='text-align:center;font-weight:bold;'>Page {current_page + 1} of {total_pages}</div>",
-            unsafe_allow_html=True,
-        )
-    with col3:
-        if st.button(
-            "⟩", key="next_page_btn", disabled=(current_page >= total_pages - 1)
-        ):
-            st.session_state[page_key] = current_page + 1
-            st.rerun()
-    with col4:
-        if st.button(
-            "🔍",
-            key="search_icon_btn",
-            help="Search for an image by name",
-            disabled=not (dataset_path and os.path.isdir(dataset_path)),
-        ):
-            st.session_state["show_search_dropdown"] = True
-
-    # Search dropdown
-    if st.session_state.get("show_search_dropdown", False):
-        col1, col2, col3 = st.columns([4, 1, 1])
-        with col1:
-            selected_img = st.selectbox(
-                "Search image:", options=image_files, key="search_image"
-            )
-        with col2:
-            st.markdown(
-                "<div style='margin-bottom: 2.4rem;'></div>", unsafe_allow_html=True
-            )
-            if st.button("Go to image", key="go_to_image_btn"):
-                new_page = image_files.index(selected_img) // IMAGES_PER_PAGE
-                st.session_state[page_key] = new_page
-                st.session_state[
-                    f"img_select_all_{dataset_path}_{split}_{new_page}"
-                ] = (image_files.index(selected_img) % IMAGES_PER_PAGE)
-                st.session_state["show_search_dropdown"] = False
-                st.rerun()
-        with col3:
-            st.markdown(
-                "<div style='margin-bottom: 2.4rem;'></div>", unsafe_allow_html=True
-            )
-            if st.button("Cancel", key="cancel_search_btn"):
-                st.session_state["show_search_dropdown"] = False
-                st.rerun()
-
-    caption_len_limit = 17
-    captions = [
-        (
-            (name[:caption_len_limit] + "..." + name[-3:])
-            if len(name) > caption_len_limit
-            else name
-        )
-        for name in sample_images
-    ]
-
-    # Image grid
-    img_select_key = f"img_select_all_{dataset_path}_{split}_{current_page}"
-    img_select_index = st.session_state.get(img_select_key)
-    if img_select_index is None or not isinstance(img_select_index, int):
-        img_select_index = 0
-    selected_img_path = (
-        image_select(
-            label="",
-            images=image_paths,
-            captions=captions,
-            use_container_width=False,
-            key=img_select_key,
-            index=img_select_index,
-        )
-        if image_paths
-        else None
+    image_paths = [os.path.join(img_dir, img_name) for img_name in image_files]
+    selected_img_path, _ = render_image_grid(
+        item_names=image_files,
+        image_paths=image_paths,
+        state_prefix="image_detection",
+        context=f"{dataset_path}_{split}",
+        search_label="image",
     )
 
     # Display selected image with annotations

@@ -239,7 +239,9 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for perceptionmetrics.cli.eval_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
@@ -450,7 +452,12 @@
         <span class="n">predictions_outdir</span><span class="o">=</span><span class="n">predictions_outdir</span><span class="p">,</span>
         <span class="n">results_per_sample</span><span class="o">=</span><span class="n">predictions_outdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_fname</span><span class="p">)</span>
+
+    <span class="c1"># Detection models return a dict with metrics_df and metrics_factory;</span>
+    <span class="c1"># other tasks return the metrics DataFrame directly.</span>
+    <span class="n">metrics_df</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metrics_df&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">results</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">out_fname</span><span class="p">)),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">metrics_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_fname</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">results</span>
 

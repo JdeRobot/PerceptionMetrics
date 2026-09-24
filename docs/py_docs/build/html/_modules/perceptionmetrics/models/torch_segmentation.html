@@ -243,7 +243,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -261,8 +261,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">segmentation</span> <span class="k">as</span> <span class="n">segmentation_dataset</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">segmentation</span> <span class="k">as</span> <span class="n">segmentation_model</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.conversion</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uc</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.segmentation_metrics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">um</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.torch</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ut</span>
 
@@ -640,6 +638,8 @@
         <span class="n">translation_direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dataset_to_model&quot;</span><span class="p">,</span>
         <span class="n">predictions_outdir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">results_per_sample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metrics_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform evaluation for an image segmentation dataset</span>
 
@@ -655,6 +655,10 @@
 <span class="sd">        :type predictions_outdir: Optional[str], optional</span>
 <span class="sd">        :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.</span>
 <span class="sd">        :type results_per_sample: bool, optional</span>
+<span class="sd">        :param progress_callback: Optional callback called as progress_callback(processed, total), defaults to None</span>
+<span class="sd">        :type progress_callback: Optional[Callable], optional</span>
+<span class="sd">        :param metrics_callback: Optional callback called as metrics_callback(metrics_df, processed, total), defaults to None</span>
+<span class="sd">        :type metrics_callback: Optional[Callable], optional</span>
 <span class="sd">        :return: DataFrame containing evaluation results</span>
 <span class="sd">        :rtype: pd.DataFrame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -668,24 +672,12 @@
         <span class="k">if</span> <span class="n">predictions_outdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># Build a LUT for transforming ontology if needed (aligned with TorchLiDARSegmentationModel.eval)</span>
-        <span class="n">eval_ontology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span>
-
-        <span class="k">if</span> <span class="n">ontology_translation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ontology_translation</span> <span class="o">=</span> <span class="n">uio</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">ontology_translation</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">translation_direction</span> <span class="o">==</span> <span class="s2">&quot;dataset_to_model&quot;</span><span class="p">:</span>
-                <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">get_ontology_conversion_lut</span><span class="p">(</span>
-                    <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">eval_ontology</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span>
-                <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">get_ontology_conversion_lut</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span>
-                <span class="p">)</span>
-
+        <span class="c1"># Build a LUT for transforming ontology if needed</span>
+        <span class="n">lut_ontology</span><span class="p">,</span> <span class="n">eval_ontology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_eval_lut_ontology</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span><span class="p">,</span> <span class="n">translation_direction</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">lut_ontology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">lut_ontology</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">lut_ontology</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_ontology</span><span class="p">)</span>
 
@@ -710,6 +702,9 @@
 
         <span class="c1"># Init metrics</span>
         <span class="n">metrics_factory</span> <span class="o">=</span> <span class="n">um</span><span class="o">.</span><span class="n">SegmentationMetricsFactory</span><span class="p">(</span><span class="n">n_classes</span><span class="p">)</span>
+        <span class="n">total_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">processed_samples</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">evaluation_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;evaluation_step&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Evaluation loop</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
@@ -770,6 +765,26 @@
                             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_idx</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
                         <span class="p">)</span>
 
+                <span class="n">processed_samples</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">progress_callback</span><span class="p">(</span><span class="n">processed_samples</span><span class="p">,</span> <span class="n">total_samples</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">metrics_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">evaluation_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">evaluation_step</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="ow">and</span> <span class="p">(</span>
+                        <span class="n">processed_samples</span> <span class="o">%</span> <span class="n">evaluation_step</span> <span class="o">==</span> <span class="mi">0</span>
+                        <span class="ow">or</span> <span class="n">processed_samples</span> <span class="o">==</span> <span class="n">total_samples</span>
+                    <span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="n">metrics_callback</span><span class="p">(</span>
+                        <span class="n">um</span><span class="o">.</span><span class="n">get_metrics_dataframe</span><span class="p">(</span><span class="n">metrics_factory</span><span class="p">,</span> <span class="n">eval_ontology</span><span class="p">),</span>
+                        <span class="n">processed_samples</span><span class="p">,</span>
+                        <span class="n">total_samples</span><span class="p">,</span>
+                    <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">um</span><span class="o">.</span><span class="n">get_metrics_dataframe</span><span class="p">(</span><span class="n">metrics_factory</span><span class="p">,</span> <span class="n">eval_ontology</span><span class="p">)</span></div>
 
 
@@ -798,6 +813,7 @@
             <span class="n">size_mb</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Measure inference time with GPU synchronization</span>
+        <span class="n">use_cuda</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span>
         <span class="n">dummy_tuple</span> <span class="o">=</span> <span class="n">dummy_input</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">dummy_input</span><span class="p">,)</span>
 
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">warm_up_runs</span><span class="p">):</span>
@@ -805,11 +821,13 @@
 
         <span class="n">inference_times</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">runs</span><span class="p">):</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
-            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">dummy_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
-            <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="n">inference_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
@@ -957,6 +975,8 @@
         <span class="n">translation_direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dataset_to_model&quot;</span><span class="p">,</span>
         <span class="n">predictions_outdir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">results_per_sample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">progress_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metrics_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform evaluation for a LiDAR segmentation dataset</span>
 
@@ -972,6 +992,10 @@
 <span class="sd">        :type predictions_outdir: Optional[str], optional</span>
 <span class="sd">        :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.</span>
 <span class="sd">        :type results_per_sample: bool, optional</span>
+<span class="sd">        :param progress_callback: Optional callback called as progress_callback(processed, total), defaults to None</span>
+<span class="sd">        :type progress_callback: Optional[Callable], optional</span>
+<span class="sd">        :param metrics_callback: Optional callback called as metrics_callback(metrics_df, processed, total), defaults to None</span>
+<span class="sd">        :type metrics_callback: Optional[Callable], optional</span>
 <span class="sd">        :return: DataFrame containing evaluation results</span>
 <span class="sd">        :rtype: pd.DataFrame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -986,23 +1010,11 @@
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Build a LUT for transforming ontology if needed</span>
-        <span class="n">eval_ontology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span>
-
-        <span class="k">if</span> <span class="n">ontology_translation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ontology_translation</span> <span class="o">=</span> <span class="n">uio</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">ontology_translation</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">translation_direction</span> <span class="o">==</span> <span class="s2">&quot;dataset_to_model&quot;</span><span class="p">:</span>
-                <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">get_ontology_conversion_lut</span><span class="p">(</span>
-                    <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">eval_ontology</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span>
-                <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">get_ontology_conversion_lut</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span>
-                <span class="p">)</span>
-
+        <span class="n">lut_ontology</span><span class="p">,</span> <span class="n">eval_ontology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_eval_lut_ontology</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span><span class="p">,</span> <span class="n">translation_direction</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">lut_ontology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">lut_ontology</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">lut_ontology</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_ontology</span><span class="p">)</span>
 
@@ -1021,6 +1033,9 @@
 
         <span class="c1"># Init metrics</span>
         <span class="n">metrics_factory</span> <span class="o">=</span> <span class="n">um</span><span class="o">.</span><span class="n">SegmentationMetricsFactory</span><span class="p">(</span><span class="n">n_classes</span><span class="p">)</span>
+        <span class="n">total_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">processed_samples</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">evaluation_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;evaluation_step&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Evaluation loop</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
@@ -1074,6 +1089,26 @@
                         <span class="n">sample_pred</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span>
                             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_name</span><span class="si">}</span><span class="s2">.bin&quot;</span><span class="p">)</span>
                         <span class="p">)</span>
+
+                <span class="n">processed_samples</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">progress_callback</span><span class="p">(</span><span class="n">processed_samples</span><span class="p">,</span> <span class="n">total_samples</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">metrics_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">evaluation_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">evaluation_step</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="ow">and</span> <span class="p">(</span>
+                        <span class="n">processed_samples</span> <span class="o">%</span> <span class="n">evaluation_step</span> <span class="o">==</span> <span class="mi">0</span>
+                        <span class="ow">or</span> <span class="n">processed_samples</span> <span class="o">==</span> <span class="n">total_samples</span>
+                    <span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="n">metrics_callback</span><span class="p">(</span>
+                        <span class="n">um</span><span class="o">.</span><span class="n">get_metrics_dataframe</span><span class="p">(</span><span class="n">metrics_factory</span><span class="p">,</span> <span class="n">eval_ontology</span><span class="p">),</span>
+                        <span class="n">processed_samples</span><span class="p">,</span>
+                        <span class="n">total_samples</span><span class="p">,</span>
+                    <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">um</span><span class="o">.</span><span class="n">get_metrics_dataframe</span><span class="p">(</span><span class="n">metrics_factory</span><span class="p">,</span> <span class="n">eval_ontology</span><span class="p">)</span></div>
 
@@ -1130,6 +1165,7 @@
             <span class="n">size_mb</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Measure inference time with GPU synchronization</span>
+        <span class="n">use_cuda</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">warm_up_runs</span><span class="p">):</span>
             <span class="k">if</span> <span class="s2">&quot;o3d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_format</span><span class="p">:</span>  <span class="c1"># reset random sampling for Open3D-ML models</span>
                 <span class="n">subsampled_points</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sample</span>
@@ -1142,11 +1178,13 @@
             <span class="k">if</span> <span class="s2">&quot;o3d&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_format</span><span class="p">:</span>  <span class="c1"># reset random sampling for Open3D-ML models</span>
                 <span class="n">subsampled_points</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sample</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_reset_sampler</span><span class="p">(</span><span class="n">sampler</span><span class="p">,</span> <span class="n">subsampled_points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">)</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
-            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">)</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
-            <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="n">inference_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>

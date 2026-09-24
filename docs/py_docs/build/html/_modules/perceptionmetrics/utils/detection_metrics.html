@@ -376,9 +376,13 @@
 
         <span class="n">ious</span> <span class="o">=</span> <span class="n">compute_iou_matrix</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">,</span> <span class="n">gt_boxes</span><span class="p">)</span>  <span class="c1"># shape: (num_preds, num_gts)</span>
 
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">p_box</span><span class="p">,</span> <span class="n">p_label</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-            <span class="nb">zip</span><span class="p">(</span><span class="n">pred_boxes</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">,</span> <span class="n">pred_scores</span><span class="p">)</span>
-        <span class="p">):</span>
+        <span class="c1"># Sort predictions by descending score to ensure highest-confidence predictions match first</span>
+        <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">([</span><span class="o">-</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">pred_scores</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sorted_indices</span><span class="p">:</span>
+            <span class="n">p_box</span> <span class="o">=</span> <span class="n">pred_boxes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">p_label</span> <span class="o">=</span> <span class="n">pred_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="n">pred_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">max_iou</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">max_j</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 

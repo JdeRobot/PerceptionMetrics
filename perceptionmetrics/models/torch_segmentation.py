@@ -2,7 +2,7 @@ import importlib
 import os
 import time
 import tempfile
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -20,8 +20,6 @@ from tqdm import tqdm
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 from perceptionmetrics.models import segmentation as segmentation_model
-import perceptionmetrics.utils.conversion as uc
-import perceptionmetrics.utils.io as uio
 import perceptionmetrics.utils.segmentation_metrics as um
 import perceptionmetrics.utils.torch as ut
 
@@ -374,6 +372,8 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         translation_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
+        progress_callback: Optional[Callable] = None,
+        metrics_callback: Optional[Callable] = None,
     ) -> pd.DataFrame:
         """Perform evaluation for an image segmentation dataset
 
@@ -389,6 +389,10 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         :type predictions_outdir: Optional[str], optional
         :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
         :type results_per_sample: bool, optional
+        :param progress_callback: Optional callback called as progress_callback(processed, total), defaults to None
+        :type progress_callback: Optional[Callable], optional
+        :param metrics_callback: Optional callback called as metrics_callback(metrics_df, processed, total), defaults to None
+        :type metrics_callback: Optional[Callable], optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
@@ -402,24 +406,12 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         if predictions_outdir is not None:
             os.makedirs(predictions_outdir, exist_ok=True)
 
-        # Build a LUT for transforming ontology if needed (aligned with TorchLiDARSegmentationModel.eval)
-        eval_ontology = self.ontology
-
-        if ontology_translation is not None:
-            ontology_translation = uio.read_json(ontology_translation)
-            if translation_direction == "dataset_to_model":
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    dataset.ontology, self.ontology, ontology_translation
-                )
-            else:
-                eval_ontology = dataset.ontology
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    self.ontology, dataset.ontology, ontology_translation
-                )
-
+        # Build a LUT for transforming ontology if needed
+        lut_ontology, eval_ontology = self.get_eval_lut_ontology(
+            dataset.ontology, ontology_translation, translation_direction
+        )
+        if lut_ontology is not None:
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
-        else:
-            lut_ontology = None
 
         n_classes = len(eval_ontology)
 
@@ -444,6 +436,9 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
         # Init metrics
         metrics_factory = um.SegmentationMetricsFactory(n_classes)
+        total_samples = len(dataset)
+        processed_samples = 0
+        evaluation_step = self.model_cfg.get("evaluation_step", 1)
 
         # Evaluation loop
         with torch.no_grad():
@@ -504,6 +499,26 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
                             os.path.join(predictions_outdir, f"{sample_idx}.png")
                         )
 
+                processed_samples += len(idx)
+
+                if progress_callback is not None:
+                    progress_callback(processed_samples, total_samples)
+
+                if (
+                    metrics_callback is not None
+                    and evaluation_step is not None
+                    and evaluation_step > 0
+                    and (
+                        processed_samples % evaluation_step == 0
+                        or processed_samples == total_samples
+                    )
+                ):
+                    metrics_callback(
+                        um.get_metrics_dataframe(metrics_factory, eval_ontology),
+                        processed_samples,
+                        total_samples,
+                    )
+
         return um.get_metrics_dataframe(metrics_factory, eval_ontology)
 
     def get_computational_cost(
@@ -529,6 +544,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
             size_mb = None
 
         # Measure inference time with GPU synchronization
+        use_cuda = self.device.type == "cuda"
         dummy_tuple = dummy_input if isinstance(dummy_input, tuple) else (dummy_input,)
 
         for _ in range(warm_up_runs):
@@ -536,11 +552,13 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
         inference_times = []
         for _ in range(runs):
-            torch.cuda.synchronize()
-            start_time = time.time()
+            if use_cuda:
+                torch.cuda.synchronize()
+            start_time = time.perf_counter()
             self.inference(dummy_tuple[0])
-            torch.cuda.synchronize()
-            end_time = time.time()
+            if use_cuda:
+                torch.cuda.synchronize()
+            end_time = time.perf_counter()
             inference_times.append(end_time - start_time)
 
         result = {
@@ -676,6 +694,8 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
         translation_direction: str = "dataset_to_model",
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
+        progress_callback: Optional[Callable] = None,
+        metrics_callback: Optional[Callable] = None,
     ) -> pd.DataFrame:
         """Perform evaluation for a LiDAR segmentation dataset
 
@@ -691,6 +711,10 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
         :type predictions_outdir: Optional[str], optional
         :param results_per_sample: Whether to store results per sample or not, defaults to False. If True, predictions_outdir must be provided.
         :type results_per_sample: bool, optional
+        :param progress_callback: Optional callback called as progress_callback(processed, total), defaults to None
+        :type progress_callback: Optional[Callable], optional
+        :param metrics_callback: Optional callback called as metrics_callback(metrics_df, processed, total), defaults to None
+        :type metrics_callback: Optional[Callable], optional
         :return: DataFrame containing evaluation results
         :rtype: pd.DataFrame
         """
@@ -705,23 +729,11 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
             os.makedirs(predictions_outdir, exist_ok=True)
 
         # Build a LUT for transforming ontology if needed
-        eval_ontology = self.ontology
-
-        if ontology_translation is not None:
-            ontology_translation = uio.read_json(ontology_translation)
-            if translation_direction == "dataset_to_model":
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    dataset.ontology, self.ontology, ontology_translation
-                )
-            else:
-                eval_ontology = dataset.ontology
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    self.ontology, dataset.ontology, ontology_translation
-                )
-
+        lut_ontology, eval_ontology = self.get_eval_lut_ontology(
+            dataset.ontology, ontology_translation, translation_direction
+        )
+        if lut_ontology is not None:
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
-        else:
-            lut_ontology = None
 
         n_classes = len(eval_ontology)
 
@@ -740,6 +752,9 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
 
         # Init metrics
         metrics_factory = um.SegmentationMetricsFactory(n_classes)
+        total_samples = len(dataset)
+        processed_samples = 0
+        evaluation_step = self.model_cfg.get("evaluation_step", 1)
 
         # Evaluation loop
         with torch.no_grad():
@@ -794,6 +809,26 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
                             os.path.join(predictions_outdir, f"{sample_name}.bin")
                         )
 
+                processed_samples += 1
+
+                if progress_callback is not None:
+                    progress_callback(processed_samples, total_samples)
+
+                if (
+                    metrics_callback is not None
+                    and evaluation_step is not None
+                    and evaluation_step > 0
+                    and (
+                        processed_samples % evaluation_step == 0
+                        or processed_samples == total_samples
+                    )
+                ):
+                    metrics_callback(
+                        um.get_metrics_dataframe(metrics_factory, eval_ontology),
+                        processed_samples,
+                        total_samples,
+                    )
+
         return um.get_metrics_dataframe(metrics_factory, eval_ontology)
 
     def get_computational_cost(
@@ -846,6 +881,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
             size_mb = None
 
         # Measure inference time with GPU synchronization
+        use_cuda = self.device.type == "cuda"
         for _ in range(warm_up_runs):
             if "o3d" in self.model_format:  # reset random sampling for Open3D-ML models
                 subsampled_points, _, sampler, _, _, _ = sample
@@ -858,11 +894,13 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
             if "o3d" in self.model_format:  # reset random sampling for Open3D-ML models
                 subsampled_points, _, sampler, _, _, _ = sample
                 self._reset_sampler(sampler, subsampled_points.shape[0], self.n_classes)
-            torch.cuda.synchronize()
-            start_time = time.time()
+            if use_cuda:
+                torch.cuda.synchronize()
+            start_time = time.perf_counter()
             self.inference(sample, self.model, self.model_cfg)
-            torch.cuda.synchronize()
-            end_time = time.time()
+            if use_cuda:
+                torch.cuda.synchronize()
+            end_time = time.perf_counter()
             inference_times.append(end_time - start_time)
 
         result = {

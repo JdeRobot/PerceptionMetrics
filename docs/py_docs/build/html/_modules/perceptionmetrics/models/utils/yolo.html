@@ -242,7 +242,6 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">nms</span>
 
-
 <span class="n">CLASS_NMS_OFFSET</span> <span class="o">=</span> <span class="mi">7680</span>  <span class="c1"># offset to apply to boxes for class-wise NMS</span>
 
 
@@ -252,6 +251,7 @@
     <span class="n">output</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">confidence_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
     <span class="n">nms_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.45</span><span class="p">,</span>
+    <span class="n">max_detections</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Post-process YOLO model output.</span>
 
@@ -261,6 +261,8 @@
 <span class="sd">    :type confidence_threshold: float</span>
 <span class="sd">    :param nms_threshold: IoU threshold for Non-Maximum Suppression (NMS). Some models may not perform NMS (e.g. YOLOv26).</span>
 <span class="sd">    :type nms_threshold: float</span>
+<span class="sd">    :param max_detections: Maximum number of best detections to keep per image after filtering.</span>
+<span class="sd">    :type max_detections: int</span>
 <span class="sd">    :return: Dictionary with keys &#39;boxes&#39;, &#39;labels&#39;, and &#39;scores&#39;.</span>
 <span class="sd">    :rtype: dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -299,6 +301,12 @@
         <span class="n">boxes_xyxy</span> <span class="o">=</span> <span class="n">boxes_xyxy</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
         <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">keep_idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">max_detections</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">max_detections</span> <span class="o">&lt;</span> <span class="n">scores</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">limited_idx</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="n">max_detections</span><span class="p">]</span>
+            <span class="n">boxes_xyxy</span> <span class="o">=</span> <span class="n">boxes_xyxy</span><span class="p">[</span><span class="n">limited_idx</span><span class="p">]</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">limited_idx</span><span class="p">]</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">limited_idx</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;boxes&quot;</span><span class="p">:</span> <span class="n">boxes_xyxy</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">labels</span><span class="p">,</span> <span class="s2">&quot;scores&quot;</span><span class="p">:</span> <span class="n">scores</span><span class="p">}</span></div>
 

@@ -13,8 +13,6 @@ from tqdm import tqdm
 
 from perceptionmetrics.datasets.segmentation import ImageSegmentationDataset
 from perceptionmetrics.models.segmentation import ImageSegmentationModel
-import perceptionmetrics.utils.conversion as uc
-import perceptionmetrics.utils.io as uio
 import perceptionmetrics.utils.segmentation_metrics as um
 
 tf.config.optimizer.set_experimental_options({"layout_optimizer": False})
@@ -273,6 +271,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
 
             if "resize" in self.model_cfg:
                 tensor = resize_image(
+                    tensor,
                     method="bilinear",
                     width=self.model_cfg["resize"].get("width", None),
                     height=self.model_cfg["resize"].get("height", None),
@@ -379,21 +378,9 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             os.makedirs(predictions_outdir, exist_ok=True)
 
         # Build a LUT for transforming ontology if needed
-        eval_ontology = self.ontology
-
-        if ontology_translation is not None:
-            ontology_translation = uio.read_json(ontology_translation)
-            if translations_direction == "dataset_to_model":
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    dataset.ontology, self.ontology, ontology_translation
-                )
-            else:
-                eval_ontology = dataset.ontology
-                lut_ontology = uc.get_ontology_conversion_lut(
-                    self.ontology, dataset.ontology, ontology_translation
-                )
-        else:
-            lut_ontology = None
+        lut_ontology, eval_ontology = self.get_eval_lut_ontology(
+            dataset.ontology, ontology_translation, translations_direction
+        )
 
         n_classes = len(eval_ontology)
 
@@ -513,13 +500,13 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             if has_gpu:
                 tf.config.experimental.set_synchronous_execution(True)
 
-            start_time = time.time()
+            start_time = time.perf_counter()
             self.inference(dummy_input)
 
             if has_gpu:
                 tf.config.experimental.set_synchronous_execution(True)
 
-            inference_times.append(time.time() - start_time)
+            inference_times.append(time.perf_counter() - start_time)
 
         # Retrieve computational cost information
         result = {

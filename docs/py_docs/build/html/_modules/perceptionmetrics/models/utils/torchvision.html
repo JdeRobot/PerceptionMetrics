@@ -241,13 +241,17 @@
           <h1>Source code for perceptionmetrics.models.utils.torchvision</h1><div class="highlight"><pre>
 <div class="viewcode-block" id="postprocess_detection">
 <a class="viewcode-back" href="../../../../api/perceptionmetrics.models.utils.html#perceptionmetrics.models.utils.torchvision.postprocess_detection">[docs]</a>
-<span></span><span class="k">def</span><span class="w"> </span><span class="nf">postprocess_detection</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">confidence_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+<span></span><span class="k">def</span><span class="w"> </span><span class="nf">postprocess_detection</span><span class="p">(</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">confidence_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">max_detections</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Post-process torchvision model output.</span>
 
 <span class="sd">    :param output: Dictionary with keys &#39;boxes&#39;, &#39;labels&#39;, and &#39;scores&#39;.</span>
 <span class="sd">    :type output: dict</span>
 <span class="sd">    :param confidence_threshold: Confidence threshold to filter boxes.</span>
 <span class="sd">    :type confidence_threshold: float</span>
+<span class="sd">    :param max_detections: Maximum number of best detections to keep per image after filtering.</span>
+<span class="sd">    :type max_detections: int</span>
 <span class="sd">    :return: Dictionary with keys &#39;boxes&#39;, &#39;labels&#39;, and &#39;scores&#39;.</span>
 <span class="sd">    :rtype: dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -258,6 +262,15 @@
             <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">][</span><span class="n">keep_mask</span><span class="p">],</span>
             <span class="s2">&quot;scores&quot;</span><span class="p">:</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">][</span><span class="n">keep_mask</span><span class="p">],</span>
         <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">max_detections</span> <span class="o">&lt;</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">max_detections</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">limited_idx</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="n">max_detections</span><span class="p">]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;boxes&quot;</span><span class="p">:</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;boxes&quot;</span><span class="p">][</span><span class="n">limited_idx</span><span class="p">],</span>
+            <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">][</span><span class="n">limited_idx</span><span class="p">],</span>
+            <span class="s2">&quot;scores&quot;</span><span class="p">:</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">][</span><span class="n">limited_idx</span><span class="p">],</span>
+        <span class="p">}</span>
+
     <span class="k">return</span> <span class="n">output</span></div>
 
 </pre></div>

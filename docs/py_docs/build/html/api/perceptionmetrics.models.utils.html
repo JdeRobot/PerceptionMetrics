@@ -480,13 +480,14 @@
 <span id="perceptionmetrics-models-utils-torchvision-module"></span><h2>perceptionmetrics.models.utils.torchvision module<a class="headerlink" href="#module-perceptionmetrics.models.utils.torchvision" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="perceptionmetrics.models.utils.torchvision.postprocess_detection">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.torchvision.</span></span><span class="sig-name descname"><span class="pre">postprocess_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/torchvision.html#postprocess_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.torchvision.postprocess_detection" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.torchvision.</span></span><span class="sig-name descname"><span class="pre">postprocess_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_detections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/torchvision.html#postprocess_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.torchvision.postprocess_detection" title="Link to this definition">¶</a></dt>
 <dd><p>Post-process torchvision model output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output</strong> (<em>dict</em>) – Dictionary with keys ‘boxes’, ‘labels’, and ‘scores’.</p></li>
 <li><p><strong>confidence_threshold</strong> (<em>float</em>) – Confidence threshold to filter boxes.</p></li>
+<li><p><strong>max_detections</strong> (<em>int</em>) – Maximum number of best detections to keep per image after filtering.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -503,7 +504,7 @@
 <span id="perceptionmetrics-models-utils-yolo-module"></span><h2>perceptionmetrics.models.utils.yolo module<a class="headerlink" href="#module-perceptionmetrics.models.utils.yolo" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="perceptionmetrics.models.utils.yolo.postprocess_detection">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.yolo.</span></span><span class="sig-name descname"><span class="pre">postprocess_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nms_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.45</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/yolo.html#postprocess_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.yolo.postprocess_detection" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.models.utils.yolo.</span></span><span class="sig-name descname"><span class="pre">postprocess_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nms_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.45</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_detections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/models/utils/yolo.html#postprocess_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.models.utils.yolo.postprocess_detection" title="Link to this definition">¶</a></dt>
 <dd><p>Post-process YOLO model output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -511,6 +512,7 @@
 <li><p><strong>output</strong> (<em>torch.Tensor</em>) – Tensor of shape [num_classes + 4, num_anchors] containing bounding box predictions and class logits.</p></li>
 <li><p><strong>confidence_threshold</strong> (<em>float</em>) – Confidence threshold to filter boxes.</p></li>
 <li><p><strong>nms_threshold</strong> (<em>float</em>) – IoU threshold for Non-Maximum Suppression (NMS). Some models may not perform NMS (e.g. YOLOv26).</p></li>
+<li><p><strong>max_detections</strong> (<em>int</em>) – Maximum number of best detections to keep per image after filtering.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
