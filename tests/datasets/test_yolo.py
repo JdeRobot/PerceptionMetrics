@@ -136,3 +136,30 @@ def test_build_dataset(caplog: pytest.LogCaptureFixture) -> None:
     assert "cat" in ontology and "dog" in ontology
     assert ontology["cat"]["idx"] == 0
     assert ontology["dog"]["idx"] == 1
+
+
+def test_build_dataset_keeps_samples_with_dots_in_name() -> None:
+    """Samples whose file names contain extra dots must not collapse into one.
+
+    Roboflow exports name every augmented copy of an image
+    ``<original>_jpg.rf.<hash>.jpg``, so the part before the first dot is the
+    same for all of them.
+    """
+    labels = [
+        "/fake/dataset/labels/val/IMG_0001_jpg.rf.3f9a1c7e2b.txt",
+        "/fake/dataset/labels/val/IMG_0001_jpg.rf.8b21d04aa9.txt",
+        "/fake/dataset/labels/val/IMG_0002_jpg.rf.1a2b3c4d5e.txt",
+    ]
+    dataset, _, _ = _make_patched_build_dataset(
+        _FAKE_YAML_TRAIN_VAL_ONLY, {"val": labels}
+    )
+
+    assert len(dataset) == 3
+    assert "IMG_0001_jpg.rf.3f9a1c7e2b" in dataset.index
+    assert "IMG_0001_jpg.rf.8b21d04aa9" in dataset.index
+
+    # Plain file names keep the same sample name as before
+    dataset, _, _ = _make_patched_build_dataset(
+        _FAKE_YAML_TRAIN_VAL_ONLY, {"val": ["/fake/dataset/labels/val/img1.txt"]}
+    )
+    assert list(dataset.index) == ["img1"]
