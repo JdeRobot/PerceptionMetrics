@@ -138,7 +138,6 @@ def render_image_detection_viewer():
         selected_img_name = os.path.basename(selected_img_path)
         try:
             img = Image.open(selected_img_path).convert("RGB")
-            img_np = np.array(img)
 
             if dataset_type == "yolo":
                 ann_row = dataset.dataset[
