@@ -509,24 +509,6 @@ independent evaluations without creating a new object.</p>
 </dd></dl>
 
 </section>
-<section id="module-perceptionmetrics.utils.gui">
-<span id="perceptionmetrics-utils-gui-module"></span><h2>perceptionmetrics.utils.gui module<a class="headerlink" href="#module-perceptionmetrics.utils.gui" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.utils.gui.browse_folder">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.gui.</span></span><span class="sig-name descname"><span class="pre">browse_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/gui.html#browse_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.gui.browse_folder" title="Link to this definition">¶</a></dt>
-<dd><p>Opens a native folder selection dialog and returns the selected folder path.
-Works on Windows, macOS, and Linux (with zenity or kdialog).
-Returns None if cancelled or error.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="perceptionmetrics.utils.gui.is_wsl">
-<span class="sig-prename descclassname"><span class="pre">perceptionmetrics.utils.gui.</span></span><span class="sig-name descname"><span class="pre">is_wsl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/gui.html#is_wsl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.gui.is_wsl" title="Link to this definition">¶</a></dt>
-<dd><p>Detect if running in Windows Subsystem for Linux (WSL).
-Returns True if WSL is detected, False otherwise.</p>
-</dd></dl>
-
-</section>
 <section id="module-perceptionmetrics.utils.image">
 <span id="perceptionmetrics-utils-image-module"></span><h2>perceptionmetrics.utils.image module<a class="headerlink" href="#module-perceptionmetrics.utils.image" title="Link to this heading">¶</a></h2>
 <dl class="py function">
@@ -1161,6 +1143,9 @@ independent evaluations without creating a new object.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[tuple, list]</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If data is not a tensor, list, or tuple</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -1177,6 +1162,9 @@ independent evaluations without creating a new object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[tuple, list]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If data is not a tensor, list, or tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1271,6 +1259,9 @@ of closest_divisor.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[tuple, list]</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If data is not a tensor, list, or tuple</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -1350,11 +1341,6 @@ of closest_divisor.</p>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.compute_ap"><code class="docutils literal notranslate"><span class="pre">compute_ap()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.compute_iou"><code class="docutils literal notranslate"><span class="pre">compute_iou()</span></code></a></li>
 <li><a class="reference internal" href="#perceptionmetrics.utils.detection_metrics.compute_iou_matrix"><code class="docutils literal notranslate"><span class="pre">compute_iou_matrix()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-perceptionmetrics.utils.gui">perceptionmetrics.utils.gui module</a><ul>
-<li><a class="reference internal" href="#perceptionmetrics.utils.gui.browse_folder"><code class="docutils literal notranslate"><span class="pre">browse_folder()</span></code></a></li>
-<li><a class="reference internal" href="#perceptionmetrics.utils.gui.is_wsl"><code class="docutils literal notranslate"><span class="pre">is_wsl()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-perceptionmetrics.utils.image">perceptionmetrics.utils.image module</a><ul>

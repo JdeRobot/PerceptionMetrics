@@ -241,6 +241,7 @@
           <h1>Source code for perceptionmetrics.models.segmentation</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -248,6 +249,8 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">segmentation</span> <span class="k">as</span> <span class="n">segmentation_dataset</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models.perception</span><span class="w"> </span><span class="kn">import</span> <span class="n">PerceptionModel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.conversion</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uio</span>
 
 
 <div class="viewcode-block" id="SegmentationModel">
@@ -276,6 +279,65 @@
         <span class="n">model_fname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_cfg</span><span class="p">,</span> <span class="n">ontology_fname</span><span class="p">,</span> <span class="n">model_fname</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SegmentationModel.get_eval_lut_ontology">
+<a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.segmentation.SegmentationModel.get_eval_lut_ontology">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_eval_lut_ontology</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_ontology</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">ontology_translation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">translation_direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dataset_to_model&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the ontology conversion LUT. When no translation file is given, both</span>
+<span class="sd">        ontologies are matched by class name: shared names with differing indices are</span>
+<span class="sd">        converted after issuing a warning, while differing names raise an error.</span>
+
+<span class="sd">        :param dataset_ontology: Image or LiDAR dataset ontology</span>
+<span class="sd">        :type dataset_ontology: dict</span>
+<span class="sd">        :param ontology_translation: JSON file containing translation between dataset and model ontologies, defaults to None</span>
+<span class="sd">        :type ontology_translation: Optional[str], optional</span>
+<span class="sd">        :param translation_direction: Direction of the ontology translation, either &#39;dataset_to_model&#39; or &#39;model_to_dataset&#39;, defaults to &quot;dataset_to_model&quot;</span>
+<span class="sd">        :type translation_direction: str, optional</span>
+<span class="sd">        :return: LUT converting indices in the requested direction and the ontology to be used for evaluation</span>
+<span class="sd">        :rtype: Tuple[Optional[np.ndarray], dict]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">translation_direction</span> <span class="o">==</span> <span class="s2">&quot;dataset_to_model&quot;</span><span class="p">:</span>
+            <span class="n">old_ontology</span><span class="p">,</span> <span class="n">new_ontology</span> <span class="o">=</span> <span class="n">dataset_ontology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span>
+        <span class="k">elif</span> <span class="n">translation_direction</span> <span class="o">==</span> <span class="s2">&quot;model_to_dataset&quot;</span><span class="p">:</span>
+            <span class="n">old_ontology</span><span class="p">,</span> <span class="n">new_ontology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">dataset_ontology</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid translation direction&quot;</span><span class="p">)</span>
+        
+        <span class="n">eval_ontology</span> <span class="o">=</span> <span class="n">new_ontology</span>
+
+        <span class="k">if</span> <span class="n">ontology_translation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ontology_translation</span> <span class="o">=</span> <span class="n">uio</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">ontology_translation</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dataset_only</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">dataset_ontology</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">))</span>
+            <span class="n">model_only</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">dataset_ontology</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">dataset_only</span> <span class="ow">or</span> <span class="n">model_only</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Dataset and model ontologies do not share the same class names, &quot;</span>
+                    <span class="s2">&quot;so &#39;ontology_translation&#39; is required to evaluate them together. &quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="n">dataset_ontology</span><span class="p">[</span><span class="n">class_name</span><span class="p">][</span><span class="s2">&quot;idx&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">[</span><span class="n">class_name</span><span class="p">][</span><span class="s2">&quot;idx&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">dataset_ontology</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">eval_ontology</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Dataset and model ontologies share class names but use different &quot;</span>
+                <span class="s2">&quot;class indices. A conversion LUT will be built to match the indices.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">get_ontology_conversion_lut</span><span class="p">(</span>
+            <span class="n">old_ontology</span><span class="p">,</span> <span class="n">new_ontology</span><span class="p">,</span> <span class="n">ontology_translation</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">lut_ontology</span><span class="p">,</span> <span class="n">eval_ontology</span></div>
+
 
 <div class="viewcode-block" id="SegmentationModel.predict">
 <a class="viewcode-back" href="../../../api/perceptionmetrics.models.html#perceptionmetrics.models.segmentation.SegmentationModel.predict">[docs]</a>

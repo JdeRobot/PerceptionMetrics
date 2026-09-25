@@ -5,7 +5,7 @@ import json
 from perceptionmetrics.datasets.coco import CocoDataset
 
 
-from perceptionmetrics.utils.gui import browse_folder
+from gui.tasks.utils import browse_folder
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
 
 
@@ -15,7 +15,8 @@ def browse_predictions_outdir():
         st.session_state.predictions_outdir = folder
 
 
-def evaluator_tab():
+def render_image_detection_evaluator():
+    """Render the image detection evaluator tab in Streamlit."""
     st.header("Evaluator")
     st.markdown("Evaluate your model on the loaded dataset using PerceptionMetrics.")
 
@@ -109,7 +110,9 @@ def evaluator_tab():
                 "<div style='margin-bottom: 1.75rem;'></div>", unsafe_allow_html=True
             )
             st.button(
-                "Browse", on_click=browse_predictions_outdir, key="browse_preds_outdir"
+                "Browse",
+                on_click=browse_predictions_outdir,
+                key="browse_preds_outdir",
             )
 
         predictions_outdir_input = st.session_state.get("predictions_outdir")
