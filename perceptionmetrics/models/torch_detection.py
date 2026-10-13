@@ -1,4 +1,5 @@
 from copy import copy
+import importlib
 import os
 import time
 from typing import Any, List, Optional, Tuple, Union, Dict
@@ -755,7 +756,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
 
 
 class TorchLiDARDetectionModel(detection_model.LiDARDetectionModel):
-    """Skeleton for LiDAR detection models using PyTorch backends.
+    """LiDAR detection model .
 
     The intended prediction format is based on common 3D detection toolkits such
     as MMDetection3D and nuScenes-style boxes:
@@ -764,9 +765,6 @@ class TorchLiDARDetectionModel(detection_model.LiDARDetectionModel):
     labels: [N] class indices
     scores: [N] confidence scores
 
-    Actual backend-specific inference and metric evaluation are intentionally
-    left unwired until the LiDAR detection dataset and metric contract is
-    finalized.
     """
 
     def __init__(
@@ -776,22 +774,35 @@ class TorchLiDARDetectionModel(detection_model.LiDARDetectionModel):
         ontology_fname: str,
         device: torch.device = None,
     ):
+        if not isinstance(model, torch.nn.Module):
+            raise TypeError("model must be an initialized torch.nn.Module.")
+
         if device is None:
             best_device, _ = get_device_info()
             self.device = torch.device(best_device)
         else:
             self.device = torch.device(device)
 
-        model_fname = model if isinstance(model, str) else None
-        model_type = "native"
-
-        super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
+        model_fname = None
+        super().__init__(model, "torch", model_cfg, ontology_fname, model_fname)
 
         self.model_format = self.model_cfg.get("model_format", "mmdet3d").lower()
         if self.model_format not in AVAILABLE_MODEL_FORMATS_LIDAR_DETECTION:
             raise ValueError(
                 f"Unsupported LiDAR detection model_format: {self.model_format}"
             )
+
+        model_utils_module_name = self.model_format.split("_")[0]
+        model_utils_module_path = (
+            f"perceptionmetrics.models.utils.{model_utils_module_name}"
+        )
+        try:
+            model_utils_module = importlib.import_module(model_utils_module_path)
+            self._inference = model_utils_module.detection_inference
+        except (ImportError, AttributeError) as exc:
+            raise ValueError(
+                f"Unsupported LiDAR detection model_format: {self.model_format}"
+            ) from exc
 
         self.idx_to_class_name = {v["idx"]: k for k, v in self.ontology.items()}
 
@@ -800,52 +811,173 @@ class TorchLiDARDetectionModel(detection_model.LiDARDetectionModel):
 
     def predict(
         self, points: np.ndarray, return_sample: bool = False
-    ) -> Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]:
+    ) -> Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], dict]]:
         """Perform prediction for a single LiDAR point cloud.
 
         :param points: Point cloud array with shape [N, 3] or [N, 4]
         :type points: np.ndarray
         :param return_sample: Whether to return the prepared tensor
         :type return_sample: bool
-        :return: LiDAR detection result, optionally with the input tensor
-        :rtype: Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]
+        :return: LiDAR detection result, optionally with the processed sample
+        :rtype: Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], dict]]
         """
-        sample = torch.as_tensor(points, dtype=torch.float32, device=self.device)
-        result = self.inference(sample)
+        result, sample = self.inference(points, return_sample=True)
+        scores = result["scores"]
+        keep = scores >= self.model_cfg.get("confidence_threshold", 0.0)
+        result = {name: values[keep] for name, values in result.items()}
 
         if return_sample:
             return result, sample
         return result
 
-    def inference(self, points: Union[np.ndarray, torch.Tensor]) -> Dict[str, torch.Tensor]:
-        """Run LiDAR detection inference.
+    def inference(
+        self, points: np.ndarray, return_sample: bool = False
+    ) -> Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], dict]]:
+        """Run backend inference and return the standard detection dictionary.
 
-        This method is a skeleton. Backend-specific MMDetection3D preparation and
-        post-processing should be added here.
+        :param points: Point cloud array accepted by the configured backend
+        :type points: np.ndarray
+        :param return_sample: Whether to return the backend's processed sample
+        :type return_sample: bool
+        :return: Detection result, optionally with the processed sample
+        :rtype: Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], dict]]
         """
-        raise NotImplementedError(
-            "TorchLiDARDetectionModel inference is not implemented yet. "
-            "Expected output format is boxes_3d [N, 7], labels [N], scores [N]."
-        )
+        result, sample = self._inference(self.model, points)
+
+        if return_sample:
+            return result, sample
+        return result
 
     def eval(
         self,
         dataset: detection_dataset.LiDARDetectionDataset,
         split: Union[str, List[str]] = "test",
+        iou_mode: str = "3d",
         ontology_translation: Optional[str] = None,
         predictions_outdir: Optional[str] = None,
         results_per_sample: bool = False,
         progress_callback=None,
-        metrics_callback=None,
-    ) -> pd.DataFrame:
+    ) -> Dict[str, Union[pd.DataFrame, um.LiDARDetectionMetricsFactory]]:
         """Evaluate a LiDAR detection model.
 
-        Kept as an explicit placeholder until 3D detection metrics are added.
+        Predictions and annotations use [x, y, z, dx, dy, dz, yaw] boxes in the
+        LiDAR frame. Metrics use oriented 3D IoU or oriented BEV IoU.
+
+        :param dataset: LiDAR detection dataset to evaluate
+        :type dataset: LiDARDetectionDataset
+        :param split: Split or splits to evaluate
+        :type split: Union[str, List[str]]
+        :param iou_mode: IoU mode, either "3d" or "bev"
+        :type iou_mode: str
+        :param ontology_translation: Optional dataset-to-model ontology translation
+        :type ontology_translation: Optional[str]
+        :param predictions_outdir: Optional directory for prediction JSON files
+        :type predictions_outdir: Optional[str]
+        :param results_per_sample: Whether to save a metrics CSV for each sample
+        :type results_per_sample: bool
+        :param progress_callback: Optional callback receiving processed and total samples
+        :return: Evaluation metrics and their metrics factory
+        :rtype: Dict[str, Union[pd.DataFrame, LiDARDetectionMetricsFactory]]
         """
-        raise NotImplementedError(
-            "TorchLiDARDetectionModel eval is not implemented yet. "
-            "LiDAR detection needs 3D box metrics before evaluation can be wired."
+        if results_per_sample and predictions_outdir is None:
+            raise ValueError(
+                "predictions_outdir is required when results_per_sample is True."
+            )
+
+        splits = [split] if isinstance(split, str) else split
+        dataset._validate_splits(splits)
+        samples = dataset.dataset[dataset.dataset["split"].isin(splits)]
+
+        if predictions_outdir is not None:
+            os.makedirs(predictions_outdir, exist_ok=True)
+
+        lut_ontology = None
+        if dataset.ontology != self.ontology:
+            if ontology_translation is None:
+                raise ValueError(
+                    "ontology_translation is required when dataset and model "
+                    "ontologies differ."
+                )
+            lut_ontology = torch.as_tensor(
+                self.get_lut_ontology(dataset.ontology, ontology_translation),
+                dtype=torch.int64,
+            )
+
+        metrics_factory = um.LiDARDetectionMetricsFactory(
+            iou_threshold=self.model_cfg.get("iou_threshold", 0.5),
+            num_classes=self.n_classes,
+            iou_mode=iou_mode,
         )
+        total_samples = len(samples)
+
+        iterator = samples.iterrows()
+        if progress_callback is None:
+            iterator = tqdm(iterator, total=total_samples, leave=True)
+
+        for processed_samples, (sample_id, row) in enumerate(iterator, start=1):
+            points = dataset.read_points(row["points"])
+            gt_boxes, gt_labels = dataset.read_annotation(row["annotation"])
+            gt_boxes = np.asarray(gt_boxes, dtype=np.float32).reshape(-1, 7)
+            gt_labels = np.asarray(gt_labels, dtype=np.int64)
+
+            if lut_ontology is not None:
+                gt_labels = lut_ontology[gt_labels].numpy()
+
+            prediction = self.predict(points)
+            metrics_factory.update(
+                gt_boxes,
+                gt_labels,
+                prediction["boxes_3d"],
+                prediction["labels"],
+                prediction["scores"],
+            )
+
+            if predictions_outdir is not None:
+                output = [
+                    {
+                        "sample_id": str(sample_id),
+                        "label": self.idx_to_class_name.get(
+                            int(label), f"class_{label}"
+                        ),
+                        "score": float(score),
+                        "bbox_3d": box.tolist(),
+                    }
+                    for box, label, score in zip(
+                        prediction["boxes_3d"].numpy(),
+                        prediction["labels"].numpy(),
+                        prediction["scores"].numpy(),
+                    )
+                ]
+                pd.DataFrame(output).to_json(
+                    os.path.join(predictions_outdir, f"{sample_id}.json"),
+                    orient="records",
+                    indent=2,
+                )
+
+                if results_per_sample:
+                    sample_metrics = um.LiDARDetectionMetricsFactory(
+                        iou_threshold=self.model_cfg.get("iou_threshold", 0.5),
+                        num_classes=self.n_classes,
+                        iou_mode=iou_mode,
+                    )
+                    sample_metrics.update(
+                        gt_boxes,
+                        gt_labels,
+                        prediction["boxes_3d"],
+                        prediction["labels"],
+                        prediction["scores"],
+                    )
+                    sample_metrics.get_metrics_dataframe(self.ontology).to_csv(
+                        os.path.join(predictions_outdir, f"{sample_id}_metrics.csv")
+                    )
+
+            if progress_callback is not None:
+                progress_callback(processed_samples, total_samples)
+
+        return {
+            "metrics_df": metrics_factory.get_metrics_dataframe(self.ontology),
+            "metrics_factory": metrics_factory,
+        }
 
     def get_computational_cost(
         self,

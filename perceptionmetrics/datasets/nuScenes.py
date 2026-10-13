@@ -5,8 +5,41 @@ import numpy as np
 import pandas as pd
 from nuscenes.eval.common.utils import quaternion_yaw
 from nuscenes.nuscenes import NuScenes
+from nuscenes.utils.splits import create_splits_scenes
 
 from perceptionmetrics.datasets.detection import LiDARDetectionDataset
+
+
+NUSCENES_DETECTION_CLASSES = [
+    "car",
+    "truck",
+    "trailer",
+    "bus",
+    "construction_vehicle",
+    "bicycle",
+    "motorcycle",
+    "pedestrian",
+    "traffic_cone",
+    "barrier",
+]
+#TODO: Conversion specified
+NUSCENES_CATEGORY_TO_DETECTION_CLASS = {
+    "vehicle.car": "car",
+    "vehicle.truck": "truck",
+    "vehicle.trailer": "trailer",
+    "vehicle.bus.bendy": "bus",
+    "vehicle.bus.rigid": "bus",
+    "vehicle.construction": "construction_vehicle",
+    "vehicle.bicycle": "bicycle",
+    "vehicle.motorcycle": "motorcycle",
+    "human.pedestrian.adult": "pedestrian",
+    "human.pedestrian.child": "pedestrian",
+    "human.pedestrian.construction_worker": "pedestrian",
+    "human.pedestrian.personal_mobility": "pedestrian",
+    "human.pedestrian.police_officer": "pedestrian",
+    "movable_object.trafficcone": "traffic_cone",
+    "movable_object.barrier": "barrier",
+}
 
 
 def build_nuscenes_lidar_detection_dataset(
@@ -24,7 +57,7 @@ def build_nuscenes_lidar_detection_dataset(
     :type dataset_dir: str
     :param version: nuScenes dataset version, defaults to "v1.0-mini"
     :type version: str
-    :param split: Dataset split to assign to the indexed samples
+    :param split: Official nuScenes split to index
     :type split: str
     :param nusc_object: Optional pre-initialized NuScenes object
     :type nusc_object: Optional[NuScenes]
@@ -43,13 +76,25 @@ def build_nuscenes_lidar_detection_dataset(
     )
 
     ontology = {
-        category["name"]: {"idx": idx + 1, "rgb": [0, 0, 0]}
-        for idx, category in enumerate(nusc.category)
+        class_name: {"idx": idx, "rgb": [0, 0, 0]}
+        for idx, class_name in enumerate(NUSCENES_DETECTION_CLASSES)
     }
 
+    split_key = f"mini_{split}" if version == "v1.0-mini" else split
+    available_splits = create_splits_scenes()
+    if split_key not in available_splits:
+        raise ValueError(
+            f"Unsupported nuScenes split '{split}' for version '{version}'."
+        )
+
+    split_scenes = set(available_splits[split_key])
     rows = []
     sample_names = []
     for sample in nusc.sample:
+        scene = nusc.get("scene", sample["scene_token"])
+        if scene["name"] not in split_scenes:
+            continue
+
         lidar_token = sample["data"].get("LIDAR_TOP")
         if lidar_token is None:
             continue
@@ -74,13 +119,13 @@ class NuScenesLiDARDetectionDataset(LiDARDetectionDataset):
     """Dataset class for nuScenes LiDAR 3D object detection.
 
     The annotation boxes are returned as [x, y, z, dx, dy, dz, yaw] in the
-    LiDAR sensor frame.
+    LiDAR sensor frame, using MMDetection3D's bottom-center z convention.
 
     :param dataset_dir: Path to the nuScenes dataset root directory
     :type dataset_dir: str
     :param version: nuScenes dataset version, defaults to "v1.0-mini"
     :type version: str
-    :param split: Dataset split to assign to the indexed samples
+    :param split: Official nuScenes split to index
     :type split: str
     """
 
@@ -103,8 +148,8 @@ class NuScenesLiDARDetectionDataset(LiDARDetectionDataset):
             nusc_object=self.nusc,
         )
         self.cat_to_idx = {
-            category_name: class_data["idx"]
-            for category_name, class_data in ontology.items()
+            category_name: ontology[detection_class]["idx"]
+            for category_name, detection_class in NUSCENES_CATEGORY_TO_DETECTION_CLASS.items()
         }
 
         super().__init__(
@@ -150,19 +195,22 @@ class NuScenesLiDARDetectionDataset(LiDARDetectionDataset):
             if category_name not in self.cat_to_idx:
                 continue
 
+            width, length, height = sample_box.wlh
+            center = sample_box.center.copy()
+            # nuScenes boxes use a geometric center, while MMDetection3D
+            # LiDAR boxes store the bottom center.
+            center[2] -= height / 2
             box = [
-                *sample_box.center,
-                *sample_box.wlh,
+                *center,
+                length,
+                width,
+                height,
                 quaternion_yaw(sample_box.orientation),
             ]
             boxes.append(box)
             labels.append(self.cat_to_idx[category_name])
 
         return boxes, labels
-
-
-
-
 if __name__ == "__main__":
     dataset = NuScenesLiDARDetectionDataset(
         dataset_dir="examples/local/nuscenes/v1.0-mini",
