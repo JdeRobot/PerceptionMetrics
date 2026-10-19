@@ -420,7 +420,8 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         if lut_ontology is not None:
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
-        n_classes = len(eval_ontology)
+        # Class indices may be non-contiguous (e.g. RELLIS-3D dataset ontology)
+        n_classes = max(c["idx"] for c in eval_ontology.values()) + 1
 
         # Retrieve ignored label indices
         ignored_label_indices = []
