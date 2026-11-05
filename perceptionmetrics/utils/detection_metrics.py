@@ -212,6 +212,7 @@ class DetectionMetricsFactory:
                 "TP": np.nan,
                 "FP": np.nan,
                 "FN": np.nan,
+                "F1":np.nan,
             }
 
         return metrics
