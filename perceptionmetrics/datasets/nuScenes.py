@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 from nuscenes.eval.common.utils import quaternion_yaw
 from nuscenes.nuscenes import NuScenes
+from nuscenes.utils.color_map import get_colormap
 from nuscenes.utils.splits import create_splits_scenes
 
 from perceptionmetrics.datasets.detection import LiDARDetectionDataset
-
 
 NUSCENES_DETECTION_CLASSES = [
     "car",
@@ -22,7 +22,6 @@ NUSCENES_DETECTION_CLASSES = [
     "traffic_cone",
     "barrier",
 ]
-#TODO: Conversion specified
 NUSCENES_CATEGORY_TO_DETECTION_CLASS = {
     "vehicle.car": "car",
     "vehicle.truck": "truck",
@@ -40,6 +39,36 @@ NUSCENES_CATEGORY_TO_DETECTION_CLASS = {
     "movable_object.trafficcone": "traffic_cone",
     "movable_object.barrier": "barrier",
 }
+
+
+def build_nuscenes_lidar_detection_ontology(class_names=None) -> dict:
+    """Build the detection ontology with colors from the nuScenes devkit.
+
+    Detection classes such as ``bus`` and ``pedestrian`` combine several raw
+    nuScenes categories. The first category listed for each class provides its
+    representative color.
+    """
+    if class_names is None:
+        class_names = NUSCENES_DETECTION_CLASSES
+
+    category_for_detection_class = {}
+    for category_name, detection_class in NUSCENES_CATEGORY_TO_DETECTION_CLASS.items():
+        category_for_detection_class.setdefault(detection_class, category_name)
+
+    unknown_classes = set(class_names) - set(category_for_detection_class)
+    if unknown_classes:
+        raise ValueError(
+            "No nuScenes category color is available for: " f"{sorted(unknown_classes)}"
+        )
+
+    colors = get_colormap()
+    return {
+        class_name: {
+            "idx": index,
+            "rgb": list(colors[category_for_detection_class[class_name]]),
+        }
+        for index, class_name in enumerate(class_names)
+    }
 
 
 def build_nuscenes_lidar_detection_dataset(
@@ -75,10 +104,7 @@ def build_nuscenes_lidar_detection_dataset(
         else NuScenes(version=version, dataroot=dataset_dir, verbose=False)
     )
 
-    ontology = {
-        class_name: {"idx": idx, "rgb": [0, 0, 0]}
-        for idx, class_name in enumerate(NUSCENES_DETECTION_CLASSES)
-    }
+    ontology = build_nuscenes_lidar_detection_ontology()
 
     split_key = f"mini_{split}" if version == "v1.0-mini" else split
     available_splits = create_splits_scenes()
@@ -163,9 +189,11 @@ class NuScenesLiDARDetectionDataset(LiDARDetectionDataset):
         """Make point cloud paths absolute while keeping annotation tokens intact."""
         if self.dataset_dir is not None:
             self.dataset["points"] = self.dataset["points"].apply(
-                lambda x: os.path.join(self.dataset_dir, x)
-                if x is not None and not os.path.isabs(x)
-                else x
+                lambda x: (
+                    os.path.join(self.dataset_dir, x)
+                    if x is not None and not os.path.isabs(x)
+                    else x
+                )
             )
             self.dataset_dir = None
 
@@ -211,6 +239,8 @@ class NuScenesLiDARDetectionDataset(LiDARDetectionDataset):
             labels.append(self.cat_to_idx[category_name])
 
         return boxes, labels
+
+
 if __name__ == "__main__":
     dataset = NuScenesLiDARDetectionDataset(
         dataset_dir="examples/local/nuscenes/v1.0-mini",
@@ -221,10 +251,12 @@ if __name__ == "__main__":
     print(dataset.dataset.head())
 
     sample_token = dataset.dataset.index[0]
-    print (f"points path: {dataset.dataset.loc[sample_token, 'points']}")
+    print(f"points path: {dataset.dataset.loc[sample_token, 'points']}")
     points = dataset.read_points(dataset.dataset.loc[sample_token, "points"])
-    boxes, labels = dataset.read_annotation(dataset.dataset.loc[sample_token, "annotation"])
-    print (f"Sample token: {sample_token}")
+    boxes, labels = dataset.read_annotation(
+        dataset.dataset.loc[sample_token, "annotation"]
+    )
+    print(f"Sample token: {sample_token}")
     print(f"Points shape: {points.shape}")
     print(f"Boxes: {len(boxes)}, Labels: {len(labels)}")
-    print (f"ontology: {dataset.ontology}")
+    print(f"ontology: {dataset.ontology}")
