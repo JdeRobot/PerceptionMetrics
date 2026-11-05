@@ -66,6 +66,14 @@ class SegmentationMetricsFactory:
         if valid_mask is not None:
             mask &= valid_mask
 
+        # Predictions outside the class range can't be placed in the confusion matrix
+        invalid_pred = mask & ((pred < 0) | (pred >= self.n_classes))
+        if np.any(invalid_pred):
+            raise ValueError(
+                f"Prediction contains class indices outside [0, {self.n_classes - 1}]: "
+                f"{np.unique(pred[invalid_pred]).tolist()}"
+            )
+
         # Update confusion matrix
         new_entry = np.bincount(
             self.n_classes * gt[mask].astype(int) + pred[mask].astype(int),
