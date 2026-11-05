@@ -3,12 +3,11 @@ from typing import Optional
 import streamlit as st
 import json
 from PIL import Image
+
 try:
     import torch
 except ImportError:
-    raise ImportError(
-        "PyTorch is required for GUI-based inference and evaluation. "
-    )
+    raise ImportError("PyTorch is required for GUI-based inference and evaluation. ")
 
 
 def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] = None):
@@ -48,7 +47,9 @@ def draw_detections(image: Image, predictions: dict, label_map: Optional[dict] =
     )
 
 
-def inference_tab():
+def render_image_detection_inference():
+    """Render the image detection inference tab in Streamlit."""
+
     st.header("Model Inference")
     st.markdown("Select an image and run inference using the loaded model.")
 
@@ -74,15 +75,19 @@ def inference_tab():
         with st.spinner("Running inference..."):
             try:
                 image = Image.open(image_file).convert("RGB")
-                predictions = st.session_state.detection_model.predict(image)
+                predictions, sample_tensor = st.session_state.detection_model.predict(
+                    image, return_sample=True
+                )
+                from torchvision.transforms import v2 as transforms
 
+                img_to_draw = transforms.ToPILImage()(sample_tensor[0])
                 label_map = getattr(
                     st.session_state.detection_model, "idx_to_class_name", None
                 )
-                result_img = draw_detections(image, predictions, label_map)
+                result_img = draw_detections(img_to_draw, predictions, label_map)
 
                 st.markdown("#### Detection Results")
-                st.image(result_img, caption="Detection Results", width="content")
+                st.image(result_img, caption="Detection Results", width="stretch")
 
                 # Display detection statistics
                 if (

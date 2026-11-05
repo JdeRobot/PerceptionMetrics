@@ -47,13 +47,9 @@ def draw_detections(
         else:
             labels.append(name)
 
+    palette = sv.ColorPalette.DEFAULT  # available in both old and new supervision
     try:
-        # Try older style (BoxAnnotator handles labels)
-        try:
-            palette = sv.Color.DEFAULT
-        except AttributeError:
-            palette = sv.ColorPalette.default()
-
+        # Older supervision (<= 0.21): one BoxAnnotator draws boxes AND labels
         annotator = sv.BoxAnnotator(
             color=palette, text_scale=0.7, text_thickness=1, text_padding=2
         )
@@ -61,11 +57,13 @@ def draw_detections(
             scene=image, detections=detections, labels=labels
         )
     except TypeError:
-        # Fallback for newer supervision (BoxAnnotator + LabelAnnotator)
-        box_annotator = sv.BoxAnnotator()
+        # Newer supervision (>= 0.22): boxes and labels are separate annotators
+        box_annotator = sv.BoxAnnotator(color=palette)
         ann_image = box_annotator.annotate(scene=image, detections=detections)
 
-        label_annotator = sv.LabelAnnotator()
+        label_annotator = sv.LabelAnnotator(
+            color=palette, text_scale=0.7, text_thickness=1, text_padding=2
+        )
         ann_image = label_annotator.annotate(
             scene=ann_image, detections=detections, labels=labels
         )

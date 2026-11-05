@@ -188,7 +188,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api/modules.html">perceptionmetrics</a><input aria-label="Toggle navigation of perceptionmetrics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/perceptionmetrics.html">perceptionmetrics package</a><input aria-label="Toggle navigation of perceptionmetrics package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/perceptionmetrics.cli.html">perceptionmetrics.cli package</a></li>
@@ -256,8 +257,6 @@
   <h2>B</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.gui.browse_folder">browse_folder() (in module perceptionmetrics.utils.gui)</a>
-</li>
         <li><a href="api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.coco.build_coco_dataset">build_coco_dataset() (in module perceptionmetrics.datasets.coco)</a>
 </li>
         <li><a href="api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.cityscapes.build_dataset">build_dataset() (in module perceptionmetrics.datasets.cityscapes)</a>
@@ -478,16 +477,18 @@
 </li>
         <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_dice_score">get_dice_score() (perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory method)</a>
 </li>
+        <li><a href="api/perceptionmetrics.models.html#perceptionmetrics.models.segmentation.SegmentationModel.get_eval_lut_ontology">get_eval_lut_ontology() (perceptionmetrics.models.segmentation.SegmentationModel method)</a>
+</li>
         <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_f1_score">get_f1_score() (perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory method)</a>
 </li>
         <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_fn">get_fn() (perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory method)</a>
 </li>
         <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_fp">get_fp() (perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory method)</a>
 </li>
-        <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.io.get_image_mode">get_image_mode() (in module perceptionmetrics.utils.io)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.io.get_image_mode">get_image_mode() (in module perceptionmetrics.utils.io)</a>
+</li>
         <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.get_iou">get_iou() (perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory method)</a>
 </li>
         <li><a href="api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.detection.DetectionDataset.get_label_count">get_label_count() (perceptionmetrics.datasets.detection.DetectionDataset method)</a>
@@ -605,8 +606,6 @@
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.torch.inverse_transform_boxes">inverse_transform_boxes() (in module perceptionmetrics.utils.torch)</a>
-</li>
-        <li><a href="api/perceptionmetrics.utils.html#perceptionmetrics.utils.gui.is_wsl">is_wsl() (in module perceptionmetrics.utils.gui)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -739,8 +738,6 @@
           <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.conversion">perceptionmetrics.utils.conversion</a>
 </li>
           <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.detection_metrics">perceptionmetrics.utils.detection_metrics</a>
-</li>
-          <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.gui">perceptionmetrics.utils.gui</a>
 </li>
           <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.image">perceptionmetrics.utils.image</a>
 </li>
@@ -976,6 +973,8 @@
           <li><a href="api/perceptionmetrics.models.html#module-perceptionmetrics.models.perception">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     perceptionmetrics.models.segmentation
 
@@ -983,8 +982,6 @@
           <li><a href="api/perceptionmetrics.models.html#module-perceptionmetrics.models.segmentation">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     perceptionmetrics.models.tf_segmentation
 
@@ -1088,13 +1085,6 @@
 
         <ul>
           <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.detection_metrics">module</a>
-</li>
-        </ul></li>
-        <li>
-    perceptionmetrics.utils.gui
-
-        <ul>
-          <li><a href="api/perceptionmetrics.utils.html#module-perceptionmetrics.utils.gui">module</a>
 </li>
         </ul></li>
         <li>

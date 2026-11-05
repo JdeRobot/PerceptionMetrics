@@ -189,7 +189,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">perceptionmetrics</a><input aria-label="Toggle navigation of perceptionmetrics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/perceptionmetrics.html">perceptionmetrics package</a><input aria-label="Toggle navigation of perceptionmetrics package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/perceptionmetrics.cli.html">perceptionmetrics.cli package</a></li>
@@ -254,8 +255,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.datasets.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageSegmentationDataset</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics.models.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageSegmentationModel</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.conversion</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uc</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">perceptionmetrics.utils.segmentation_metrics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">um</span>
 
 <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">set_experimental_options</span><span class="p">({</span><span class="s2">&quot;layout_optimizer&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
@@ -531,6 +530,7 @@
 
             <span class="k">if</span> <span class="s2">&quot;resize&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">:</span>
                 <span class="n">tensor</span> <span class="o">=</span> <span class="n">resize_image</span><span class="p">(</span>
+                    <span class="n">tensor</span><span class="p">,</span>
                     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span>
                     <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">[</span><span class="s2">&quot;resize&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                     <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_cfg</span><span class="p">[</span><span class="s2">&quot;resize&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
@@ -645,21 +645,9 @@
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">predictions_outdir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Build a LUT for transforming ontology if needed</span>
-        <span class="n">eval_ontology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span>
-
-        <span class="k">if</span> <span class="n">ontology_translation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ontology_translation</span> <span class="o">=</span> <span class="n">uio</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">ontology_translation</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">translations_direction</span> <span class="o">==</span> <span class="s2">&quot;dataset_to_model&quot;</span><span class="p">:</span>
-                <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">get_ontology_conversion_lut</span><span class="p">(</span>
-                    <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">eval_ontology</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span>
-                <span class="n">lut_ontology</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">get_ontology_conversion_lut</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">lut_ontology</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">lut_ontology</span><span class="p">,</span> <span class="n">eval_ontology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_eval_lut_ontology</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="o">.</span><span class="n">ontology</span><span class="p">,</span> <span class="n">ontology_translation</span><span class="p">,</span> <span class="n">translations_direction</span>
+        <span class="p">)</span>
 
         <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_ontology</span><span class="p">)</span>
 

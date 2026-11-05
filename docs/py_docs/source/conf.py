@@ -52,3 +52,5 @@ autodoc_mock_imports = [
     "utils",  # lsk3dnet 3rd party utils folder
 ]
 
+# Guide links resolve after the Sphinx output is published inside the Jekyll site.
+linkcheck_ignore = [r"^\.\./\.\./\.\./(?:installation|guides)/$"]

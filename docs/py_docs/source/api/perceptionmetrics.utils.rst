@@ -20,14 +20,6 @@ perceptionmetrics.utils.detection\_metrics module
    :undoc-members:
    :show-inheritance:
 
-perceptionmetrics.utils.gui module
-----------------------------------
-
-.. automodule:: perceptionmetrics.utils.gui
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 perceptionmetrics.utils.image module
 ------------------------------------
 

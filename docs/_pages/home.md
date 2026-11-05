@@ -15,12 +15,24 @@ excerpt:
 
 *PerceptionMetrics* is a toolkit designed to unify and streamline the evaluation of object detection and segmentation models across different sensor modalities, frameworks, and datasets. It offers multiple interfaces including a GUI for interactive analysis, a CLI for batch evaluation, and a Python library for seamless integration into your codebase. The toolkit provides consistent abstractions for models, datasets, and metrics, enabling fair, reproducible comparisons across heterogeneous perception systems.
 
+## Documentation
+
+Start with [Getting Started]({{ "/installation/" | relative_url }}), then choose
+the relevant topic from the [guides]({{ "/guides/" | relative_url }}). Detailed
+classes and functions are available in the
+[Python API reference]({{ "/py_docs/build/html/index.html" | relative_url }}).
+
+| Guides | Other resources |
+| --- | --- |
+| [Datasets and data formats]({{ "/datasets/" | relative_url }}), [models]({{ "/models/" | relative_url }}), [CLI]({{ "/usage/#command-line-interface" | relative_url }}) | [Compatibility]({{ "/compatibility/" | relative_url }}) |
+| [Metrics]({{ "/metrics/" | relative_url }}) | [GUI]({{ "/gui/" | relative_url }}) and [tutorial notebooks](https://github.com/JdeRobot/PerceptionMetrics/tree/master/examples) |
+
 <table style='font-size:100%; margin: auto;'>
   <tr>
     <th>&#128187; <a href="https://github.com/JdeRobot/PerceptionMetrics">Code</a></th>
     <th>&#128295; <a href="https://jderobot.github.io/PerceptionMetrics/installation">Installation</a></th>
     <th>&#129513; <a href="https://jderobot.github.io/PerceptionMetrics/compatibility">Compatibility</a></th>
-    <th>&#128214; <a href="https://jderobot.github.io/PerceptionMetrics/py_docs/build/html/index.html">Docs</a></th>
+    <th>&#128214; <a href="https://jderobot.github.io/PerceptionMetrics/py_docs/build/html/index.html">Python API</a></th>
     <th>&#128187; <a href="https://jderobot.github.io/PerceptionMetrics/gui">GUI</a></th>
   </tr>
 </table>
@@ -42,23 +54,24 @@ excerpt:
   <tr>
     <td rowspan="2">Segmentation</td>
     <td>Image</td>
-    <td>RELLIS-3D, GOOSE, RUGD, WildScenes, custom GAIA format</td>
+    <td>Cityscapes, nuImages, RELLIS-3D, GOOSE, RUGD,<br>WildScenes, GAIA, Generic</td>
     <td>PyTorch, Tensorflow</td>
   </tr>
   <tr>
     <td>LiDAR</td>
-    <td>RELLIS-3D, GOOSE, WildScenes, custom GAIA format</td>
-    <td>PyTorch (tested with <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>, <a href="https://github.com/open-mmlab/mmdetection3d">mmdetection3d</a>, <a href="https://github.com/dvlab-research/SphereFormer">SphereFormer</a>, and <a href="https://github.com/FengZicai/LSK3DNet">LSK3DNet</a> models)</td>  </tr>
+    <td>SemanticKITTI, RELLIS-3D, GOOSE,<br>WildScenes, GAIA, Generic</td>
+    <td>PyTorch (tested with <a href="https://github.com/isl-org/Open3D-ML">Open3D-ML</a>, <a href="https://github.com/open-mmlab/mmdetection3d">mmdetection3d</a>, <a href="https://github.com/dvlab-research/SphereFormer">SphereFormer</a>, and <a href="https://github.com/FengZicai/LSK3DNet">LSK3DNet</a> models)</td>
+  </tr>
   <tr>
     <td>Object detection</td>
     <td>Image</td>
-    <td>COCO, YOLO</td>
+    <td>COCO, YOLO, nuImages</td>
     <td>PyTorch (tested with torchvision and torchscript-exported YOLO models)</td>
   </tr>
 </tbody>
 </table>
 
-More details about the specific metrics and input/output formats required fow each framework are provided in the [Compatibility](https://jderobot.github.io/PerceptionMetrics/compatibility/) section
+More details about the specific metrics and input/output formats required for each framework are provided in the [Compatibility](https://jderobot.github.io/PerceptionMetrics/compatibility/) section
 
 # DetectionMetrics
 

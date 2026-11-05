@@ -4,7 +4,7 @@ title: GUI
 permalink: /gui/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 # PerceptionMetrics GUI
@@ -27,6 +27,28 @@ The GUI will open in your default web browser, typically at `http://localhost:85
 ## GUI Overview
 
 The GUI consists of three main tabs, each designed for specific tasks:
+
+### 🎥 GUI Tutorial Videos
+
+The following videos show the GUI workflow for the currently supported tasks:
+
+#### Image Detection GUI
+
+<div style="position: relative; width: 100%; max-width: 720px; aspect-ratio: 16 / 9; margin-bottom: 1.5rem;">
+  <iframe src="https://www.youtube.com/embed/fRQmvGkb9KI" title="Image Detection GUI tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; inset: 0; width: 100%; height: 100%;"></iframe>
+</div>
+
+#### Image Segmentation GUI
+
+<div style="position: relative; width: 100%; max-width: 720px; aspect-ratio: 16 / 9; margin-bottom: 1.5rem;">
+  <iframe src="https://www.youtube.com/embed/B1z6mrsk8Cw" title="Image Segmentation GUI tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; inset: 0; width: 100%; height: 100%;"></iframe>
+</div>
+
+#### LiDAR Segmentation GUI
+
+<div style="position: relative; width: 100%; max-width: 720px; aspect-ratio: 16 / 9; margin-bottom: 1.5rem;">
+  <iframe src="https://www.youtube.com/embed/sPIOhqD__AI" title="LiDAR Segmentation GUI tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; inset: 0; width: 100%; height: 100%;"></iframe>
+</div>
 
 ### 📁 Dataset Viewer Tab
 

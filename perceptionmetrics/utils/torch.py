@@ -16,6 +16,7 @@ def data_to_device(
     :type device: torch.device
     :return: Data moved to device
     :rtype: Union[tuple, list]
+    :raises TypeError: If data is not a tensor, list, or tuple
     """
     if isinstance(data, (tuple, list)):
         return type(data)(
@@ -25,7 +26,9 @@ def data_to_device(
     elif torch.is_tensor(data):
         return data.to(device)
     else:
-        return data
+        raise TypeError(
+            f"data_to_device expected torch.Tensor, list, or tuple, but got {type(data)}"
+        )
 
 
 def get_data_shape(data: Union[tuple, list]) -> Union[tuple, list]:
@@ -35,6 +38,7 @@ def get_data_shape(data: Union[tuple, list]) -> Union[tuple, list]:
     :type data: Union[tuple, list]
     :return: Data shape
     :rtype: Union[tuple, list]
+    :raises TypeError: If data is not a tensor, list, or tuple
     """
     if isinstance(data, (tuple, list)):
         return type(data)(
@@ -43,7 +47,9 @@ def get_data_shape(data: Union[tuple, list]) -> Union[tuple, list]:
     elif torch.is_tensor(data):
         return tuple(data.shape)
     else:
-        return tuple(data.shape)
+        raise TypeError(
+            f"get_data_shape expected torch.Tensor, list, or tuple, but got {type(data)}"
+        )
 
 
 def unsqueeze_data(data: Union[tuple, list], dim: int = 0) -> Union[tuple, list]:
@@ -55,6 +61,7 @@ def unsqueeze_data(data: Union[tuple, list], dim: int = 0) -> Union[tuple, list]
     :type dim: int, optional
     :return: Unsqueezed data
     :rtype: Union[tuple, list]
+    :raises TypeError: If data is not a tensor, list, or tuple
     """
     if isinstance(data, (tuple, list)):
         return type(data)(
@@ -64,7 +71,9 @@ def unsqueeze_data(data: Union[tuple, list], dim: int = 0) -> Union[tuple, list]
     elif torch.is_tensor(data):
         return data.unsqueeze(dim)
     else:
-        return data
+        raise TypeError(
+            f"unsqueeze_data expected torch.Tensor, list, or tuple, but got {type(data)}"
+        )
 
 
 def get_device_info():

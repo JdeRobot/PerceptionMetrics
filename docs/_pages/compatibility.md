@@ -4,7 +4,7 @@ title: Compatibility
 permalink: /compatibility/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 ## Image semantic segmentation
