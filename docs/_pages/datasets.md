@@ -141,6 +141,8 @@ adapter inherits the base SemanticKITTI-style binary label reader; see
 
 ## GOOSE
 
+API: [`GOOSEImageSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.goose.GOOSEImageSegmentationDataset" | relative_url }}), [`GOOSELiDARSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.goose.GOOSELiDARSegmentationDataset" | relative_url }}).
+
 GOOSE supports image and LiDAR semantic segmentation. The adapter expects the official split directory layout and reads `goose_label_mapping.csv` from the first provided split root.
 
 Expected inputs:
@@ -153,6 +155,8 @@ Expected inputs:
 - LiDAR labels under `labels/<split>/<scene>/*_goose.label`
 
 ## RELLIS-3D
+
+API: [`Rellis3DImageSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.rellis3d.Rellis3DImageSegmentationDataset" | relative_url }}), [`Rellis3DLiDARSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.rellis3d.Rellis3DLiDARSegmentationDataset" | relative_url }}).
 
 RELLIS-3D supports image and LiDAR semantic segmentation. The adapter uses official `.lst` split files and a YAML ontology file.
 
@@ -178,6 +182,8 @@ Each row in a split file is expected to contain the relative data path and relat
 
 ## RUGD
 
+API: [`RUGDImageSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.rugd.RUGDImageSegmentationDataset" | relative_url }}).
+
 RUGD supports image semantic segmentation. Labels are RGB masks, so the adapter initializes the base image segmentation dataset with RGB-label handling enabled.
 
 Expected inputs:
@@ -190,6 +196,8 @@ The default train, validation, and test split assignment is built into the adapt
 
 ## WildScenes
 
+API: [`WildscenesImageSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.wildscenes.WildscenesImageSegmentationDataset" | relative_url }}), [`WildscenesLiDARSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.wildscenes.WildscenesLiDARSegmentationDataset" | relative_url }}).
+
 WildScenes supports image and LiDAR semantic segmentation through the CLI and Python API. The adapters expect official CSV split files and use ontology definitions embedded in the adapter source.
 
 Expected inputs:
@@ -200,6 +208,8 @@ Expected inputs:
 Use the 2D split files for `WildscenesImageSegmentationDataset` and the 3D split files for `WildscenesLiDARSegmentationDataset`.
 
 ## Cityscapes
+
+API: [`CityscapesImageSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.cityscapes.CityscapesImageSegmentationDataset" | relative_url }}).
 
 Cityscapes supports image semantic segmentation through the CLI and Python API.
 
@@ -214,6 +224,8 @@ Expected inputs:
 The adapter can build either Cityscapes label-id ontologies or train-id ontologies. When using train IDs, provide train-id labels with `label_suffix="_gtFine_labelTrainIds.png"`.
 
 ## SemanticKITTI
+
+API: [`SemanticKITTILiDARSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.semantickitti.SemanticKITTILiDARSegmentationDataset" | relative_url }}).
 
 SemanticKITTI supports LiDAR semantic segmentation through the CLI and Python API.
 
@@ -354,6 +366,8 @@ The YAML `names` field supplies the ontology. See the existing
 for model evaluation.
 
 ## nuImages
+
+API: [`NuImagesDetectionDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.nuimages.NuImagesDetectionDataset" | relative_url }}), [`NuImagesSegmentationDataset`]({{ "/py_docs/build/html/api/perceptionmetrics.datasets.html#perceptionmetrics.datasets.nuimages.NuImagesSegmentationDataset" | relative_url }}).
 
 nuImages supports image object detection and image semantic segmentation through the CLI and Python API.
 

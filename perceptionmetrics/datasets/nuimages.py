@@ -183,6 +183,10 @@ class NuImagesDetectionDataset(ImageDetectionDataset):
     :type version: str
     :param split: Dataset split ("train" or "val").
     :type split: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#nuimages>`__.
     """
 
     def __init__(
@@ -283,6 +287,9 @@ class NuImagesSegmentationDataset(segmentation_dataset.ImageSegmentationDataset)
     :param labels_rel_dir: Relative directory within the dataset where generated segmentation label images will be stored, defaults to "generated/nuimages_segmentation_labels".
     :type labels_rel_dir: str
 
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#nuimages>`__.
     """
 
     def __init__(
