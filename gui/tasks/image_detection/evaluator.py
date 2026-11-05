@@ -2,11 +2,12 @@ import streamlit as st
 import os
 import tempfile
 import json
-from perceptionmetrics.datasets.coco import CocoDataset
-
 
 from gui.tasks.utils import browse_folder
-from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
+from gui.tasks.image_detection.dataset_viewer import (
+    get_image_detection_dataset_key,
+    load_image_detection_dataset,
+)
 
 
 def browse_predictions_outdir():
@@ -28,43 +29,27 @@ def render_image_detection_evaluator():
 
     # Check for dataset from sidebar inputs
     dataset_path = st.session_state.get("dataset_path", "")
-    dataset_type = st.session_state.get("dataset_type", "Coco")
+    dataset_type = st.session_state.get("dataset_type", "COCO")
     split = st.session_state.get("split", "val")
 
-    # Try to get existing dataset from session state first
-    dataset_key = f"{dataset_path}_{split}"
-    if dataset_key in st.session_state:
-        dataset = st.session_state[dataset_key]
-        dataset_available = True
-        st.success(
-            f"✅ Dataset loaded: {dataset_path} ({split} split) - {len(dataset.dataset)} samples"
-        )
-    elif dataset_path and os.path.isdir(dataset_path):
+    # Reuse the dataset loaded by the viewer if available, otherwise load it here
+    dataset_key = get_image_detection_dataset_key(dataset_type, dataset_path, split)
+    if dataset_path and os.path.isdir(dataset_path):
         try:
-            if dataset_type.lower() == "coco":
-                img_dir, ann_file = find_img_dir_and_ann_file(
-                    dataset_path=dataset_path, split=split
+            if dataset_key not in st.session_state:
+                st.session_state[dataset_key] = load_image_detection_dataset(
+                    dataset_type,
+                    dataset_path,
+                    split,
+                    st.session_state.get("dataset_config_file"),
                 )
-
-                if os.path.isdir(img_dir) and os.path.isfile(ann_file):
-                    st.session_state[dataset_key] = CocoDataset(
-                        annotation_file=ann_file, image_dir=img_dir, split=split
-                    )
-                    # Make filenames global - this is crucial for evaluation
-                    st.session_state[dataset_key].make_fname_global()
-                    dataset = st.session_state[dataset_key]
-                    dataset_available = True
-                    st.success(
-                        f"✅ Dataset loaded: {dataset_path} ({split} split) - {len(dataset.dataset)} samples"
-                    )
-                else:
-                    st.warning(
-                        "⚠️ Dataset files not found. Please check the dataset path and split in the sidebar."
-                    )
-            else:
-                st.warning(
-                    "⚠️ Only COCO datasets are currently supported for evaluation."
-                )
+            dataset = st.session_state[dataset_key]
+            dataset_available = True
+            st.success(
+                f"✅ Dataset loaded: {dataset_path} ({split} split) - {len(dataset.dataset)} samples"
+            )
+        except FileNotFoundError as e:
+            st.warning(f"⚠️ {e}")
         except Exception as e:
             st.error(f"❌ Error loading dataset: {e}")
     else:

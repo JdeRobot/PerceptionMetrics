@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import tempfile
 
 from perceptionmetrics.datasets.coco import find_img_dir_and_ann_file
 from gui.tasks.utils import render_image_grid
@@ -7,9 +8,6 @@ from gui.tasks.utils import render_image_grid
 
 def render_image_detection_viewer():
     """Render the image detection dataset viewer tab in Streamlit."""
-    import tempfile
-    from perceptionmetrics.datasets.coco import CocoDataset
-    from perceptionmetrics.datasets.yolo import YOLODataset
     import numpy as np
     from PIL import Image
     from perceptionmetrics.utils.image import draw_detections
@@ -26,94 +24,40 @@ def render_image_detection_viewer():
         st.warning("⚠️ Please select a valid dataset folder.")
         return
 
-    # Setup paths and pagination
+    # Setup image directory used for pagination
     if dataset_type == "coco":
         try:
-            img_dir, ann_file = find_img_dir_and_ann_file(
+            img_dir, _ = find_img_dir_and_ann_file(
                 dataset_path=dataset_path, split=split
             )
         except FileNotFoundError:
             st.warning("Dataset files not found. Check path and split.")
             return
-
     elif dataset_type == "yolo":
-        dataset_config_file = st.session_state.get("dataset_config_file", None)
-        img_dir = os.path.join(dataset_path, f"images/{split}")
+        img_dir = os.path.join(dataset_path, "images", split)
         if not os.path.isdir(img_dir):
             st.warning("Image directory not found.")
-            return
-        if dataset_config_file is None:
-            st.warning("Dataset configuration file not found. Please upload it.")
             return
     else:
         st.error("Unsupported dataset type.")
         return
 
-    # Load dataset
-    dataset_key = f"{dataset_path}_{split}"
+    # Load dataset (shared with the evaluator tab through session state)
+    dataset_key = get_image_detection_dataset_key(dataset_type, dataset_path, split)
     if dataset_key not in st.session_state:
         try:
-            if dataset_type == "coco":
-                st.session_state[dataset_key] = CocoDataset(
-                    annotation_file=ann_file,
-                    image_dir=img_dir,
-                    split=split,
-                )
-            elif dataset_type == "yolo":
-                if dataset_config_file is not None:
-                    # Save uploaded config file to a temporary location
-                    with tempfile.NamedTemporaryFile(
-                        delete=False, suffix=".yaml"
-                    ) as tmp:
-                        tmp.write(dataset_config_file.read())
-                        tmp_path = tmp.name
-
-                    # Load YOLO dataset
-                    yolo_dataset = YOLODataset(tmp_path, dataset_path)
-                    st.session_state["full_dataset_df"] = yolo_dataset.dataset
-
-                    # Filter dataset for the selected split
-                    yolo_dataset.dataset = yolo_dataset.dataset[
-                        yolo_dataset.dataset["split"] == split
-                    ].reset_index(drop=True)
-                    st.session_state[dataset_key] = yolo_dataset
-
-                    os.unlink(tmp_path)  # Clean up temp file
-                else:
-                    st.warning(
-                        "Dataset configuration file not found. Please upload it."
-                    )
-                    return
-            else:
-                st.error("Unsupported dataset type.")
-                return
-
+            st.session_state[dataset_key] = load_image_detection_dataset(
+                dataset_type,
+                dataset_path,
+                split,
+                st.session_state.get("dataset_config_file"),
+            )
+        except FileNotFoundError as e:
+            st.warning(f"⚠️ {e}")
+            return
         except Exception as e:
             st.error(f"Failed to load dataset: {e}")
             return
-    else:
-        # Ensure cached dataset has the correct split; if not, rebuild it
-        try:
-            cached_ds = st.session_state[dataset_key]
-            cached_split = getattr(cached_ds, "split", None)
-            if cached_split != split:
-                if dataset_type == "coco":
-                    st.session_state[dataset_key] = CocoDataset(
-                        annotation_file=ann_file,
-                        image_dir=img_dir,
-                        split=split,
-                    )
-                elif dataset_type == "yolo":
-                    yolo_dataset = st.session_state[dataset_key]
-                    yolo_dataset.dataset = st.session_state["full_dataset_df"][
-                        st.session_state["full_dataset_df"]["split"] == split
-                    ].reset_index(drop=True)
-                    st.session_state[dataset_key] = yolo_dataset
-                else:
-                    st.error("Unsupported dataset type.")
-                    return
-        except Exception:
-            pass
     dataset = st.session_state[dataset_key]
 
     # Get image files
@@ -189,3 +133,77 @@ def render_image_detection_viewer():
             st.error(f"Error displaying image: {e}")
     else:
         st.info("Select an image to view with annotations.")
+
+
+def get_image_detection_dataset_key(dataset_type, dataset_path, split):
+    """Build the session state key used to cache an image detection dataset.
+
+    The dataset type is part of the key so that switching between COCO and YOLO
+    for the same folder and split never returns a stale dataset.
+
+    :param dataset_type: Type of the dataset (e.g., "COCO", "YOLO")
+    :type dataset_type: str
+    :param dataset_path: Path to the dataset directory
+    :type dataset_path: str
+    :param split: Dataset split (e.g., "train", "val", "test")
+    :type split: str
+    :return: Session state key for the dataset
+    :rtype: str
+    """
+    return f"{dataset_type.lower()}_{dataset_path}_{split}"
+
+
+def load_image_detection_dataset(
+    dataset_type, dataset_path, split, dataset_config_file=None
+):
+    """Load an image detection dataset based on the provided type, path, and split.
+
+    Filenames are kept relative to the dataset directory. Models make them global
+    on their own copy of the dataset during evaluation.
+
+    :param dataset_type: Type of the dataset ("COCO" or "YOLO", case-insensitive)
+    :type dataset_type: str
+    :param dataset_path: Path to the dataset directory
+    :type dataset_path: str
+    :param split: Dataset split to load (e.g., "train", "val", "test")
+    :type split: str
+    :param dataset_config_file: YOLO dataset configuration (YAML) as an uploaded
+        file-like object exposing ``getvalue()``. Required for YOLO datasets.
+    :type dataset_config_file: Optional[streamlit.runtime.uploaded_file_manager.UploadedFile]
+    :raises FileNotFoundError: If required dataset files or configuration are missing
+    :raises ValueError: If the dataset type is not supported
+    :return: Loaded dataset containing only the requested split
+    :rtype: CocoDataset or YOLODataset
+    """
+    from perceptionmetrics.datasets.coco import CocoDataset
+    from perceptionmetrics.datasets.yolo import YOLODataset
+
+    dataset_type = dataset_type.lower()
+
+    if dataset_type == "coco":
+        img_dir, ann_file = find_img_dir_and_ann_file(
+            dataset_path=dataset_path, split=split
+        )
+        return CocoDataset(annotation_file=ann_file, image_dir=img_dir, split=split)
+
+    if dataset_type == "yolo":
+        if dataset_config_file is None:
+            raise FileNotFoundError(
+                "Please upload the YOLO dataset configuration (.yaml) in the sidebar."
+            )
+
+        # getvalue() returns the full content even if the file was read before
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".yaml") as tmp:
+            tmp.write(dataset_config_file.getvalue())
+            tmp_path = tmp.name
+        try:
+            yolo_dataset = YOLODataset(tmp_path, dataset_path)
+        finally:
+            os.unlink(tmp_path)
+
+        yolo_dataset.dataset = yolo_dataset.dataset[
+            yolo_dataset.dataset["split"] == split
+        ].reset_index(drop=True)
+        return yolo_dataset
+
+    raise ValueError(f"{dataset_type} image detection dataset is not supported.")
