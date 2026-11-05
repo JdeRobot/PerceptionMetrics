@@ -92,7 +92,8 @@ def build_coco_dataset(
     dataset = OrderedDict()
     for img_id in coco.getImgIds():
         img_info = coco.loadImgs(img_id)[0]
-        sample_name = os.path.basename(img_info["file_name"]).split(".")[0]
+        # splitext keeps dots in the stem, see yolo.build_dataset
+        sample_name = os.path.splitext(os.path.basename(img_info["file_name"]))[0]
         dataset[sample_name] = (
             img_info["file_name"],
             str(img_id),

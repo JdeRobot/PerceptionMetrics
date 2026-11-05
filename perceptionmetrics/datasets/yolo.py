@@ -69,7 +69,10 @@ def build_dataset(
         def _add_to_dataset(image_fname: str, label_fname: str, split: str) -> None:
             """Add a sample to the dataset DataFrame"""
             if os.path.isfile(image_fname) and os.path.isfile(label_fname):
-                sample_name = os.path.basename(image_fname).split(".")[0]
+                # splitext, not split("."): Roboflow exports name files like
+                # "IMG_0001_jpg.rf.<hash>.jpg", and cutting at the first dot gives
+                # every augmented copy the same key, so all but one get dropped
+                sample_name = os.path.splitext(os.path.basename(image_fname))[0]
                 dataset[sample_name] = (
                     os.path.relpath(image_fname, dataset_dir),
                     os.path.relpath(label_fname, dataset_dir),
