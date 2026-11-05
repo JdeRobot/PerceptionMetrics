@@ -216,7 +216,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         # Get device (CPU or GPU)
         self.device = torch.device(
             "cuda"
-            if torch.cuda.is_available()
+            if torch.cuda.device_count() > 0
             else "mps" if torch.backends.mps.is_available() else "cpu"
         )
 
@@ -602,7 +602,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
         # Get device (CPU or GPU)
         self.device = torch.device(
             "cuda"
-            if torch.cuda.is_available()
+            if torch.cuda.device_count() > 0
             else "mps" if torch.backends.mps.is_available() else "cpu"
         )
 
