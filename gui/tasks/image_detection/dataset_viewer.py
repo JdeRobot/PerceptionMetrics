@@ -24,24 +24,6 @@ def render_image_detection_viewer():
         st.warning("⚠️ Please select a valid dataset folder.")
         return
 
-    # Setup image directory used for pagination
-    if dataset_type == "coco":
-        try:
-            img_dir, _ = find_img_dir_and_ann_file(
-                dataset_path=dataset_path, split=split
-            )
-        except FileNotFoundError:
-            st.warning("Dataset files not found. Check path and split.")
-            return
-    elif dataset_type == "yolo":
-        img_dir = os.path.join(dataset_path, "images", split)
-        if not os.path.isdir(img_dir):
-            st.warning("Image directory not found.")
-            return
-    else:
-        st.error("Unsupported dataset type.")
-        return
-
     # Load dataset (shared with the evaluator tab through session state)
     dataset_key = get_image_detection_dataset_key(dataset_type, dataset_path, split)
     if dataset_key not in st.session_state:
@@ -60,15 +42,15 @@ def render_image_detection_viewer():
             return
     dataset = st.session_state[dataset_key]
 
-    # Get image files
-    image_files = [
-        f for f in os.listdir(img_dir) if f.lower().endswith((".jpg", ".jpeg", ".png"))
+    # Image paths come from the dataset itself, so any folder layout works
+    image_paths = [
+        os.path.join(dataset.dataset_dir or "", img) for img in dataset.dataset["image"]
     ]
+    image_files = [os.path.basename(path) for path in image_paths]
     if not image_files:
         st.warning("No images found.")
         return
 
-    image_paths = [os.path.join(img_dir, img_name) for img_name in image_files]
     selected_img_path, _ = render_image_grid(
         item_names=image_files,
         image_paths=image_paths,
@@ -138,16 +120,13 @@ def render_image_detection_viewer():
 def get_image_detection_dataset_key(dataset_type, dataset_path, split):
     """Build the session state key used to cache an image detection dataset.
 
-    The dataset type is part of the key so that switching between COCO and YOLO
-    for the same folder and split never returns a stale dataset.
-
-    :param dataset_type: Type of the dataset (e.g., "COCO", "YOLO")
+    :param dataset_type: Dataset type ("COCO" or "YOLO")
     :type dataset_type: str
     :param dataset_path: Path to the dataset directory
     :type dataset_path: str
-    :param split: Dataset split (e.g., "train", "val", "test")
+    :param split: Dataset split
     :type split: str
-    :return: Session state key for the dataset
+    :return: Session state key
     :rtype: str
     """
     return f"{dataset_type.lower()}_{dataset_path}_{split}"
@@ -156,24 +135,20 @@ def get_image_detection_dataset_key(dataset_type, dataset_path, split):
 def load_image_detection_dataset(
     dataset_type, dataset_path, split, dataset_config_file=None
 ):
-    """Load an image detection dataset based on the provided type, path, and split.
+    """Load a COCO or YOLO image detection dataset.
 
-    Filenames are kept relative to the dataset directory. Models make them global
-    on their own copy of the dataset during evaluation.
-
-    :param dataset_type: Type of the dataset ("COCO" or "YOLO", case-insensitive)
+    :param dataset_type: Dataset type ("COCO" or "YOLO", case-insensitive)
     :type dataset_type: str
     :param dataset_path: Path to the dataset directory
     :type dataset_path: str
-    :param split: Dataset split to load (e.g., "train", "val", "test")
+    :param split: Dataset split to load
     :type split: str
-    :param dataset_config_file: YOLO dataset configuration (YAML) as an uploaded
-        file-like object exposing ``getvalue()``. Required for YOLO datasets.
-    :type dataset_config_file: Optional[streamlit.runtime.uploaded_file_manager.UploadedFile]
-    :raises FileNotFoundError: If required dataset files or configuration are missing
+    :param dataset_config_file: Uploaded YOLO YAML (needs ``getvalue()``)
+    :type dataset_config_file: Optional[UploadedFile]
+    :raises FileNotFoundError: If dataset files or the YOLO config are missing
     :raises ValueError: If the dataset type is not supported
-    :return: Loaded dataset containing only the requested split
-    :rtype: CocoDataset or YOLODataset
+    :return: Dataset with only the requested split
+    :rtype: Union[CocoDataset, YOLODataset]
     """
     from perceptionmetrics.datasets.coco import CocoDataset
     from perceptionmetrics.datasets.yolo import YOLODataset
