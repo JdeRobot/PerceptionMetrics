@@ -85,7 +85,7 @@ def get_device_info():
 
     available_devices = []
 
-    if torch.cuda.is_available():
+    if torch.cuda.device_count() > 0:
         available_devices.append("cuda")
     if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
         available_devices.append("mps")
