@@ -4,7 +4,7 @@ title: Usage
 permalink: /usage/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 ## Interactive GUI
@@ -42,7 +42,7 @@ The GUI consists of three main tabs:
 
 You can check the [`examples` directory](https://github.com/JdeRobot/PerceptionMetrics/tree/master/examples) for inspiration. If you are using *poetry*, you can run the scripts provided either by activating the created environment using `poetry shell` or directly running `poetry run python examples/<some_python_script.py>`.
 
-#### [Full docs for the Python library](https://jderobot.github.io/PerceptionMetrics/py_docs/build/html/index.html)
+#### [Python API reference]({{ "/py_docs/build/html/index.html" | relative_url }})
 
 ## Command-line interface
 PerceptionMetrics currently provides a CLI with three commands, `pm_eval_model`, `pm_eval_preds` and `pm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files.

@@ -124,8 +124,8 @@ footer:
 # Reading Files
 include:
   #- .htaccess
-  - _pages
   - _build
+  - _modules
   - _sources
   - _static
 exclude:

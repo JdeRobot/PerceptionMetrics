@@ -4,7 +4,7 @@ title: Metrics
 permalink: /metrics/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 This page summarizes the metrics computed by PerceptionMetrics for segmentation, object detection, and model profiling. The implementation lives in `perceptionmetrics.utils.segmentation_metrics` and `perceptionmetrics.utils.detection_metrics`.

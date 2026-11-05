@@ -4,7 +4,7 @@ title: Models
 permalink: /models/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 This page summarizes the model wrappers available in PerceptionMetrics and the configuration files they expect. Model wrappers normalize framework-specific inference into the common `PerceptionModel` API used by evaluation, prediction export, and the GUI.

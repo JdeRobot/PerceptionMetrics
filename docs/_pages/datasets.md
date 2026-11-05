@@ -4,7 +4,7 @@ title: Datasets
 permalink: /datasets/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 This page summarizes the dataset adapters available in PerceptionMetrics and the inputs each adapter expects. Dataset adapters normalize different dataset layouts into the common `PerceptionDataset` abstractions used by model evaluation, prediction evaluation, the GUI, and the Python API.
