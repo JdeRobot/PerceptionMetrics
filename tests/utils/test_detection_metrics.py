@@ -32,9 +32,10 @@ def test_match_predictions_logic(metrics_factory):
     results = matches[1]
     assert (0.95, 1) in results, "High overlap prediction should be a True Positive"
     assert (0.6, 0) in results, "Zero overlap prediction should be a False Positive"
-    assert (None, -1) not in results, (
-        "GT was matched, so there should be no False Negative"
-    )
+    assert (
+        None,
+        -1,
+    ) not in results, "GT was matched, so there should be no False Negative"
 
 
 def test_compute_metrics(metrics_factory):
@@ -138,9 +139,9 @@ def test_compute_coco_map_perfect_match(metrics_factory):
     metrics_factory.update(gt_boxes, [1], pred_boxes, [1], [0.9])
     coco_map = metrics_factory.compute_coco_map()
 
-    assert coco_map == 1.0, (
-        "Perfect overlap must yield perfect mAP across all thresholds"
-    )
+    assert (
+        coco_map == 1.0
+    ), "Perfect overlap must yield perfect mAP across all thresholds"
 
 
 def test_compute_coco_map_complex_multi_class(metrics_factory):
@@ -232,3 +233,34 @@ def test_coco_map_empty_vs_non_empty_class(metrics_factory):
 
     # (AP_Class1 + AP_Class2) / 2  => (1.0 + 0.0) / 2 = 0.5
     assert np.isclose(mAP, 0.5), f"Expected mAP of 0.5, but got {mAP}"
+
+
+def test_f1_score(metrics_factory):
+    """
+    Verify F1 score calculation.
+    """
+
+    gt_boxes = np.array([[10, 10, 50, 50]])
+    gt_labels = [1]
+
+    pred_boxes = np.array(
+        [
+            [12, 12, 48, 48],  # TP
+            [11, 11, 49, 49],  # FP (duplicate detection)
+        ]
+    )
+
+    pred_labels = [1, 1]
+    pred_scores = [0.9, 0.4]
+
+    metrics_factory.update(
+        gt_boxes,
+        gt_labels,
+        pred_boxes,
+        pred_labels,
+        pred_scores,
+    )
+
+    metrics = metrics_factory.compute_metrics()
+
+    assert np.isclose(metrics[1]["F1"], 2 / 3)
