@@ -3,6 +3,7 @@ from typing import List, Dict, Tuple, Optional
 
 import numpy as np
 import pandas as pd
+from shapely.geometry import Polygon
 
 
 class DetectionMetricsFactory:
@@ -384,7 +385,165 @@ class DetectionMetricsFactory:
 
         df = pd.DataFrame(metrics_dict)
         return df.T  # metrics as rows, classes as columns (with mean)
+def _bev_corners(box: np.ndarray) -> np.ndarray:
+    """Return counter-clockwise XY corners for an oriented LiDAR box."""
+    x, y, _, dx, dy, _, yaw = box[:7]
+    corners = np.array(
+        [
+            [-dx / 2, -dy / 2],
+            [dx / 2, -dy / 2],
+            [dx / 2, dy / 2],
+            [-dx / 2, dy / 2],
+        ],
+        dtype=np.float64,
+    )
+    rotation = np.array(
+        [[np.cos(yaw), -np.sin(yaw)], [np.sin(yaw), np.cos(yaw)]],
+        dtype=np.float64,
+    )
+    return corners @ rotation.T + np.array([x, y], dtype=np.float64)
 
+
+def _bev_intersection_area(box_a: np.ndarray, box_b: np.ndarray) -> float:
+    """Return the overlap area between two oriented LiDAR boxes in BEV."""
+    polygon_a = Polygon(_bev_corners(box_a))
+    polygon_b = Polygon(_bev_corners(box_b))
+    return float(polygon_a.intersection(polygon_b).area)
+
+
+def compute_bev_iou(box_a: np.ndarray, box_b: np.ndarray) -> float:
+    """Compute oriented top-down IoU for two LiDAR boxes."""
+    box_a = np.asarray(box_a, dtype=np.float64)
+    box_b = np.asarray(box_b, dtype=np.float64)
+    if box_a.shape[0] < 7 or box_b.shape[0] < 7:
+        raise ValueError("LiDAR boxes must contain at least seven values.")
+    if np.any(box_a[3:5] <= 0) or np.any(box_b[3:5] <= 0):
+        return 0.0
+
+    intersection = _bev_intersection_area(box_a, box_b)
+    area_a = box_a[3] * box_a[4]
+    area_b = box_b[3] * box_b[4]
+    union = area_a + area_b - intersection
+    return intersection / union if union > 0 else 0.0
+
+
+def compute_3d_iou(box_a: np.ndarray, box_b: np.ndarray) -> float:
+    """Compute oriented 3D IoU for bottom-center LiDAR boxes."""
+    box_a = np.asarray(box_a, dtype=np.float64)
+    box_b = np.asarray(box_b, dtype=np.float64)
+    if box_a.shape[0] < 7 or box_b.shape[0] < 7:
+        raise ValueError("LiDAR boxes must contain at least seven values.")
+    if np.any(box_a[3:6] <= 0) or np.any(box_b[3:6] <= 0):
+        return 0.0
+
+    intersection_area = _bev_intersection_area(box_a, box_b)
+    a_bottom, a_top = box_a[2], box_a[2] + box_a[5]
+    b_bottom, b_top = box_b[2], box_b[2] + box_b[5]
+    intersection_height = max(0.0, min(a_top, b_top) - max(a_bottom, b_bottom))
+    intersection_volume = intersection_area * intersection_height
+
+    volume_a = float(np.prod(box_a[3:6]))
+    volume_b = float(np.prod(box_b[3:6]))
+    union = volume_a + volume_b - intersection_volume
+    return intersection_volume / union if union > 0 else 0.0
+
+
+def compute_bev_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
+    """Compute oriented BEV IoU for every predicted/ground-truth box pair."""
+    return _compute_lidar_iou_matrix(pred_boxes, gt_boxes, compute_bev_iou)
+
+
+def compute_3d_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
+    """Compute oriented 3D IoU for every predicted/ground-truth box pair."""
+    return _compute_lidar_iou_matrix(pred_boxes, gt_boxes, compute_3d_iou)
+
+
+def _compute_lidar_iou_matrix(pred_boxes, gt_boxes, iou_function) -> np.ndarray:
+    """Apply an oriented IoU function to every predicted/ground-truth pair."""
+    pred_boxes = np.asarray(pred_boxes, dtype=np.float64)
+    gt_boxes = np.asarray(gt_boxes, dtype=np.float64)
+    if pred_boxes.ndim != 2 or pred_boxes.shape[1] < 7:
+        raise ValueError(
+            f"Expected pred_boxes of shape (N, 7+), got {pred_boxes.shape}"
+        )
+    if gt_boxes.ndim != 2 or gt_boxes.shape[1] < 7:
+        raise ValueError(f"Expected gt_boxes of shape (M, 7+), got {gt_boxes.shape}")
+
+    ious = np.zeros((len(pred_boxes), len(gt_boxes)), dtype=np.float64)
+    for pred_index, pred_box in enumerate(pred_boxes):
+        for gt_index, gt_box in enumerate(gt_boxes):
+            ious[pred_index, gt_index] = iou_function(pred_box, gt_box)
+    return ious
+
+
+class LiDARDetectionMetricsFactory(DetectionMetricsFactory):
+    """Detection metrics for oriented LiDAR boxes.
+
+    Boxes use the [x, y, z, dx, dy, dz, yaw] convention, where the center and
+    yaw are expressed in the LiDAR frame.
+    """
+
+    def __init__(
+        self,
+        iou_threshold: float = 0.5,
+        num_classes: Optional[int] = None,
+        iou_mode: str = "3d",
+    ):
+        if iou_mode not in {"3d", "bev"}:
+            raise ValueError("iou_mode must be '3d' or 'bev'.")
+        super().__init__(iou_threshold=iou_threshold, num_classes=num_classes)
+        self.iou_mode = iou_mode
+
+    def compute_iou_matrix(
+        self, pred_boxes: np.ndarray, gt_boxes: np.ndarray
+    ) -> np.ndarray:
+        """Compute the configured IoU matrix for predicted and GT boxes."""
+        if self.iou_mode == "bev":
+            return compute_bev_iou_matrix(pred_boxes, gt_boxes)
+        return compute_3d_iou_matrix(pred_boxes, gt_boxes)
+
+    def _match_predictions(
+        self,
+        gt_boxes: np.ndarray,
+        gt_labels: List[int],
+        pred_boxes: np.ndarray,
+        pred_labels: List[int],
+        pred_scores: List[float],
+        iou_threshold: Optional[float] = None,
+    ) -> Dict[int, List[Tuple[float, int]]]:
+        """Match 3D predictions to ground truth using the configured IoU mode."""
+        if iou_threshold is None:
+            iou_threshold = self.iou_threshold
+
+        results = defaultdict(list)
+        used = set()
+        ious = self.compute_iou_matrix(pred_boxes, gt_boxes)
+
+        for index in np.argsort([-score for score in pred_scores]):
+            pred_label = pred_labels[index]
+            score = pred_scores[index]
+            max_iou = 0
+            matched_index = -1
+
+            for gt_index, gt_label in enumerate(gt_labels):
+                if gt_index in used or pred_label != gt_label:
+                    continue
+                iou = ious[index, gt_index]
+                if iou > max_iou:
+                    max_iou = iou
+                    matched_index = gt_index
+
+            if max_iou >= iou_threshold:
+                results[pred_label].append((score, 1))
+                used.add(matched_index)
+            else:
+                results[pred_label].append((score, 0))
+
+        for gt_index, gt_label in enumerate(gt_labels):
+            if gt_index not in used:
+                results[gt_label].append((None, -1))
+
+        return results
 
 def compute_iou_matrix(pred_boxes: np.ndarray, gt_boxes: np.ndarray) -> np.ndarray:
     """Compute IoU matrix between pred and gt boxes using vectorized operations.

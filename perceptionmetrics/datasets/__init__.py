@@ -2,6 +2,7 @@ from perceptionmetrics.datasets.nuimages import (
     NuImagesDetectionDataset,
     NuImagesSegmentationDataset,
 )
+from perceptionmetrics.datasets.nuScenes import NuScenesLiDARDetectionDataset
 from perceptionmetrics.datasets.gaia import (
     GaiaImageSegmentationDataset,
     GaiaLiDARSegmentationDataset,
@@ -50,6 +51,7 @@ REGISTRY = {
     "nuimages_image_segmentation": NuImagesSegmentationDataset,
     "semantickitti_lidar_segmentation": SemanticKITTILiDARSegmentationDataset,
     "nuimages_image_detection": NuImagesDetectionDataset,
+    "nuscenes_lidar_detection": NuScenesLiDARDetectionDataset,
     "yolo_image_detection": YOLODataset,
 }
 
