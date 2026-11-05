@@ -147,6 +147,10 @@ class YOLODataset(ImageDetectionDataset):
     :type dataset_dir: Optional[str]
     :param im_ext: Image file extension (default is "jpg")
     :type im_ext: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#yolo>`__.
     """
 
     def __init__(

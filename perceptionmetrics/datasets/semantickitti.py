@@ -255,6 +255,10 @@ class SemanticKITTILiDARSegmentationDataset(
     :param split: Split or splits to load. Accepts "train", "val"/"valid", and "test".
         Loads all splits if None, defaults to None
     :type split: Optional[Union[str, List[str]]], optional
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#semantickitti>`__.
     """
 
     def __init__(

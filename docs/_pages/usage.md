@@ -45,6 +45,8 @@ You can check the [`examples` directory](https://github.com/JdeRobot/PerceptionM
 #### [Python API reference]({{ "/py_docs/build/html/index.html" | relative_url }})
 
 ## Command-line interface
+
+Python API: [`get_dataset`]({{ "/py_docs/build/html/api/perceptionmetrics.cli.html#perceptionmetrics.cli.get_dataset" | relative_url }}) and [`get_model`]({{ "/py_docs/build/html/api/perceptionmetrics.cli.html#perceptionmetrics.cli.get_model" | relative_url }}). See the [dataset formats]({{ "/datasets/" | relative_url }}) and [model configuration]({{ "/models/" | relative_url }}) guides for the inputs these factories expect.
 PerceptionMetrics currently provides a CLI with three commands, `pm_eval_model`, `pm_eval_preds` and `pm_batch`. Thanks to the configuration in the `pyproject.toml` file, we can simply run `poetry install` from the root directory and use them without explicitly invoking the Python files.
 
 #### `pm_eval_model`

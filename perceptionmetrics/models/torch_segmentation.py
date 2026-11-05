@@ -191,6 +191,13 @@ class LiDARSegmentationTorchDataset(Dataset):
 
 class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
+    """TorchImageSegmentationModel wrapper.
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/models/#image-segmentation-config>`__.
+    """
+
     def __init__(
         self,
         model: Union[str, torch.nn.Module],
@@ -572,6 +579,13 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
 
 class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
+
+    """TorchLiDARSegmentationModel wrapper.
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/models/#lidar-segmentation-config>`__.
+    """
 
     def __init__(
         self, model: Union[str, torch.nn.Module], model_cfg: str, ontology_fname: str

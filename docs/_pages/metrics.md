@@ -11,6 +11,8 @@ This page summarizes the metrics computed by PerceptionMetrics for segmentation,
 
 ## Segmentation Metrics
 
+API: [`SegmentationMetricsFactory`]({{ "/py_docs/build/html/api/perceptionmetrics.utils.html#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory" | relative_url }}).
+
 Segmentation metrics are accumulated with `SegmentationMetricsFactory`. The factory stores a confusion matrix of shape `(n_classes, n_classes)` and updates it from integer prediction and ground-truth arrays.
 
 Supported metrics:
@@ -66,6 +68,8 @@ The class-name rows at the bottom represent the confusion matrix. For those rows
 Segmentation evaluation can ignore labels by passing a valid mask into the metric update. Model wrappers build this mask from `ignored_classes` in the model configuration. Ignored pixels or points are excluded before the confusion matrix is updated.
 
 ## Detection Metrics
+
+API: [`DetectionMetricsFactory`]({{ "/py_docs/build/html/api/perceptionmetrics.utils.html#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory" | relative_url }}).
 
 Object detection metrics are accumulated with `DetectionMetricsFactory`. The factory receives ground-truth boxes, predicted boxes, labels, and confidence scores.
 

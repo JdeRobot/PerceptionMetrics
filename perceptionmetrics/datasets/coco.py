@@ -117,6 +117,10 @@ class CocoDataset(ImageDetectionDataset):
     :type image_dir: str
     :param split: Dataset split name (e.g., "train", "val", "test")
     :type split: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#coco>`__.
     """
 
     def __init__(self, annotation_file: str, image_dir: str, split: str = "train"):

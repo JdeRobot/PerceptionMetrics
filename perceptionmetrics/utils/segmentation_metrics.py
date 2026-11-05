@@ -12,6 +12,10 @@ class SegmentationMetricsFactory:
 
     :param n_classes: Number of classes to evaluate
     :type n_classes: int
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/metrics/#segmentation-metrics>`__.
     """
 
     METRIC_NAMES = [
