@@ -107,6 +107,28 @@ def test_edge_cases(metrics_factory):
     assert np.isnan(empty_metrics_factory.get_iou(per_class=False))
 
 
+@pytest.mark.parametrize("bad_class", [3, 255, -1])
+def test_update_rejects_out_of_range_prediction(metrics_factory, bad_class):
+    """Test that predicted classes outside [0, n_classes) raise instead of miscounting"""
+    gt = np.array([0, 1])
+    pred = np.array([bad_class, 1])
+
+    with pytest.raises(ValueError, match="outside"):
+        metrics_factory.update(pred, gt)
+
+    # Nothing should have been added to the confusion matrix
+    assert not metrics_factory.get_confusion_matrix().any()
+
+
+def test_update_ignores_out_of_range_prediction_on_ignored_pixels(metrics_factory):
+    """Test that invalid predictions are fine where the GT pixel is ignored anyway"""
+    gt = np.array([0, 1, 255])
+    pred = np.array([0, 1, 7])
+
+    metrics_factory.update(pred, gt)
+    assert metrics_factory.get_confusion_matrix().trace() == 2
+
+
 def test_macro_micro_weighted(metrics_factory):
     """Test macro, micro, and weighted metric averaging"""
     pred = np.array([0, 1, 2, 2, 1])
