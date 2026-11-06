@@ -9,6 +9,7 @@ from PIL import Image
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import v2 as transforms
+
 try:
     from torchvision import tv_tensors
 except ImportError:
@@ -25,6 +26,9 @@ from perceptionmetrics.utils.torch import (
     inverse_transform_boxes,
     pad_to_closest_divisor,
 )
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 def data_to_device(
@@ -258,7 +262,9 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                 model_type = "compiled"
             except Exception:
                 try:
-                    loaded = torch.load(model, map_location=self.device, weights_only=False)
+                    loaded = torch.load(
+                        model, map_location=self.device, weights_only=False
+                    )
                     # Handle Ultralytics/YOLO-style dict checkpoints
                     if isinstance(loaded, dict):
                         candidate = loaded.get("ema") or loaded.get("model")
@@ -339,7 +345,9 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
                 resize_args = get_resize_args(resize_cfg)
                 self.transform_input.append(transforms.Resize(**resize_args))
         else:
-            print("'resize_cfg' missing in model config. No resizing will be applied.")
+            _logger.warning(
+                "'resize_cfg' missing in model config. No resizing will be applied."
+            )
 
         if "crop" in self.model_cfg:
             crop_size = (
@@ -517,7 +525,7 @@ class TorchImageDetectionModel(detection_model.ImageDetectionModel):
             for image_ids, images, targets in iterator:
                 # Defensive check for empty images
                 if not images or any(image.numel() == 0 for image in images):
-                    print("Skipping batch: empty image tensor detected.")
+                    _logger.info("Skipping batch: empty image tensor detected.")
                     continue
 
                 images = torch.stack(images).to(self.device)

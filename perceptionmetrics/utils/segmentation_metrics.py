@@ -1,10 +1,12 @@
 from collections import defaultdict
-import logging
 import math
 from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 class SegmentationMetricsFactory:
@@ -225,7 +227,7 @@ class SegmentationMetricsFactory:
             return float(tp / union) if union > 0 else math.nan
         else:
             return np.where(union > 0, tp / union, np.nan)
-    
+
     def get_dice_score(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """Dice Score = 2 * TP / (2 * TP + FP + FN)
 
@@ -270,7 +272,7 @@ class SegmentationMetricsFactory:
                     f"Warning: {missing_count} class(es) were missing from the confusion matrix. "
                     f"Their {metric_name.upper()} evaluated to NaN and will be ignored in the macro-average."
                 )
-                logging.warning(msg)
+                _logger.warning(msg)
             return float(np.nanmean(per_class_values))
         if method == "micro":
             return float(metric(per_class=False))

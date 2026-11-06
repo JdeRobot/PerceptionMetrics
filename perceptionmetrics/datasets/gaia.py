@@ -5,6 +5,9 @@ import pandas as pd
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 import perceptionmetrics.utils.io as uio
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 def build_dataset(dataset_fname: str) -> Tuple[pd.DataFrame, str, dict]:
@@ -26,7 +29,7 @@ def build_dataset(dataset_fname: str) -> Tuple[pd.DataFrame, str, dict]:
     try:
         ontology_fname = dataset.attrs["ontology_fname"]
     except KeyError:
-        ontology_fname =  "ontology.json"
+        ontology_fname = "ontology.json"
 
     ontology_fname = os.path.join(dataset_dir, ontology_fname)
     assert os.path.isfile(ontology_fname), "Ontology file not found"
@@ -36,7 +39,7 @@ def build_dataset(dataset_fname: str) -> Tuple[pd.DataFrame, str, dict]:
         ontology[name]["rgb"] = tuple(data["rgb"])
 
     # Report results
-    print(f"Samples retrieved: {len(dataset)}")
+    _logger.info(f"Samples retrieved: {len(dataset)}")
 
     return dataset, dataset_dir, ontology
 

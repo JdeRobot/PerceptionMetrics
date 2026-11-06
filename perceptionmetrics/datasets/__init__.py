@@ -24,13 +24,18 @@ from perceptionmetrics.datasets.wildscenes import (
     WildscenesLiDARSegmentationDataset,
 )
 from perceptionmetrics.datasets.cityscapes import CityscapesImageSegmentationDataset
-from perceptionmetrics.datasets.semantickitti import SemanticKITTILiDARSegmentationDataset
+from perceptionmetrics.datasets.semantickitti import (
+    SemanticKITTILiDARSegmentationDataset,
+)
 from perceptionmetrics.datasets.yolo import YOLODataset
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 try:
     from perceptionmetrics.datasets.coco import CocoDataset
 except ImportError:
-    print("COCO dataset dependencies not available")
+    _logger.warning("COCO dataset dependencies not available")
     CocoDataset = None
 
 
