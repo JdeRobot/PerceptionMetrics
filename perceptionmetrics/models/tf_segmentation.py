@@ -386,8 +386,6 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             dataset.ontology, ontology_translation, translations_direction
         )
 
-        n_classes = len(eval_ontology)
-
         # Get Tensorflow dataset
         dataset = ImageSegmentationTensorflowDataset(
             dataset,
@@ -408,7 +406,7 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
             ignored_label_indices.append(eval_ontology[ignored_class]["idx"])
 
         # Init metrics
-        metrics_factory = um.SegmentationMetricsFactory(n_classes)
+        metrics_factory = um.SegmentationMetricsFactory.from_ontology(eval_ontology)
 
         # Evaluation loop
         pbar = tqdm(dataset.dataset)
@@ -450,7 +448,9 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
                         sample_valid_mask = (
                             valid_mask[i] if valid_mask is not None else None
                         )
-                        sample_mf = um.SegmentationMetricsFactory(n_classes)
+                        sample_mf = um.SegmentationMetricsFactory.from_ontology(
+                            eval_ontology
+                        )
                         sample_mf.update(sample_pred, sample_label, sample_valid_mask)
                         sample_df = um.get_metrics_dataframe(sample_mf, eval_ontology)
                         sample_df.to_csv(
