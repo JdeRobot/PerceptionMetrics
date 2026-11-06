@@ -1,7 +1,14 @@
+import io
 import json
 
+import pytest
 from PIL import Image
 from streamlit.testing.v1 import AppTest
+
+from gui.tasks.image_detection.dataset_viewer import (
+    get_image_detection_dataset_key,
+    load_image_detection_dataset,
+)
 
 
 def create_tiny_coco_dataset(tmp_path):
@@ -45,6 +52,24 @@ def create_tiny_coco_dataset(tmp_path):
         json.dump(annotation, f)
 
     return tmp_path
+
+
+def create_tiny_yolo_dataset(tmp_path):
+    """Create a minimal YOLO dataset with one train and one val sample.
+
+    :return: Dataset directory and the YAML configuration as bytes
+    :rtype: tuple
+    """
+    for split, name in [("train", "train_sample"), ("val", "val_sample")]:
+        image_dir = tmp_path / "images" / split
+        label_dir = tmp_path / "labels" / split
+        image_dir.mkdir(parents=True)
+        label_dir.mkdir(parents=True)
+        Image.new("RGB", (32, 32), color=(40, 80, 120)).save(image_dir / f"{name}.jpg")
+        (label_dir / f"{name}.txt").write_text("0 0.5 0.5 0.25 0.25\n")
+
+    config = "train: images/train\nval: images/val\nnames:\n  0: car\n"
+    return tmp_path, config.encode("utf-8")
 
 
 def get_by_label(elements, label):
@@ -173,7 +198,7 @@ def test_image_detection_gui_loads_tiny_coco_dataset(tmp_path):
     assert app.session_state["split"] == "val"
     assert app.session_state["dataset_path"] == str(dataset_path)
 
-    dataset_key = f"{dataset_path}_val"
+    dataset_key = get_image_detection_dataset_key("COCO", str(dataset_path), "val")
     assert dataset_key in app.session_state
     assert len(app.session_state[dataset_key].dataset) == 1
 
@@ -207,3 +232,58 @@ def test_image_detection_evaluator_uses_loaded_coco_dataset(tmp_path):
         button for button in app.button if button.label == "🚀 Run Evaluation"
     )
     assert run_evaluation.disabled
+
+
+def test_image_detection_evaluator_does_not_reject_yolo(tmp_path):
+    """Verify that selecting YOLO no longer shows a COCO-only warning (#529)."""
+    dataset_path, _ = create_tiny_yolo_dataset(tmp_path)
+    app = AppTest.from_file("app.py").run(timeout=10)
+
+    get_by_label(app.selectbox, "Type").select("YOLO").run(timeout=10)
+    get_by_label(app.selectbox, "Split").select("val").run(timeout=10)
+    get_by_label(app.text_input, "Dataset Folder").input(str(dataset_path)).run(
+        timeout=10
+    )
+
+    warning_text = "\n".join(warning.value for warning in app.warning)
+
+    assert not app.exception
+    assert "Only COCO datasets are currently supported" not in warning_text
+    assert "Please upload the YOLO dataset configuration" in warning_text
+
+
+def test_load_image_detection_dataset_yolo(tmp_path):
+    """Verify that the shared loader builds a YOLO dataset filtered by split."""
+    dataset_path, config = create_tiny_yolo_dataset(tmp_path)
+
+    dataset = load_image_detection_dataset(
+        "YOLO", str(dataset_path), "val", io.BytesIO(config)
+    )
+
+    assert len(dataset.dataset) == 1
+    assert set(dataset.dataset["split"]) == {"val"}
+    assert "car" in dataset.ontology
+
+
+def test_load_image_detection_dataset_yolo_requires_config(tmp_path):
+    """Verify that YOLO loading fails with a clear message without a config."""
+    dataset_path, _ = create_tiny_yolo_dataset(tmp_path)
+
+    with pytest.raises(FileNotFoundError, match="YOLO dataset configuration"):
+        load_image_detection_dataset("YOLO", str(dataset_path), "val")
+
+
+def test_load_image_detection_dataset_coco(tmp_path):
+    """Verify that the shared loader builds a COCO dataset."""
+    dataset_path = create_tiny_coco_dataset(tmp_path)
+
+    dataset = load_image_detection_dataset("COCO", str(dataset_path), "val")
+
+    assert len(dataset.dataset) == 1
+
+
+def test_image_detection_dataset_key_depends_on_type():
+    """Verify that COCO and YOLO datasets on the same path are cached separately."""
+    assert get_image_detection_dataset_key(
+        "COCO", "/data", "val"
+    ) != get_image_detection_dataset_key("YOLO", "/data", "val")

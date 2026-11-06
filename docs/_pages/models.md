@@ -4,7 +4,7 @@ title: Models
 permalink: /models/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 This page summarizes the model wrappers available in PerceptionMetrics and the configuration files they expect. Model wrappers normalize framework-specific inference into the common `PerceptionModel` API used by evaluation, prediction export, and the GUI.
@@ -41,6 +41,10 @@ The model ontology maps output class names to model output indices. It uses the 
 If model and dataset class spaces differ, provide an ontology translation during evaluation. The translation file is interpreted by the evaluation code to build a lookup table between dataset labels and model labels.
 
 ## Image Segmentation Config
+
+TensorFlow API: [`TensorflowImageSegmentationModel`]({{ "/py_docs/build/html/api/perceptionmetrics.models.html#perceptionmetrics.models.tf_segmentation.TensorflowImageSegmentationModel" | relative_url }}).
+
+API: [`TorchImageSegmentationModel`]({{ "/py_docs/build/html/api/perceptionmetrics.models.html#perceptionmetrics.models.torch_segmentation.TorchImageSegmentationModel" | relative_url }}).
 
 PyTorch and TensorFlow image segmentation wrappers share a similar JSON configuration:
 
@@ -88,6 +92,8 @@ For PyTorch image segmentation, the wrapper accepts either a TorchScript file, a
 For TensorFlow image segmentation, the wrapper accepts either a SavedModel directory or a loaded TensorFlow/Keras model from Python.
 
 ## LiDAR Segmentation Config
+
+API: [`TorchLiDARSegmentationModel`]({{ "/py_docs/build/html/api/perceptionmetrics.models.html#perceptionmetrics.models.torch_segmentation.TorchLiDARSegmentationModel" | relative_url }}).
 
 `TorchLiDARSegmentationModel` supports several LiDAR model utility formats through `model_cfg["model_format"]`:
 
@@ -147,6 +153,10 @@ LSK3DNet style configs may include:
 Additional environment setup for MMDetection3D, SphereFormer, and LSK3DNet is documented in `additional_envs/INSTRUCTIONS.md`.
 
 ## Image Detection Config
+
+API: [`TorchImageDetectionModel`]({{ "/py_docs/build/html/api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel" | relative_url }}) and its [`TorchImageDetectionModel.eval`]({{ "/py_docs/build/html/api/perceptionmetrics.models.html#perceptionmetrics.models.torch_detection.TorchImageDetectionModel.eval" | relative_url }}) method.
+
+Existing tutorials: [COCO detection](https://github.com/JdeRobot/PerceptionMetrics/blob/master/examples/tutorial_image_detection.ipynb) and [YOLO detection](https://github.com/JdeRobot/PerceptionMetrics/blob/master/examples/tutorial_image_detection_yolo.ipynb).
 
 `TorchImageDetectionModel` supports TorchVision-style detection outputs and TorchScript-exported YOLO-style outputs. Choose the post-processing path with `model_cfg["model_format"]`.
 

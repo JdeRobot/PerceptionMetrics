@@ -46,6 +46,10 @@ class GaiaImageSegmentationDataset(segmentation_dataset.ImageSegmentationDataset
 
     :param dataset_fname: Parquet dataset filename
     :type dataset_fname: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#gaia>`__.
     """
 
     def __init__(self, dataset_fname: str):
@@ -58,6 +62,10 @@ class GaiaLiDARSegmentationDataset(segmentation_dataset.LiDARSegmentationDataset
 
     :param dataset_fname: Parquet dataset filename
     :type dataset_fname: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#gaia>`__.
     """
 
     def __init__(self, dataset_fname: str):

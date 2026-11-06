@@ -99,6 +99,10 @@ class RUGDImageSegmentationDataset(segmentation_dataset.ImageSegmentationDataset
     :type ontology_fname: str
     :param split_sequences: Dictionary containing the split sequences for train, val, and test, defaults to DEFAULT_SPLIT
     :type split_sequences: dict, optional
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#rugd>`__.
     """
 
     def __init__(

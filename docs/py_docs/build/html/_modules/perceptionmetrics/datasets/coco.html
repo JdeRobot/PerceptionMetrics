@@ -189,7 +189,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">perceptionmetrics</a><input aria-label="Toggle navigation of perceptionmetrics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/perceptionmetrics.html">perceptionmetrics package</a><input aria-label="Toggle navigation of perceptionmetrics package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/perceptionmetrics.cli.html">perceptionmetrics.cli package</a></li>
@@ -338,7 +339,8 @@
     <span class="n">dataset</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">img_id</span> <span class="ow">in</span> <span class="n">coco</span><span class="o">.</span><span class="n">getImgIds</span><span class="p">():</span>
         <span class="n">img_info</span> <span class="o">=</span> <span class="n">coco</span><span class="o">.</span><span class="n">loadImgs</span><span class="p">(</span><span class="n">img_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">sample_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">img_info</span><span class="p">[</span><span class="s2">&quot;file_name&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># splitext keeps dots in the stem, see yolo.build_dataset</span>
+        <span class="n">sample_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">img_info</span><span class="p">[</span><span class="s2">&quot;file_name&quot;</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">dataset</span><span class="p">[</span><span class="n">sample_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">img_info</span><span class="p">[</span><span class="s2">&quot;file_name&quot;</span><span class="p">],</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">img_id</span><span class="p">),</span>
@@ -365,6 +367,10 @@
 <span class="sd">    :type image_dir: str</span>
 <span class="sd">    :param split: Dataset split name (e.g., &quot;train&quot;, &quot;val&quot;, &quot;test&quot;)</span>
 <span class="sd">    :type split: str</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        `User guide and format examples &lt;https://jderobot.github.io/PerceptionMetrics/datasets/#coco&gt;`__.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotation_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">):</span>

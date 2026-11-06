@@ -94,6 +94,10 @@ class WildscenesImageSegmentationDataset(
     :type dataset_dir: str
     :param split_dir: Directory where train, val, and test files (.csv) have been extracted to
     :type split_dir: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#wildscenes>`__.
     """
 
     def __init__(self, dataset_dir: str, split_dir: str):
@@ -171,6 +175,10 @@ class WildscenesLiDARSegmentationDataset(
     :type dataset_dir: str
     :param split_dir: Directory where train, val, and test files (.csv) have been extracted to
     :type split_dir: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#wildscenes>`__.
     """
 
     def __init__(self, dataset_dir: str, split_dir: str):

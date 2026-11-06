@@ -12,6 +12,10 @@ class DetectionMetricsFactory:
     :type iou_threshold: float, optional
     :param num_classes: Number of classes in the dataset, defaults to None
     :type num_classes: Optional[int], optional
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/metrics/#detection-metrics>`__.
     """
 
     def __init__(self, iou_threshold: float = 0.5, num_classes: Optional[int] = None):

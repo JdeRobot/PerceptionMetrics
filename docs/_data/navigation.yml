@@ -1,15 +1,35 @@
-# main links
+# Main documentation links
 main:
-  - title: Installation
-    url: /installation
-  - title: Compatibility
-    url: /compatibility
-  - title: Usage
-    url: /usage/
-  - title: DetectionMetrics
-    url: /DetectionMetrics/
+  - title: Home
+    url: /
+  - title: Getting Started
+    url: /installation/
+  - title: Guides
+    url: /guides/
+  - title: Python API Reference
+    url: /py_docs/build/html/index.html
   - title: About
-    url: /about
+    url: /about/
+
+# Documentation sidebar
+docs:
+  - title: Documentation
+    url: /
+  - title: Getting Started
+    url: /installation/
+  - title: Guides
+    url: /guides/
+    children:
+      - title: Datasets and data formats
+        url: /datasets/
+      - title: Models
+        url: /models/
+      - title: CLI
+        url: /usage/#command-line-interface
+      - title: Metrics
+        url: /metrics/
+  - title: Python API Reference
+    url: /py_docs/build/html/index.html
 
 # DetectionMetrics links
 detectionmetrics:
@@ -53,36 +73,3 @@ detectionmetrics:
         url: /DetectionMetrics/resources/gsoc_19
       - title: "Talks"
         url: /DetectionMetrics/resources/talks
-
-# Main links
-main:
-  - title: Home
-    url: /
-  - title: Installation
-    url: /installation
-  - title: Compatibility
-    url: /compatibility
-    children:
-    - title: "Image semantic segmentation"
-      url: /compatibility/#image-semantic-segmentation
-    - title: "LiDAR semantic segmentation"
-      url: /compatibility/#lidar-semantic-segmentation
-    - title: "Image object detection"
-      url: /compatibility/#image-object-detection
-  - title: Datasets
-    url: /datasets
-  - title: Models
-    url: /models
-  - title: Metrics
-    url: /metrics
-  - title: Usage
-    url: /usage
-    children:
-      - title: "Interactive GUI"
-        url: /usage/#interactive-gui
-      - title: "Library"
-        url: /usage/#library
-      - title: "Command-line interface"
-        url: /usage/#command-line-interface
-  - title: GUI
-    url: /gui
