@@ -16,6 +16,7 @@ def _stub_missing_torch():
 
     torch_stub = MagicMock(name="torch")
     torch_stub.cuda.is_available.return_value = False
+    torch_stub.cuda.device_count.return_value = 0
     torch_stub.backends.mps.is_available.return_value = False
     torch_stub.is_tensor.return_value = False
 
