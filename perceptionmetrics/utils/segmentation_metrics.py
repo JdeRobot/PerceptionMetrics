@@ -12,6 +12,8 @@ class SegmentationMetricsFactory:
 
     :param n_classes: Number of classes to evaluate
     :type n_classes: int
+    :param class_indices: Indices that belong to a class, defaults to None (every index below n_classes). Metrics for any other index are NaN and are left out of averaged metrics.
+    :type class_indices: Optional[List[int]], optional
 
     .. seealso::
 
@@ -31,9 +33,24 @@ class SegmentationMetricsFactory:
         "dice_score",
     ]
 
-    def __init__(self, n_classes: int):
+    def __init__(self, n_classes: int, class_indices: Optional[List[int]] = None):
         self.n_classes = n_classes
         self.confusion_matrix = np.zeros((n_classes, n_classes), dtype=np.int64)
+        self.unused_indices = np.zeros(n_classes, dtype=bool)
+        if class_indices is not None:
+            self.unused_indices = ~np.isin(np.arange(n_classes), class_indices)
+
+    @classmethod
+    def from_ontology(cls, ontology: dict) -> "SegmentationMetricsFactory":
+        """Build a factory for the classes in an ontology, whose indices may be non-contiguous
+
+        :param ontology: Ontology dictionary
+        :type ontology: dict
+        :return: Metrics factory sized by the largest class index
+        :rtype: SegmentationMetricsFactory
+        """
+        class_indices = [class_data["idx"] for class_data in ontology.values()]
+        return cls(max(class_indices) + 1, class_indices)
 
     def reset(self):
         """Reset all accumulated results to initial state.
@@ -89,6 +106,20 @@ class SegmentationMetricsFactory:
         """
         return self.confusion_matrix
 
+    def _mask_unused(self, values: np.ndarray) -> np.ndarray:
+        """Set per class values of indices that don't belong to any class to NaN.
+        Otherwise every element would count as a true negative for those indices,
+        inflating accuracy.
+
+        :param values: Per class values
+        :type values: np.ndarray
+        :return: Per class values with NaN for unused indices
+        :rtype: np.ndarray
+        """
+        if not self.unused_indices.any():
+            return values
+        return np.where(self.unused_indices, np.nan, values)
+
     def get_tp(self, per_class: bool = True) -> Union[np.ndarray, int]:
         """True Positives
 
@@ -97,7 +128,7 @@ class SegmentationMetricsFactory:
         :return: True Positives
         :rtype: Union[np.ndarray, int]
         """
-        tp = np.diag(self.confusion_matrix)
+        tp = self._mask_unused(np.diag(self.confusion_matrix))
         return tp if per_class else int(np.nansum(tp))
 
     def get_fp(self, per_class: bool = True) -> Union[np.ndarray, int]:
@@ -109,6 +140,7 @@ class SegmentationMetricsFactory:
         :rtype: Union[np.ndarray, int]
         """
         fp = self.confusion_matrix.sum(axis=0) - np.diag(self.confusion_matrix)
+        fp = self._mask_unused(fp)
         return fp if per_class else int(np.nansum(fp))
 
     def get_fn(self, per_class: bool = True) -> Union[np.ndarray, int]:
@@ -120,6 +152,7 @@ class SegmentationMetricsFactory:
         :rtype: Union[np.ndarray, int]
         """
         fn = self.confusion_matrix.sum(axis=1) - np.diag(self.confusion_matrix)
+        fn = self._mask_unused(fn)
         return fn if per_class else int(np.nansum(fn))
 
     def get_tn(self, per_class: bool = True) -> Union[np.ndarray, int]:
@@ -261,7 +294,8 @@ class SegmentationMetricsFactory:
         metric = getattr(self, f"get_{metric_name}")
         if method == "macro":
             per_class_values = metric(per_class=True)
-            nan_mask = np.isnan(per_class_values)
+            # Unused indices are always NaN and are not missing classes
+            nan_mask = np.isnan(per_class_values) & ~self.unused_indices
             missing_count = int(np.sum(nan_mask))
 
             if missing_count > 0:

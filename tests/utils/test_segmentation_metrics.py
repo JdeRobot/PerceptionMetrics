@@ -1,10 +1,15 @@
+import logging
 import math
 
 import numpy as np
 from numpy.testing import assert_allclose
+from pandas.testing import assert_frame_equal
 import pytest
 from perceptionmetrics.utils.detection_metrics import DetectionMetricsFactory
-from perceptionmetrics.utils.segmentation_metrics import SegmentationMetricsFactory
+from perceptionmetrics.utils.segmentation_metrics import (
+    SegmentationMetricsFactory,
+    get_metrics_dataframe,
+)
 from perceptionmetrics.utils.detection_metrics import compute_iou_matrix, compute_iou
 
 
@@ -198,6 +203,79 @@ def test_dice_score():
 
     assert dice.shape[0] == 2
     assert np.all(dice >= 0) and np.all(dice <= 1)
+
+
+# Same classes as a contiguous baseline, but with unused indices 1 and 2
+CONTIGUOUS_ONTOLOGY = {"a": {"idx": 0}, "b": {"idx": 1}, "c": {"idx": 2}}
+NON_CONTIGUOUS_ONTOLOGY = {"a": {"idx": 0}, "b": {"idx": 3}, "c": {"idx": 4}}
+TO_NON_CONTIGUOUS = np.array([0, 3, 4])
+
+
+def test_from_ontology_masks_unused_indices():
+    """Test that indices without a class get NaN for every per class metric"""
+    factory = SegmentationMetricsFactory.from_ontology(NON_CONTIGUOUS_ONTOLOGY)
+    factory.update(np.array([0, 3, 4, 0]), np.array([0, 3, 4, 4]))
+
+    assert factory.n_classes == 5
+    for metric_name in factory.get_metric_names():
+        per_class = factory.get_metric_per_name(metric_name, per_class=True)
+        assert np.isnan(per_class[[1, 2]]).all(), metric_name
+        assert not np.isnan(per_class[[0, 3, 4]]).any(), metric_name
+
+
+def test_non_contiguous_ontology_matches_contiguous_baseline():
+    """Test that every metric for a non-contiguous ontology matches the contiguous
+    baseline, including macro and micro accuracy"""
+    gt = np.array([0, 0, 0, 1, 1, 2, 2, 2, 2, 2])
+    pred = np.array([0, 0, 1, 1, 2, 2, 2, 2, 0, 2])
+
+    baseline = SegmentationMetricsFactory.from_ontology(CONTIGUOUS_ONTOLOGY)
+    baseline.update(pred, gt)
+    non_contiguous = SegmentationMetricsFactory.from_ontology(NON_CONTIGUOUS_ONTOLOGY)
+    non_contiguous.update(TO_NON_CONTIGUOUS[pred], TO_NON_CONTIGUOUS[gt])
+
+    rows = baseline.get_metric_names()
+    columns = ["a", "b", "c", "macro", "micro"]
+    baseline_df = get_metrics_dataframe(baseline, CONTIGUOUS_ONTOLOGY)
+    non_contiguous_df = get_metrics_dataframe(non_contiguous, NON_CONTIGUOUS_ONTOLOGY)
+
+    assert_frame_equal(
+        non_contiguous_df.loc[rows, columns], baseline_df.loc[rows, columns]
+    )
+    assert non_contiguous_df.loc["accuracy", "macro"] == pytest.approx(0.8)
+    assert non_contiguous_df.loc["accuracy", "micro"] == pytest.approx(0.8)
+
+
+@pytest.mark.parametrize(
+    "gt, pred, expected_warnings",
+    [
+        (np.array([0, 3, 4, 4]), np.array([0, 3, 4, 0]), []),
+        (np.array([0, 3, 3, 0]), np.array([0, 3, 0, 0]), ["1 class(es)"]),
+    ],
+)
+def test_macro_warning_ignores_unused_indices(caplog, gt, pred, expected_warnings):
+    """Test that the missing class warning counts only classes, not unused indices
+
+    :param caplog: pytest log capture fixture
+    :type caplog: pytest.LogCaptureFixture
+    :param gt: Ground truth indices
+    :type gt: np.ndarray
+    :param pred: Predicted indices
+    :type pred: np.ndarray
+    :param expected_warnings: Expected start of each warning's class count
+    :type expected_warnings: List[str]
+    """
+    factory = SegmentationMetricsFactory.from_ontology(NON_CONTIGUOUS_ONTOLOGY)
+    factory.update(pred, gt)
+
+    with caplog.at_level(logging.WARNING, logger="root"):
+        factory.get_averaged_metric("iou", "macro")
+
+    warnings = [r.message for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warnings) == len(expected_warnings)
+    for warning, expected in zip(warnings, expected_warnings):
+        assert f"Warning: {expected} were missing" in warning
+
 
 def compute_iou_matrix_reference(
     pred_boxes: np.ndarray, gt_boxes: np.ndarray
