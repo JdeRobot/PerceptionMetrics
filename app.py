@@ -3,16 +3,19 @@ import streamlit as st
 from perceptionmetrics.utils.torch import get_device_info
 from gui.dataset_viewer import dataset_viewer_tab
 from gui.evaluator import evaluator_tab
+from gui.computational_cost import computational_cost_tab
 from gui.inference import inference_tab
 from gui.tasks.image_detection.sidebar import render_image_detection_sidebar
 from gui.tasks.image_segmentation.sidebar import render_image_segmentation_sidebar
 from gui.tasks.lidar_segmentation.sidebar import render_lidar_segmentation_sidebar
+
 st.set_page_config(page_title="PerceptionMetrics", layout="wide")
 
 PAGES = {
     "Dataset Viewer": dataset_viewer_tab,
     "Inference": inference_tab,
     "Evaluator": evaluator_tab,
+    "Computational Cost": computational_cost_tab,
 }
 
 best_device, available_devices = get_device_info()
@@ -42,6 +45,15 @@ st.session_state.setdefault("segmentation_model_path", "")
 st.session_state.setdefault("segmentation_config_path", "")
 st.session_state.setdefault("segmentation_ontology_path", "")
 
+# Lidar segmentation state
+st.session_state.setdefault("lidar_model", None)
+st.session_state.setdefault("lidar_model_loaded", False)
+
+# Computational cost state
+st.session_state.setdefault("id_cost_results", None)
+st.session_state.setdefault("is_cost_results", None)
+st.session_state.setdefault("ls_cost_results", None)
+
 with st.sidebar:
     task = st.selectbox(
         "Task",
@@ -58,11 +70,11 @@ with st.sidebar:
         render_lidar_segmentation_sidebar(available_devices)
     else:
         st.error(f"Unsupported task: {task}")
-        
-    
 
 
-tab1, tab2, tab3 = st.tabs(["Dataset Viewer", "Inference", "Evaluator"])
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["Dataset Viewer", "Inference", "Evaluator", "Computational Cost"]
+)
 
 with tab1:
     dataset_viewer_tab()
@@ -70,3 +82,5 @@ with tab2:
     inference_tab()
 with tab3:
     evaluator_tab()
+with tab4:
+    computational_cost_tab()
