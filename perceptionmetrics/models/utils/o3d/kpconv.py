@@ -1,11 +1,14 @@
 from typing import List, Tuple
 
 import numpy as np
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 try:
     from open3d._ml3d.torch.models.kpconv import batch_grid_subsampling, batch_neighbors
 except Exception:
-    print("Open3D-ML3D not available")
+    _logger.warning("Open3D-ML3D not available")
 import torch
 
 import perceptionmetrics.utils.lidar as ul

@@ -102,14 +102,19 @@ def test_build_dataset(caplog: pytest.LogCaptureFixture) -> None:
     assert "test" not in dataset["split"].values
 
     # --- warning must be emitted for the null 'test' split ---
-    with caplog.at_level(logging.WARNING, logger="root"):
-        _make_patched_build_dataset(
-            _FAKE_YAML_TEST_NULL,
-            {
-                "train": ["/fake/dataset/labels/train/img1.txt"],
-                "val": ["/fake/dataset/labels/val/img2.txt"],
-            },
-        )
+    pm_logger = logging.getLogger("perceptionmetrics")
+    pm_logger.addHandler(caplog.handler)
+    try:
+        with caplog.at_level(logging.WARNING, logger="root"):
+            _make_patched_build_dataset(
+                _FAKE_YAML_TEST_NULL,
+                {
+                    "train": ["/fake/dataset/labels/train/img1.txt"],
+                    "val": ["/fake/dataset/labels/val/img2.txt"],
+                },
+            )
+    finally:
+        pm_logger.removeHandler(caplog.handler)
     warning_messages = [
         r.message for r in caplog.records if r.levelno == logging.WARNING
     ]

@@ -1,6 +1,5 @@
 from typing import OrderedDict
 from glob import glob
-import logging
 import os
 from typing import Tuple, List, Optional
 
@@ -9,6 +8,9 @@ from PIL import Image
 
 from perceptionmetrics.datasets.detection import ImageDetectionDataset
 from perceptionmetrics.utils import io as uio
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 def build_dataset(
@@ -52,7 +54,7 @@ def build_dataset(
     for split in ["train", "val", "test"]:
         split_paths = dataset_info.get(split)
         if not split_paths:
-            logging.warning(
+            _logger.warning(
                 "Split '%s' is missing or has no path defined in '%s'; skipping.",
                 split,
                 dataset_fname,

@@ -7,6 +7,9 @@ import pandas as pd
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 import perceptionmetrics.utils.io as uio
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 # Default split presented in the paper
 DEFAULT_SPLIT = {
@@ -69,7 +72,7 @@ def build_dataset(
                 "rgb": (int(r), int(g), int(b)),
             }
     except Exception as e:
-        print(f"Error loading ontology: {e}")
+        _logger.error(f"Error loading ontology: {e}")
         raise
 
     # Build dataset as ordered python dictionary
@@ -124,7 +127,7 @@ class RUGDImageSegmentationDataset(segmentation_dataset.ImageSegmentationDataset
         dataset = pd.DataFrame.from_dict(dataset, orient="index", columns=cols)
 
         # Report results
-        print(f"Samples retrieved: {len(dataset)}")
+        _logger.info(f"Samples retrieved: {len(dataset)}")
 
         # Initialize parent class
         super().__init__(dataset, images_dir, ontology, is_label_rgb=True)

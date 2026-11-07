@@ -7,6 +7,9 @@ from tqdm import tqdm
 
 from perceptionmetrics.cli import REGISTRY as cli_registry
 from perceptionmetrics.utils import io as uio
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 @click.command(name="batch", help="Perform PerceptionMetrics jobs in batch mode")
@@ -20,7 +23,7 @@ def batch(command, jobs_cfg):
     target_key = "model" if "model" in jobs_cfg else "predictions"
     if not isinstance(jobs_cfg[target_key], list):
         jobs_cfg[target_key] = [jobs_cfg[target_key]]
-    
+
     # Alias predictions to model so the rest of the iteration logic works
     if target_key == "predictions":
         jobs_cfg["model"] = jobs_cfg.pop("predictions")
@@ -47,7 +50,7 @@ def batch(command, jobs_cfg):
         if not model_paths:
             raise FileNotFoundError(f"No files found for path/pattern: {model_path}")
 
-        print(f"Found {len(model_paths)} model(s) for pattern: {model_path}")
+        _logger.info(f"Found {len(model_paths)} model(s) for pattern: {model_path}")
         for new_path in model_paths:
             assert os.path.exists(new_path), f"File or directory {new_path} not found"
 
@@ -82,11 +85,11 @@ def batch(command, jobs_cfg):
 
         all_jobs[job_id] = job_components
 
-    print("\n" + "-" * 80)
-    print(f"{len(all_jobs)} job(s) will be executed:")
+    _logger.info("\n" + "-" * 80)
+    _logger.info(f"{len(all_jobs)} job(s) will be executed:")
     for job_id in all_jobs:
-        print(f"\t- {job_id}")
-    print("-" * 80 + "\n")
+        _logger.info(f"\t- {job_id}")
+    _logger.info("-" * 80 + "\n")
 
     # Start processing jobs
     pbar = tqdm(all_jobs.items(), total=len(all_jobs), leave=True)
@@ -171,7 +174,7 @@ def batch(command, jobs_cfg):
             result = ctx.invoke(cli_registry[command], **params)
 
         except Exception as e:
-            print(f"Error processing job {job_id}: {e}")
+            _logger.error(f"Error processing job {job_id}: {e}")
             continue
 
         # Handle both dict and DataFrame results
