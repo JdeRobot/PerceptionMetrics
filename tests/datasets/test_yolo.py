@@ -1,10 +1,12 @@
 import logging
+import os
 from typing import Any, Dict, List, Tuple
 from unittest.mock import patch
 
 import pandas as pd
 import pytest
-from perceptionmetrics.datasets.yolo import build_dataset  # noqa: E402
+from PIL import Image
+from perceptionmetrics.datasets.yolo import YOLODataset, build_dataset  # noqa: E402
 
 _FAKE_YAML_TRAIN_VAL_ONLY = {
     "path": "/fake/dataset",
@@ -163,3 +165,53 @@ def test_build_dataset_keeps_samples_with_dots_in_name() -> None:
         _FAKE_YAML_TRAIN_VAL_ONLY, {"val": ["/fake/dataset/labels/val/img1.txt"]}
     )
     assert list(dataset.index) == ["img1"]
+
+
+def _write_yolo_dataset(dataset_dir) -> str:
+    """Write a small YOLO dataset to disk and return its YAML path.
+
+    :param dataset_dir: Directory where the dataset is created
+    :type dataset_dir: pathlib.Path
+    :return: Path to the dataset YAML file
+    :rtype: str
+    """
+    for split, sample in [("train", "img1"), ("val", "img2")]:
+        (dataset_dir / "images" / split).mkdir(parents=True)
+        (dataset_dir / "labels" / split).mkdir(parents=True)
+        Image.new("RGB", (100, 50)).save(
+            dataset_dir / "images" / split / f"{sample}.jpg"
+        )
+        (dataset_dir / "labels" / split / f"{sample}.txt").write_text(
+            "0 0.5 0.5 0.2 0.4\n"
+        )
+
+    yaml_fname = dataset_dir / "data.yaml"
+    yaml_fname.write_text(
+        f"path: {dataset_dir}\ntrain: images/train\nval: images/val\n"
+        "names:\n  0: cat\n"
+    )
+    return str(yaml_fname)
+
+
+@pytest.mark.parametrize("parent", ["drone_images", "my_labels"])
+def test_yolo_dataset_parent_folder_names(tmp_path, parent) -> None:
+    """Only the dataset's own images/labels folders must be swapped.
+
+    A parent folder whose name contains "images" or "labels" must not be
+    rewritten when looking up the matching labels or image file.
+    """
+    dataset_dir = tmp_path / parent / "mydata"
+    yaml_fname = _write_yolo_dataset(dataset_dir)
+
+    dataset = YOLODataset(yaml_fname, None)
+    assert sorted(dataset.dataset.index) == ["img1", "img2"]
+    assert dataset.dataset.loc["img2", "annotation"] == os.path.join(
+        "labels", "val", "img2.txt"
+    )
+
+    ann_fname = os.path.join(
+        dataset.dataset_dir, dataset.dataset.loc["img2", "annotation"]
+    )
+    boxes, labels = dataset.read_annotation(ann_fname)
+    assert boxes == [[40.0, 15.0, 60.0, 35.0]]
+    assert labels == [0]
