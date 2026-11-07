@@ -240,6 +240,10 @@ class TensorflowImageSegmentationModel(ImageSegmentationModel):
     :type model_cfg: str
     :param ontology_fname: JSON file containing model output ontology
     :type ontology_fname: str
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/models/#image-segmentation-config>`__.
     """
 
     def __init__(

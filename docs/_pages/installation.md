@@ -1,10 +1,10 @@
 ---
 layout: home
-title: Installation
+title: Getting Started
 permalink: /installation/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 ## Installation
@@ -88,3 +88,8 @@ And it's done! You can check the `examples` directory for inspiration and run so
 
 ### Additional environments
 Some LiDAR segmentation models, such as SphereFormer and LSK3DNet, require a dedicated installation workflow. Refer to [additional_envs/INSTRUCTIONS.md](additional_envs/INSTRUCTIONS.md) for detailed setup instructions.
+
+## First evaluation
+
+Choose a workflow from the [guides]({{ "/guides/" | relative_url }}), or use the
+[Python API reference]({{ "/py_docs/build/html/index.html" | relative_url }}).

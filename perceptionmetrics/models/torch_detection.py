@@ -217,6 +217,13 @@ class ImageDetectionTorchDataset(Dataset):
 
 
 class TorchImageDetectionModel(detection_model.ImageDetectionModel):
+    """TorchImageDetectionModel wrapper.
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/models/#image-detection-config>`__.
+    """
+
     def __init__(
         self,
         model: Union[str, torch.nn.Module],

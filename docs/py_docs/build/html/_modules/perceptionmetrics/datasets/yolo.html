@@ -189,7 +189,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">perceptionmetrics</a><input aria-label="Toggle navigation of perceptionmetrics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/perceptionmetrics.html">perceptionmetrics package</a><input aria-label="Toggle navigation of perceptionmetrics package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/perceptionmetrics.cli.html">perceptionmetrics.cli package</a></li>
@@ -312,7 +313,10 @@
         <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_dataset</span><span class="p">(</span><span class="n">image_fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label_fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Add a sample to the dataset DataFrame&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">image_fname</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">label_fname</span><span class="p">):</span>
-                <span class="n">sample_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image_fname</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># splitext, not split(&quot;.&quot;): Roboflow exports name files like</span>
+                <span class="c1"># &quot;IMG_0001_jpg.rf.&lt;hash&gt;.jpg&quot;, and cutting at the first dot gives</span>
+                <span class="c1"># every augmented copy the same key, so all but one get dropped</span>
+                <span class="n">sample_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image_fname</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">dataset</span><span class="p">[</span><span class="n">sample_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">image_fname</span><span class="p">,</span> <span class="n">dataset_dir</span><span class="p">),</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">label_fname</span><span class="p">,</span> <span class="n">dataset_dir</span><span class="p">),</span>
@@ -390,6 +394,10 @@
 <span class="sd">    :type dataset_dir: Optional[str]</span>
 <span class="sd">    :param im_ext: Image file extension (default is &quot;jpg&quot;)</span>
 <span class="sd">    :type im_ext: str</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        `User guide and format examples &lt;https://jderobot.github.io/PerceptionMetrics/datasets/#yolo&gt;`__.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>

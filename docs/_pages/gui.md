@@ -4,7 +4,7 @@ title: GUI
 permalink: /gui/
 
 sidebar:
-  nav: "main"
+  nav: "docs"
 ---
 
 # PerceptionMetrics GUI

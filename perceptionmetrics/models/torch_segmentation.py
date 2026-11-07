@@ -191,6 +191,13 @@ class LiDARSegmentationTorchDataset(Dataset):
 
 class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
+    """TorchImageSegmentationModel wrapper.
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/models/#image-segmentation-config>`__.
+    """
+
     def __init__(
         self,
         model: Union[str, torch.nn.Module],
@@ -209,7 +216,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         # Get device (CPU or GPU)
         self.device = torch.device(
             "cuda"
-            if torch.cuda.is_available()
+            if torch.cuda.device_count() > 0
             else "mps" if torch.backends.mps.is_available() else "cpu"
         )
 
@@ -579,6 +586,13 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
 class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
 
+    """TorchLiDARSegmentationModel wrapper.
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/models/#lidar-segmentation-config>`__.
+    """
+
     def __init__(
         self, model: Union[str, torch.nn.Module], model_cfg: str, ontology_fname: str
     ):
@@ -594,7 +608,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
         # Get device (CPU or GPU)
         self.device = torch.device(
             "cuda"
-            if torch.cuda.is_available()
+            if torch.cuda.device_count() > 0
             else "mps" if torch.backends.mps.is_available() else "cpu"
         )
 
