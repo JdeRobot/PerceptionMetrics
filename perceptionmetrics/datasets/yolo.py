@@ -11,6 +11,28 @@ from perceptionmetrics.datasets.detection import ImageDetectionDataset
 from perceptionmetrics.utils import io as uio
 
 
+def _swap_dir_name(path: str, old: str, new: str) -> str:
+    """Replace the last folder in a path that is named exactly ``old`` with ``new``
+
+    If no folder has that exact name, every occurrence of ``old`` is replaced.
+
+    :param path: Path to modify
+    :type path: str
+    :param old: Folder name to replace (e.g. "images")
+    :type old: str
+    :param new: New folder name (e.g. "labels")
+    :type new: str
+    :return: Modified path
+    :rtype: str
+    """
+    parts = path.split(os.sep)
+    for i in reversed(range(len(parts))):
+        if parts[i] == old:
+            parts[i] = new
+            return os.sep.join(parts)
+    return path.replace(old, new)
+
+
 def build_dataset(
     dataset_fname: str, dataset_dir: Optional[str] = None, im_ext: str = "jpg"
 ) -> Tuple[pd.DataFrame, dict, str]:
@@ -114,7 +136,7 @@ def build_dataset(
 
             else:
                 if "images" in sp:
-                    labels_dir = sp.replace("images", "labels")
+                    labels_dir = _swap_dir_name(sp, "images", "labels")
                 else:
                     labels_dir = os.path.join(
                         dataset_dir, "labels", os.path.basename(sp)
@@ -177,7 +199,10 @@ class YOLODataset(ImageDetectionDataset):
         """
         label = uio.read_txt(fname)
         image_fname = fname.replace(".txt", f".{self.im_ext}")
-        image_fname = image_fname.replace("labels", "images")
+        image_dir, image_basename = os.path.split(image_fname)
+        image_fname = os.path.join(
+            _swap_dir_name(image_dir, "labels", "images"), image_basename
+        )
         if image_size is None:
             image_size = Image.open(image_fname).size
 
