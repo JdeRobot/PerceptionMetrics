@@ -157,7 +157,7 @@ class ImageSegmentationTensorflowDataset:
         self.dataset = self.dataset.map(
             self.load_data, num_parallel_calls=tf_data.AUTOTUNE
         )
-        self.dataset = self.dataset.batch(batch_size, drop_remainder=True)
+        self.dataset = self.dataset.batch(batch_size)
 
     def read_image(self, fname: str, label=False) -> tf.Tensor:
         """Read a single image or label
