@@ -315,6 +315,14 @@
         <span class="k">if</span> <span class="n">valid_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">valid_mask</span>
 
+        <span class="c1"># Predictions outside the class range can&#39;t be placed in the confusion matrix</span>
+        <span class="n">invalid_pred</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="p">((</span><span class="n">pred</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">pred</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">invalid_pred</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Prediction contains class indices outside [0, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">]: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="n">invalid_pred</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
         <span class="c1"># Update confusion matrix</span>
         <span class="n">new_entry</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">*</span> <span class="n">gt</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="n">pred</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
