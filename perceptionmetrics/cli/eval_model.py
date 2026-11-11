@@ -212,8 +212,9 @@ def eval_model(
     # Detection models return a dict with metrics_df and metrics_factory;
     # other tasks return the metrics DataFrame directly.
     metrics_df = results.get("metrics_df") if isinstance(results, dict) else results
-    os.makedirs(os.path.dirname(os.path.abspath(out_fname)), exist_ok=True)
-    metrics_df.to_csv(out_fname)
+    if out_fname is not None:
+        os.makedirs(os.path.dirname(os.path.abspath(out_fname)), exist_ok=True)
+        metrics_df.to_csv(out_fname)
 
     return results
 
