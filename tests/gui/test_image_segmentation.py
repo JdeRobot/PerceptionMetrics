@@ -8,13 +8,7 @@ def create_tiny_cityscapes_dataset(tmp_path):
     city = "frankfurt"
     sample_id = "frankfurt_000000_000294"
 
-    image_dir = (
-        tmp_path
-        / "leftImg8bit_trainvaltest"
-        / "leftImg8bit"
-        / "val"
-        / city
-    )
+    image_dir = tmp_path / "leftImg8bit_trainvaltest" / "leftImg8bit" / "val" / city
     label_dir = tmp_path / "gtFine" / "val" / city
     image_dir.mkdir(parents=True)
     label_dir.mkdir(parents=True)
@@ -61,7 +55,12 @@ def test_image_segmentation_gui_default_view():
     assert app.session_state["segmentation_dataset_type"] == "Cityscapes"
 
     tab_labels = [tab.label for tab in app.tabs]
-    assert tab_labels == ["Dataset Viewer", "Inference", "Evaluator"]
+    assert tab_labels == [
+        "Dataset Viewer",
+        "Inference",
+        "Evaluator",
+        "Computational Cost",
+    ]
 
     selectbox_labels = [selectbox.label for selectbox in app.selectbox]
     assert "Task" in selectbox_labels
@@ -77,7 +76,9 @@ def test_image_segmentation_gui_default_view():
 
     warning_text = "\n".join(warning.value for warning in app.warning)
     assert "Please select a valid image segmentation dataset folder." in warning_text
-    assert "Load a segmentation model from the sidebar to start inference." in warning_text
+    assert (
+        "Load a segmentation model from the sidebar to start inference." in warning_text
+    )
 
 
 def test_image_segmentation_sidebar_switches_from_cityscapes_to_nuimages():
@@ -178,13 +179,15 @@ def test_image_segmentation_gui_loads_tiny_cityscapes_dataset(tmp_path):
     button_labels = [button.label for button in app.button]
     assert "⟨" in button_labels
     assert "⟩" in button_labels
-    assert "🔍" in button_labels    
+    assert "🔍" in button_labels
 
     slider_labels = [slider.label for slider in app.slider]
     assert "Mask Opacity" in slider_labels
 
     warning_text = "\n".join(warning.value for warning in app.warning)
-    assert "Please select a valid image segmentation dataset folder." not in warning_text
+    assert (
+        "Please select a valid image segmentation dataset folder." not in warning_text
+    )
 
 
 def test_image_segmentation_evaluator_uses_loaded_cityscapes_dataset(tmp_path):

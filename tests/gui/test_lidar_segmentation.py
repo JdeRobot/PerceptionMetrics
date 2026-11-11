@@ -98,7 +98,12 @@ def test_lidar_segmentation_gui_default_view():
     assert app.session_state["lidar_dataset_type"] == "SemanticKITTI"
 
     tab_labels = [tab.label for tab in app.tabs]
-    assert tab_labels == ["Dataset Viewer", "Inference", "Evaluator"]
+    assert tab_labels == [
+        "Dataset Viewer",
+        "Inference",
+        "Evaluator",
+        "Computational Cost",
+    ]
 
     selectbox_labels = [selectbox.label for selectbox in app.selectbox]
     assert "Task" in selectbox_labels
@@ -117,7 +122,10 @@ def test_lidar_segmentation_gui_default_view():
 
     warning_text = "\n".join(warning.value for warning in app.warning)
     assert "Please select a valid SemanticKITTI dataset folder." in warning_text
-    assert "Load a LiDAR segmentation model from the sidebar to start inference." in warning_text
+    assert (
+        "Load a LiDAR segmentation model from the sidebar to start inference."
+        in warning_text
+    )
 
 
 def test_lidar_segmentation_sidebar_updates_dataset_inputs():
@@ -151,9 +159,9 @@ def test_lidar_segmentation_sidebar_updates_model_inputs():
     get_by_label(app.text_input, "Model Config JSON").input(
         "/tmp/lidar_model_cfg.json"
     ).run(timeout=10)
-    get_by_label(app.text_input, "Ontology File").input(
-        "/tmp/lidar_ontology.json"
-    ).run(timeout=10)
+    get_by_label(app.text_input, "Ontology File").input("/tmp/lidar_ontology.json").run(
+        timeout=10
+    )
 
     assert app.session_state["lidar_model_type"] == "MMDetection3D"
     assert app.session_state["lidar_mmdet3d_config_path"] == "/tmp/mmdet3d_config.py"

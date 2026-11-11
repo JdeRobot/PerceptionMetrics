@@ -95,7 +95,12 @@ def test_image_detection_gui_default_view():
     assert app.session_state["dataset_type"] == "YOLO"
 
     tab_labels = [tab.label for tab in app.tabs]
-    assert tab_labels == ["Dataset Viewer", "Inference", "Evaluator"]
+    assert tab_labels == [
+        "Dataset Viewer",
+        "Inference",
+        "Evaluator",
+        "Computational Cost",
+    ]
 
     selectbox_labels = [selectbox.label for selectbox in app.selectbox]
     assert "Task" in selectbox_labels
@@ -143,9 +148,7 @@ def test_image_detection_sidebar_updates_model_config_inputs():
 
     get_by_label(app.slider, "Confidence Threshold").set_value(0.7).run(timeout=10)
     get_by_label(app.slider, "NMS Threshold").set_value(0.3).run(timeout=10)
-    get_by_label(app.number_input, "Max Detections/Image").set_value(25).run(
-        timeout=10
-    )
+    get_by_label(app.number_input, "Max Detections/Image").set_value(25).run(timeout=10)
     get_by_label(app.selectbox, "Model Format").select("YOLO").run(timeout=10)
     get_by_label(app.number_input, "Batch Size").set_value(4).run(timeout=10)
     get_by_label(app.number_input, "Evaluation Step").set_value(10).run(timeout=10)
@@ -160,9 +163,7 @@ def test_image_detection_sidebar_updates_model_config_inputs():
     get_by_label(app.radio, "Resize Strategy").set_value("Fixed Dimensions").run(
         timeout=10
     )
-    get_by_label(app.number_input, "Image Resize Height").set_value(480).run(
-        timeout=10
-    )
+    get_by_label(app.number_input, "Image Resize Height").set_value(480).run(timeout=10)
     get_by_label(app.number_input, "Image Resize Width").set_value(640).run(timeout=10)
 
     assert app.session_state["resize_strategy"] == "Fixed Dimensions"
