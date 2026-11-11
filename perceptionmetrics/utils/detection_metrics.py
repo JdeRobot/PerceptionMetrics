@@ -326,6 +326,9 @@ class DetectionMetricsFactory:
     def compute_auc_pr(self) -> float:
         """Compute the Area Under the Precision-Recall Curve (AUC-PR).
 
+        The overall precision-recall curve is anchored at (recall=0, precision=1)
+        and integrated with the trapezoidal rule.
+
         :return: Area under the precision-recall curve
         :rtype: float
         """
@@ -337,8 +340,14 @@ class DetectionMetricsFactory:
         if len(precision) == 0 or len(recall) == 0:
             return 0.0
 
+        # Anchor the curve at (recall=0, precision=1), as sklearn's
+        # precision_recall_curve does, so the area before the first
+        # detection is not dropped
+        recall = np.concatenate(([0.0], recall))
+        precision = np.concatenate(([1.0], precision))
+
         # Sort by recall to ensure proper integration
-        sorted_indices = np.argsort(recall)
+        sorted_indices = np.argsort(recall, kind="stable")
         recall_sorted = recall[sorted_indices]
         precision_sorted = precision[sorted_indices]
 

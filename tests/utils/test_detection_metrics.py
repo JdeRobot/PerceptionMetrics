@@ -232,3 +232,45 @@ def test_coco_map_empty_vs_non_empty_class(metrics_factory):
 
     # (AP_Class1 + AP_Class2) / 2  => (1.0 + 0.0) / 2 = 0.5
     assert np.isclose(mAP, 0.5), f"Expected mAP of 0.5, but got {mAP}"
+
+
+@pytest.mark.parametrize("n_objects", [1, 2, 5])
+def test_auc_pr_is_one_for_perfect_detector(metrics_factory, n_objects):
+    """A detector that finds every object with no false positives has AUC-PR = 1"""
+    for i in range(n_objects):
+        box = np.array([[20 * i, 0, 20 * i + 10, 10]])
+        metrics_factory.update(box, [1], box, [1], [0.9 - 0.01 * i])
+
+    auc_pr = metrics_factory.compute_auc_pr()
+    assert np.isclose(auc_pr, 1.0), f"Expected AUC-PR of 1.0, got {auc_pr}"
+
+
+def test_auc_pr_is_zero_without_matches(metrics_factory):
+    """Predictions that never overlap the ground truth give AUC-PR = 0"""
+    metrics_factory.update(
+        np.array([[0, 0, 10, 10]]),
+        [1],
+        np.array([[100, 100, 110, 110]]),
+        [1],
+        [0.9],
+    )
+    assert metrics_factory.compute_auc_pr() == 0.0
+
+
+def test_auc_pr_with_false_positive_and_missed_object(metrics_factory):
+    """AUC-PR integrates from recall 0 for a mix of TP, FP and a missed object"""
+    gt_boxes = np.array([[0, 0, 10, 10], [20, 0, 30, 10], [40, 0, 50, 10]])
+    pred_boxes = np.array(
+        [
+            [0, 0, 10, 10],  # TP (score 0.9)
+            [100, 0, 110, 10],  # FP (score 0.8)
+            [20, 0, 30, 10],  # TP (score 0.7)
+        ]
+    )
+    # The object at x=40 is never detected, so recall reaches 2/3 at most
+    metrics_factory.update(gt_boxes, [1, 1, 1], pred_boxes, [1, 1, 1], [0.9, 0.8, 0.7])
+
+    # Curve (recall, precision): (0, 1), (1/3, 1), (1/3, 1/2), (2/3, 2/3)
+    # Area = 1/3 * 1 + 0 + 1/3 * (1/2 + 2/3) / 2 = 19/36
+    auc_pr = metrics_factory.compute_auc_pr()
+    assert np.isclose(auc_pr, 19 / 36), f"Expected AUC-PR of 19/36, got {auc_pr}"
