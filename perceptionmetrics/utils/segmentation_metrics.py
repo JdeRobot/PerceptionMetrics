@@ -1,4 +1,5 @@
 from collections import defaultdict
+import logging
 import math
 from typing import List, Optional, Union
 
@@ -11,6 +12,10 @@ class SegmentationMetricsFactory:
 
     :param n_classes: Number of classes to evaluate
     :type n_classes: int
+
+    .. seealso::
+
+        `User guide <https://jderobot.github.io/PerceptionMetrics/metrics/#segmentation-metrics>`__.
     """
 
     METRIC_NAMES = [
@@ -60,6 +65,14 @@ class SegmentationMetricsFactory:
         mask = (gt >= 0) & (gt < self.n_classes)
         if valid_mask is not None:
             mask &= valid_mask
+
+        # Predictions outside the class range can't be placed in the confusion matrix
+        invalid_pred = mask & ((pred < 0) | (pred >= self.n_classes))
+        if np.any(invalid_pred):
+            raise ValueError(
+                f"Prediction contains class indices outside [0, {self.n_classes - 1}]: "
+                f"{np.unique(pred[invalid_pred]).tolist()}"
+            )
 
         # Update confusion matrix
         new_entry = np.bincount(
@@ -255,7 +268,18 @@ class SegmentationMetricsFactory:
         """
         metric = getattr(self, f"get_{metric_name}")
         if method == "macro":
-            return float(np.nanmean(metric(per_class=True)))
+            per_class_values = metric(per_class=True)
+            nan_mask = np.isnan(per_class_values)
+            missing_count = int(np.sum(nan_mask))
+
+            if missing_count > 0:
+                # Use implicit string concatenation to keep lines short
+                msg = (
+                    f"Warning: {missing_count} class(es) were missing from the confusion matrix. "
+                    f"Their {metric_name.upper()} evaluated to NaN and will be ignored in the macro-average."
+                )
+                logging.warning(msg)
+            return float(np.nanmean(per_class_values))
         if method == "micro":
             return float(metric(per_class=False))
         if method == "weighted":

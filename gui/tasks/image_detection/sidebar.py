@@ -5,7 +5,7 @@ from typing import Optional
 
 import streamlit as st
 
-from tabs.tasks.utils import browse_folder
+from gui.tasks.utils import browse_folder
 
 
 def browse_dataset_path():

@@ -189,7 +189,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">perceptionmetrics</a><input aria-label="Toggle navigation of perceptionmetrics" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/perceptionmetrics.html">perceptionmetrics package</a><input aria-label="Toggle navigation of perceptionmetrics package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/perceptionmetrics.cli.html">perceptionmetrics.cli package</a></li>
@@ -239,7 +240,9 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for perceptionmetrics.cli.eval_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">perceptionmetrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
@@ -450,7 +453,12 @@
         <span class="n">predictions_outdir</span><span class="o">=</span><span class="n">predictions_outdir</span><span class="p">,</span>
         <span class="n">results_per_sample</span><span class="o">=</span><span class="n">predictions_outdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_fname</span><span class="p">)</span>
+
+    <span class="c1"># Detection models return a dict with metrics_df and metrics_factory;</span>
+    <span class="c1"># other tasks return the metrics DataFrame directly.</span>
+    <span class="n">metrics_df</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metrics_df&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">results</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">out_fname</span><span class="p">)),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">metrics_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_fname</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">results</span>
 

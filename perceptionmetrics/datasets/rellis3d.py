@@ -89,6 +89,10 @@ class Rellis3DImageSegmentationDataset(
     :type split_dir: str
     :param ontology_fname: YAML file contained in the ontology compressed directory
     :type ontology_fname: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#rellis-3d>`__.
     """
 
     def __init__(self, dataset_dir: str, split_dir: str, ontology_fname: str):
@@ -123,6 +127,10 @@ class Rellis3DLiDARSegmentationDataset(
     :type split_dir: str
     :param ontology_fname: YAML file contained in the ontology compressed directory
     :type ontology_fname: str
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#rellis-3d>`__.
     """
 
     def __init__(self, dataset_dir: str, split_dir: str, ontology_fname: str):

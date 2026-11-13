@@ -180,6 +180,10 @@ class CityscapesImageSegmentationDataset(segmentation_dataset.ImageSegmentationD
     :type label_suffix: str, optional
     :param use_train_id: Whether to use train IDs instead of Cityscapes label IDs, defaults to False
     :type use_train_id: bool, optional
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#cityscapes>`__.
     """
 
     def __init__(

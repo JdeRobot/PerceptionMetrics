@@ -4,7 +4,7 @@ import tempfile
 import numpy as np
 import streamlit as st
 
-from tabs.tasks.lidar_segmentation.dataset_viewer import (
+from gui.tasks.lidar_segmentation.dataset_viewer import (
     classes_dataframe,
     get_label_colors,
     get_label_names,

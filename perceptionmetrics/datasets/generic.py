@@ -124,6 +124,10 @@ class GenericImageSegmentationDataset(segmentation_dataset.ImageSegmentationData
     :type val_dataset_dir: str, optional
     :param test_dataset_dir: Directory containing test data, defaults to None
     :type test_dataset_dir: str, optional
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#generic>`__.
     """
 
     def __init__(
@@ -172,6 +176,10 @@ class GenericLiDARSegmentationDataset(segmentation_dataset.LiDARSegmentationData
     :type val_dataset_dir: str, optional
     :param test_dataset_dir: Directory containing test data, defaults to None
     :type test_dataset_dir: str, optional
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#generic>`__.
     """
 
     def __init__(

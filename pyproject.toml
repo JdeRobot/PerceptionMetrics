@@ -32,7 +32,7 @@ shapely = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.0"
-pylint = "^3.3.1"
+pylint = ">=3.3.1,<5.0.0"
 ipykernel = "^6.29.5"
 
 [tool.poetry.group.docs.dependencies]

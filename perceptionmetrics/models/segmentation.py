@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from typing import Any, List, Optional, Tuple, Union
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -7,6 +8,8 @@ from PIL import Image
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 from perceptionmetrics.models.perception import PerceptionModel
+import perceptionmetrics.utils.conversion as uc
+import perceptionmetrics.utils.io as uio
 
 
 class SegmentationModel(PerceptionModel):
@@ -33,6 +36,62 @@ class SegmentationModel(PerceptionModel):
         model_fname: Optional[str] = None,
     ):
         super().__init__(model, model_type, model_cfg, ontology_fname, model_fname)
+
+    def get_eval_lut_ontology(
+        self,
+        dataset_ontology: dict,
+        ontology_translation: Optional[str] = None,
+        translation_direction: str = "dataset_to_model",
+    ) -> Tuple[Optional[np.ndarray], dict]:
+        """Build the ontology conversion LUT. When no translation file is given, both
+        ontologies are matched by class name: shared names with differing indices are
+        converted after issuing a warning, while differing names raise an error.
+
+        :param dataset_ontology: Image or LiDAR dataset ontology
+        :type dataset_ontology: dict
+        :param ontology_translation: JSON file containing translation between dataset and model ontologies, defaults to None
+        :type ontology_translation: Optional[str], optional
+        :param translation_direction: Direction of the ontology translation, either 'dataset_to_model' or 'model_to_dataset', defaults to "dataset_to_model"
+        :type translation_direction: str, optional
+        :return: LUT converting indices in the requested direction and the ontology to be used for evaluation
+        :rtype: Tuple[Optional[np.ndarray], dict]
+        """
+        if translation_direction == "dataset_to_model":
+            old_ontology, new_ontology = dataset_ontology, self.ontology
+        elif translation_direction == "model_to_dataset":
+            old_ontology, new_ontology = self.ontology, dataset_ontology
+        else:
+            raise ValueError("Invalid translation direction")
+        
+        eval_ontology = new_ontology
+
+        if ontology_translation is not None:
+            ontology_translation = uio.read_json(ontology_translation)
+        else:
+            dataset_only = sorted(set(dataset_ontology) - set(self.ontology))
+            model_only = sorted(set(self.ontology) - set(dataset_ontology))
+            if dataset_only or model_only:
+                raise ValueError(
+                    "Dataset and model ontologies do not share the same class names, "
+                    "so 'ontology_translation' is required to evaluate them together. "
+                )
+
+            if all(
+                dataset_ontology[class_name]["idx"] == self.ontology[class_name]["idx"]
+                for class_name in dataset_ontology
+            ):
+                return None, eval_ontology
+
+            warnings.warn(
+                "Dataset and model ontologies share class names but use different "
+                "class indices. A conversion LUT will be built to match the indices."
+            )
+
+        lut_ontology = uc.get_ontology_conversion_lut(
+            old_ontology, new_ontology, ontology_translation
+        )
+        
+        return lut_ontology, eval_ontology
 
     @abstractmethod
     def predict(

@@ -190,7 +190,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">perceptionmetrics</a><input aria-label="Toggle navigation of perceptionmetrics" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="perceptionmetrics.html">perceptionmetrics package</a><input aria-label="Toggle navigation of perceptionmetrics package" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="perceptionmetrics.cli.html">perceptionmetrics.cli package</a></li>
@@ -347,6 +348,10 @@ translation dictionary with old and new class names as keys and values, respecti
 </ul>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://jderobot.github.io/PerceptionMetrics/metrics/#detection-metrics">User guide</a>.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.compute_auc_pr">
 <span class="sig-name descname"><span class="pre">compute_auc_pr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptionmetrics/utils/detection_metrics.html#DetectionMetricsFactory.compute_auc_pr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#perceptionmetrics.utils.detection_metrics.DetectionMetricsFactory.compute_auc_pr" title="Link to this definition">¶</a></dt>
@@ -833,6 +838,10 @@ Adapts to different supervision versions.</p>
 <dd class="field-odd"><p><strong>n_classes</strong> (<em>int</em>) – Number of classes to evaluate</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://jderobot.github.io/PerceptionMetrics/metrics/#segmentation-metrics">User guide</a>.</p>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.METRIC_NAMES">
 <span class="sig-name descname"><span class="pre">METRIC_NAMES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['tp',</span> <span class="pre">'fp',</span> <span class="pre">'fn',</span> <span class="pre">'tn',</span> <span class="pre">'precision',</span> <span class="pre">'recall',</span> <span class="pre">'accuracy',</span> <span class="pre">'f1_score',</span> <span class="pre">'iou',</span> <span class="pre">'dice_score']</span></em><a class="headerlink" href="#perceptionmetrics.utils.segmentation_metrics.SegmentationMetricsFactory.METRIC_NAMES" title="Link to this definition">¶</a></dt>
@@ -1143,6 +1152,9 @@ independent evaluations without creating a new object.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[tuple, list]</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If data is not a tensor, list, or tuple</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -1159,6 +1171,9 @@ independent evaluations without creating a new object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[tuple, list]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If data is not a tensor, list, or tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1252,6 +1267,9 @@ of closest_divisor.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[tuple, list]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If data is not a tensor, list, or tuple</p>
 </dd>
 </dl>
 </dd></dl>

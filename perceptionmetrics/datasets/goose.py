@@ -110,6 +110,10 @@ class GOOSEImageSegmentationDataset(segmentation_dataset.ImageSegmentationDatase
     :type val_dataset_dir: str, optional
     :param test_dataset_dir: Directory containing test data, defaults to None
     :type test_dataset_dir: str, optional
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#goose>`__.
     """
 
     def __init__(
@@ -156,6 +160,10 @@ class GOOSELiDARSegmentationDataset(segmentation_dataset.LiDARSegmentationDatase
     :type test_dataset_dir: str, optional
     :param is_goose_ex: Whether the dataset is GOOSE Ex or GOOSE, defaults to False
     :type is_goose_ex: bool, optional
+
+    .. seealso::
+
+        `User guide and format examples <https://jderobot.github.io/PerceptionMetrics/datasets/#goose>`__.
     """
 
     def __init__(
