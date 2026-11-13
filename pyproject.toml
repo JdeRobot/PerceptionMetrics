@@ -28,6 +28,7 @@ streamlit-image-select = "^0.6.0"
 supervision = "^0.18.0"
 cityscapesscripts = "^2.2.4"
 nuscenes-devkit = "^1.1.0"
+shapely = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.0"

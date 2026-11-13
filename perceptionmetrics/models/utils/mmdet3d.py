@@ -1,6 +1,7 @@
 import time
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
+import numpy as np
 from mmdet3d.datasets.transforms import (
     LoadPointsFromFile,
     LoadAnnotations3D,
@@ -11,6 +12,70 @@ import torch
 from torchvision.transforms import Compose
 
 COLLATE_FN = FUNCTIONS.get("pseudo_collate")
+
+
+def detection_inference(
+    model: torch.nn.Module,
+    points: np.ndarray,
+) -> Tuple[Dict[str, torch.Tensor], dict]:
+    """Run MMDetection3D inference on one loaded LiDAR point cloud.
+
+    The returned dictionary follows PerceptionMetrics' common LiDAR detection
+    contract. MMDetection3D-specific point preparation and prediction fields
+    remain contained in this helper.
+
+    :param model: Initialized MMDetection3D model
+    :type model: torch.nn.Module
+    :param points: Point cloud with three to five features per point
+    :type points: np.ndarray
+    :return: Standard detection result and MMDetection3D processed sample
+    :rtype: Tuple[Dict[str, torch.Tensor], dict]
+    """
+    from mmdet3d.apis import inference_detector
+
+    points = np.asarray(points, dtype=np.float32)
+    if points.ndim != 2 or points.shape[1] not in (3, 4, 5):
+        raise ValueError(
+            "points must be a two-dimensional array with 3, 4, or 5 features "
+            "per point."
+        )
+
+    expected_features = points.shape[1]
+    uses_multi_sweeps = False
+    pipeline = model.cfg.test_dataloader.dataset.pipeline
+    for transform in pipeline:
+        if transform.get("type") == "LoadPointsFromFile":
+            use_dim = transform.get("use_dim", expected_features)
+            expected_features = (
+                len(use_dim) if isinstance(use_dim, (list, tuple)) else use_dim
+            )
+        elif transform.get("type") == "LoadPointsFromMultiSweeps":
+            uses_multi_sweeps = True
+
+    # nuScenes multi-sweep pipelines reserve the fifth column for time lag.
+    if uses_multi_sweeps:
+        expected_features = max(expected_features, 5)
+
+    if points.shape[1] < expected_features:
+        padding = np.zeros(
+            (points.shape[0], expected_features - points.shape[1]),
+            dtype=np.float32,
+        )
+        points = np.concatenate((points, padding), axis=1)
+    elif points.shape[1] > expected_features:
+        points = points[:, :expected_features]
+
+    with torch.no_grad():
+        prediction, sample = inference_detector(model, points)
+
+    instances = prediction.pred_instances_3d
+    return {
+        # MMDetection3D nuScenes models can append velocity components. PM uses
+        # the shared seven-value box representation.
+        "boxes_3d": instances.bboxes_3d.tensor[:, :7].detach().cpu(),
+        "labels": instances.labels_3d.detach().cpu(),
+        "scores": instances.scores_3d.detach().cpu(),
+    }, sample
 
 
 def get_sample(
