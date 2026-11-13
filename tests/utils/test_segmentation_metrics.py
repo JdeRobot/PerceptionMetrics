@@ -272,3 +272,45 @@ def test_compute_iou_matrix():
             compute_iou_matrix_reference(pred, gt),
             atol=1e-10,
         )
+
+
+def test_f1_score_is_zero_for_fully_missed_class():
+    """A class with no true positives but missed pixels must have F1 = 0, not NaN.
+
+    Otherwise ``nanmean`` silently drops it from the macro average and inflates it.
+    """
+    metrics_factory = SegmentationMetricsFactory(n_classes=2)
+    # Class 0: TP=0, FP=0, FN=2 (never predicted)
+    # Class 1: TP=2, FP=2, FN=0
+    pred = np.array([1, 1, 1, 1])
+    gt = np.array([0, 0, 1, 1])
+    metrics_factory.update(pred, gt)
+
+    f1 = metrics_factory.get_f1_score()
+    assert f1[0] == 0.0, "A fully missed class must have F1 = 0"
+    assert np.isclose(f1[1], 2 * 2 / (2 * 2 + 2 + 0))
+
+    macro_f1 = metrics_factory.get_averaged_metric("f1_score", method="macro")
+    assert np.isclose(macro_f1, (0.0 + 2 / 3) / 2), "Macro F1 must include class 0"
+
+    # Same for the global score when nothing is classified correctly
+    all_wrong = SegmentationMetricsFactory(n_classes=2)
+    all_wrong.update(np.array([1, 1]), np.array([0, 0]))
+    assert all_wrong.get_f1_score(per_class=False) == 0.0
+
+
+def test_f1_score_is_nan_for_class_without_ground_truth():
+    """A class with no ground truth pixels is not evaluated: its F1 stays NaN, so it
+    is ignored in macro averages, even if the model predicts that class.
+    """
+    metrics_factory = SegmentationMetricsFactory(n_classes=3)
+    pred = np.array([0, 0, 1, 2])  # class 2 is predicted once...
+    gt = np.array([0, 0, 1, 1])  # ...but never appears in the ground truth
+    metrics_factory.update(pred, gt)
+
+    f1 = metrics_factory.get_f1_score()
+    assert np.isnan(f1[2])
+    assert_allclose(f1[:2], [1.0, 2 / 3])
+
+    macro_f1 = metrics_factory.get_averaged_metric("f1_score", method="macro")
+    assert np.isclose(macro_f1, (1.0 + 2 / 3) / 2)

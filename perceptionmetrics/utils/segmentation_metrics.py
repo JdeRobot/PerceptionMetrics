@@ -198,23 +198,27 @@ class SegmentationMetricsFactory:
     def get_f1_score(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """F1-score = 2 * (Precision * Recall) / (Precision + Recall)
 
+        Computed as 2 * TP / (2 * TP + FP + FN), which is equivalent but stays defined
+        (0) for classes that have ground truth pixels but no true positives. It is NaN
+        only when there are no ground truth pixels (TP + FN = 0), so those classes are
+        ignored in macro averages.
+
         :param per_class: Return per class F1 score, defaults to True
         :type per_class: bool, optional
         :return: F1-score value (per class if per_class=True, otherwise global)
         :rtype: Union[np.ndarray, float]
         """
-        precision = self.get_precision(per_class)
-        recall = self.get_recall(per_class)
-        denominator = precision + recall
+        tp = self.get_tp(per_class)
+        fp = self.get_fp(per_class)
+        fn = self.get_fn(per_class)
+        denominator = 2 * tp + fp + fn
+        has_ground_truth = tp + fn > 0
 
         if np.isscalar(denominator):
-            return (
-                2 * (precision * recall) / denominator if denominator > 0 else math.nan
-            )
+            return float(2 * tp / denominator) if has_ground_truth else math.nan
         else:
-            return np.where(
-                denominator > 0, 2 * (precision * recall) / denominator, np.nan
-            )
+            with np.errstate(divide="ignore", invalid="ignore"):
+                return np.where(has_ground_truth, 2 * tp / denominator, np.nan)
 
     def get_iou(self, per_class: bool = True) -> Union[np.ndarray, float]:
         """IoU = TP / (TP + FP + FN)
