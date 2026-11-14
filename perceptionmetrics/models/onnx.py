@@ -7,7 +7,7 @@ class OnnxImageSegmentationModel(ImageSegmentationModel):
     def __init__(self, model, model_type, model_cfg, ontology_fname, model_fname):
 
         #Get Device (CPU and GPU)
-        providers = ort.get_available_provgiiders()
+        providers = ort.get_available_provziders()
 
         if isinstance(model,str):
             assert os.path.isfile(model),"Onnx Model file not found"
@@ -30,22 +30,7 @@ class OnnxImageSegmentationModel(ImageSegmentationModel):
         self.transform_input = []
         self.transform_label = []
 
-        if "resize" in self.model_cfg:
-            self.transform_input += [
-                CustomResize(
-                    width=self.model_cfg["resize"].get("width", None),
-                    height=self.model_cfg["resize"].get("height", None),
-                    interpolation=F.InterpolationMode.BILINEAR,
-                )
-            ]
-            self.transform_label += [
-                CustomResize(
-                    width=self.model_cfg["resize"].get("width", None),
-                    height=self.model_cfg["resize"].get("height", None),
-                    interpolation=F.InterpolationMode.NEAREST,
-                )
-            ]
-
+    
         
 
         
