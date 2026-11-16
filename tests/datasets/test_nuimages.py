@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 
 import numpy as np
@@ -75,9 +76,15 @@ def test_nuimages_segmentation_dataset(tmp_path) -> None:
             )
 
     assert isinstance(dataset, pd.DataFrame)
-    assert dataset.iloc[0]["image"].endswith("samples/CAM_FRONT/sample.jpg")
-    assert dataset.iloc[0]["label"].endswith(
-        "generated/labels/v1.0-mini/sample_data_1.png"
+    assert (
+        dataset.iloc[0]["image"]
+        .replace(os.sep, "/")
+        .endswith("samples/CAM_FRONT/sample.jpg")
+    )
+    assert (
+        dataset.iloc[0]["label"]
+        .replace(os.sep, "/")
+        .endswith("generated/labels/v1.0-mini/sample_data_1.png")
     )
     assert dataset.iloc[0]["split"] == "train"
     assert ontology["background"]["idx"] == 0
