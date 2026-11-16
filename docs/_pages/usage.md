@@ -54,12 +54,12 @@ Run a single evaluation job given a model and dataset configurations.
 
 **Segmentation Example:**
 ```shell
-pm_eval_model segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset  --dataset_ontology /path/to/ontology.json --out_fname /path/to/results.csv
+pm_eval_model segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset --split_dir /path/to/split_directory --dataset_ontology /path/to/dataset_ontology.yaml --out_fname /path/to/results.csv
 ```
 
 **Detection Example:**
 ```shell
-pm_eval_model detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --out_fname /path/to/results.csv
+pm_eval_model detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --split val --out_fname /path/to/results.csv
 ```
 
 Docs:
@@ -181,14 +181,14 @@ Execute requested jobs sequentially. It must be configured by means of a YAML fi
 
 Example:
 ```shell
-pm_batch evaluate /path/to/batch_config.yaml
+pm_batch eval_model /path/to/batch_config.yaml
 ```
 
 Docs:
 ```shell
-Usage: pm_batch [OPTIONS] {evaluate|computational_cost} JOBS_CFG
+Usage: pm_batch [OPTIONS] {eval_model|eval_preds|computational_cost} JOBS_CFG
 
-  Perform detection metrics jobs in batch mode
+  Perform PerceptionMetrics jobs in batch mode
 
 Options:
   --help  Show this message and exit.
@@ -226,7 +226,7 @@ dataset:
     data_suffix: "_image.jpg"  # (For Generic) Data suffix
     label_suffix: "_label.png"  # (For Generic) Label suffix
     ontology: "/path/to/dataset_ontology.json"  # (For Rellis3D/Generic) Path to dataset ontology
-    split: test  # Dataset split to evaluate (e.g., train, val, test)
+    split: val  # Dataset split to evaluate (e.g., train, val, test)
   - id: "another_dataset_id"
     # ...
 

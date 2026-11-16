@@ -182,12 +182,12 @@ PerceptionMetrics provides a CLI with several commands (e.g. `pm_eval_model` and
 ### Example Usage
 **Segmentation:**
 ```bash
-pm_eval_model segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset --dataset_ontology /path/to/ontology.json --out_fname /path/to/results.csv
+pm_eval_model segmentation image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format rellis3d --dataset_dir /path/to/dataset --split_dir /path/to/split_directory --dataset_ontology /path/to/dataset_ontology.yaml --out_fname /path/to/results.csv
 ```
 
 **Detection:**
 ```bash
-pm_eval_model detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --out_fname /path/to/results.csv
+pm_eval_model detection image --model_format torch --model /path/to/model.pt --model_ontology /path/to/ontology.json --model_cfg /path/to/cfg.json --dataset_format coco --dataset_dir /path/to/coco/dataset --split val --out_fname /path/to/results.csv
 ```
 
 <h1 id="DetectionMetrics">DetectionMetrics</h1>
