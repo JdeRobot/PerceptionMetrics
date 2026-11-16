@@ -25,7 +25,7 @@ def _swap_dir_name(path: str, old: str, new: str) -> str:
     :return: Modified path
     :rtype: str
     """
-    parts = path.split(os.sep)
+    parts = os.path.normpath(path).split(os.sep)
     for i in reversed(range(len(parts))):
         if parts[i] == old:
             parts[i] = new
