@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, List, Tuple
 from unittest.mock import patch
 
@@ -13,14 +14,23 @@ from perceptionmetrics.datasets.cityscapes import (
     build_train_id_ontology_translation,
 )
 
-_FAKE_ROOT = "/fake/cityscapes"
-_FAKE_IMAGE = (
-    "/fake/cityscapes/leftImg8bit_trainvaltest/leftImg8bit/val/"
-    "frankfurt/frankfurt_000000_000294_leftImg8bit.png"
+# build_dataset normalizes paths with os.path.abspath, so the fixtures must use
+# the platform-native form (e.g. "C:\fake\cityscapes" on Windows).
+_FAKE_ROOT = os.path.abspath("/fake/cityscapes")
+_FAKE_IMAGE = os.path.join(
+    _FAKE_ROOT,
+    "leftImg8bit_trainvaltest",
+    "leftImg8bit",
+    "val",
+    "frankfurt",
+    "frankfurt_000000_000294_leftImg8bit.png",
 )
-_FAKE_LABEL = (
-    "/fake/cityscapes/gtFine/val/frankfurt/"
-    "frankfurt_000000_000294_gtFine_labelIds.png"
+_FAKE_LABEL = os.path.join(
+    _FAKE_ROOT,
+    "gtFine",
+    "val",
+    "frankfurt",
+    "frankfurt_000000_000294_gtFine_labelIds.png",
 )
 
 
@@ -39,7 +49,7 @@ def _make_patched_build_dataset(
 
     def _fake_glob(pattern: str) -> List[str]:
         for split, files in image_files_by_split.items():
-            if f"/{split}/" in pattern:
+            if f"/{split}/" in pattern.replace(os.sep, "/"):
                 return files
         return []
 

@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, List, Tuple
 from unittest.mock import patch
 
@@ -11,11 +12,14 @@ from perceptionmetrics.datasets.semantickitti import (
     build_train_id_ontology_translation,
 )
 
-_FAKE_ROOT = "/fake/SemanticKITTI"
-_FAKE_CONFIG = "/fake/SemanticKITTI/semantic-kitti.yaml"
-_FAKE_POINTS = "/fake/SemanticKITTI/dataset/sequences/08/velodyne/000000.bin"
-_FAKE_LABEL = "/fake/SemanticKITTI/dataset/sequences/08/labels/000000.label"
-_FAKE_TEST_POINTS = "/fake/SemanticKITTI/dataset/sequences/11/velodyne/000001.bin"
+# build_dataset normalizes paths with os.path.abspath/os.path.join, so the
+# fixtures must use the platform-native form (e.g. "C:\fake\SemanticKITTI").
+_FAKE_ROOT = os.path.abspath("/fake/SemanticKITTI")
+_FAKE_SEQUENCES = os.path.join(_FAKE_ROOT, "dataset", "sequences")
+_FAKE_CONFIG = os.path.join(_FAKE_ROOT, "semantic-kitti.yaml")
+_FAKE_POINTS = os.path.join(_FAKE_SEQUENCES, "08", "velodyne", "000000.bin")
+_FAKE_LABEL = os.path.join(_FAKE_SEQUENCES, "08", "labels", "000000.label")
+_FAKE_TEST_POINTS = os.path.join(_FAKE_SEQUENCES, "11", "velodyne", "000001.bin")
 
 _FAKE_YAML = {
     "labels": {
@@ -63,17 +67,24 @@ def _make_patched_build_dataset(
     """
 
     def _fake_glob(pattern: str, recursive: bool = False) -> List[str]:
+        pattern = pattern.replace(os.sep, "/")
         if pattern.endswith("*/velodyne"):
-            return [f"{_FAKE_ROOT}/dataset/sequences/{seq}/velodyne" for seq in points_files_by_sequence]
+            return [
+                os.path.join(_FAKE_SEQUENCES, seq, "velodyne")
+                for seq in points_files_by_sequence
+            ]
         if pattern.endswith("*/labels"):
-            return [f"{_FAKE_ROOT}/dataset/sequences/{seq}/labels" for seq in points_files_by_sequence]
+            return [
+                os.path.join(_FAKE_SEQUENCES, seq, "labels")
+                for seq in points_files_by_sequence
+            ]
         for sequence, files in points_files_by_sequence.items():
             if f"/{sequence}/velodyne/" in pattern:
                 return files
         return []
 
     def _fake_isdir(path: str) -> bool:
-        return path == _FAKE_ROOT or path.endswith("/velodyne")
+        return path == _FAKE_ROOT or path.replace(os.sep, "/").endswith("/velodyne")
 
     def _fake_isfile(path: str) -> bool:
         if path == _FAKE_CONFIG:
