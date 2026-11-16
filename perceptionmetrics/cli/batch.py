@@ -165,7 +165,11 @@ def batch(command, jobs_cfg):
                 )
 
             params.update({"out_fname": job_out_fname})
-            if preds_outdir is not None:
+            if command == "eval_preds":
+                params["results_per_sample"] = jobs_cfg.get(
+                    "store_results_per_sample", False
+                )
+            elif preds_outdir is not None:
                 params.update({"predictions_outdir": preds_outdir})
 
             result = ctx.invoke(cli_registry[command], **params)
