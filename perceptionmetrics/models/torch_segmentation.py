@@ -420,8 +420,6 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         if lut_ontology is not None:
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
-        n_classes = len(eval_ontology)
-
         # Retrieve ignored label indices
         ignored_label_indices = []
         for ignored_class in self.model_cfg.get("ignored_classes", []):
@@ -442,7 +440,7 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
         )
 
         # Init metrics
-        metrics_factory = um.SegmentationMetricsFactory(n_classes)
+        metrics_factory = um.SegmentationMetricsFactory.from_ontology(eval_ontology)
         total_samples = len(dataset)
         processed_samples = 0
         evaluation_step = self.model_cfg.get("evaluation_step", 1)
@@ -487,8 +485,8 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
                             sample_valid_mask = (
                                 valid_mask[i] if valid_mask is not None else None
                             )
-                            sample_mf = um.SegmentationMetricsFactory(
-                                n_classes=n_classes
+                            sample_mf = um.SegmentationMetricsFactory.from_ontology(
+                                eval_ontology
                             )
                             sample_mf.update(
                                 sample_pred, sample_label, sample_valid_mask
@@ -749,8 +747,6 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
         if lut_ontology is not None:
             lut_ontology = torch.tensor(lut_ontology, dtype=torch.int64).to(self.device)
 
-        n_classes = len(eval_ontology)
-
         # Retrieve ignored label indices
         ignored_label_indices = []
         for ignored_class in self.model_cfg.get("ignored_classes", []):
@@ -765,7 +761,7 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
         )
 
         # Init metrics
-        metrics_factory = um.SegmentationMetricsFactory(n_classes)
+        metrics_factory = um.SegmentationMetricsFactory.from_ontology(eval_ontology)
         total_samples = len(dataset)
         processed_samples = 0
         evaluation_step = self.model_cfg.get("evaluation_step", 1)
@@ -809,7 +805,9 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
                             sample_valid_mask = (
                                 valid_mask[i] if valid_mask is not None else None
                             )
-                            sample_mf = um.SegmentationMetricsFactory(n_classes)
+                            sample_mf = um.SegmentationMetricsFactory.from_ontology(
+                                eval_ontology
+                            )
                             sample_mf.update(
                                 sample_pred, sample_label, sample_valid_mask
                             )

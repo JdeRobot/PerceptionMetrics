@@ -301,8 +301,6 @@ class ImageSegmentationDataset(SegmentationDataset):
                     pred_ontology, self.ontology, ontology_translation
                 )
 
-        n_classes = len(eval_ontology)
-
         # Retrieve ignored label indices
         ignored_label_indices = []
         if ignored_classes:
@@ -310,7 +308,7 @@ class ImageSegmentationDataset(SegmentationDataset):
                 ignored_label_indices.append(self.ontology[cls_name]["idx"])
 
         # Init metrics
-        metrics_factory = um.SegmentationMetricsFactory(n_classes)
+        metrics_factory = um.SegmentationMetricsFactory.from_ontology(eval_ontology)
 
         pbar = tqdm(df.iterrows(), total=len(df), leave=True)
         for sample_name, row in pbar:
@@ -349,7 +347,7 @@ class ImageSegmentationDataset(SegmentationDataset):
 
             # Per-sample results
             if results_per_sample:
-                sample_mf = um.SegmentationMetricsFactory(n_classes)
+                sample_mf = um.SegmentationMetricsFactory.from_ontology(eval_ontology)
                 sample_mf.update(pred, gt, valid_mask)
                 sample_df = um.get_metrics_dataframe(sample_mf, eval_ontology)
                 sample_csv = os.path.join(
