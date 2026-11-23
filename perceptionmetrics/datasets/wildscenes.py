@@ -1,11 +1,13 @@
 from collections import OrderedDict
-import logging
 import os
 from typing import Tuple
 
 import pandas as pd
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 def build_dataset(
@@ -66,25 +68,23 @@ def build_dataset(
 
         if not os.path.isfile(data_fname) or not os.path.isfile(label_fname):
             missing_file = "data" if not os.path.isfile(data_fname) else "label"
-            logging.warning(f"Missing {missing_file} for {sample_name}. Skipped!")
+            _logger.warning(f"Missing {missing_file} for {sample_name}. Skipped!")
             skipped_samples.append(sample_name)
             continue
 
         dataset[sample_name] = (data_fname, label_fname, scene, split)
 
     # Report results
-    print(f"Samples retrieved: {len(dataset)} / {len(samples_data)}")
+    _logger.warning(f"Samples retrieved: {len(dataset)} / {len(samples_data)}")
     if skipped_samples:
-        print("Skipped samples:")
+        _logger.warning("Skipped samples:")
         for sample_name in skipped_samples:
-            print(f"\n\t{sample_name}")
+            _logger.warning(f"\n\t{sample_name}")
 
     return dataset, parsed_ontology
 
 
-class WildscenesImageSegmentationDataset(
-    segmentation_dataset.ImageSegmentationDataset
-):
+class WildscenesImageSegmentationDataset(segmentation_dataset.ImageSegmentationDataset):
     """Specific class for Wildscenes-styled image segmentation datasets. All data can
     be downloaded from the official repo:
     dataset  -> https://data.csiro.au/collection/csiro:61541
@@ -163,9 +163,7 @@ class WildscenesImageSegmentationDataset(
         super().__init__(dataset, dataset_dir, ontology)
 
 
-class WildscenesLiDARSegmentationDataset(
-    segmentation_dataset.LiDARSegmentationDataset
-):
+class WildscenesLiDARSegmentationDataset(segmentation_dataset.LiDARSegmentationDataset):
     """Specific class for Wildscenes-styled LiDAR segmentation datasets. All data can
     be downloaded from the official repo:
     dataset  -> https://data.csiro.au/collection/csiro:61541

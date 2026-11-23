@@ -8,6 +8,9 @@ import pandas as pd
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 from cityscapesscripts.helpers.labels import labels
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 def build_dataset_ontology(
@@ -120,8 +123,8 @@ def build_dataset(
         image_fnames = sorted(glob(image_pattern))
 
         if len(image_fnames) == 0:
-            print(f"No images found for split={split}")
-            print(f"Searched pattern: {image_pattern}")
+            _logger.warning(f"No images found for split={split}")
+            _logger.warning(f"Searched pattern: {image_pattern}")
             continue
 
         for image_fname in image_fnames:
@@ -144,8 +147,8 @@ def build_dataset(
             label_fname = os.path.abspath(label_fname)
 
             if not os.path.exists(label_fname):
-                print(f"Missing label for image: {image_fname}")
-                print(f"Expected label path: {label_fname}")
+                _logger.warning(f"Missing label for image: {image_fname}")
+                _logger.warning(f"Expected label path: {label_fname}")
                 continue
 
             dataset[sample_name] = (
@@ -216,7 +219,7 @@ class CityscapesImageSegmentationDataset(segmentation_dataset.ImageSegmentationD
                 "No Cityscapes samples were found. Please check dataset paths."
             )
 
-        print(f"Samples retrieved: {len(dataset)}")
+        _logger.info(f"Samples retrieved: {len(dataset)}")
 
         all_dataset_dirs = [train_dataset_root, val_dataset_root, test_dataset_root]
         dataset_dir = [d for d in all_dataset_dirs if d is not None][0]
@@ -232,4 +235,4 @@ if __name__ == "__main__":
         val_dataset_root=cityscapes_dir,
     )
 
-    print(dataset.dataset.head())
+    _logger.warning(dataset.dataset.head())

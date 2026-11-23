@@ -7,6 +7,9 @@ import pandas as pd
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 import perceptionmetrics.utils.conversion as uc
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 def build_dataset(
@@ -136,7 +139,7 @@ class GOOSEImageSegmentationDataset(segmentation_dataset.ImageSegmentationDatase
         dataset = pd.DataFrame.from_dict(dataset, orient="index", columns=cols)
 
         # Report results
-        print(f"Samples retrieved: {len(dataset)}")
+        _logger.info(f"Samples retrieved: {len(dataset)}")
 
         # Select dataset directory
         all_dataset_dirs = [train_dataset_dir, val_dataset_dir, test_dataset_dir]
@@ -188,7 +191,7 @@ class GOOSELiDARSegmentationDataset(segmentation_dataset.LiDARSegmentationDatase
         dataset = pd.DataFrame.from_dict(dataset, orient="index", columns=cols)
 
         # Report results
-        print(f"Samples retrieved: {len(dataset)}")
+        _logger.info(f"Samples retrieved: {len(dataset)}")
 
         # Select dataset directory
         all_dataset_dirs = [train_dataset_dir, val_dataset_dir, test_dataset_dir]

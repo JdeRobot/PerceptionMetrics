@@ -22,6 +22,9 @@ from perceptionmetrics.datasets import segmentation as segmentation_dataset
 from perceptionmetrics.models import segmentation as segmentation_model
 import perceptionmetrics.utils.segmentation_metrics as um
 import perceptionmetrics.utils.torch as ut
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 AVAILABLE_MODEL_FORMATS_LIDAR = [
     "o3d_randlanet",
@@ -190,7 +193,6 @@ class LiDARSegmentationTorchDataset(Dataset):
 
 
 class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
-
     """TorchImageSegmentationModel wrapper.
 
     .. seealso::
@@ -228,7 +230,9 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
             except:
-                print("Model is not a TorchScript model. Loading as a PyTorch module.")
+                _logger.info(
+                    "Model is not a TorchScript model. Loading as a PyTorch module."
+                )
                 model = torch.load(model, map_location=self.device)
                 model_type = "native"
         # Otherwise, check that it is a PyTorch module
@@ -579,7 +583,6 @@ class TorchImageSegmentationModel(segmentation_model.ImageSegmentationModel):
 
 
 class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
-
     """TorchLiDARSegmentationModel wrapper.
 
     .. seealso::
@@ -614,7 +617,9 @@ class TorchLiDARSegmentationModel(segmentation_model.LiDARSegmentationModel):
                 model = torch.jit.load(model, map_location=self.device)
                 model_type = "compiled"
             except Exception:
-                print("Model is not a TorchScript model. Loading as a PyTorch module.")
+                _logger.info(
+                    "Model is not a TorchScript model. Loading as a PyTorch module."
+                )
                 model = torch.load(model, map_location=self.device)
                 model_type = "native"
 

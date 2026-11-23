@@ -3,11 +3,14 @@ from typing import Optional, Tuple, Union, Dict
 
 import numpy as np
 import torch
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 try:
     from open3d._ml3d.datasets.utils import DataProcessing
 except Exception:
-    print("Open3D-ML3D not available")
+    _logger.warning("Open3D-ML3D not available")
 from sklearn.neighbors import KDTree
 
 from perceptionmetrics.models.utils.o3d import randlanet, kpconv

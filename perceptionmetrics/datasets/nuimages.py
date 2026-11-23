@@ -7,8 +7,11 @@ from perceptionmetrics.datasets.detection import ImageDetectionDataset
 from nuimages import NuImages
 from nuimages.utils.utils import name_to_index_mapping
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
+from perceptionmetrics.utils.logging_config import get_logger
 
+_logger = get_logger(__name__)
 DROP = {}
+
 
 def _get_rgb_from_idx(class_idx: int) -> List[int]:
     """Generate a deterministic RGB color for a class index."""
@@ -80,7 +83,7 @@ def build_nuimages_detection_dataset(
         "cat_to_idx": cat_to_idx,
     }
 
-    print(
+    _logger.info(
         f"Built nuimages detection dataset with {len(dataset)} samples and "
         f"{len(categories)} categories."
     )
@@ -162,7 +165,7 @@ def build_nuimages_segmentation_dataset(
     dataset = pd.DataFrame(rows)
     dataset.attrs = {"ontology": ontology}
 
-    print(
+    _logger.info(
         f"Built nuImages segmentation dataset with {len(dataset)} samples and "
         f"{len(ontology)} classes."
     )
@@ -316,7 +319,6 @@ class NuImagesSegmentationDataset(segmentation_dataset.ImageSegmentationDataset)
         super().__init__(dataset, dataset_dir, ontology)
 
 
-
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
@@ -382,4 +384,3 @@ if __name__ == "__main__":
     plt.axis("off")
     plt.title("Image with Segmentation Overlay and Labels")
     plt.show()
-

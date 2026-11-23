@@ -8,6 +8,9 @@ import pandas as pd
 
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 import perceptionmetrics.utils.io as uio
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 def get_random_rgb(class_index: int) -> Tuple[int, int, int]:
@@ -77,7 +80,7 @@ def build_dataset(
         else:
             raise ValueError("Ontology format not supported")
     except Exception as e:
-        print(f"Error loading ontology: {e}")
+        _logger.error(f"Error loading ontology: {e}")
         raise
 
     # Build dataset as ordered python dictionary
@@ -153,7 +156,7 @@ class GenericImageSegmentationDataset(segmentation_dataset.ImageSegmentationData
         dataset = pd.DataFrame.from_dict(dataset, orient="index", columns=cols)
 
         # Report results
-        print(f"Samples retrieved: {len(dataset)}")
+        _logger.info(f"Samples retrieved: {len(dataset)}")
 
         # Select dataset directory
         all_dataset_dirs = [train_dataset_dir, val_dataset_dir, test_dataset_dir]
@@ -205,7 +208,7 @@ class GenericLiDARSegmentationDataset(segmentation_dataset.LiDARSegmentationData
         dataset = pd.DataFrame.from_dict(dataset, orient="index", columns=cols)
 
         # Report results
-        print(f"Samples retrieved: {len(dataset)}")
+        _logger.info(f"Samples retrieved: {len(dataset)}")
 
         # Select dataset directory
         all_dataset_dirs = [train_dataset_dir, val_dataset_dir, test_dataset_dir]

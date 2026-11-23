@@ -1,12 +1,14 @@
 from collections import OrderedDict
 from glob import glob
-import logging
 import os
 from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 from perceptionmetrics.datasets import segmentation as segmentation_dataset
 import perceptionmetrics.utils.io as uio
+from perceptionmetrics.utils.logging_config import get_logger
+
+_logger = get_logger(__name__)
 
 
 def _find_sequence_root(dataset_dir: str, subdir: str) -> Optional[str]:
@@ -163,7 +165,7 @@ def build_dataset(
     :rtype: Tuple[dict, dict]
     """
     dataset_dir = os.path.abspath(dataset_dir)
-    print(f"Building dataset from SemanticKITTI directory: {dataset_dir}")
+    _logger.warning(f"Building dataset from SemanticKITTI directory: {dataset_dir}")
     assert os.path.isdir(dataset_dir), "Dataset directory not found"
     assert os.path.isfile(config_fname), "SemanticKITTI config file not found"
 
@@ -205,7 +207,7 @@ def build_dataset(
             )
 
             if not os.path.isdir(points_dir):
-                logging.warning(
+                _logger.warning(
                     f"Missing velodyne directory for sequence {scene}. Skipped!"
                 )
                 continue
@@ -226,19 +228,19 @@ def build_dataset(
                         label_fname = None
                     else:
                         missing_label_count += 1
-                        logging.warning(f"Missing label for {sample_name}. Skipped!")
+                        _logger.warning(f"Missing label for {sample_name}. Skipped!")
                         skipped_samples.append(sample_name)
                         continue
 
                 dataset[sample_name] = (points_fname, label_fname, scene, split_name)
 
-    print(f"Samples retrieved: {len(dataset)} / {total_samples}")
+    _logger.warning(f"Samples retrieved: {len(dataset)} / {total_samples}")
     if missing_label_count:
-        print(f"Samples without labels: {missing_label_count}")
+        _logger.warning(f"Samples without labels: {missing_label_count}")
     if skipped_samples:
-        print("Skipped samples:")
+        _logger.warning("Skipped samples:")
         for sample_name in skipped_samples:
-            print(f"\n\t{sample_name}")
+            _logger.warning(f"\n\t{sample_name}")
 
     return dataset, ontology
 
