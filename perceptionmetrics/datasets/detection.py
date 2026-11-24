@@ -74,6 +74,33 @@ class ImageDetectionDataset(DetectionDataset):
         # TODO implement COCO or VOC parsing in their classes separately.
         raise NotImplementedError("Implement annotation reading logic")
 
+    @staticmethod
+    def _pred_label_to_idx(label: Union[int, str], pred_ontology: dict) -> int:
+        """Convert a prediction label to its class index.
+
+        Predictions saved by the model evaluation store the class name, while
+        other prediction files may store the class index directly.
+
+        :param label: Class name or class index read from the prediction file
+        :type label: Union[int, str]
+        :param pred_ontology: Ontology used by the predictions
+        :type pred_ontology: dict
+        :return: Class index
+        :rtype: int
+        :raises ValueError: If the class name is not in the prediction ontology
+        """
+        if isinstance(label, str):
+            if label in pred_ontology:
+                return pred_ontology[label]["idx"]
+            # A numeric string such as "1" is a class index, as before
+            if label.isdigit():
+                return int(label)
+            raise ValueError(
+                f"Unknown class name '{label}' in predictions. Expected one of "
+                f"the prediction ontology classes: {list(pred_ontology)}"
+            )
+        return int(label)
+
     def eval_preds(
         self,
         predictions_dir: str,
@@ -176,7 +203,9 @@ class ImageDetectionDataset(DetectionDataset):
                 preds = json.load(f)
 
             pred_boxes = [p["bbox"] for p in preds]
-            pred_labels = [p["label"] for p in preds]
+            pred_labels = [
+                self._pred_label_to_idx(p["label"], pred_ontology) for p in preds
+            ]
             pred_scores = [p["score"] for p in preds]
 
             pred_boxes = (
