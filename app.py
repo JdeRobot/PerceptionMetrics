@@ -5,6 +5,7 @@ from gui.dataset_viewer import dataset_viewer_tab
 from gui.evaluator import evaluator_tab
 from gui.inference import inference_tab
 from gui.tasks.image_detection.sidebar import render_image_detection_sidebar
+from gui.tasks.image_detection.computational_cost import render_computational_cost
 from gui.tasks.image_segmentation.sidebar import render_image_segmentation_sidebar
 from gui.tasks.lidar_segmentation.sidebar import render_lidar_segmentation_sidebar
 st.set_page_config(page_title="PerceptionMetrics", layout="wide")
@@ -62,7 +63,9 @@ with st.sidebar:
     
 
 
-tab1, tab2, tab3 = st.tabs(["Dataset Viewer", "Inference", "Evaluator"])
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["Dataset Viewer", "Inference", "Evaluator", "Computational Cost"]
+)
 
 with tab1:
     dataset_viewer_tab()
@@ -70,3 +73,8 @@ with tab2:
     inference_tab()
 with tab3:
     evaluator_tab()
+with tab4:
+    if task == "Image Detection":
+        render_computational_cost()
+    else:
+        st.info("Computational Cost is currently available for Image Detection models only.")
