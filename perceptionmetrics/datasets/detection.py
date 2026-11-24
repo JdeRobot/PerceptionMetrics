@@ -90,12 +90,15 @@ class ImageDetectionDataset(DetectionDataset):
         :raises ValueError: If the class name is not in the prediction ontology
         """
         if isinstance(label, str):
-            if label not in pred_ontology:
-                raise ValueError(
-                    f"Unknown class name '{label}' in predictions. Expected one of "
-                    f"the prediction ontology classes: {list(pred_ontology)}"
-                )
-            return pred_ontology[label]["idx"]
+            if label in pred_ontology:
+                return pred_ontology[label]["idx"]
+            # A numeric string such as "1" is a class index, as before
+            if label.isdigit():
+                return int(label)
+            raise ValueError(
+                f"Unknown class name '{label}' in predictions. Expected one of "
+                f"the prediction ontology classes: {list(pred_ontology)}"
+            )
         return int(label)
 
     def eval_preds(

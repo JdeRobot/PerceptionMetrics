@@ -74,6 +74,17 @@ def test_eval_preds_still_accepts_integer_labels(tmp_path):
     assert np.allclose(results.loc["AP", ["car", "person"]].astype(float), 1.0)
 
 
+def test_eval_preds_accepts_numeric_string_labels(tmp_path):
+    """Labels stored as numeric strings like "1" are still read as class indices."""
+    dataset = _make_dataset(tmp_path)
+    preds_dir = tmp_path / "preds"
+    _write_preds(preds_dir, ["0", "1"])
+
+    results = dataset.eval_preds(str(preds_dir), split="test")
+
+    assert np.allclose(results.loc["AP", ["car", "person"]].astype(float), 1.0)
+
+
 def test_eval_preds_rejects_unknown_class_name(tmp_path):
     dataset = _make_dataset(tmp_path)
     preds_dir = tmp_path / "preds"
